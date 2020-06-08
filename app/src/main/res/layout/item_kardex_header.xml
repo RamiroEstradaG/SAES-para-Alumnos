@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"
+    tools:ignore="HardcodedText"
+    android:layout_marginBottom="4dp"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Promedio"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/kardexItemPromedio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="28sp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonKardexStats"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:drawableTint="@color/colorAccent"
+        android:text="Rendimiento"
+        android:textAllCaps="false"
+        android:textColor="@color/colorAccent"
+        app:cornerRadius="20dp"
+        app:icon="@drawable/ic_show_chart_black_24dp"
+        app:iconTint="@color/colorAccent"
+        app:strokeColor="@color/colorAccent" />
+
+</LinearLayout>

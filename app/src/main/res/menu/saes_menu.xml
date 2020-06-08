@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText">
+    <item
+        android:id="@+id/nav_alumnos_title"
+        android:title="Alumnos">
+        <menu>
+            <item
+                android:id="@+id/nav_kardex"
+                android:checkable="true"
+                android:icon="@drawable/ic_school_black_24dp"
+                android:title="Kárdex" />
+            <item
+                android:id="@+id/nav_estado_general"
+                android:checkable="true"
+                android:icon="@drawable/ic_thumbs_up_down_black_24dp"
+                android:title="Estado general" />
+            <item
+                android:id="@+id/nav_horario"
+                android:checkable="true"
+                android:icon="@drawable/ic_schedule_black_24dp"
+                android:title="Horario de clase" />
+
+            <item
+                android:id="@+id/nav_calendario_trabajo"
+                android:checkable="true"
+                android:icon="@drawable/ic_event_black_24dp"
+                android:title="Calendario de trabajo"/>
+
+            <item
+                android:id="@+id/nav_calific"
+                android:checkable="true"
+                android:icon="@drawable/ic_assignment_turned_in_black_24dp"
+                android:title="Calificaciones" />
+            <item
+                android:id="@+id/nav_eval_prof"
+                android:checkable="true"
+                android:icon="@drawable/ic_supervisor_account_black_24dp"
+                android:title="Evaluación de profesores" />
+            <item
+                android:id="@+id/nav_reinsc"
+                android:checkable="true"
+                android:icon="@drawable/ic_event_available_black_24dp"
+                android:title="Cita de reinscripción" />
+            <item
+                android:id="@+id/nav_ets"
+                android:checkable="true"
+                android:icon="@drawable/ic_border_color_black_24dp"
+                android:title="ETS" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/nav_academica_title"
+        android:title="Academica">
+        <menu>
+            <item
+                android:id="@+id/nav_agenda_escolar"
+                android:checkable="true"
+                android:icon="@drawable/ic_event_note_black_24dp"
+                android:title="Agenda escolar" />
+            <item
+                android:id="@+id/nav_horarios_clase"
+                android:checkable="true"
+                android:icon="@drawable/ic_schedule_black_24dp"
+                android:title="Horario general de clase" />
+            <item
+                android:id="@+id/nav_calendario_ets"
+                android:checkable="true"
+                android:icon="@drawable/ic_event_black_24dp"
+                android:title="Calendario de ETS" />
+            <item
+                android:id="@+id/nav_ocupabilidad"
+                android:checkable="true"
+                android:icon="@drawable/ic_pie_chart_black_24dp"
+                android:title="Ocupabilidad de horario" />
+            <item
+                android:id="@+id/nav_equivalencias"
+                android:checkable="true"
+                android:icon="@drawable/ic_compare_arrows_black_24dp"
+                android:title="Equivalencias" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/nav_app_title"
+        android:title="Aplicación">
+        <menu>
+            <item
+                android:id="@+id/nav_about"
+                android:checkable="true"
+                android:icon="@drawable/ic_info_outline_black_24dp"
+                android:title="Acerca de" />
+            <item
+                android:id="@+id/nav_pref"
+                android:checkable="true"
+                android:icon="@drawable/ic_settings_black_24dp"
+                android:title="Configuraciones" />
+        </menu>
+    </item>
+</menu>

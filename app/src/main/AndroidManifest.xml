@@ -1,0 +1,477 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ziox.ramiro.saes">
+
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    
+    <application android:allowBackup="true"
+                 android:label="@string/app_name"
+                 android:icon="@mipmap/ic_launcher"
+                 android:fullBackupContent="true"
+                 android:roundIcon="@mipmap/ic_launcher_round"
+                 android:supportsRtl="true"
+                 android:theme="@style/LightTheme"
+                 android:hardwareAccelerated="true">
+
+        <activity android:name="ziox.ramiro.saes.activities.MainActivity"
+            android:theme="@style/LightTheme"
+            android:configChanges="orientation|screenSize"
+            android:windowSoftInputMode="adjustPan">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <intent-filter android:label="SAES IPN">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"
+                    android:host="www.saes.ipn.mx" />
+            </intent-filter>
+
+            <intent-filter android:label="SAES CECyT 1" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt1.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 2" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt2.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 3" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt3.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 4" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt4.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 5" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt5.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 6" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt6.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 7" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt7.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 8" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt8.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 9" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt9.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 10" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt10.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 11" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt11.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 12" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt12.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 13" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt13.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 14" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt14.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 15" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt15.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 16" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt16.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 17" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="148.204.250.26"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 18" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="148.204.250.24"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CET 1" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cet1.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESIME Azcapotzalco" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esimeazc.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESIME Culhuacan" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esimecu.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESIME Ticomán" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esimetic.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESIME Zacatenco" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esimez.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESIA Tecamachalco" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esiatec.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESIA Ticomán" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esiatic.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESIA Zacatenco" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esiaz.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CICS Milpa Alta" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cicsma.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CICS Santo Tomas" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cicsst.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESCA Santo Tomas" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.escasto.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESCA Tepepan" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.escatep.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ENCB" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.encb.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ENMH" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.enmh.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESEO" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.eseo.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESM" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esm.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESE" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.ese.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES EST" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.est.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ENBA" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="148.204.250.37"/>
+            </intent-filter>
+            <intent-filter android:label="SAES UPIBI" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.upibi.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES UPIICSA" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.upiicsa.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES UPIITA" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.upiita.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESCOM" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.escom.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESFM" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esfm.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESIQIE" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esiqie.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES ESIT" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.esit.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES UPIIG" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.upiig.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES UPIIH" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="148.204.250.36"/>
+            </intent-filter>
+            <intent-filter android:label="SAES UPIIZ" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.upiiz.ipn.mx"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name="ziox.ramiro.saes.activities.SAESActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/LightTheme"/>
+
+        <activity android:name="ziox.ramiro.saes.activities.AddEventoActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/LightTheme"/>
+
+        <activity android:name="ziox.ramiro.saes.activities.VisualizarKardexActivity"
+            android:theme="@style/LightTheme"/>
+
+        <activity android:name="ziox.ramiro.saes.activities.CreateHorarioActivity"
+            android:theme="@style/LightTheme"/>
+
+        <activity android:name="ziox.ramiro.saes.activities.AboutActivity"
+            android:theme="@style/LightTheme"/>
+
+        <activity android:name="ziox.ramiro.saes.activities.SettingsActivity"
+            android:theme="@style/LightTheme"/>
+
+        <activity android:name="ziox.ramiro.saes.activities.EvaluarProfesorActivity"
+            android:theme="@style/LightTheme"/>
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/admobAppId"/>
+
+        <receiver
+            android:name="ziox.ramiro.saes.widgets.HorarioSmallWidget"
+            android:label="Clase actual">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/horario_small_widget_info" />
+        </receiver>
+        <receiver
+            android:name="ziox.ramiro.saes.widgets.HorarioLargeWidget"
+            android:label="Horario semanal">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/horario_large_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name="ziox.ramiro.saes.widgets.HorarioListWidget"
+            android:label="Horario del día">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/horario_list_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name="ziox.ramiro.saes.widgets.AgendaEscolarWidget"
+            android:label="Agenda escolar">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/agenda_escolar_widget_info" />
+        </receiver>
+
+        <receiver android:name=".services.AlarmReceiver"/>
+        <receiver android:name=".services.AlarmBootReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="ziox.ramiro.saes.services.AgendaEscolarWidgetRemoteViewService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <service
+            android:name="ziox.ramiro.saes.services.ListWidgetRemoteViewService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <service android:name=".services.MessagingService"
+            android:permission="android.permission.INTERNET">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_launcher_foreground" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="notificaciones_general" />
+    </application>
+</manifest>

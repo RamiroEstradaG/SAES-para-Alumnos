@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/itemeSelectableButton"
+    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:insetLeft="2dp"
+    android:insetRight="2dp"
+    android:orientation="vertical"
+    android:text="Text"
+    android:minWidth="0dp"
+    app:layout_minWidth="0dp"
+    android:textAllCaps="false"
+    android:textColor="@color/colorAccent"
+    app:cornerRadius="20dp"
+    app:strokeColor="@color/colorAccent" />

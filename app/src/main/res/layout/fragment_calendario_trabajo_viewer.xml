@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/monthYearDisplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:paddingStart="16dp"
+        android:paddingTop="32dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp"
+        android:text="Enero 2020"
+        android:textColor="@color/colorOnSecondary"
+        android:textSize="24sp" />
+
+    <com.github.sundeepk.compactcalendarview.CompactCalendarView
+        android:id="@+id/compactCalendarView"
+        android:layout_width="fill_parent"
+        android:layout_height="250dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        app:compactCalendarBackgroundColor="@color/colorPrimary"
+        app:compactCalendarCurrentDayBackgroundColor="#99CCCCCC"
+        app:compactCalendarCurrentSelectedDayBackgroundColor="@color/colorDanger"
+        app:compactCalendarDisplayOtherMonthDays="false"
+        app:compactCalendarMultiEventIndicatorColor="#fff"
+        app:compactCalendarTargetHeight="250dp"
+        app:compactCalendarTextColor="@color/colorOnSecondary"
+        app:compactCalendarTextSize="12sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/eventosRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="58dp"
+        tools:listitem="@layout/view_calendario_info_item" />
+</LinearLayout>

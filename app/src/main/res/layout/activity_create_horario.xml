@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/parentCrearHorario"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorCrearHorario"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarCrearHorario">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewCrearHorario"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/view_create_horario_item" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabPreviewMateria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorAccent"
+            android:tint="?attr/colorOnSecondary"
+            app:layout_anchor="@+id/frameLayout2"
+            app:layout_anchorGravity="top|center"
+            app:srcCompat="@drawable/ic_remove_red_eye_black_24dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAnadirMateria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorAccent"
+            android:tint="?attr/colorOnSecondary"
+            android:layout_margin="16dp"
+            app:layout_anchor="@+id/frameLayout"
+            app:layout_anchorGravity="top|center"
+            app:srcCompat="@drawable/ic_add_black_24dp" />
+
+        <FrameLayout
+            android:id="@+id/frameLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="74dp"
+            app:layout_anchor="@+id/fabAnadirMateria"
+            app:layout_anchorGravity="top|center">
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="76dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="40dp"
+            app:layout_anchor="@+id/recyclerViewCrearHorario"
+            app:layout_anchorGravity="end|bottom" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarCrearHorario"
+        android:layout_width="match_parent"
+        android:layout_height="88dp"
+        android:background="@color/colorPrimary"
+        android:gravity="bottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbarCrearHorario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:elevation="3dp"
+            android:minHeight="?attr/actionBarSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:titleTextColor="@color/colorOnSecondary" />
+    </com.google.android.material.appbar.AppBarLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

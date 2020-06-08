@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/diasTextLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="45dp"
+                    android:layout_height="0dp" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="L"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="M"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="M"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="J"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="V"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/expandedLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dia"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="18sp"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/horarioLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="45dp"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:id="@+id/horasContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/arrowMarker"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:layout_gravity="end"
+                            android:scaleType="fitEnd"
+                            android:tint="@color/colorPrimary"
+                            android:visibility="gone"
+                            app:srcCompat="@drawable/ic_play_arrow_black_24dp" />
+
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:id="@+id/diasContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="?android:attr/selectableItemBackground">
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="?android:attr/selectableItemBackground">
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="?android:attr/selectableItemBackground">
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="?android:attr/selectableItemBackground">
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="?android:attr/selectableItemBackground">
+
+                        </FrameLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </FrameLayout>
+        </ListView>
+    </LinearLayout>
+</FrameLayout>

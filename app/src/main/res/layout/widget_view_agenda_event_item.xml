@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/itemInOut"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_weight="0"
+        android:background="@drawable/ic_keyboard_arrow_down_black_24dp"
+        android:rotation="-90"
+        android:backgroundTint="@color/colorPrimaryText"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/itemDiaEvento"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/itemMesEvento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_marginTop="-5dp"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="10sp"
+            tools:ignore="SmallSp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/itemNombreEvento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:paddingStart="8dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="2dp"
+        android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+</LinearLayout>

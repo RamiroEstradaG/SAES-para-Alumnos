@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/logoMenu"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            app:srcCompat="@drawable/ic_logopoli" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/nombreMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="Nombre"
+                android:textColor="?android:attr/textColorPrimary" />
+
+            <TextView
+                android:id="@+id/boletaMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="TextView" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/perfilButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:singleLine="true"
+            android:text="Perfil"
+            android:textAllCaps="false"
+            android:textColor="@color/colorAccent" />
+
+        <ImageView
+            android:id="@+id/closeMenu"
+            android:layout_width="27dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_exit_to_app_black_24dp"
+            android:tint="@android:color/holo_red_light"
+            android:tintMode="src_in" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonEscolarizado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_event_black_24dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:text="Escolarizado"
+            android:layout_weight="1"
+            android:textColor="@color/colorAccent"
+            app:iconTint="@color/colorAccent"
+            android:textAllCaps="false"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonNoEscolarizado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_event_black_24dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:text="No escolarizado"
+            android:layout_weight="1"
+            android:textColor="@color/colorAccent"
+            app:iconTint="@color/colorAccent"
+            android:textAllCaps="false"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"/>
+    </LinearLayout>
+</LinearLayout>
