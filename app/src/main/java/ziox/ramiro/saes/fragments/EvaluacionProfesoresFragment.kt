@@ -39,7 +39,7 @@ class EvaluacionProfesoresFragment : Fragment() {
         val interstitialAd = InterstitialAd(context)
 
         if(activity?.haveDonated() == false) {
-            interstitialAd.adUnitId = "ca-app-pub-5186385350655213/9871805763"
+            interstitialAd.adUnitId = "ca-app-pub-9041205561484091/6700850234"
             interstitialAd.adListener = object : AdListener() {
                 override fun onAdClosed() {
                     super.onAdClosed()

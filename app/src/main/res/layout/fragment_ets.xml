@@ -23,7 +23,7 @@
             android:layout_height="50dp"
             android:visibility="gone"
             app:adSize="BANNER"
-            app:adUnitId="ca-app-pub-5186385350655213/6498519032"
+            app:adUnitId="ca-app-pub-9041205561484091/6345148089"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/appBarCrearHorario" />
