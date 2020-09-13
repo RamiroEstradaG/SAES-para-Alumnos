@@ -24,7 +24,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:text="Fecha de inscripcion"
+            android:text="Fecha de inscripción"
             android:textColor="@color/colorPrimaryText"
             android:textSize="24sp" />
 
@@ -171,7 +171,7 @@
                     android:text="0.0"
                     android:textAlignment="center"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="18sp" />
+                    android:textSize="24sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -202,7 +202,7 @@
                     android:text="0.0"
                     android:textAlignment="center"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="18sp" />
+                    android:textSize="24sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -233,7 +233,7 @@
                     android:text="0.0"
                     android:textAlignment="center"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="18sp" />
+                    android:textSize="24sp" />
             </LinearLayout>
 
         </LinearLayout>
@@ -243,6 +243,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
             android:text="Periodos escolares"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="18sp" />
@@ -251,43 +252,53 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ProgressBar
-                android:id="@+id/progressDuracionCarrera"
-                style="?android:attr/progressBarStyleHorizontal"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:max="0"
-                android:progress="0"
-                android:progressTint="@android:color/holo_red_light"
-                android:scaleY="20" />
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp">
 
-            <ProgressBar
-                android:id="@+id/progressPeriodosCursados"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:max="0"
-                android:progress="0"
-                android:progressBackgroundTint="@android:color/transparent"
-                android:progressTint="@color/colorAccent"
-                android:scaleY="20" />
+                <ProgressBar
+                    android:id="@+id/progressDuracionCarrera"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:max="0"
+                    android:progress="0"
+                    android:progressTint="@android:color/holo_red_light"
+                    android:scaleY="30" />
+
+                <ProgressBar
+                    android:id="@+id/progressPeriodosCursados"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:indeterminate="false"
+                    android:max="0"
+                    android:progress="0"
+                    android:progressBackgroundTint="@android:color/transparent"
+                    android:progressTint="@color/colorAccent"
+                    android:scaleY="30" />
+            </androidx.cardview.widget.CardView>
+
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:orientation="horizontal">
 
-            <View
+            <androidx.cardview.widget.CardView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:background="@color/colorAccent" />
+                app:cardElevation="0dp"
+                app:cardCornerRadius="4dp"
+                app:cardBackgroundColor="@color/colorAccent" />
 
             <TextView
                 android:id="@+id/labelPeriodosCursados"
@@ -298,10 +309,12 @@
                 android:text="Cursado (0)"
                 android:textColor="?android:attr/textColorPrimary" />
 
-            <View
+            <androidx.cardview.widget.CardView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:background="@android:color/holo_red_light" />
+                app:cardElevation="0dp"
+                app:cardCornerRadius="4dp"
+                app:cardBackgroundColor="@android:color/holo_red_light" />
 
             <TextView
                 android:id="@+id/labelDuracionNormal"
@@ -319,6 +332,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
             android:text="Créditos"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="18sp" />
@@ -327,17 +341,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ProgressBar
-                android:id="@+id/progressCreditosObtenidos"
-                style="?android:attr/progressBarStyleHorizontal"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:max="0"
-                android:progress="0"
-                android:progressTint="@color/design_default_color_primary"
-                android:scaleY="20" />
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp">
+
+                <ProgressBar
+                    android:id="@+id/progressCreditosObtenidos"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:max="0"
+                    android:progress="0"
+                    android:progressTint="@color/design_default_color_primary"
+                    android:scaleY="30" />
+            </androidx.cardview.widget.CardView>
 
         </FrameLayout>
 
@@ -345,13 +366,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:orientation="horizontal">
 
-            <View
+            <androidx.cardview.widget.CardView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:background="@color/design_default_color_primary" />
+                app:cardElevation="0dp"
+                app:cardCornerRadius="4dp"
+                app:cardBackgroundColor="@color/design_default_color_primary" />
 
             <TextView
                 android:id="@+id/labelCreditosObtenidos"

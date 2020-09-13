@@ -20,8 +20,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="NACIMIENTO"
-            android:textColor="?android:attr/textColorPrimary"
+            android:text="Nacimiento"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
@@ -29,8 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Fecha de nacimiento"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -38,7 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -46,8 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Nacionalidad"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -55,7 +57,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -63,8 +66,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Entidad de nacimiento"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -72,7 +75,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -80,8 +84,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="8dp"
-            android:text="DIRECCIÓN"
-            android:textColor="?android:attr/textColorPrimary"
+            android:text="Dirección"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
@@ -89,8 +94,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Dirección"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -98,7 +103,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -106,8 +112,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Delegación/Municipio"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -115,7 +121,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -123,8 +130,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Teléfono"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -132,7 +139,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -140,8 +148,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Teléfono móvil"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -149,7 +157,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -157,8 +166,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Teléfono de oficina"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -166,7 +175,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -174,8 +184,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="E-mail"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -183,7 +193,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -191,8 +202,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="8dp"
-            android:text="ESCOLARIDAD"
-            android:textColor="?android:attr/textColorPrimary"
+            android:text="Escolaridad"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
@@ -200,8 +212,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Escuela de procedencia"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -209,7 +221,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -217,8 +230,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Promedio en la secundaria"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -226,7 +239,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -234,8 +248,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Promedio en nivel medio superior "
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -243,7 +257,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -251,8 +266,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="8dp"
-            android:text="PADRE O TUTOR"
-            android:textColor="?android:attr/textColorPrimary"
+            android:text="Madre, padre o tutor"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
@@ -260,8 +276,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Tutor"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -269,7 +285,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -277,8 +294,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Padre"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -286,7 +303,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -294,8 +312,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Madre"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -303,7 +321,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
     </LinearLayout>
 </ScrollView>

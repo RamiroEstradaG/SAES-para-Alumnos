@@ -40,8 +40,8 @@
                 android:id="@+id/boletaMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="?android:attr/textColorPrimary"
-                android:text="TextView" />
+                android:text="0000000000"
+                android:textColor="?android:attr/textColorPrimary" />
         </LinearLayout>
 
         <Button
@@ -53,7 +53,10 @@
             android:singleLine="true"
             android:text="Perfil"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/colorInfo"
+            app:cornerRadius="20dp"
+            app:rippleColor="@color/colorInfo"
+            app:strokeColor="@color/colorInfo" />
 
         <ImageView
             android:id="@+id/closeMenu"
@@ -61,8 +64,8 @@
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_exit_to_app_black_24dp"
-            android:tint="@android:color/holo_red_light"
-            android:tintMode="src_in" />
+            android:tintMode="src_in"
+            app:tint="@android:color/holo_red_light" />
 
     </LinearLayout>
     <LinearLayout
@@ -70,31 +73,39 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonEscolarizado"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:icon="@drawable/ic_event_black_24dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:text="Escolarizado"
-            android:layout_weight="1"
-            android:textColor="@color/colorAccent"
-            app:iconTint="@color/colorAccent"
-            android:textAllCaps="false"
             android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"/>
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:text="Escolarizado"
+            android:textAllCaps="false"
+            android:textColor="@color/colorAccent"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_event_black_24dp"
+            app:iconTint="@color/colorAccent"
+            app:rippleColor="@color/colorAccent"
+            app:strokeColor="@color/colorAccent" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonNoEscolarizado"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:icon="@drawable/ic_event_black_24dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:text="No escolarizado"
-            android:layout_weight="1"
-            android:textColor="@color/colorAccent"
-            app:iconTint="@color/colorAccent"
-            android:textAllCaps="false"
             android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"/>
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:text="No escolarizado"
+            android:textAllCaps="false"
+            android:textColor="@color/colorAccent"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_event_black_24dp"
+            app:iconTint="@color/colorAccent"
+            app:rippleColor="@color/colorAccent"
+            app:strokeColor="@color/colorAccent" />
     </LinearLayout>
 </LinearLayout>

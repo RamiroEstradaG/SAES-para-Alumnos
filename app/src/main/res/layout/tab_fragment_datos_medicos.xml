@@ -20,8 +20,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="GENERALES"
-            android:textColor="?android:attr/textColorPrimary"
+            android:text="Generales"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
@@ -29,8 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Peso"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -38,7 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -46,8 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Estatura"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -55,7 +57,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -63,8 +66,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Tipo de sangre"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -72,7 +75,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -80,8 +84,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="8dp"
-            android:text="AFILIACIÓN MÉDICA"
-            android:textColor="?android:attr/textColorPrimary"
+            android:text="Afiliación Médica"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
@@ -89,8 +94,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Institución"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -98,7 +103,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -106,8 +112,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="No. de seguro social"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -115,7 +121,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -123,8 +130,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Fecha de alta "
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -132,7 +139,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -140,8 +148,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Fecha de baja "
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -149,7 +157,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -157,8 +166,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="8dp"
-            android:text="INTEGRIDAD FÍSICA"
-            android:textColor="?android:attr/textColorPrimary"
+            android:text="Integridad Física"
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <TextView
@@ -166,8 +176,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Padecimiento de enfermedades"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -175,7 +185,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -183,8 +194,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Problemas físicos"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -192,7 +203,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -200,8 +212,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Tatuado"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -209,7 +221,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
         <TextView
 
@@ -217,8 +230,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Pie plano"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textColor="@color/colorSecondaryText"
+            android:textSize="14sp" />
 
         <TextView
 
@@ -226,7 +239,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="..."
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp" />
 
     </LinearLayout>
 </ScrollView>

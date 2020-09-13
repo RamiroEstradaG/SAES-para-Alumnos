@@ -161,6 +161,9 @@ class KardexFragment : Fragment() {
 
             activity?.runOnUiThread {
                 rootView.kardexItemPromedio.text = promedio
+                if(promedio.toDoubleOrNull() ?: 10.0 < 6.0){
+                    rootView.kardexItemPromedio.setTextColor(ContextCompat.getColor(activity!!, R.color.colorDanger))
+                }
             }
 
             kardexList.add(

@@ -41,7 +41,7 @@ class DatosPersonalesTabFragment : Fragment() {
                         "var directionCompleta = getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_Calle\")+" +
                         "\" #\"+getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_NumExt\");" +
                         "if(getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_NumInt\") != \"0\" && getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_NumInt\") != \"\") directionCompleta += \" No. Int. #\"+getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_NumInt\");" +
-                        "directionCompleta += \" Col. \"+getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_Colonia\")+\". C. P. \"+getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_CP\");" +
+                        "directionCompleta += \". \"+getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_Colonia\")+\". C.P. \"+getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_CP\");" +
                         "window.JSI.setDireccion(directionCompleta, getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_DelMpo\")+\", \"+getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_Estado\")," +
                         "getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_Tel\")," +
                         "getText(\"ctl00_mainCopy_TabContainer1_Tab_Direccion_Lbl_Movil\")," +

@@ -206,7 +206,7 @@ class VisualizarKardexActivity : AppCompatActivity() {
                 }
 
                 if(calificaciones.size > 0){
-                    val entry = calificaciones.maxBy {
+                    val entry = calificaciones.maxByOrNull {
                         it.y
                     }
                     val index = calificaciones.indexOf(entry)
@@ -220,7 +220,7 @@ class VisualizarKardexActivity : AppCompatActivity() {
                 }
 
                 if(calificaciones.size > 0){
-                    val entry = calificaciones.minBy {
+                    val entry = calificaciones.minByOrNull {
                         it.y
                     }
                     val index = calificaciones.indexOf(entry)

@@ -60,7 +60,7 @@ class MenuDrawerSaesModal : BottomSheetDialogFragment() {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
             context?.startActivity(
                 Intent(Intent.ACTION_VIEW)
-                    .setData(Uri.parse("https://www.ipn.mx/assets/files/main/docs/inicio/escolarizado.pdf"))
+                    .setData(Uri.parse("https://www.ipn.mx/assets/files/main/docs/inicio/cal-Escolarizada-20-21.pdf"))
             )
         }
 
@@ -68,7 +68,7 @@ class MenuDrawerSaesModal : BottomSheetDialogFragment() {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
             context?.startActivity(
                 Intent(Intent.ACTION_VIEW)
-                    .setData(Uri.parse("https://www.ipn.mx/assets/files/main/docs/inicio/noescolarizado.pdf"))
+                    .setData(Uri.parse("https://www.ipn.mx/assets/files/main/docs/inicio/cal-NoEscolarizada-20-21.pdf"))
             )
         }
 

@@ -146,7 +146,7 @@ fun removePreference(context: Context?, key: String){
 }
 
 fun createWebView(context: Context?, client : WebViewClient, progressBar: ProgressBar?) : WebView {
-    val webView = WebView(context)
+    val webView = WebView(context!!)
     initWebView(webView, client, progressBar)
 
     return webView
@@ -360,7 +360,7 @@ fun downloadFile(context: Context?, name : String){
 
 fun getBoleta(context: Context?) = getPreference(context, "boleta", "")
 
-fun getUrl(context: Context?) : String? = getPreference(context, ValType.STRING, "new_url_escuela") as String?
+fun getUrl(context: Context?) : String = getPreference(context, ValType.STRING, "new_url_escuela") as String? ?: ""
 
 fun getNameEscuela(context: Context?) = getPreference(
     context,

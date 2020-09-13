@@ -31,12 +31,12 @@
                     app:adSize="BANNER"
                     app:adUnitId="ca-app-pub-9041205561484091/9203724642"/>
 
-                <com.google.android.material.card.MaterialCardView
+                <androidx.cardview.widget.CardView
                     android:id="@+id/loginCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:background="@color/colorSurface"
+                    app:cardBackgroundColor="@color/colorSurface"
                     app:cardCornerRadius="8dp"
                     app:contentPadding="8dp">
 
@@ -173,7 +173,7 @@
                             android:textColor="@color/colorAccent" />
 
                     </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
         </ScrollView>
 
@@ -189,6 +189,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:visibility="visible"
             app:behavior_hideable="false"
             app:behavior_peekHeight="40dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -206,8 +207,8 @@
                     android:layout_gravity="center"
                     android:contentDescription="Arrow"
                     android:scaleType="centerCrop"
-                    android:tint="?android:attr/textColorPrimary"
-                    app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp" />
+                    app:srcCompat="@drawable/ic_keyboard_arrow_up_black_24dp"
+                    app:tint="?android:attr/textColorPrimary" />
 
                 <TextView
                     android:layout_width="match_parent"

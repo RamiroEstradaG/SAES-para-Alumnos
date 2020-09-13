@@ -31,7 +31,7 @@ class EvaluarProfesorActivity : AppCompatActivity() {
         evaluacionWebView.addBottomInsetPadding()
 
         val nombre = intent?.extras?.getString("nombre")
-        val url = intent?.extras?.getString("url")
+        val url = intent?.extras?.getString("url")!!
 
         evaluacionToolbar.title = nombre
         setSupportActionBar(evaluacionToolbar)

@@ -79,8 +79,8 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:gravity="center_vertical|end"
+                            android:orientation="vertical">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -98,7 +98,7 @@
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Esto permite hacer comparaciones por carrera, unidad y general. Los resultados dependen de la cantidad de usuarios que deciden compartir sus estadísticas.\nLos datos se almacenarán de manera anónima."
+                                    android:text="Esto permite hacer comparaciones por carrera, unidad y el IPN. Los resultados dependen de la cantidad de usuarios que deciden compartir sus estadísticas.\nLos datos se almacenarán de manera anónima."
                                     android:textColor="@color/colorSecondaryText" />
                             </LinearLayout>
 
@@ -129,7 +129,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
-                                android:text="Mejor semestre hasta el momento"
+                                android:text="Mejor semestre"
                                 android:textColor="@color/colorOnPrimary"
                                 android:textSize="18sp" />
 
@@ -193,7 +193,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
-                                android:text="Peor semestre hasta el momento"
+                                android:text="Peor semestre"
                                 android:textColor="@color/colorOnPrimary"
                                 android:textSize="18sp" />
 
@@ -391,7 +391,7 @@
                                         android:layout_marginTop="8dp"
                                         android:layout_marginEnd="8dp"
                                         android:gravity="center_vertical"
-                                        android:text="Último promedio"
+                                        android:text="Promedio global"
                                         android:textAlignment="center"
                                         android:textColor="@color/colorPrimaryText"
                                         android:textSize="18sp" />
@@ -403,7 +403,7 @@
                                         android:layout_marginEnd="8dp"
                                         android:layout_marginBottom="8dp"
                                         android:gravity="center_vertical"
-                                        android:text="VS\nPromedio general de la institución"
+                                        android:text="VS\nPromedio general del IPN"
                                         android:textAlignment="center"
                                         android:textColor="@color/colorSecondaryText"
                                         android:textSize="18sp" />
@@ -450,7 +450,7 @@
                                     android:layout_marginTop="8dp"
                                     android:layout_marginEnd="8dp"
                                     android:gravity="center_vertical"
-                                    android:text="Este semestre"
+                                    android:text="Semestre en curso"
                                     android:textAlignment="center"
                                     android:textColor="@color/colorPrimaryText"
                                     android:textSize="18sp" />
@@ -567,7 +567,7 @@
                                     android:layout_marginTop="8dp"
                                     android:layout_marginEnd="8dp"
                                     android:gravity="center_vertical"
-                                    android:text="Último promedio"
+                                    android:text="Promedio global"
                                     android:textAlignment="center"
                                     android:textColor="@color/colorPrimaryText"
                                     android:textSize="18sp" />
@@ -579,7 +579,7 @@
                                     android:layout_marginEnd="8dp"
                                     android:layout_marginBottom="8dp"
                                     android:gravity="center_vertical"
-                                    android:text="VS\nEl anterior"
+                                    android:text="VS\nPromedio global anterior"
                                     android:textAlignment="center"
                                     android:textColor="@color/colorSecondaryText"
                                     android:textSize="18sp" />
@@ -637,7 +637,7 @@
                                     android:layout_marginEnd="8dp"
                                     android:layout_marginBottom="8dp"
                                     android:gravity="center_vertical"
-                                    android:text="VS\nÚltimo promedio"
+                                    android:text="VS\nPromedio global"
                                     android:textAlignment="center"
                                     android:textColor="@color/colorSecondaryText"
                                     android:textSize="18sp" />
@@ -653,6 +653,38 @@
                                 android:text="—%"
                                 android:textColor="@color/colorInfo"
                                 android:textSize="40sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        app:cardBackgroundColor="@color/colorSurface"
+                        app:cardCornerRadius="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:text="Gráfica"
+                                android:textColor="@color/colorPrimaryText"
+                                android:textSize="18sp" />
+
+                            <com.github.mikephil.charting.charts.LineChart
+                                android:id="@+id/chartKardex"
+                                android:layout_width="match_parent"
+                                android:layout_height="182dp"
+                                android:layout_margin="8dp"
+                                android:orientation="vertical" />
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
@@ -673,7 +705,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
-                                android:text="Tendencia de los semestres"
+                                android:text="Tendencia del promedio por semestres"
                                 android:textColor="@color/colorPrimaryText"
                                 android:textSize="18sp" />
 
@@ -707,7 +739,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
-                                android:text="Tendencia del promedio"
+                                android:text="Tendencia del promedio global"
                                 android:textColor="@color/colorPrimaryText"
                                 android:textSize="18sp" />
 
@@ -721,36 +753,6 @@
                                 android:text="Datos insuficientes"
                                 android:textColor="@color/colorInfo"
                                 android:textSize="30sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:cardBackgroundColor="@color/colorSurface"
-                        app:cardCornerRadius="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="8dp"
-                                android:text="Gráfica"
-                                android:textColor="@color/colorPrimaryText"
-                                android:textSize="18sp" />
-
-                            <com.github.mikephil.charting.charts.LineChart
-                                android:id="@+id/chartKardex"
-                                android:layout_width="match_parent"
-                                android:layout_height="182dp"
-                                android:layout_margin="8dp"
-                                android:orientation="vertical" />
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
                 </LinearLayout>

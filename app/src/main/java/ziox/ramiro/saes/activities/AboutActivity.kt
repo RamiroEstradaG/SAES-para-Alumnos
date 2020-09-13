@@ -6,11 +6,14 @@ package ziox.ramiro.saes.activities
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.anjlab.android.iab.v3.BillingProcessor
 import com.anjlab.android.iab.v3.Constants
 import com.anjlab.android.iab.v3.TransactionDetails
+import com.google.android.play.core.ktx.requestReview
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.android.synthetic.main.activity_about.*
@@ -72,14 +75,21 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler {
             startActivity(mailer)
         }
 
-        link_2.setOnClickListener {
-            crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=ziox.ramiro.saes")
-                )
-            )
+        link_2.setOnClickListener { v ->
+            crashlytics.log("Click en ${resources.getResourceName(v.id)} en la clase ${this.localClassName}")
+            val manager = ReviewManagerFactory.create(this)
+            manager.requestReviewFlow().addOnCompleteListener { request ->
+                if (request.isSuccessful) {
+                    val reviewInfo = request.result
+                    manager.launchReviewFlow(this, reviewInfo).addOnFailureListener {
+                        Log.w("A","In-app review request failed, reason=$it")
+                    }.addOnCompleteListener { _ ->
+                        Log.i("A","In-app review finished")
+                    }
+                } else {
+                    Log.w("A","In-app review request failed, reason=${request.exception}")
+                }
+            }
         }
 
         link_3.setOnClickListener {

@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         enablePersistance(true)
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
         setPreference(this, "offline_mode", false)
-        MobileAds.initialize(this, resources.getString(R.string.admobAppId))
+        MobileAds.initialize(this)
         initForm()
         initBottomSheet()
 
@@ -264,7 +264,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     sheetBehavior.peekHeight = EDGE_INSET_BOTTOM + dpToPixel(this@MainActivity, 40)
                     elegirEscuelaDrag.visibility = View.VISIBLE
                     hideLoading()
-                    webViewCaptcha.loadUrl(captchaSrc)
+                    if (captchaSrc != null) {
+                        webViewCaptcha.loadUrl(captchaSrc)
+                    }
                     webViewCaptcha.visibility = View.VISIBLE
                 }
             }

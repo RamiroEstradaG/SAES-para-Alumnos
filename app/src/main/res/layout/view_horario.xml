@@ -210,7 +210,6 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="58dp"
-            android:layout_marginBottom="8dp"
             android:background="@color/colorSurface">
 
             <FrameLayout
@@ -261,6 +260,7 @@
                     android:id="@+id/newClassCustomLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:orientation="vertical">
 
                     <Button
@@ -269,8 +269,9 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/colorAccent"
                         android:text="Añadir materia predefinida"
-                        android:textAllCaps="false"
-                        android:textColor="@color/colorOnPrimary" />
+                        android:textAllCaps="true"
+                        android:textColor="@color/colorOnPrimary"
+                        app:cornerRadius="20dp" />
 
                     <TextView
                         android:layout_width="match_parent"

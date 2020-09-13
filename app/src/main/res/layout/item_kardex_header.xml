@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Promedio"
+            android:text="Promedio global"
             android:textColor="@color/colorSecondaryText"
             android:textSize="20sp" />
 
@@ -29,7 +29,7 @@
             android:id="@+id/kardexItemPromedio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryText"
+            android:textColor="@color/colorInfo"
             android:textSize="28sp" />
 
     </LinearLayout>

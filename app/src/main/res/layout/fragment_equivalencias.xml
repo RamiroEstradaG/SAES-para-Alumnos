@@ -39,7 +39,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/colorAccent"
-                android:text="Carrera equivalente"
+                android:text="Equivalente"
                 android:tint="@color/colorAccent" />
         </LinearLayout>
 
