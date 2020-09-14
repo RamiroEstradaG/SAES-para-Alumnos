@@ -1,2 +1,70 @@
-# SAES para Alumnos
- Repositorio de la aplicación SAES para Alumnos
+<p align="center">
+  <a href="https://github.com/RamiroEda/SAES-para-Alumnos">
+    <img src="https://raw.githubusercontent.com/RamiroEda/SAES-para-Alumnos/master/app/src/main/ic_launcher-web.png" alt="Logo" width=150 height=150>
+  </a>
+
+  <h1 align="center">SAES para Alumnos</h1>
+  <p align="center">
+    <a href="https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE">
+      <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License: MIT">
+    </a>
+  </p>
+  <p align="center">
+    SAES para Alumnos es una aplicación de alumnos del IPN para alumnos del IPN.
+    <br>
+    <a href="https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?template=issue.md&labels=bug">Reportar un bug</a>
+    ·
+    <a href="https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?template=feature.md&labels=feature">Solicita una característica nueva</a>
+  </p>
+</p>
+
+
+## Tabla de contenidos
+
+- [Tabla de contenidos](#tabla-de-contenidos)
+- [Inicio rápido](#inicio-rápido)
+- [Bugs y solicitudes de características nuevas](#bugs-y-solicitudes-de-características-nuevas)
+- [Contribuir](#contribuir)
+- [Creadores](#creadores)
+- [Colaboradores](#colaboradores)
+- [Copyright and license](#copyright-and-license)
+
+
+## Inicio rápido
+
+La aplicaición fue hecha en Android Studio por lo que es el editor recomendado para el desarrollo.
+
+- Clona el repositorio en la carpeta de preferencia.
+- Abre el proyecto desde Android Studio.
+- El proyecto basa algunas características en Firebase por lo que se necesita configurar un google-services.json personal.
+- El proyecto contiene claves de APIs secretas de Google Admob y Google Pay por lo que se necesita crear un archivo llamado secrets.xml en la carpeta /values/ con esos valores.
+
+
+## Bugs y solicitudes de características nuevas
+
+¿Tienes algun bug o caracteristica nueva? Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y busca si hay un problema abierto o cerrado. Si tu problema o idea aún no ha sido resuelto, [por favor abre un nuevo Issue](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new).
+
+## Contribuir
+
+Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md). Incluidos estan las direcciones para abrir Issues, estándares de programación y notas de desarrollo.
+
+Además, todo HTML y CSS deve de cumplir con [Code Guide](https://github.com/mdo/code-guide), mantenido por el [autor original](https://github.com/ramiroeda).
+
+## Creadores
+
+<p align="center">
+    <a href="https://github.com/RamiroEda">
+        <img src="https://github.com/RamiroEda.png" style="border-radius: 9999px;" alt="Logo" width=150 height=150>
+    </a>
+    <h2 align="center">Ramiro Estrada Garcia</h2>
+    <h4 align="center">Github: <a href="https://github.com/RamiroEda">@RamiroEda</a></h4>
+    <h4 align="center">Twitter: <a href="https://twitter.com/ramiroeda">@ramiroeda</a></h4>
+</p>
+
+## Colaboradores
+
+Sin colaboradores
+
+## Copyright and license
+
+Code and documentation copyright 2018-2020 the authors. Code released under the [MIT License](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE).
