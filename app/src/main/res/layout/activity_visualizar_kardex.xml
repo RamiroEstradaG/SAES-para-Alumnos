@@ -275,7 +275,7 @@
                                         android:layout_marginTop="8dp"
                                         android:layout_marginEnd="8dp"
                                         android:gravity="center_vertical"
-                                        android:text="Último promedio"
+                                        android:text="Promedio global"
                                         android:textAlignment="center"
                                         android:textColor="@color/colorPrimaryText"
                                         android:textSize="18sp" />
@@ -333,7 +333,7 @@
                                         android:layout_marginTop="8dp"
                                         android:layout_marginEnd="8dp"
                                         android:gravity="center_vertical"
-                                        android:text="Último promedio"
+                                        android:text="Promedio global"
                                         android:textAlignment="center"
                                         android:textColor="@color/colorPrimaryText"
                                         android:textSize="18sp" />
