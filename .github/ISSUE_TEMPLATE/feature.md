@@ -1,3 +1,10 @@
+---
+name: Solicitud de características
+about: Esta plantilla es para solicitar una nueva característica.
+title: "[DATE]: [FEATURE NAME]"
+labels: feature
+---
+
 <!--- Para marcar las casillas reemplaza el espacio por una X dentro del cuadro -->
 - [ ] Al marcar esta casilla entiendo que "SAES para Alumnos" NO es un producto oficial del Instituto Politécnico Nacional (IPN) ni ninguna de sus unidades académicas.
 - [ ] Al marcar esta casilla aseguro que he revisado la lista de Issues por si alguien ya solicitó una característica igual a la mía o ya ha sido implementada.

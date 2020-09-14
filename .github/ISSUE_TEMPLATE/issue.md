@@ -1,3 +1,10 @@
+---
+name: Reporte de bugs
+about: Esta plantilla es para reportar errores o bugs.
+title: "[DATE]: [FEATURE NAME]"
+labels: bug
+---
+
 <!--- Para marcar las casillas reemplaza el espacio por una X dentro del cuadro -->
 - [ ] Al marcar esta casilla entiendo que "SAES para Alumnos" NO es un producto oficial del Instituto Politécnico Nacional (IPN) ni ninguna de sus unidades académicas.
 - [ ] Al marcar esta casilla aseguro que he revisado la lista de Issues por si alguien ya creó un problema igual al mío o ya ha sido solucionado.
