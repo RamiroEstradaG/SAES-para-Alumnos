@@ -5,8 +5,8 @@ correo electrónico, o cualquier otro método con los propietarios de este repos
 
 Ten en cuenta que tenemos un código de conducta, por favor sígelo en todas sus interacciones con el proyecto.
 
-* Para reportar un bug haz [click aquí](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?template=issue.md&labels=bug).
-* Para solicitar una característica haz [click aquí](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?template=feature.md&labels=feature).
+* Para reportar un bug haz [click aquí](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?labels=bug&template=issue.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D).
+* Para solicitar una característica haz [click aquí](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?labels=feature&template=feature.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D).
 
 ## Procedimiento para Pull Requests
 

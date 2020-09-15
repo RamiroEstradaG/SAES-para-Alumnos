@@ -12,9 +12,9 @@
   <p align="center">
     SAES para Alumnos es una aplicación de alumnos del IPN para alumnos del IPN.
     <br>
-    <a href="https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?template=issue.md&labels=bug">Reportar un bug</a>
+    <a href="https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?labels=bug&template=issue.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D">Reportar un bug</a>
     ·
-    <a href="https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?template=feature.md&labels=feature">Solicita una característica nueva</a>
+    <a href="https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?labels=feature&template=feature.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D">Solicita una característica nueva</a>
   </p>
 </p>
 
@@ -42,13 +42,13 @@ La aplicaición fue hecha en Android Studio por lo que es el editor recomendado 
 
 ## Bugs y solicitudes de características nuevas
 
-¿Tienes algun bug o caracteristica nueva? Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y busca si hay un problema abierto o cerrado. Si tu problema o idea aún no ha sido resuelto, [por favor abre un nuevo Issue](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new).
+¿Tienes algun bug o caracteristica nueva? Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y busca si hay un problema abierto o cerrado. Si tu problema o idea aún no ha sido resuelto, [por favor abre un nuevo Issue](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new/choose).
 
 ## Contribuir
 
 Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md). Incluidos estan las direcciones para abrir Issues, estándares de programación y notas de desarrollo.
 
-Además, todo HTML y CSS deve de cumplir con [Code Guide](https://github.com/mdo/code-guide), mantenido por el [autor original](https://github.com/ramiroeda).
+Además, todo HTML y CSS debe de cumplir con [Code Guide](https://github.com/mdo/code-guide).
 
 ## Creadores
 
