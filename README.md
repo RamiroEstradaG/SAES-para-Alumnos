@@ -15,7 +15,7 @@
       <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License: MIT">
     </a>
     <a href="https://discord.gg/Pgczrsq">
-      <img src="https://img.shields.io/discord/755225426913132586.svg" alt="Discord">
+      <img src="https://img.shields.io/discord/755225426913132586.svg?label=Discord" alt="Discord">
     </a>
     <a href="https://twitter.com/ramiroeda">
       <img src="https://img.shields.io/twitter/follow/ramiroeda.svg?style=social" alt="Follow twitter">
