@@ -6,11 +6,11 @@
   <h1 align="center">SAES para Alumnos</h1>
   <p align="center">
     <span>
-      <img src="https://img.shields.io/github/stars/badges/shields.svg?style=social&label=Stars&style=plastic" alt="License: MIT">
+      <img src="https://img.shields.io/github/forks/RamiroEda/SAES-para-Alumnos?label=Fork&style=social" alt="Forks">
     </span>
-    <a href="https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE">
-      <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License: MIT">
-    </a>
+    <span>
+      <img src="https://img.shields.io/github/stars/RamiroEda/SAES-para-Alumnos?label=Star&style=social" alt="Stars">
+    </span>
     <a href="https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE">
       <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License: MIT">
     </a>
@@ -37,6 +37,8 @@
 ## Tabla de contenidos
 
 - [Tabla de contenidos](#tabla-de-contenidos)
+- [Social](#social)
+  - [Canal de Discord](#canal-de-discord)
 - [Inicio rápido](#inicio-rápido)
 - [Bugs y solicitudes de características nuevas](#bugs-y-solicitudes-de-características-nuevas)
 - [Contribuir](#contribuir)
@@ -44,6 +46,11 @@
 - [Colaboradores](#colaboradores)
 - [Copyright and license](#copyright-and-license)
 
+
+## Social
+Puedes unirte al canal de Discord de la aplicación para dudas rápidas a otros desarrolladores.
+
+### [Canal de Discord](https://discord.gg/Pgczrsq)
 
 ## Inicio rápido
 
