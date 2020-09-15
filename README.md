@@ -5,6 +5,12 @@
 
   <h1 align="center">SAES para Alumnos</h1>
   <p align="center">
+    <span>
+      <img src="https://img.shields.io/github/stars/badges/shields.svg?style=social&label=Stars&style=plastic" alt="License: MIT">
+    </span>
+    <a href="https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE">
+      <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License: MIT">
+    </a>
     <a href="https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE">
       <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License: MIT">
     </a>
@@ -41,7 +47,7 @@
 
 ## Inicio rápido
 
-La aplicaición fue hecha en Android Studio por lo que es el editor recomendado para el desarrollo.
+La aplicación fue hecha en Android Studio por lo que es el editor recomendado para el desarrollo.
 
 - Clona el repositorio en la carpeta de preferencia.
 - Abre el proyecto desde Android Studio.
@@ -51,11 +57,11 @@ La aplicaición fue hecha en Android Studio por lo que es el editor recomendado 
 
 ## Bugs y solicitudes de características nuevas
 
-¿Tienes algun bug o caracteristica nueva? Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y busca si hay un problema abierto o cerrado. Si tu problema o idea aún no ha sido resuelto, [por favor abre un nuevo Issue](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new/choose).
+¿Tienes algun bug o característica nueva? Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y nuestro [código de conducta](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CODE_OF_CONDUCT.md). Si tu idea o problema aún no ha sido resuelto, [por favor abre un nuevo Issue](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new/choose).
 
 ## Contribuir
 
-Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md). Incluidos estan las direcciones para abrir Issues, estándares de programación y notas de desarrollo.
+Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y nuestro [código de conducta](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CODE_OF_CONDUCT.md). Dentro están incluidas las direcciones para abrir Issues, estándares de programación y notas de desarrollo.
 
 Además, todo HTML y CSS debe de cumplir con [Code Guide](https://github.com/mdo/code-guide).
 
