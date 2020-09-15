@@ -19,10 +19,11 @@ Ten en cuenta que tenemos un código de conducta, por favor sígelo en todas sus
 Para el desarrollo de la aplicación se usan las convensiones publicadas por Kotlin.
 Para más información puedes leer el [artículo oficial](https://kotlinlang.org/docs/reference/coding-conventions.html).
 
-### Notas sobre los paradigmas
+## Notas sobre el desarrollo
 
 * Kotlin tiene muchas herramientas de programación funcional, de ser posible usarlas.
 * Gran parte del código no sigue correctamente ninguna arquitectura (como MVC, o MVVM) y no se usa correctamente el paradigma orientado a objetos. Si ves una manera de mejorar el código sin estropear la funcionalidad puedes modificarlo.
+* Poco a poco se irán incluyendo pruebas unitarias al proyecto. Si escribes nuevas funcionalidades, haz las correspondientes pruebas unitarias.
 
 ## Código de conducta
 
@@ -30,7 +31,7 @@ Para más información puedes leer el [artículo oficial](https://kotlinlang.org
 
 Nosotros, como contribuyentes y mantenedores, con el interés de fomentar un entorno abierto y acogedor, nos comprometemos a hacer de la participación en nuestro proyecto y en nuestra comunidad una experiencia libre de acoso para todos, independientemente de su edad, tamaño corporal, discapacidad o nivel de experiencia; apariencia personal, identidad y expresión de género, orientación e identidad sexual, nacionalidad, raza o religión.
 
-### Our Standards
+### Nuestros estándares
 
 Ejemplos de comportamiento que contribuye a crear un ambiente positivo incluyen:
 
@@ -64,7 +65,7 @@ Los casos de comportamiento abusivo, acosador o inaceptable de cualquier otro mo
 
 Los mantenedores del proyecto que no sigan o hagan cumplir el Código de Conducta de buena fe pueden enfrentar repercusiones temporales o permanentes según lo determinen otros miembros del liderazgo del proyecto.
 
-### Attribution
+### Atribución
 
 Este Código de Conducta está adaptado desde [Contributor Covenant][homepage], version 1.4,
 disponible en [http://contributor-covenant.org/version/1/4][version]
