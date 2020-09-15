@@ -1,7 +1,7 @@
 ---
 name: Solicitud de características
 about: Esta plantilla es para solicitar una nueva característica.
-title: "[DATE]: [FEATURE NAME]"
+title: "[FECHA EN YY-MM-DD]: [TITULO DEL ISSUE]"
 labels: feature
 ---
 

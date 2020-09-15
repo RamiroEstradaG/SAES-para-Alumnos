@@ -1,7 +1,7 @@
 ---
 name: Reporte de bugs
 about: Esta plantilla es para reportar errores o bugs.
-title: "[DATE]: [FEATURE NAME]"
+title: "[FECHA EN YY-MM-DD]: [TITULO DEL ISSUE]"
 labels: bug
 ---
 
