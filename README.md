@@ -8,6 +8,15 @@
     <a href="https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE">
       <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License: MIT">
     </a>
+    <a href="https://discord.gg/Pgczrsq">
+      <img src="https://img.shields.io/discord/755225426913132586.svg" alt="Discord">
+    </a>
+    <a href="https://twitter.com/ramiroeda">
+      <img src="https://img.shields.io/twitter/follow/ramiroeda.svg?style=social" alt="Follow twitter">
+    </a>
+    <a href="https://opensource.org/">
+      <img src="https://badges.frapsoft.com/os/v1/open-source.svg?v=103" alt="Open source">
+    </a>
   </p>
   <p align="center">
     SAES para Alumnos es una aplicación de alumnos del IPN para alumnos del IPN.
