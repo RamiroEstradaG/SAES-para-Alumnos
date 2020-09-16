@@ -54,23 +54,23 @@ Puedes unirte al canal de Discord de la aplicación para dudas rápidas a otros 
 
 ## Inicio rápido
 
-La aplicación fue hecha en Android Studio por lo que es el editor recomendado para el desarrollo.
+La aplicación fue hecha en Android Studio, por lo que es el editor recomendado para el desarrollo.
 
 - Clona el repositorio en la carpeta de preferencia.
 - Abre el proyecto desde Android Studio.
-- El proyecto basa algunas características en Firebase por lo que se necesita configurar un google-services.json personal.
-- El proyecto contiene claves de APIs secretas de Google Admob y Google Pay por lo que se necesita crear un archivo llamado secrets.xml en la carpeta /values/ con esos valores.
+- El proyecto basa algunas características en Firebase, así que se necesita configurar un `google-services.json` personal.
+- El proyecto contiene claves de APIs secretas de Google Admob y Google Pay, por lo cual se necesita crear un archivo llamado secrets.xml en la carpeta `/values/` con esos valores.
 
 
-## Bugs y solicitudes de características nuevas
+## Reporte de bugs y solicitud de características nuevas
 
-¿Tienes algun bug o característica nueva? Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y nuestro [código de conducta](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CODE_OF_CONDUCT.md). Si tu idea o problema aún no ha sido resuelto, [por favor abre un nuevo Issue](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new/choose).
+¿Tienes algún bug o característica nueva? Por favor, lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y nuestro [código de conducta](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CODE_OF_CONDUCT.md). Si tu idea o problema aún no ha sido resuelta, [por favor abre un nuevo Issue](https://github.com/RamiroEda/SAES-para-Alumnos/issues/new/choose).
 
 ## Contribuir
 
-Por favor lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y nuestro [código de conducta](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CODE_OF_CONDUCT.md). Dentro están incluidas las direcciones para abrir Issues, estándares de programación y notas de desarrollo.
+Por favor, lee nuestras [pautas para contribuir](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CONTRIBUTING.md) y nuestro [código de conducta](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CODE_OF_CONDUCT.md); Dentro, están incluidas las direcciones para abrir Issues, estándares de programación y notas de desarrollo.
 
-Además, todo HTML y CSS debe de cumplir con [Code Guide](https://github.com/mdo/code-guide).
+Además, todo HTML y CSS debe de cumplir con el [Code Guide](https://github.com/mdo/code-guide).
 
 ## Creadores
 
@@ -85,7 +85,7 @@ Además, todo HTML y CSS debe de cumplir con [Code Guide](https://github.com/mdo
 
 ## Colaboradores
 
-Sin colaboradores
+Sin colaboradores.
 
 ## Copyright and license
 
