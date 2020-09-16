@@ -3,7 +3,7 @@
 Cuando contribuyas a este repositorio, primero discute el cambio que deseas realizar a través de Issues,
 correo electrónico, o cualquier otro método con los propietarios de este repositorio antes de realizar un cambio.
 
-Ten en cuenta que tenemos un código de conducta, por favor sígelo en todas tus interacciones en el proyecto.
+Ten en cuenta que tenemos un [código de conducta](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CODE_OF_CONDUCT.md), por favor sígelo en todas tus interacciones en el proyecto.
 
 **Nota: Si nunca has contribuido en un proyecto Open Source [aquí hay un video](https://www.youtube.com/watch?v=c6b6B9oN4Vg&t=780s&ab_channel=FacebookOpenSource) explicando buenas prácticas de contribución.**
 
@@ -12,21 +12,17 @@ Ten en cuenta que tenemos un código de conducta, por favor sígelo en todas tus
 
 ## Procedimiento para Pull Requests
 
-1. Asegúrate de eliminar los archivos compilados (cómo APKs o AABs).
-2. En caso de que se necesite instalar un software para poder iniciar el proyecto, agregarlo en el README.md en la sección "Inicio rápido". 
+1. Asegúrate de eliminar los archivos compilados (como APKs o AABs).
+2. En caso de que se necesite instalar un software para poder iniciar el proyecto, agrégalo en el README.md en la sección "Inicio rápido". 
 
-## Estándar de desarrollo
+## Estándares de desarrollo
 
 ### Nombres de variables y funciones
-Para el desarrollo de la aplicación se usan las convensiones publicadas por Kotlin.
+Para el desarrollo de la aplicación se usan las convenciones publicadas por Kotlin.
 Para más información puedes leer el [artículo oficial](https://kotlinlang.org/docs/reference/coding-conventions.html).
 
 ## Notas sobre el desarrollo
 
-* Kotlin tiene muchas herramientas de programación funcional, de ser posible usarlas.
-* Gran parte del código no sigue correctamente ninguna arquitectura (como MVC, o MVVM) y no se usa correctamente el paradigma orientado a objetos. Si ves una manera de mejorar el código sin estropear la funcionalidad puedes modificarlo.
+* Kotlin tiene muchas herramientas de programación funcional, usarlas de ser posible.
+* Gran parte del código no sigue correctamente ninguna arquitectura (como MVC o MVVM) y no se usa correctamente el paradigma orientado a objetos. Si ves una manera de mejorar el código "sin estropear la funcionalidad" puedes modificarlo.
 * Poco a poco se irán incluyendo pruebas unitarias al proyecto. Si escribes nuevas funcionalidades, haz las correspondientes pruebas unitarias.
-
-## Otros
-
-Para ver el código de conducta haz [click aquí](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/CODE_OF_CONDUCT.md).
