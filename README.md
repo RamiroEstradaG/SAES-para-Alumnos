@@ -5,7 +5,6 @@
 
   <h1 align="center">SAES para Alumnos</h1>
   <p align="center">
-  
     <span>
       <img src="https://github.com/RamiroEda/SAES-para-Alumnos/workflows/test/badge.svg" alt="Test">
     </span>
