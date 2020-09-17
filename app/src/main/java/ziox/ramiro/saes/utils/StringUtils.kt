@@ -35,10 +35,10 @@ object HashUtils {
 
 fun generateRandomString(size: Int) : String{
     val chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-    val radom = Random(Calendar.getInstance().timeInMillis)
+    val random = Random()
     var res = ""
     for (i in 0 until size){
-        res += chars[radom.nextInt().absoluteValue%chars.length]
+        res += chars[random.nextInt().absoluteValue%chars.length]
     }
     return res
 }
