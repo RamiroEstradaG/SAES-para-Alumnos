@@ -11,7 +11,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-
+          
+      - name: Decode google-services.json
+        env:
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+        run: echo $FIREBASE_CONFIG > app/google-services.json  
+        
       - name: Unit Test
         run: bash ./gradlew testDebugUnitTest
 
