@@ -61,12 +61,12 @@ fun String.toProperCase(): String {
                 if (arr.matches(Regex("[ivx]+"))) {
                     arr.toUpperCase(Locale.ROOT)
                 } else {
-                    arr.capitalize()
+                    arr.capitalize(Locale.ROOT)
                 }
             } else if (arr.matches(Regex("de|del|y|o|e|por|a|u|para|las|los|la|el|en"))) {
                 "$arr "
             } else {
-                "${arr.capitalize()} "
+                "${arr.capitalize(Locale.ROOT)} "
             }
         }
         res
