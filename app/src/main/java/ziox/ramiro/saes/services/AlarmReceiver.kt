@@ -89,7 +89,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     .sendNotification(Notification.NOTIFICATION_ID_CALENDARIO_TRABAJO)
             }
         }else{
-            Log.d("asd", "Receiver void")
+            Log.d("AlarmReceiver", "Receiver void")
         }
     }
 

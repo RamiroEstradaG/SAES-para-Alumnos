@@ -125,7 +125,7 @@ class SettingsActivity : AppCompatActivity() {
                             }
                         ).apply()
                     } catch (e: Exception) {
-                        Log.e("error", e.toString())
+                        Log.e("AppException", e.toString())
                     }
                 } else {
                     isInitDark = true

@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
 
 /**
  * Creado por Ramiro el 1/21/2019 a las 11:17 PM para SAESv2.
@@ -80,7 +81,7 @@ class HorarioGeneradoDatabase (context: Context?) : SQLiteOpenHelper(context, "h
                     + col.jueves + " TEXT,"
                     + col.viernes + " TEXT)")
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
         }
     }
 
@@ -91,6 +92,7 @@ class HorarioGeneradoDatabase (context: Context?) : SQLiteOpenHelper(context, "h
             writableDatabase.execSQL("DELETE FROM "+ col.tableName +" WHERE materia = '"+name+"';")
             true
         }catch (e : Exception){
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -99,7 +101,7 @@ class HorarioGeneradoDatabase (context: Context?) : SQLiteOpenHelper(context, "h
         try {
             writableDatabase.execSQL("DROP TABLE IF EXISTS "+col.tableName)
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
         }
     }
 
@@ -108,6 +110,7 @@ class HorarioGeneradoDatabase (context: Context?) : SQLiteOpenHelper(context, "h
             writableDatabase.insert(col.tableName, null, toContentValues(data))
             true
         } catch (e: Exception) {
+            Log.e("AppException", e.toString())
             false
         }
     }

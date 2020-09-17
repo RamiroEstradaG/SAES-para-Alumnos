@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.utils.ClaseData
 
@@ -75,7 +76,7 @@ class HorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.d
                     + col.edificio + " TEXT NOT NULL,"
                     + col.salon + " TEXT NOT NULL)")
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
         }
     }
 
@@ -86,6 +87,7 @@ class HorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.d
             }
             true
         } catch (e: Exception) {
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -111,7 +113,7 @@ class HorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.d
             writableDatabase.execSQL("DROP TABLE IF EXISTS "+col.tableName)
             true
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
             false
         }
     }

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Base64
 import android.util.Base64.NO_WRAP
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.webkit.JavascriptInterface
@@ -91,7 +92,7 @@ class EvaluarProfesorActivity : AppCompatActivity() {
                         "})()"
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("AppException", e.toString())
         }
 
     }

@@ -128,7 +128,7 @@ fun initTheme(context: Context?){
 
         setStatusBarByTheme(context)
     } catch (e: Exception) {
-        Log.e("error", e.toString())
+        Log.e("AppException", e.toString())
     }
 }
 

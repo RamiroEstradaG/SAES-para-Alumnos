@@ -182,7 +182,7 @@ class HorarioView : FrameLayout {
                             newData.horaInicio = hourToDouble(lay.editClaseHoraInicio.editText!!.text.toString())
                             newData.horaFinal = hourToDouble(lay.editClaseHoraFinal.editText!!.text.toString())
                         } catch (e: Exception) {
-                            Log.e("asd", e.toString())
+                            Log.e("AppException", e.toString())
                         }
 
                         correccionHorarioDatabase.deleteData(newData)

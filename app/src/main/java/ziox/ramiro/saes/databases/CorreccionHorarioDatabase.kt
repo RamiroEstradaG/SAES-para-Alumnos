@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
 import ziox.ramiro.saes.utils.ClaseData
 
 /**
@@ -78,7 +79,9 @@ class CorreccionHorarioDatabase (context: Context?) : SQLiteOpenHelper(context, 
                     + col.profesor + " TEXT NOT NULL,"
                     + col.edificio + " TEXT NOT NULL,"
                     + col.salon + " TEXT NOT NULL)")
-        }catch (e : Exception){ }
+        }catch (e : Exception){
+            Log.e("AppException", e.toString())
+        }
     }
 
     fun deleteTable() : Boolean{
@@ -86,7 +89,7 @@ class CorreccionHorarioDatabase (context: Context?) : SQLiteOpenHelper(context, 
             writableDatabase.execSQL("DROP TABLE IF EXISTS "+col.tableName)
             true
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -96,6 +99,7 @@ class CorreccionHorarioDatabase (context: Context?) : SQLiteOpenHelper(context, 
             writableDatabase.insert(col.tableName, null, toContentValues(data))
             true
         } catch (e: Exception) {
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -123,6 +127,7 @@ class CorreccionHorarioDatabase (context: Context?) : SQLiteOpenHelper(context, 
             writableDatabase.delete(col.tableName, col.id+" = '"+data.id+"'", null)
             true
         }catch (e : Exception) {
+            Log.e("AppException", e.toString())
             false
         }
     }

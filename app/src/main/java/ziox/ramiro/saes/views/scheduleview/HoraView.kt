@@ -58,7 +58,7 @@ class HoraView: FrameLayout{
             val relativeToTop = getRelativeTop(layout.changingLabelLayout)
 
             if(relativeToTop < OFFSET){
-                Log.d("offset", "$relativeToTop  --- ${OFFSET - relativeToTop.toFloat()} -- $parentHeight - $changelayoutHeight = ${parentHeight - changelayoutHeight}")
+                Log.d("HoraViewOffset", "$relativeToTop  --- ${OFFSET - relativeToTop.toFloat()} -- $parentHeight - $changelayoutHeight = ${parentHeight - changelayoutHeight}")
 
                 if(OFFSET - relativeToTop.toFloat() >= parentHeight - changelayoutHeight - dpToPixel(context, 4)){
                     layout.changingLabelLayout.translationY = parentHeight - changelayoutHeight.toFloat() - dpToPixel(context, 4)

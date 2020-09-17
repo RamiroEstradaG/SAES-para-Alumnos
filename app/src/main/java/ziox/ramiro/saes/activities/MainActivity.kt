@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -238,7 +239,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
             )
         } catch (e: Exception) {
-
+            Log.e("AppException", e.toString())
         }
 
         loginWebView.loadUrl(getUrl(this))

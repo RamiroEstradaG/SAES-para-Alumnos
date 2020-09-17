@@ -3,6 +3,7 @@ package ziox.ramiro.saes.fragments
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -162,7 +163,7 @@ class AgendaEscolarFragment : Fragment() {
             try {
                 return format.parse(str2.joinToString(" "))!!
             } catch (e: Exception) {
-
+                Log.e("AppException", e.toString())
             }
             return Date()
         }

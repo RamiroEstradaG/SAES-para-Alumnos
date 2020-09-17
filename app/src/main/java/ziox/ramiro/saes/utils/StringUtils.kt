@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.utils
 
 import android.content.Context
+import android.util.Log
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
@@ -113,7 +114,7 @@ fun String.toDate() : Date {
     try {
         return format.parse(str2)?: Date()
     } catch (e: Exception) {
-
+        Log.e("AppException", e.toString())
     }
     return Date()
 }
@@ -142,10 +143,10 @@ fun String.toDateString() : String{
             val strFormat = SimpleDateFormat("EEEE, d 'de' MMMM 'del' yyyy 'a las' HH:mm", Locale.US)
             return strFormat.format(date?: Date())
         } catch (e: Exception) {
-
+            Log.e("AppException", e.toString())
         }
     } catch (e: Exception) {
-
+        Log.e("AppException", e.toString())
     }
     return ""
 }

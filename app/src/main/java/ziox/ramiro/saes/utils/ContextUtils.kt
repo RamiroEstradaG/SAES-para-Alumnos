@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Log
 import com.anjlab.android.iab.v3.BillingProcessor
 import com.anjlab.android.iab.v3.TransactionDetails
 import ziox.ramiro.saes.R
@@ -47,7 +48,9 @@ fun Context.isNetworkAvailable() : Boolean{
             if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
                 return true
             }
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            Log.e("AppException", e.toString())
+        }
     }
 
     return false

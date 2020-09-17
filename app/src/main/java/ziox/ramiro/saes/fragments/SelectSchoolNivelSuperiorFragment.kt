@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,6 +94,7 @@ class SelectSchoolNivelSuperiorFragment : Fragment() {
                 holder.textViewName.text = key.split(" ", limit = 2)[0]
                 holder.textViewLugar.text = key.split(" ", limit = 2)[1]
             } catch (e: Exception) {
+                Log.e("AppException", e.toString())
                 holder.textViewName.text = key
                 holder.textViewLugar.text = ""
             }
@@ -111,7 +113,7 @@ class SelectSchoolNivelSuperiorFragment : Fragment() {
                     }
                 )
             } catch (e: Exception) {
-
+                Log.e("AppException", e.toString())
             }
 
 

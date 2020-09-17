@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
 import ziox.ramiro.saes.utils.ClaseData
 
 /**
@@ -78,7 +79,7 @@ class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "h
                     + col.edificio + " TEXT NOT NULL,"
                     + col.salon + " TEXT NOT NULL)")
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
         }
     }
 
@@ -89,6 +90,7 @@ class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "h
             }
             true
         } catch (e: Exception) {
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -98,6 +100,7 @@ class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "h
             writableDatabase.execSQL("DELETE FROM "+ col.tableName +" WHERE id = '$id'")
             true
         }catch (e : Exception){
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -123,7 +126,7 @@ class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "h
             writableDatabase.execSQL("DROP TABLE IF EXISTS "+col.tableName)
             true
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
             false
         }
     }

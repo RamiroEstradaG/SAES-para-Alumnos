@@ -272,7 +272,7 @@ fun getAllEventosSiguientes(context: Context?, onComplete: (eventos: List<Evento
                     }
                 })
             }.addOnFailureListener { error ->
-                Log.e("asd", error.toString())
+                Log.e("FirebaseFailure", error.toString())
             }
         }
     }
