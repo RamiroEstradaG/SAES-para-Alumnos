@@ -13,10 +13,11 @@ import androidx.appcompat.app.AlertDialog;
 import ziox.ramiro.saes.R;
 import ziox.ramiro.saes.activities.MainActivity;
 
-import static ziox.ramiro.saes.utils.UtilsKt.getPreference;
-import static ziox.ramiro.saes.utils.UtilsKt.isNetworkAvailable;
-import static ziox.ramiro.saes.utils.UtilsKt.removePreference;
-import static ziox.ramiro.saes.utils.UtilsKt.setPreference;
+import static ziox.ramiro.saes.utils.ContextUtilsKt.isNetworkAvailable;
+import static ziox.ramiro.saes.utils.SharedPreferencesUtilsKt.getPreference;
+import static ziox.ramiro.saes.utils.SharedPreferencesUtilsKt.removePreference;
+import static ziox.ramiro.saes.utils.SharedPreferencesUtilsKt.setPreference;
+
 
 /**
  * Creado por Ramiro el 7/21/2018 a las 5:52 PM para SAES.
