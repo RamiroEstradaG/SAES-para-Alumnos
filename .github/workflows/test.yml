@@ -1,15 +1,5 @@
 name: test
-
-# Step 1: Choose the branch or branches you want to run this workflow
-on:
-  pull_request:
-    branches:
-      - master
-      - dev
-  push:
-    branches:
-      - master
-      - dev
+on: [push]
 
 jobs:
   test:
@@ -22,9 +12,8 @@ jobs:
         with:
           java-version: 1.8
 
-      # Execute unit tests
       - name: Unit Test
-        run: ./gradlew testDebugUnitTest
+        run: bash ./gradlew testDebugUnitTest
 
       - name: Android Test Report
         uses: asadmansr/android-test-report-action@v1.2.0
