@@ -67,6 +67,16 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler {
             Log.e("AppException", e.toString())
         }
 
+        githubLink.setOnClickListener {
+            crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/RamiroEda/SAES-para-Alumnos")
+                )
+            )
+        }
+
         link_1.setOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
             val intent = Intent(Intent.ACTION_SENDTO)
