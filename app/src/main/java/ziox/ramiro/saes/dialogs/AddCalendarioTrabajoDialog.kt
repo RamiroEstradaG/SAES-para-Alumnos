@@ -30,7 +30,7 @@ class AddCalendarioTrabajoDialog : DialogFragment() {
         rootView.addCalendarioAccept.setOnClickListener {
             rootView.addCalendarioInput.error = null
             if(rootView.addCalendarioInput.editText?.text.toString().isNotEmpty()){
-                val alertPermission = AlertDialog.Builder(activity)
+                val alertPermission = AlertDialog.Builder(activity, R.style.DialogAlert)
                 alertPermission.setTitle("Aviso")
                 alertPermission.setMessage("Al presionar 'Aceptar' otorgas permiso a la aplicación para almacenar en la nube:\n\n• Número de boleta.\n• Recordatorios.")
                 alertPermission.setPositiveButton("Aceptar"){ _, _ ->
