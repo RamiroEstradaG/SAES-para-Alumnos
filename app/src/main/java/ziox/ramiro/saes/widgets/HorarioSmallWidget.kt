@@ -12,8 +12,8 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.services.SmallWidgetUpdateService
-import ziox.ramiro.saes.sql.CorreccionHorarioDatabase
-import ziox.ramiro.saes.sql.HorarioDatabase
+import ziox.ramiro.saes.databases.CorreccionHorarioDatabase
+import ziox.ramiro.saes.databases.HorarioDatabase
 import ziox.ramiro.saes.utils.getPreference
 import ziox.ramiro.saes.utils.setPreference
 import ziox.ramiro.saes.utils.toProperCase

@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import kotlinx.android.synthetic.main.dialog_add_calendario_trabajo.view.*
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.utils.addCalendario
-import ziox.ramiro.saes.utils.addCalendarioToUser
+import ziox.ramiro.saes.databases.addCalendario
+import ziox.ramiro.saes.databases.addCalendarioToUser
 import ziox.ramiro.saes.utils.generateRandomString
 
 class AddCalendarioTrabajoDialog : DialogFragment() {

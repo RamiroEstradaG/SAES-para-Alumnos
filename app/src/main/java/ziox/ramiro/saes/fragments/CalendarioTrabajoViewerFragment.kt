@@ -24,7 +24,10 @@ import kotlinx.android.synthetic.main.view_calendario_info_item.view.*
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
 import ziox.ramiro.saes.dialogs.AddEventoCalendarioTrabajoDialog
-import ziox.ramiro.saes.sql.AgendaEscolarDatabase
+import ziox.ramiro.saes.databases.AgendaEscolarDatabase
+import ziox.ramiro.saes.databases.Evento
+import ziox.ramiro.saes.databases.getEventos
+import ziox.ramiro.saes.databases.removeEvento
 import ziox.ramiro.saes.utils.*
 import java.text.SimpleDateFormat
 import java.util.*

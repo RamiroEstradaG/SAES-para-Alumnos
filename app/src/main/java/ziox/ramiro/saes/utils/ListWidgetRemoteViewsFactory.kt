@@ -8,8 +8,8 @@ import android.widget.AdapterView
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.sql.CorreccionHorarioDatabase
-import ziox.ramiro.saes.sql.HorarioDatabase
+import ziox.ramiro.saes.databases.CorreccionHorarioDatabase
+import ziox.ramiro.saes.databases.HorarioDatabase
 import java.util.*
 
 

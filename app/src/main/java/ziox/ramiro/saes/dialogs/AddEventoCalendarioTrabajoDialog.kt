@@ -11,10 +11,10 @@ import androidx.fragment.app.DialogFragment
 import kotlinx.android.synthetic.main.dialog_add_evento_calendario_trabajo.view.*
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
-import ziox.ramiro.saes.utils.Evento
-import ziox.ramiro.saes.utils.addEvento
+import ziox.ramiro.saes.databases.Evento
+import ziox.ramiro.saes.databases.addEvento
 import ziox.ramiro.saes.utils.format
-import ziox.ramiro.saes.utils.updateEvento
+import ziox.ramiro.saes.databases.updateEvento
 import java.util.*
 
 
@@ -72,7 +72,8 @@ class AddEventoCalendarioTrabajoDialog (private val codigo : String, private val
                     rootView.eventInfoInput?.editText?.text.toString(),
                     true,
                     codigo
-                ))
+                )
+                )
             }else{
                 updateEvento(codigo, Evento(
                     eventDate.timeInMillis,
@@ -83,7 +84,8 @@ class AddEventoCalendarioTrabajoDialog (private val codigo : String, private val
                     true,
                     codigo,
                     edit.id
-                ))
+                )
+                )
             }.addOnSuccessListener {
                 this.dismiss()
             }

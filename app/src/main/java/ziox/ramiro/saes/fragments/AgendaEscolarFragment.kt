@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.fragment_agenda_escolar.view.*
 import kotlinx.android.synthetic.main.view_agenda_escolar_item.view.*
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
-import ziox.ramiro.saes.sql.AgendaEscolarDatabase
+import ziox.ramiro.saes.databases.AgendaEscolarDatabase
 import ziox.ramiro.saes.utils.*
 import java.text.SimpleDateFormat
 import java.util.*

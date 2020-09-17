@@ -25,7 +25,7 @@ import net.cachapa.expandablelayout.ExpandableLayout
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
 import ziox.ramiro.saes.activities.VisualizarKardexActivity
-import ziox.ramiro.saes.sql.KardexDatabase
+import ziox.ramiro.saes.databases.KardexDatabase
 import ziox.ramiro.saes.utils.*
 
 /**

@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.view_create_horario_item.view.*
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.dialogs.AnadirMateriaDialog
 import ziox.ramiro.saes.dialogs.VisualizarHorarioDialog
-import ziox.ramiro.saes.sql.HorarioGeneradoDatabase
+import ziox.ramiro.saes.databases.HorarioGeneradoDatabase
 import ziox.ramiro.saes.utils.*
 import java.util.*
 import kotlin.collections.ArrayList

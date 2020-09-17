@@ -3,7 +3,7 @@ package ziox.ramiro.saes.services
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import ziox.ramiro.saes.utils.Notification
-import ziox.ramiro.saes.utils.updateToken
+import ziox.ramiro.saes.databases.updateToken
 
 
 class MessagingService : FirebaseMessagingService() {

@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.sql
+package ziox.ramiro.saes.databases
 
 import android.content.ContentValues
 import android.content.Context
@@ -8,27 +8,29 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
 
 /**
- * Creado por Ramiro el 12/4/2018 a las 8:20 PM para SAESv2.
+ * Creado por Ramiro el 14/04/2019 a las 04:10 PM para SAESv2.
  */
-class KardexDatabase (context: Context?) : SQLiteOpenHelper(context, "datos_escolares.db", null,1){
+class EstadoGeneralDatabase (context: Context?) : SQLiteOpenHelper(context, "datos_escolares.db", null,1){
     val col = DBCols()
-    data class DBCols(val tableName : String = "kardex",
+    data class DBCols(val tableName : String = "reinscripcion",
                       val _id : String = "_id",
-                      val name: String = "materia",
-                      val semestre: String = "semestre",
-                      val calificacion: String = "calificacion") : BaseColumns
+                      val tipo: String = "tipo",
+                      val v1: String = "v1",
+                      val v2: String = "v2",
+                      val v3: String = "v3") : BaseColumns
 
-    data class Data(val name: String,
-                    val semestre: String,
-                    val calificacion: String)
-
+    data class Data(val tipo: String,
+                    val v1: String,
+                    val v2: String,
+                    val v3: String)
 
     companion object {
-        fun cursorAsData(cursor: Cursor) : Data{
+        fun cursorAsClaseData(cursor: Cursor) : Data{
             val col = DBCols()
-            return Data(cursor.getString(cursor.getColumnIndex(col.name)),
-                cursor.getString(cursor.getColumnIndex(col.semestre)),
-                cursor.getString(cursor.getColumnIndex(col.calificacion)))
+            return Data(cursor.getString(cursor.getColumnIndex(col.tipo)),
+                cursor.getString(cursor.getColumnIndex(col.v1)),
+                cursor.getString(cursor.getColumnIndex(col.v2)),
+                cursor.getString(cursor.getColumnIndex(col.v3)))
         }
     }
 
@@ -37,9 +39,10 @@ class KardexDatabase (context: Context?) : SQLiteOpenHelper(context, "datos_esco
         try {
             p0.execSQL("CREATE TABLE " + col.tableName + " ("
                     + col._id + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                    + col.name + " TEXT NOT NULL,"
-                    + col.semestre + " TEXT NOT NULL,"
-                    + col.calificacion + " TEXT NOT NULL)")
+                    + col.tipo + " TEXT NOT NULL,"
+                    + col.v1 + " TEXT NOT NULL,"
+                    + col.v2 + " TEXT NOT NULL,"
+                    + col.v3 + " TEXT NOT NULL)")
         }catch (e : Exception){
 
         }
@@ -55,7 +58,7 @@ class KardexDatabase (context: Context?) : SQLiteOpenHelper(context, "datos_esco
         }
     }
 
-    fun addMateria(data : Data) : Boolean{
+    fun addData(data : Data) : Boolean{
         val p0 = writableDatabase
 
         return try {
@@ -83,10 +86,10 @@ class KardexDatabase (context: Context?) : SQLiteOpenHelper(context, "datos_esco
     private fun toContentValues(vals : Data): ContentValues {
         val col = DBCols()
         val values = ContentValues()
-        values.put(col.name, vals.name)
-        values.put(col.semestre, vals.semestre)
-        values.put(col.calificacion, vals.calificacion)
-
+        values.put(col.tipo, vals.tipo)
+        values.put(col.v1, vals.v1)
+        values.put(col.v2, vals.v2)
+        values.put(col.v3, vals.v3)
         return values
     }
 }

@@ -11,8 +11,8 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.content.ContextCompat
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.sql.CorreccionHorarioDatabase
-import ziox.ramiro.saes.sql.HorarioDatabase
+import ziox.ramiro.saes.databases.CorreccionHorarioDatabase
+import ziox.ramiro.saes.databases.HorarioDatabase
 import ziox.ramiro.saes.utils.getInitials
 import java.util.*
 

@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.utils
+package ziox.ramiro.saes.databases
 
 import android.content.Context
 import android.util.Log
@@ -6,7 +6,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.messaging.FirebaseMessaging
+import ziox.ramiro.saes.utils.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -51,7 +51,7 @@ fun updateToken(context: Context?, token: String) = db.collection("users").docum
     "messagingToken" to token
 ))
 
-fun addUser(boleta: String, user: User) = db.collection("users").document(HashUtils.sha256(boleta+user.escuela)).set(mapOf(
+fun addUser(boleta: String, user: User) = db.collection("users").document(HashUtils.sha256(boleta + user.escuela)).set(mapOf(
     "boleta" to boleta,
     "escuela" to user.escuela,
     "carrera" to user.carrera,
@@ -87,7 +87,7 @@ fun updateUser(boleta: String, user: User) : Task<Void>{
     }
 
 
-    return db.collection("users").document(HashUtils.sha256(boleta+user.escuela)).update(map)
+    return db.collection("users").document(HashUtils.sha256(boleta + user.escuela)).update(map)
 }
 
 fun initUser(context: Context?, boleta: String, user: User, onComplete: () -> Unit = {}) {
@@ -114,7 +114,8 @@ fun getStatistics(name : String = "IPN") = db.collection("statistics").document(
 fun getUserData(context: Context?, onComplete: (user: User)->Unit = {}){
     db.collection("users").document(getHashUserId(context)).get().addOnSuccessListener {
         if(it.data != null){
-            onComplete(User(
+            onComplete(
+                User(
                 it.data!!["escuela"] as String,
                 it.data!!["carrera"] as String,
                 it.data!!["isMediaSuperior"] as Boolean,
@@ -123,7 +124,8 @@ fun getUserData(context: Context?, onComplete: (user: User)->Unit = {}){
                 it.data!!["lastPeriodo"] as String,
                 it.exists(),
                 it.data!!["calendariosId"] as List<String>? ?: listOf()
-            ))
+            )
+            )
         }else{
             onComplete(
                 User(
@@ -131,7 +133,8 @@ fun getUserData(context: Context?, onComplete: (user: User)->Unit = {}){
                 "",
                 false,
                 exists = false
-            ))
+            )
+            )
         }
     }
 }
@@ -145,19 +148,23 @@ fun getCalendarios(id: List<String>, onComplete: (calendarios: List<Calendario>)
     db.collection("calendarios").whereIn("codigo", id).get().addOnSuccessListener {
         val arr = ArrayList<Calendario>()
         for(doc in it.documents){
-            arr.add(Calendario(
+            arr.add(
+                Calendario(
                 doc.data!!["admin"] as? List<String> ?: listOf(),
                 doc.data!!["codigo"] as String,
                 doc.data!!["nombre"] as String,
                 doc.data!!["private"] as Boolean
-            ))
+            )
+            )
         }
 
         onComplete(arr)
     }
 }
 
-fun removeCalendario(context: Context?, codigo: String) = db.collection("users").document(getHashUserId(context)).update(
+fun removeCalendario(context: Context?, codigo: String) = db.collection("users").document(
+    getHashUserId(context)
+).update(
     "calendariosId", FieldValue.arrayRemove(codigo)
 )
 
@@ -170,7 +177,9 @@ fun addCalendario(context: Context? ,name: String, id : String, private: Boolean
     ))
 }
 
-fun addCalendarioToUser(context: Context?, id : String) = db.collection("users").document(getHashUserId(context)).update(
+fun addCalendarioToUser(context: Context?, id : String) = db.collection("users").document(
+    getHashUserId(context)
+).update(
     "calendariosId", FieldValue.arrayUnion(id)
 )
 
@@ -218,12 +227,14 @@ fun getAdminCalendar(context: Context?, onComplete: (calendarios: List<Calendari
     db.collection("calendarios").whereArrayContains("admin", getHashUserId(context)).get().addOnSuccessListener {
         val arr = ArrayList<Calendario>()
         for(doc in it.documents){
-            arr.add(Calendario(
+            arr.add(
+                Calendario(
                 doc.data!!["admin"] as? List<String> ?: listOf(),
                 doc.data!!["codigo"] as String,
                 doc.data!!["nombre"] as String,
                 doc.data!!["private"] as Boolean
-            ))
+            )
+            )
         }
 
         onComplete(arr)

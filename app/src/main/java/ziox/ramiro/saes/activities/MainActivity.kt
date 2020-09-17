@@ -26,6 +26,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_select_school.*
 import kotlinx.android.synthetic.main.fragment_loading.*
 import ziox.ramiro.saes.R
+import ziox.ramiro.saes.databases.enablePersistance
 import ziox.ramiro.saes.fragments.SelectSchoolNivelMedioSuperiorFragment
 import ziox.ramiro.saes.fragments.SelectSchoolNivelSuperiorFragment
 import ziox.ramiro.saes.utils.*
