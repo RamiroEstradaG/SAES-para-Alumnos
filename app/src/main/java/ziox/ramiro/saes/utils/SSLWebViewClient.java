@@ -65,18 +65,15 @@ public class SSLWebViewClient extends WebViewClient {
                     handler.proceed();
                 }
             });
-            builder.setNegativeButton("cancelar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    try{
-                        setPreference(context, "SSLChoose", false);
-                        removePreference(context, "new_url_escuela");
-                        context.startActivity(new Intent(context, MainActivity.class));
-                    }catch (Exception e){
-                        Log.e("AppException", e.toString());
-                    }
-                    handler.cancel();
+            builder.setNegativeButton("cancelar", (dialog, which) -> {
+                try{
+                    setPreference(context, "SSLChoose", false);
+                    removePreference(context, "new_url_escuela");
+                    context.startActivity(new Intent(context, MainActivity.class));
+                }catch (Exception e){
+                    Log.e("AppException", e.toString());
                 }
+                handler.cancel();
             });
             try{
                 final AlertDialog dialog = builder.create();
