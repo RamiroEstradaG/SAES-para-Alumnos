@@ -1,0 +1,25 @@
+name: test
+
+# Step 1: Choose the branch or branches you want to run this workflow
+on:
+  pull_request:
+    branches:
+      - master
+      - dev
+  push:
+    branches:
+      - master
+      - dev
+
+jobs:
+  testing:
+    name: Lint Check and Testing
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Test and build
+        uses: Vukan-Markovic/Github-Android-Action@1.2
