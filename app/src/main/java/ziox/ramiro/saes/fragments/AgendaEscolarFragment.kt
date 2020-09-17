@@ -3,6 +3,7 @@ package ziox.ramiro.saes.fragments
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_agenda_escolar.view.*
 import kotlinx.android.synthetic.main.view_agenda_escolar_item.view.*
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
-import ziox.ramiro.saes.sql.AgendaEscolarDatabase
+import ziox.ramiro.saes.databases.AgendaEscolarDatabase
 import ziox.ramiro.saes.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -162,7 +163,7 @@ class AgendaEscolarFragment : Fragment() {
             try {
                 return format.parse(str2.joinToString(" "))!!
             } catch (e: Exception) {
-
+                Log.e("AppException", e.toString())
             }
             return Date()
         }

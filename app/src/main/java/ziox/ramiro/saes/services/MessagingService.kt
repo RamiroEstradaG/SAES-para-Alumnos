@@ -1,9 +1,10 @@
 package ziox.ramiro.saes.services
 
+import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import ziox.ramiro.saes.utils.Notification
-import ziox.ramiro.saes.utils.updateToken
+import ziox.ramiro.saes.databases.updateToken
 
 
 class MessagingService : FirebaseMessagingService() {
@@ -21,6 +22,8 @@ class MessagingService : FirebaseMessagingService() {
         super.onNewToken(p0)
         try {
             updateToken(this, p0)
-        }catch (e : Exception){}
+        }catch (e : Exception){
+            Log.e("AppException", e.toString())
+        }
     }
 }

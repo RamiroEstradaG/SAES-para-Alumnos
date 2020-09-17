@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             ads:adSize="LARGE_BANNER"
-            ads:adUnitId="ca-app-pub-9041205561484091/1871195386" />
+            ads:adUnitId="@string/calificacionesBannerAdId" />
 
         <View
             android:id="@+id/adSeparator"

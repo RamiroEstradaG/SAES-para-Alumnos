@@ -64,7 +64,17 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler {
         try {
             version_text.text = packageManager.getPackageInfo(packageName, 0).versionName
         } catch (e: Exception) {
+            Log.e("AppException", e.toString())
+        }
 
+        githubLink.setOnClickListener {
+            crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/RamiroEda/SAES-para-Alumnos")
+                )
+            )
         }
 
         link_1.setOnClickListener {
@@ -82,12 +92,12 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler {
                 if (request.isSuccessful) {
                     val reviewInfo = request.result
                     manager.launchReviewFlow(this, reviewInfo).addOnFailureListener {
-                        Log.w("A","In-app review request failed, reason=$it")
+                        Log.w("GooglePlayReview","In-app review request failed, reason=$it")
                     }.addOnCompleteListener { _ ->
-                        Log.i("A","In-app review finished")
+                        Log.i("GooglePlayReview","In-app review finished")
                     }
                 } else {
-                    Log.w("A","In-app review request failed, reason=${request.exception}")
+                    Log.w("GooglePlayReview","In-app review request failed, reason=${request.exception}")
                 }
             }
         }

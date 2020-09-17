@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.widget.RemoteViews
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.services.ListWidgetRemoteViewService
-import ziox.ramiro.saes.sql.HorarioDatabase
+import ziox.ramiro.saes.databases.HorarioDatabase
 import java.util.*
 
 /**

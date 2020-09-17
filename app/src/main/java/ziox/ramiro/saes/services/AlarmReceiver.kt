@@ -6,7 +6,9 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import ziox.ramiro.saes.sql.AgendaEscolarDatabase
+import ziox.ramiro.saes.databases.AgendaEscolarDatabase
+import ziox.ramiro.saes.databases.Evento
+import ziox.ramiro.saes.databases.getAllEventosSiguientes
 import ziox.ramiro.saes.utils.*
 import ziox.ramiro.saes.widgets.AgendaEscolarWidget
 import java.text.SimpleDateFormat
@@ -87,7 +89,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     .sendNotification(Notification.NOTIFICATION_ID_CALENDARIO_TRABAJO)
             }
         }else{
-            Log.d("asd", "Receiver void")
+            Log.d("AlarmReceiver", "Receiver void")
         }
     }
 

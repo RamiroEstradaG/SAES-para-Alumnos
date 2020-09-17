@@ -2,6 +2,7 @@ package ziox.ramiro.saes.activities
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -18,9 +19,8 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import kotlinx.android.synthetic.main.activity_visualizar_kardex.*
 import ziox.ramiro.saes.R
+import ziox.ramiro.saes.databases.*
 import ziox.ramiro.saes.fragments.SelectSchoolNivelMedioSuperiorFragment
-import ziox.ramiro.saes.sql.CalificacionesDatabase
-import ziox.ramiro.saes.sql.KardexDatabase
 import ziox.ramiro.saes.utils.*
 import kotlin.math.absoluteValue
 import kotlin.math.max
@@ -192,16 +192,26 @@ class VisualizarKardexActivity : AppCompatActivity() {
                 calificacionesDataSet.setCircleColor(Color.TRANSPARENT)
                 calificacionesDataSet.circleHoleColor = Color.TRANSPARENT
 
-                if(isShareStatsEnable(this@VisualizarKardexActivity)){
+                val shareStats = isShareStatsEnable(this@VisualizarKardexActivity) as? Int
+
+                if(shareStats != 0){
                     cardStatsPermissions.visibility = View.GONE
-                    evalSharedStats(promedio, lastPeriodo)
+
+                    if (shareStats == 1){
+                        evalSharedStats(promedio, lastPeriodo)
+                    }
                 }else{
                     cardStatsPermissions.visibility = View.VISIBLE
                 }
 
+                buttonStatsPermissionDeny.setOnClickListener {
+                    cardStatsPermissions.visibility = View.GONE
+                    setShareStatsEnable(this@VisualizarKardexActivity, -1)
+                }
+
                 buttonStatsPermission.setOnClickListener {
                     cardStatsPermissions.visibility = View.GONE
-                    setShareStatsEnable(this@VisualizarKardexActivity, true)
+                    setShareStatsEnable(this@VisualizarKardexActivity, 1)
                     evalSharedStats(promedio, lastPeriodo)
                 }
 
@@ -453,7 +463,8 @@ class VisualizarKardexActivity : AppCompatActivity() {
             calificaciones.map { it.y },
             promedio.map { it.y },
             lastPeriodo
-        )){
+        )
+        ){
             getStatistics().addOnSuccessListener {
                 if(it.data != null){
                     val diference = lastPromedio.minus(it.data!!["promedio"] as? Double ?: 0.0)

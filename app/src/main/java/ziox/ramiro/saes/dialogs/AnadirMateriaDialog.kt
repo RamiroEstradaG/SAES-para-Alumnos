@@ -17,7 +17,7 @@ import org.json.JSONArray
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.CreateHorarioActivity
 import ziox.ramiro.saes.fragments.HorarioFragment
-import ziox.ramiro.saes.sql.HorarioGeneradoDatabase
+import ziox.ramiro.saes.databases.HorarioGeneradoDatabase
 import ziox.ramiro.saes.utils.createWebView
 import ziox.ramiro.saes.utils.getUrl
 import ziox.ramiro.saes.utils.toProperCase

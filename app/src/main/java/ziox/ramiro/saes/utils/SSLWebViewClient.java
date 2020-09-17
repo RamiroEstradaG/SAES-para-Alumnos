@@ -13,10 +13,11 @@ import androidx.appcompat.app.AlertDialog;
 import ziox.ramiro.saes.R;
 import ziox.ramiro.saes.activities.MainActivity;
 
-import static ziox.ramiro.saes.utils.UtilsKt.getPreference;
-import static ziox.ramiro.saes.utils.UtilsKt.isNetworkAvailable;
-import static ziox.ramiro.saes.utils.UtilsKt.removePreference;
-import static ziox.ramiro.saes.utils.UtilsKt.setPreference;
+import static ziox.ramiro.saes.utils.ContextUtilsKt.isNetworkAvailable;
+import static ziox.ramiro.saes.utils.SharedPreferencesUtilsKt.getPreference;
+import static ziox.ramiro.saes.utils.SharedPreferencesUtilsKt.removePreference;
+import static ziox.ramiro.saes.utils.SharedPreferencesUtilsKt.setPreference;
+
 
 /**
  * Creado por Ramiro el 7/21/2018 a las 5:52 PM para SAES.
@@ -64,24 +65,21 @@ public class SSLWebViewClient extends WebViewClient {
                     handler.proceed();
                 }
             });
-            builder.setNegativeButton("cancelar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    try{
-                        setPreference(context, "SSLChoose", false);
-                        removePreference(context, "new_url_escuela");
-                        context.startActivity(new Intent(context, MainActivity.class));
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    handler.cancel();
+            builder.setNegativeButton("cancelar", (dialog, which) -> {
+                try{
+                    setPreference(context, "SSLChoose", false);
+                    removePreference(context, "new_url_escuela");
+                    context.startActivity(new Intent(context, MainActivity.class));
+                }catch (Exception e){
+                    Log.e("AppException", e.toString());
                 }
+                handler.cancel();
             });
             try{
                 final AlertDialog dialog = builder.create();
                 dialog.show();
             }catch (Exception e){
-                Log.e("error", e.toString());
+                Log.e("AppException", e.toString());
             }
         }
     }

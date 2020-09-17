@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.RemoteViews
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.services.AgendaEscolarWidgetRemoteViewService
@@ -52,7 +53,7 @@ class AgendaEscolarWidget : AppWidgetProvider(){
                 R.drawable.ic_logopoli
             })
         } catch (e: Exception) {
-
+            Log.e("AppException", e.toString())
         }
 
         views.setRemoteAdapter(R.id.agendaList, intent)

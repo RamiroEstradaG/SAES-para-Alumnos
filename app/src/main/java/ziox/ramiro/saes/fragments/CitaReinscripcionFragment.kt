@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_cita_reinscripcion.view.*
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.CreateHorarioActivity
 import ziox.ramiro.saes.activities.SAESActivity
-import ziox.ramiro.saes.sql.ReinscripcionDatabase
+import ziox.ramiro.saes.databases.ReinscripcionDatabase
 import ziox.ramiro.saes.utils.*
 
 /**

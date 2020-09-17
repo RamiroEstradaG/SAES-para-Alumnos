@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import kotlinx.android.synthetic.main.dialog_visualizar_materias.view.*
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.sql.HorarioGeneradoDatabase
+import ziox.ramiro.saes.databases.HorarioGeneradoDatabase
 import ziox.ramiro.saes.utils.ClaseData
 import ziox.ramiro.saes.utils.dividirHoras
 

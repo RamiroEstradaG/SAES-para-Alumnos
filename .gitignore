@@ -5,7 +5,7 @@
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
-/app/src/main/res/values/secrets.xml
+/app/src/main/res/values/secrets_tmp.xml
 /app/google-services.json
 .DS_Store
 /build

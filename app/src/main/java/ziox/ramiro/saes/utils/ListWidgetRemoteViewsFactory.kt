@@ -4,12 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Binder
+import android.util.Log
 import android.widget.AdapterView
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.sql.CorreccionHorarioDatabase
-import ziox.ramiro.saes.sql.HorarioDatabase
+import ziox.ramiro.saes.databases.CorreccionHorarioDatabase
+import ziox.ramiro.saes.databases.HorarioDatabase
 import java.util.*
 
 
@@ -29,6 +30,7 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
         return try{
             data[position].id.hashCode().toLong()
         }catch (e : Exception){
+            Log.e("AppException", e.toString())
             data.hashCode().toLong()
         }
     }

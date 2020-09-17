@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.sql
+package ziox.ramiro.saes.databases
 
 import android.content.ContentValues
 import android.content.Context
@@ -6,25 +6,30 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
-import ziox.ramiro.saes.R
+import android.util.Log
 import ziox.ramiro.saes.utils.ClaseData
 
 /**
  * Creado por Ramiro el 12/4/2018 a las 8:20 PM para SAESv2.
  */
-class HorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.db", null,1) {
+
+class CorreccionHorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.db", null,1) {
     /**
-    * id: string
-    * dia: integer
-    * nombre: string
-    * hora-isInit: time
-    * hora-termino: time
-    * color: string
-    * grupo: string
-    * profesor: string
-    * edificio: string
-    * salon: string
+     * id: string
+     * dia: integer
+     * nombre: string
+     * hora-isInit: time
+     * hora-termino: time
+     * color: string
+     * grupo: string
+     * profesor: string
+     * edificio: string
+     * salon: string
      */
+
+    init {
+        this.createTable()
+    }
 
     companion object {
         fun cursorAsClaseData(cursor: Cursor) : ClaseData{
@@ -43,7 +48,7 @@ class HorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.d
     }
 
     val col = DBCols()
-    data class DBCols(val tableName : String = "horario",
+    data class DBCols(val tableName : String = "correcciones",
                       val _id : String = "_id",
                       val id : String = "id",
                       val diaIndex: String = "diaIndex",
@@ -67,43 +72,16 @@ class HorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.d
                     + col.id + " TEXT NOT NULL,"
                     + col.diaIndex + " INT NOT NULL,"
                     + col.materia + " TEXT NOT NULL,"
-                    + col.horaInicio + " FLOAT NOT NULL,"
-                    + col.horaFinal + " FLOAT NOT NULL,"
+                    + col.horaInicio + " TEXT NOT NULL,"
+                    + col.horaFinal + " TEXT NOT NULL,"
                     + col.color + " TEXT NOT NULL,"
                     + col.grupo + " TEXT NOT NULL,"
                     + col.profesor + " TEXT NOT NULL,"
                     + col.edificio + " TEXT NOT NULL,"
                     + col.salon + " TEXT NOT NULL)")
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
         }
-    }
-
-    fun add(data : ClaseData) : Boolean {
-        return try {
-            if(!contains(data)){
-                writableDatabase.insert(col.tableName, null, toContentValues(data))
-            }
-            true
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    private fun contains(data : ClaseData) : Boolean{
-        val cursor = getAll()
-
-        while(cursor.moveToNext()) {
-            val cursorData = cursorAsClaseData(cursor)
-
-            if(cursorData == data) {
-                cursor.close()
-                return true
-            }
-        }
-
-        cursor.close()
-        return false
     }
 
     fun deleteTable() : Boolean{
@@ -111,7 +89,17 @@ class HorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.d
             writableDatabase.execSQL("DROP TABLE IF EXISTS "+col.tableName)
             true
         }catch (e : Exception){
+            Log.e("AppException", e.toString())
+            false
+        }
+    }
 
+    fun add(data : ClaseData) : Boolean {
+        return try {
+            writableDatabase.insert(col.tableName, null, toContentValues(data))
+            true
+        } catch (e: Exception) {
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -134,30 +122,19 @@ class HorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.d
         return null
     }
 
+    fun deleteData(data: ClaseData) : Boolean{
+        return try {
+            writableDatabase.delete(col.tableName, col.id+" = '"+data.id+"'", null)
+            true
+        }catch (e : Exception) {
+            Log.e("AppException", e.toString())
+            false
+        }
+    }
+
     fun getAll() : Cursor {
         return readableDatabase.query(col.tableName,
             null,
-            null,
-            null,
-            null,
-            null,
-            null)
-    }
-
-    fun getUniqueColors(context: Context?) : Array<String>?{
-        val colors = context?.resources?.getStringArray(R.array.paletaHorario)
-
-        return colors?.filter {
-            val query = readableDatabase.query(col.tableName, arrayOf(col.color), "${col.color} = ?", arrayOf(it), null, null, null)
-            val count = query.count
-            query.close()
-            count == 0
-        }?.toTypedArray()
-    }
-
-    fun getAllByCols(cols : Array<String>) : Cursor {
-        return readableDatabase.query(col.tableName,
-            cols,
             null,
             null,
             null,

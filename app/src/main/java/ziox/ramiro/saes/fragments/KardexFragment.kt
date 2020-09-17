@@ -3,6 +3,7 @@ package ziox.ramiro.saes.fragments
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,7 @@ import net.cachapa.expandablelayout.ExpandableLayout
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
 import ziox.ramiro.saes.activities.VisualizarKardexActivity
-import ziox.ramiro.saes.sql.KardexDatabase
+import ziox.ramiro.saes.databases.KardexDatabase
 import ziox.ramiro.saes.utils.*
 
 /**
@@ -212,7 +213,7 @@ class KardexFragment : Fragment() {
                     )
                 }
             } catch (e: Exception) {
-
+                Log.e("AppException", e.toString())
             }
         }
 

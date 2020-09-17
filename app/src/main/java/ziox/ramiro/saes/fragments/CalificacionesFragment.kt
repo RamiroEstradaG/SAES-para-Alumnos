@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.fragment_calificaciones.view.*
 import kotlinx.android.synthetic.main.view_calificacion_semestre.view.*
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
-import ziox.ramiro.saes.sql.CalificacionesDatabase
+import ziox.ramiro.saes.databases.CalificacionesDatabase
 import ziox.ramiro.saes.utils.*
 
 /**

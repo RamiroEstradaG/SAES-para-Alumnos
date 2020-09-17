@@ -11,7 +11,7 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import androidx.core.content.ContextCompat
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.sql.AgendaEscolarDatabase
+import ziox.ramiro.saes.databases.AgendaEscolarDatabase
 import java.util.*
 import kotlin.collections.ArrayList
 

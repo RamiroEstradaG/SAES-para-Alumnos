@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:adSize="BANNER"
-            app:adUnitId="ca-app-pub-9041205561484091/9557634789"
+            app:adUnitId="@string/calendarioBannerAdId"
             android:layout_gravity="center_horizontal" />
     </androidx.cardview.widget.CardView>
 

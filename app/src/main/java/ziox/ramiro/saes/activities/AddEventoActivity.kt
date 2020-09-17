@@ -10,6 +10,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_add_evento.*
 import ziox.ramiro.saes.R
+import ziox.ramiro.saes.databases.Evento
+import ziox.ramiro.saes.databases.addEvento
+import ziox.ramiro.saes.databases.enablePersistance
+import ziox.ramiro.saes.databases.getAdminCalendar
 import ziox.ramiro.saes.utils.*
 import java.util.*
 
@@ -68,7 +72,8 @@ class AddEventoActivity : AppCompatActivity(){
                 eventInfoInput?.editText?.text.toString(),
                 true,
                 codigo
-            ))
+            )
+            )
 
             Toast.makeText(this, "Correcto", Toast.LENGTH_SHORT).show()
             this.finish()

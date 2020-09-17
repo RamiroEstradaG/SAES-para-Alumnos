@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.sql
+package ziox.ramiro.saes.databases
 
 import android.content.ContentValues
 import android.content.Context
@@ -6,23 +6,25 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
+import ziox.ramiro.saes.R
 import ziox.ramiro.saes.utils.ClaseData
 
 /**
  * Creado por Ramiro el 12/4/2018 a las 8:20 PM para SAESv2.
  */
-class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.db", null,1) {
+class HorarioDatabase (context: Context?) : SQLiteOpenHelper(context, "horario.db", null,1) {
     /**
-     * id: string
-     * dia: integer
-     * nombre: string
-     * hora-isInit: time
-     * hora-termino: time
-     * color: string
-     * grupo: string
-     * profesor: string
-     * edificio: string
-     * salon: string
+    * id: string
+    * dia: integer
+    * nombre: string
+    * hora-isInit: time
+    * hora-termino: time
+    * color: string
+    * grupo: string
+    * profesor: string
+    * edificio: string
+    * salon: string
      */
 
     companion object {
@@ -37,12 +39,12 @@ class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "h
                 cursor.getString(cursor.getColumnIndex(col.grupo)),
                 cursor.getString(cursor.getColumnIndex(col.profesor)),
                 cursor.getString(cursor.getColumnIndex(col.edificio)),
-                cursor.getString(cursor.getColumnIndex(col.salon)), true)
+                cursor.getString(cursor.getColumnIndex(col.salon)))
         }
     }
 
     val col = DBCols()
-    data class DBCols(val tableName : String = "horario_personal",
+    data class DBCols(val tableName : String = "horario",
                       val _id : String = "_id",
                       val id : String = "id",
                       val diaIndex: String = "diaIndex",
@@ -54,10 +56,6 @@ class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "h
                       val profesor : String = "profesor",
                       val edificio : String = "edificio",
                       val salon: String = "salon") : BaseColumns
-
-    init {
-        createTable()
-    }
 
     override fun onCreate(db: SQLiteDatabase?) {}
 
@@ -78,7 +76,7 @@ class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "h
                     + col.edificio + " TEXT NOT NULL,"
                     + col.salon + " TEXT NOT NULL)")
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
         }
     }
 
@@ -89,15 +87,7 @@ class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "h
             }
             true
         } catch (e: Exception) {
-            false
-        }
-    }
-
-    fun deleteMateriaById(id : String) : Boolean{
-        return try {
-            writableDatabase.execSQL("DELETE FROM "+ col.tableName +" WHERE id = '$id'")
-            true
-        }catch (e : Exception){
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -123,14 +113,53 @@ class HorarioPersonalDatabase (context: Context?) : SQLiteOpenHelper(context, "h
             writableDatabase.execSQL("DROP TABLE IF EXISTS "+col.tableName)
             true
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
             false
         }
+    }
+
+    fun searchData(data: ClaseData?) : ClaseData?{
+        val cursor = getAll()
+
+        if(data != null){
+            while(cursor.moveToNext()) {
+                val cursorData = cursorAsClaseData(cursor)
+
+                if(cursorData.id == data.id) {
+                    cursor.close()
+                    return cursorData
+                }
+            }
+        }
+
+        cursor.close()
+        return null
     }
 
     fun getAll() : Cursor {
         return readableDatabase.query(col.tableName,
             null,
+            null,
+            null,
+            null,
+            null,
+            null)
+    }
+
+    fun getUniqueColors(context: Context?) : Array<String>?{
+        val colors = context?.resources?.getStringArray(R.array.paletaHorario)
+
+        return colors?.filter {
+            val query = readableDatabase.query(col.tableName, arrayOf(col.color), "${col.color} = ?", arrayOf(it), null, null, null)
+            val count = query.count
+            query.close()
+            count == 0
+        }?.toTypedArray()
+    }
+
+    fun getAllByCols(cols : Array<String>) : Cursor {
+        return readableDatabase.query(col.tableName,
+            cols,
             null,
             null,
             null,

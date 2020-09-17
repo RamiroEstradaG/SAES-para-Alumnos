@@ -12,6 +12,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
@@ -90,6 +91,7 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     MenuDrawerSaesModal().show(supportFragmentManager, "menu_modal")
                 } catch (e: Exception) {
                     crashlytics.recordException(e)
+                    Log.e("AppException", e.toString())
                 }
             }
 
@@ -134,6 +136,7 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 MenuDrawerSaesModal().show(supportFragmentManager, "menu_modal")
             } catch (e: Exception) {
                 crashlytics.recordException(e)
+                Log.e("AppException", e.toString())
             }
         }
 
@@ -206,7 +209,7 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 FirebaseAnalytics.Event.SELECT_CONTENT
             )
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("AppException", e.toString())
         }
         when (id) {
             R.id.nav_about -> {

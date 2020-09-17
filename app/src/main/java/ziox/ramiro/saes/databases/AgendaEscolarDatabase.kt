@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.sql
+package ziox.ramiro.saes.databases
 
 import android.content.ContentValues
 import android.content.Context
@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
+import android.util.Log
 
 /**
  * Creado por Ramiro el 14/04/2019 a las 04:10 PM para SAESv2.
@@ -63,7 +64,7 @@ class AgendaEscolarDatabase (context: Context?) : SQLiteOpenHelper(context, "dat
                     + col.final + " TEXT NOT NULL,"
                     + col.laborable + " INTEGER NOT NULL)")
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
         }
     }
 
@@ -72,7 +73,7 @@ class AgendaEscolarDatabase (context: Context?) : SQLiteOpenHelper(context, "dat
             val p0 = writableDatabase
             p0.execSQL("DROP TABLE IF EXISTS "+col.tableName)
         }catch (e : Exception){
-
+            Log.e("AppException", e.toString())
         }
     }
 
@@ -83,6 +84,7 @@ class AgendaEscolarDatabase (context: Context?) : SQLiteOpenHelper(context, "dat
             p0.insert(col.tableName, null, toContentValues(data))
             true
         } catch (e: Exception) {
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -94,6 +96,7 @@ class AgendaEscolarDatabase (context: Context?) : SQLiteOpenHelper(context, "dat
             p0.delete(col.tableName, "${col.type} = ?", arrayOf(type.toString()))
             true
         } catch (e: Exception) {
+            Log.e("AppException", e.toString())
             false
         }
     }
@@ -105,6 +108,7 @@ class AgendaEscolarDatabase (context: Context?) : SQLiteOpenHelper(context, "dat
             p0.delete(col.tableName, "${col.grupo} = ?", arrayOf(grupo))
             true
         } catch (e: Exception) {
+            Log.e("AppException", e.toString())
             false
         }
     }

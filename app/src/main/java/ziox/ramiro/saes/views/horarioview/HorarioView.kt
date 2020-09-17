@@ -28,10 +28,10 @@ import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
 import ziox.ramiro.saes.dialogs.AnadirMateriaDialog
 import ziox.ramiro.saes.fragments.HorarioFragment
-import ziox.ramiro.saes.sql.CorreccionHorarioDatabase
-import ziox.ramiro.saes.sql.HorarioDatabase
-import ziox.ramiro.saes.sql.HorarioGeneradoDatabase
-import ziox.ramiro.saes.sql.HorarioPersonalDatabase
+import ziox.ramiro.saes.databases.CorreccionHorarioDatabase
+import ziox.ramiro.saes.databases.HorarioDatabase
+import ziox.ramiro.saes.databases.HorarioGeneradoDatabase
+import ziox.ramiro.saes.databases.HorarioPersonalDatabase
 import ziox.ramiro.saes.utils.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -182,7 +182,7 @@ class HorarioView : FrameLayout {
                             newData.horaInicio = hourToDouble(lay.editClaseHoraInicio.editText!!.text.toString())
                             newData.horaFinal = hourToDouble(lay.editClaseHoraFinal.editText!!.text.toString())
                         } catch (e: Exception) {
-                            Log.e("asd", e.toString())
+                            Log.e("AppException", e.toString())
                         }
 
                         correccionHorarioDatabase.deleteData(newData)
