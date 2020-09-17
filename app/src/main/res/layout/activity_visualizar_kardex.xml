@@ -98,17 +98,32 @@
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Esto permite hacer comparaciones por carrera, unidad y el IPN. Los resultados dependen de la cantidad de usuarios que deciden compartir sus estadísticas.\nLos datos se almacenarán de manera anónima."
+                                    android:layout_marginTop="8dp"
+                                    android:text="Esto permite hacer comparaciones por carrera, unidad y el IPN. Los resultados dependen de la cantidad de usuarios que deciden compartir sus estadísticas.\nLos datos que se almacenarán son:\n\n• Número de boleta.\n• Unidad académica.\n• Nombre de la carrera.\n• Promedio global.\n• Kárdex."
                                     android:textColor="@color/colorSecondaryText" />
                             </LinearLayout>
 
-                            <Button
-                                android:id="@+id/buttonStatsPermission"
-                                style="@style/Widget.MaterialComponents.Button.TextButton"
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Permitir"
-                                android:textColor="@color/colorInfo" />
+                                android:layout_gravity="end">
+
+                                <Button
+                                    android:id="@+id/buttonStatsPermissionDeny"
+                                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="No volver a mostrar"
+                                    android:textColor="@color/colorDanger" />
+
+                                <Button
+                                    android:id="@+id/buttonStatsPermission"
+                                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Permitir"
+                                    android:textColor="@color/colorInfo" />
+                            </LinearLayout>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 

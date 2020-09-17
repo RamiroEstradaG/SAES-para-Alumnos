@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.dialogs
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,13 +30,20 @@ class AddCalendarioTrabajoDialog : DialogFragment() {
         rootView.addCalendarioAccept.setOnClickListener {
             rootView.addCalendarioInput.error = null
             if(rootView.addCalendarioInput.editText?.text.toString().isNotEmpty()){
-                val id = generateRandomString(8)
-                addCalendario(activity ,rootView.addCalendarioInput.editText?.text.toString(), id, !rootView.addCalendarioCheck.isChecked).addOnSuccessListener {
-                    addCalendarioToUser(context, id).addOnSuccessListener {
-                        this.onSuccessListener()
-                        this.dismiss()
+                val alertPermission = AlertDialog.Builder(activity)
+                alertPermission.setTitle("Aviso")
+                alertPermission.setMessage("Al presionar 'Aceptar' otorgas permiso a la aplicación para almacenar en la nube:\n\n• Número de boleta.\n• Recordatorios.")
+                alertPermission.setPositiveButton("Aceptar"){ _, _ ->
+                    val id = generateRandomString(10)
+                    addCalendario(activity ,rootView.addCalendarioInput.editText?.text.toString(), id, !rootView.addCalendarioCheck.isChecked).addOnSuccessListener {
+                        addCalendarioToUser(context, id).addOnSuccessListener {
+                            this.onSuccessListener()
+                            this.dismiss()
+                        }
                     }
                 }
+                alertPermission.setNegativeButton("Cancelar", null)
+                alertPermission.show()
             }else{
                 rootView.addCalendarioInput.error = "El título no puede ser vacío"
             }
