@@ -17,7 +17,7 @@ class SharedPreferencesUtilsKtTest {
 
     @Test
     fun setPreference() {
-
+        assertTrue(false)
     }
 
     @Test
