@@ -59,7 +59,7 @@ La aplicación fue hecha en Android Studio, por lo que es el editor recomendado 
 - Clona el repositorio en la carpeta de preferencia.
 - Abre el proyecto desde Android Studio.
 - El proyecto basa algunas características en Firebase, así que se necesita configurar un `google-services.json` personal.
-- El proyecto contiene claves de APIs secretas de Google Admob y Google Pay, por lo cual se necesita crear un archivo llamado secrets.xml en la carpeta `/values/` con esos valores.
+- El proyecto contiene claves de APIs secretas de Google Admob y Google Pay en `app/src/main/res/values/secrets.xml`.
 
 
 ## Reporte de bugs y solicitud de características nuevas
