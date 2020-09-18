@@ -1,0 +1,40 @@
+name: deploy
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: deploy
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Repo
+        uses: actions/checkout@v1
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      # Step 2: Decode Google services configuration file
+      - name: Decode google-services.json
+        env:
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_CONFIG }}
+        run: echo $FIREBASE_CONFIG > app/google-services.json
+
+      # Step 3: Decode the service account json key, needed on the next job
+      - name: Decode service account key
+        env:
+          SERVICE_ACCOUNT: ${{ secrets.SERVICE_ACCOUNT }}
+        run: echo $SERVICE_ACCOUNT > app/service-account-key.json
+
+      # Step 4: Publish the APK to the Play Store using the release keystore
+      - name: Publish APK
+        env:
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrests.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrests.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrests.RELEASE_KEY_PASSWORD }}
+        run: ./gradlew publishStagingRelease
