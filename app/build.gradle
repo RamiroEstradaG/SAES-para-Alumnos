@@ -17,7 +17,7 @@ android {
         config {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
+            storeFile file('../keystore.jks')
             storePassword keystoreProperties['storePassword']
         }
     }
