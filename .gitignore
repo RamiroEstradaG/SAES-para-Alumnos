@@ -12,3 +12,5 @@
 /captures
 .externalNativeBuild
 app/release/app-release.aab
+app/service-account-key.json
+keystore.properties
