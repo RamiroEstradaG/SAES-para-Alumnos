@@ -27,7 +27,7 @@
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="Abrir dialog"
         android:padding="4dp"
-        android:tint="?attr/colorOnBackground"
+        app:tint="?attr/colorOnBackground"
         android:visibility="visible"
         app:srcCompat="@drawable/ic_event_black_24dp"
         tools:ignore="HardcodedText" />

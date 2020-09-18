@@ -137,7 +137,7 @@
                             android:layout_gravity="end"
                             android:contentDescription="horario"
                             android:scaleType="fitEnd"
-                            android:tint="@color/colorHighlight"
+                            app:tint="@color/colorHighlight"
                             android:visibility="gone"
                             app:srcCompat="@drawable/ic_play_arrow_black_24dp" />
 
@@ -225,7 +225,7 @@
                     android:layout_marginStart="16dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:contentDescription="horario"
-                    android:tint="@color/colorPrimaryText"
+                    app:tint="@color/colorPrimaryText"
                     app:srcCompat="@drawable/ic_close_black_24dp" />
 
                 <Button
@@ -322,7 +322,7 @@
                         android:contentDescription="horario"
                         android:focusable="true"
                         android:padding="8dp"
-                        android:tint="@color/colorPrimaryText"
+                        app:tint="@color/colorPrimaryText"
                         app:srcCompat="@drawable/ic_refresh_black_24dp" />
                 </LinearLayout>
 
@@ -359,7 +359,7 @@
                         android:contentDescription="horario"
                         android:focusable="true"
                         android:padding="8dp"
-                        android:tint="@color/colorPrimaryText"
+                        app:tint="@color/colorPrimaryText"
                         app:srcCompat="@drawable/ic_refresh_black_24dp" />
                 </LinearLayout>
 
@@ -396,7 +396,7 @@
                         android:contentDescription="horario"
                         android:focusable="true"
                         android:padding="8dp"
-                        android:tint="@color/colorPrimaryText"
+                        app:tint="@color/colorPrimaryText"
                         app:srcCompat="@drawable/ic_refresh_black_24dp" />
                 </LinearLayout>
 
@@ -433,7 +433,7 @@
                         android:contentDescription="horario"
                         android:focusable="true"
                         android:padding="8dp"
-                        android:tint="@color/colorPrimaryText"
+                        app:tint="@color/colorPrimaryText"
                         app:srcCompat="@drawable/ic_refresh_black_24dp" />
 
                 </LinearLayout>
@@ -473,7 +473,7 @@
                         android:contentDescription="horario"
                         android:focusable="true"
                         android:padding="8dp"
-                        android:tint="@color/colorPrimaryText"
+                        app:tint="@color/colorPrimaryText"
                         android:visibility="invisible"
                         app:srcCompat="@drawable/ic_refresh_black_24dp" />
                 </LinearLayout>
@@ -512,7 +512,7 @@
                         android:contentDescription="horario"
                         android:focusable="true"
                         android:padding="8dp"
-                        android:tint="@color/colorPrimaryText"
+                        app:tint="@color/colorPrimaryText"
                         app:srcCompat="@drawable/ic_refresh_black_24dp" />
 
                 </LinearLayout>
@@ -557,7 +557,7 @@
                         android:contentDescription="horario"
                         android:focusable="true"
                         android:padding="8dp"
-                        android:tint="@color/colorPrimaryText"
+                        app:tint="@color/colorPrimaryText"
                         app:srcCompat="@drawable/ic_refresh_black_24dp" />
 
                 </LinearLayout>
@@ -602,7 +602,7 @@
                         android:contentDescription="horario"
                         android:focusable="true"
                         android:padding="8dp"
-                        android:tint="@color/colorPrimaryText"
+                        app:tint="@color/colorPrimaryText"
                         app:srcCompat="@drawable/ic_refresh_black_24dp" />
 
                 </LinearLayout>

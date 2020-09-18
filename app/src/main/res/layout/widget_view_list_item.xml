@@ -28,7 +28,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="bottom"
             android:text="00:00"
             android:textAlignment="center"
             android:textColor="@android:color/white" />

@@ -28,7 +28,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="@color/colorPrimaryText"
+        app:tint="@color/colorPrimaryText"
         app:srcCompat="@drawable/ic_info_outline_black_24dp" />
 
 </LinearLayout>

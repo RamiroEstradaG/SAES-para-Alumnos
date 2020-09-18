@@ -25,7 +25,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
-                android:tint="?android:attr/textColorPrimary"
+                app:tint="@color/colorPrimaryText"
                 app:srcCompat="@drawable/ic_close_black_24dp" />
         </androidx.appcompat.widget.Toolbar>
 
