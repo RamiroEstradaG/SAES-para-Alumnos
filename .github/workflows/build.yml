@@ -1,12 +1,13 @@
-name: deploy
+  
+name: build
 on:
-  push:
+  pull_request:
     branches:
       - master
 
 jobs:
-  deploy:
-    name: deploy
+  build:
+    name: build
 
     runs-on: ubuntu-latest
 
@@ -35,4 +36,4 @@ jobs:
         run: echo $KEYSTORE_PROPERTIES > keystore.properties
 
       - name: Publish Bundle
-        run: bash ./gradlew build publishReleaseBundle
+        run: bash ./gradlew assembleRelease
