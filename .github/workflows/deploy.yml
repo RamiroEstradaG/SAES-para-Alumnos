@@ -35,4 +35,4 @@ jobs:
         run: echo $KEYSTORE_PROPERTIES > ./keystore.properties
 
       - name: Publish Bundle
-        run: bash ./gradlew build publishReleaseBundle
+        run: bash ./gradlew tasks build publishReleaseBundle
