@@ -33,6 +33,12 @@ jobs:
         env:
           KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
         run: echo $KEYSTORE_PROPERTIES > ./keystore.properties
+      
+      - name: Publish Bundle
+        run: bash ./gradlew tasks
 
       - name: Publish Bundle
-        run: bash ./gradlew tasks build publishReleaseBundle
+        run: bash ./gradlew build
+
+      - name: Publish Bundle
+        run: bash ./gradlew publishReleaseBundle
