@@ -6,8 +6,21 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'com.github.triplet.play'
+
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
+    signingConfigs {
+        config {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
     compileSdkVersion 30
     defaultConfig {
         applicationId "ziox.ramiro.saes"
@@ -21,6 +34,7 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 
@@ -36,6 +50,10 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+}
+
+play {
+    serviceAccountCredentials = rootProject.file("app/service-account-key.json")
 }
 
 dependencies {
@@ -56,18 +74,18 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7" //Con licencia
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha' //Con licencia
     implementation 'com.github.florent37:viewtooltip:1.1.5' //Con licencia
-    implementation 'com.anjlab.android.iab.v3:library:1.0.44' //Con licencia
+    implementation 'com.anjlab.android.iab.v3:library:1.1.0' //Con licencia
     implementation 'com.google.android:flexbox:2.0.0' //Con licencia
     implementation 'com.github.sundeepk:compact-calendar-view:3.0.0'//Con licencia
     implementation "androidx.work:work-runtime-ktx:2.4.0"
     implementation 'com.google.android.play:core:1.8.0'
     implementation 'com.google.android.play:core-ktx:1.8.1'
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     testImplementation 'androidx.test:core:1.3.0'
-    testImplementation "org.robolectric:robolectric:4.3"
+    testImplementation 'org.robolectric:robolectric:4.4'
     testImplementation 'org.mockito:mockito-core:3.5.10'
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.1' //Con licencia
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'com.google.guava:guava:27.0.1-android'
+    implementation 'com.google.guava:guava:29.0-jre'
 }

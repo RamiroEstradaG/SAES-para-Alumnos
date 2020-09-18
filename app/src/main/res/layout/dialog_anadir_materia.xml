@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorSurface"
     android:orientation="vertical">
 
@@ -108,7 +109,7 @@
                 android:backgroundTint="@color/colorAccent"
                 android:text="Añadir"
                 android:textColor="@color/colorOnPrimary"
-                android:tint="@color/colorAccent" />
+                app:tint="@color/colorAccent" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -33,7 +33,7 @@
             android:layout_height="30dp"
             android:layout_margin="8dp"
             android:layout_weight="0"
-            android:tint="?android:attr/textColorPrimary"
+            app:tint="?android:attr/textColorPrimary"
             app:srcCompat="@drawable/ic_keyboard_arrow_down_black_24dp" />
     </LinearLayout>
 

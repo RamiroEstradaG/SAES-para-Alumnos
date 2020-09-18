@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorAccent"
-            android:tint="?attr/colorOnSecondary"
+            app:tint="?attr/colorOnSecondary"
             app:layout_anchor="@+id/frameLayout2"
             app:layout_anchorGravity="top|center"
             app:srcCompat="@drawable/ic_remove_red_eye_black_24dp" />
@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorAccent"
-            android:tint="?attr/colorOnSecondary"
+            app:tint="?attr/colorOnSecondary"
             android:layout_margin="16dp"
             app:layout_anchor="@+id/frameLayout"
             app:layout_anchorGravity="top|center"

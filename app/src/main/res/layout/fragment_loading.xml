@@ -71,7 +71,7 @@
             android:id="@+id/offlineImage"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:tint="@color/colorPrimaryText"
+            app:tint="@color/colorPrimaryText"
             android:visibility="gone"
             app:srcCompat="@drawable/ic_signal_wifi_off_black_24dp" />
     </LinearLayout>

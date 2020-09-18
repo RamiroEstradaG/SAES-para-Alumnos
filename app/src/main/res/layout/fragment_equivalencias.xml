@@ -28,7 +28,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/colorAccent"
                 android:text="Carrera"
-                android:tint="@color/colorAccent" />
+                app:tint="@color/colorAccent" />
 
             <Button
                 android:id="@+id/buttonCarrera2"
@@ -40,7 +40,7 @@
                 android:layout_weight="1"
                 android:backgroundTint="@color/colorAccent"
                 android:text="Equivalente"
-                android:tint="@color/colorAccent" />
+                app:tint="@color/colorAccent" />
         </LinearLayout>
 
         <ScrollView

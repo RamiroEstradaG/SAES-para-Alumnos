@@ -122,7 +122,7 @@
                             android:layout_height="20dp"
                             android:layout_gravity="end"
                             android:scaleType="fitEnd"
-                            android:tint="@color/colorPrimary"
+                            app:tint="@color/colorPrimary"
                             android:visibility="gone"
                             app:srcCompat="@drawable/ic_play_arrow_black_24dp" />
 
