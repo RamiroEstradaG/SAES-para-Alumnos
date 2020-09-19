@@ -20,7 +20,9 @@ jobs:
       - name: Decode keystore properties
         env:
           KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
-        run: echo $KEYSTORE_PROPERTIES > ./keystore.properties
+        run: |
+          echo $KEYSTORE_PROPERTIES > ./app/keystore.properties
+          echo $KEYSTORE_PROPERTIES > ./keystore.properties
         
       - name: Unit Test
         run: bash ./gradlew testDebugUnitTest
