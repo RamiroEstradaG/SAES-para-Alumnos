@@ -21,6 +21,10 @@ jobs:
         env:
           KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
         run: echo $KEYSTORE_PROPERTIES > ./keystore.properties
+      
+      - run: |
+          ls
+          cat ./keystore.properties
         
       - name: Unit Test
         run: bash ./gradlew testDebugUnitTest
