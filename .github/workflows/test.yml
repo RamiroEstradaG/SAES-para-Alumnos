@@ -18,14 +18,10 @@ jobs:
         run: echo $FIREBASE_CONFIG > ./app/google-services.json  
       
       - name: Decode keystore properties
-        env:
-          KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
-        run: echo $KEYSTORE_PROPERTIES > ./keystore.properties
+        run: echo ${{ secrets.KEYSTORE_PROPERTIES }} > ./keystore.properties
       
       - name: Decode keystore properties
-        env:
-          KEYSTORE_PROPERTIES: ${{ secrets.KEYSTORE_PROPERTIES }}
-        run: echo $KEYSTORE_PROPERTIES
+        run: echo ${{ secrets.KEYSTORE_PROPERTIES }}
         
       - name: Unit Test
         run: bash ./gradlew testDebugUnitTest
