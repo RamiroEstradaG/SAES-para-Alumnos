@@ -10,11 +10,10 @@ apply plugin: 'com.github.triplet.play'
 
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreFile = rootProject.file('keystore.jks')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
-
-print(keystoreProperties)
 
 android {
     compileSdkVersion 30
@@ -22,7 +21,7 @@ android {
         release {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storeFile keystoreFile.exists() ? keystoreFile : null
             storePassword keystoreProperties['storePassword']
         }
     }
