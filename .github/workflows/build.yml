@@ -7,6 +7,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
@@ -18,11 +19,11 @@ jobs:
         run: echo $FIREBASE_CONFIG > ./app/google-services.json  
 
       - name: Build
-        run: ./gradlew build
+        run: bash ./gradlew build
 
       - name: Assemble Release Bundle
         run: |
-          ./gradlew bundleRelease
+          bash ./gradlew bundleRelease
       - name: Sign Release
         uses: r0adkll/sign-android-release@v1
         with:
