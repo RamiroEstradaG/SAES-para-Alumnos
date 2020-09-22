@@ -20,15 +20,3 @@ jobs:
 
       - name: Build
         run: bash ./gradlew build
-
-      - name: Assemble Release Bundle
-        run: |
-          bash ./gradlew bundleRelease
-      - name: Sign Release
-        uses: r0adkll/sign-android-release@v1.0.1
-        with:
-          releaseDirectory: app/build/outputs/bundle/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.RELEASE_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
-          keyPassword: ${{ secrets.RELEASE_KEY_ALIAS }}
