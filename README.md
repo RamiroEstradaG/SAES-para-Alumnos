@@ -6,7 +6,7 @@
   <h1 align="center">SAES para Alumnos</h1>
   <p align="center">
     <span>
-      <img src="https://github.com/RamiroEda/SAES-para-Alumnos/workflows/build/badge.svg?branch=master" alt="Build">
+      <img src="https://github.com/RamiroEstradaG/SAES-para-Alumnos/workflows/build/badge.svg?branch=master&event=push" alt="Build">
     </span>
     <span>
       <img src="https://github.com/RamiroEda/SAES-para-Alumnos/workflows/test/badge.svg?branch=dev" alt="Test">
