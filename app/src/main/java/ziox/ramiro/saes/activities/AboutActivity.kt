@@ -77,12 +77,24 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler {
             )
         }
 
-        link_1.setOnClickListener {
+        bugReport.setOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
-            val intent = Intent(Intent.ACTION_SENDTO)
-            intent.data = Uri.parse("mailto:ramiroestradag@gmail.com")
-            val mailer = Intent.createChooser(intent, "Enviar correo electrónico...")
-            startActivity(mailer)
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?labels=bug&template=issue.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D")
+                )
+            )
+        }
+
+        featureRequest.setOnClickListener {
+            crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?labels=feature&template=feature.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D")
+                )
+            )
         }
 
         link_2.setOnClickListener { v ->

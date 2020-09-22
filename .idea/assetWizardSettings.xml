@@ -216,7 +216,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_add_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material/icons/materialicons/bug_report/baseline_bug_report_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -226,9 +226,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="assetSourceType" value="FILE" />
-                            <entry key="color" value="6c1d45" />
-                            <entry key="outputName" value="ic_octicons_mark_github" />
+                            <entry key="outputName" value="ic_baseline_bug_report_24" />
                             <entry key="sourceFile" value="C:\Users\PC\Downloads\Octicons-mark-github.svg" />
                           </map>
                         </option>
