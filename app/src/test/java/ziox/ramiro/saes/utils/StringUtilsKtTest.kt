@@ -7,6 +7,19 @@ import org.junit.Assert.*
 class StringUtilsKtTest {
 
     @Test
+    fun isSchoolGroup(){
+        val test1 = "Calculo diferencial e integral"
+        val test2 = "1CM1"
+        val test3 = "2CM2"
+        val test4 = "10SMT13"
+
+        assertFalse(test1.isSchoolGroup())
+        assertTrue(test2.isSchoolGroup())
+        assertTrue(test3.isSchoolGroup())
+        assertTrue(test4.isSchoolGroup())
+    }
+
+    @Test
     fun generateRandomString() {
         val random1 = generateRandomString(10)
         val random2 = generateRandomString(10)
