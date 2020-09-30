@@ -148,6 +148,7 @@ fun getCalendarios(id: List<String>, onComplete: (calendarios: List<Calendario>)
     db.collection("calendarios").whereIn("codigo", id).get().addOnSuccessListener {
         val arr = ArrayList<Calendario>()
         for(doc in it.documents){
+            @Suppress("UNCHECKED_CAST")
             arr.add(
                 Calendario(
                 doc.data!!["admin"] as? List<String> ?: listOf(),
@@ -227,6 +228,7 @@ fun getAdminCalendar(context: Context?, onComplete: (calendarios: List<Calendari
     db.collection("calendarios").whereArrayContains("admin", getHashUserId(context)).get().addOnSuccessListener {
         val arr = ArrayList<Calendario>()
         for(doc in it.documents){
+            @Suppress("UNCHECKED_CAST")
             arr.add(
                 Calendario(
                 doc.data!!["admin"] as? List<String> ?: listOf(),
