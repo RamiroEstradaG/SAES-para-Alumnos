@@ -14,7 +14,7 @@ android {
         applicationId "ziox.ramiro.saes"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 92
+        versionCode 93
         versionName "1.6.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
