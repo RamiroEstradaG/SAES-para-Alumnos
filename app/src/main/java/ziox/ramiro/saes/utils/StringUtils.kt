@@ -47,6 +47,10 @@ fun String.isUrl() : Boolean{
     return this.matches(Regex("https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"))
 }
 
+fun String.isSchoolGroup() : Boolean{
+    return this.matches(Regex("[0-9]{1,3}[a-zA-Z]+[0-9]{1,3}"))
+}
+
 fun String.toProperCase(): String {
     val str = this.toLowerCase(Locale.ROOT).split(" ").filter {
         it.isNotEmpty()
