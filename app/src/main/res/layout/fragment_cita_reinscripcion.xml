@@ -19,7 +19,7 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
@@ -141,6 +141,7 @@
             android:layout_marginBottom="16dp"
             android:orientation="horizontal"
             android:paddingStart="8dp"
+            android:baselineAligned="false"
             android:paddingEnd="8dp">
 
             <LinearLayout
@@ -155,7 +156,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:singleLine="true"
                     android:text="Carga mínima"
                     android:textAlignment="center"
@@ -167,7 +167,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:text="0.0"
                     android:textAlignment="center"
                     android:textColor="?android:attr/textColorPrimary"
@@ -186,7 +185,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:singleLine="true"
                     android:text="Carga media"
                     android:textAlignment="center"
@@ -198,7 +196,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:text="0.0"
                     android:textAlignment="center"
                     android:textColor="?android:attr/textColorPrimary"
@@ -217,7 +214,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:singleLine="true"
                     android:text="Carga máxima"
                     android:textAlignment="center"
@@ -229,7 +225,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
                     android:text="0.0"
                     android:textAlignment="center"
                     android:textColor="?android:attr/textColorPrimary"
@@ -258,6 +253,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 app:cardCornerRadius="8dp"
+                app:cardBackgroundColor="@color/colorSurface"
                 app:cardElevation="0dp">
 
                 <ProgressBar
@@ -306,6 +302,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:text="Cursado (0)"
                 android:textColor="?android:attr/textColorPrimary" />
 
@@ -322,6 +319,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:text="Duración normal (0)"
                 android:textColor="?android:attr/textColorPrimary" />
         </LinearLayout>
@@ -347,6 +345,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 app:cardCornerRadius="8dp"
+                app:cardBackgroundColor="@color/colorSurface"
                 app:cardElevation="0dp">
 
                 <ProgressBar
@@ -379,10 +378,11 @@
 
             <TextView
                 android:id="@+id/labelCreditosObtenidos"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:text="Créditos obtenidos (0/0)"
                 android:textColor="?android:attr/textColorPrimary" />
 
