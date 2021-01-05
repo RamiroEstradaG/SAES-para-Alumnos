@@ -47,14 +47,20 @@ fun getBoleta(context: Context?) = getPreference(context, "boleta", "")
 
 fun getUrl(context: Context?) : String = getPreference(context, ValType.STRING, "new_url_escuela") as String? ?: ""
 
-fun getNameEscuela(context: Context?) = getPreference(
+fun getSchoolName(context: Context?) = getPreference(
     context,
     "name_escuela",
     "Instituto Politecnico Nacional"
 )
 
-fun getCarrera(context: Context?) = getPreference(context, "carrera", "Sin definir")
+fun getCareerName(context: Context?) = getPreference(context, "carrera", "Sin definir")
 
+/**
+ * Si se pueden compartir o no datos sobre el rendimiento escolar de un alumno
+ *  0: No se ha elegido una opcion
+ *  1: Compartir datos
+ * -1: No volver a mostrar
+ */
 fun isShareStatsEnable(context: Context?) = getPreference(context,"share_stats_enable", 0)
 
 fun setShareStatsEnable(context: Context?, value : Int) = setPreference(context, "share_stats_enable", value)

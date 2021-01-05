@@ -8,7 +8,7 @@ class ColumnAnalizerTest {
 
     @Test
     fun analiseColumns() {
-        val jsi = ColumnAnalizer()
+        val jsi = ColumnAnalyzer()
         val test1Cols = arrayOf("Grupo","Materia","Profesor","Edificio","Salón","Lunes","Martes","Miércoles","Jueves","Viernes")
         val test1Row = arrayOf("3CM2","TEORIA DE COMUNICACIONES Y SEÑALES","RODRÍGUEZ VÁZQUEZ DANIEL","A1","124", "","11:30 - 13:00","13:00 - 14:30","07:00 - 08:30", "")
 

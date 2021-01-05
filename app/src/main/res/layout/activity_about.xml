@@ -12,7 +12,7 @@
         android:layout_height="wrap_content">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView4"
+            android:id="@+id/appInfoCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -60,7 +60,7 @@
                         app:layout_constraintVertical_bias="0.07999998" />
 
                     <TextView
-                        android:id="@+id/version_text"
+                        android:id="@+id/versionNameTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -88,7 +88,7 @@
             app:cardCornerRadius="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView4">
+            app:layout_constraintTop_toBottomOf="@+id/appInfoCard">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -105,7 +105,7 @@
                     android:textSize="16sp" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/githubLink"
+                    android:id="@+id/githubLinkButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:foreground="?attr/selectableItemBackground">
@@ -142,8 +142,10 @@
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/bugReport"
+                    android:id="@+id/bugReportButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:foreground="?attr/selectableItemBackground">
@@ -181,7 +183,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/featureRequest"
+                    android:id="@+id/featureRequestButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:foreground="?attr/selectableItemBackground">
@@ -219,7 +221,45 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/link_2"
+                    android:id="@+id/contactButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/imageView18"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_email_black_24dp"
+                        app:tint="?android:attr/textColorSecondary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Contacto"
+                        android:textColor="?android:attr/textColorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/imageView18"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/requestPlayReviewButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:foreground="?attr/selectableItemBackground">
@@ -257,7 +297,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/link_3"
+                    android:id="@+id/openSourceLicensesButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:foreground="?attr/selectableItemBackground">
@@ -295,7 +335,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/link_4"
+                    android:id="@+id/privacyPolicyButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:foreground="?attr/selectableItemBackground">
@@ -333,7 +373,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/link_6"
+                    android:id="@+id/saesPrivacyPolicyButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:foreground="?attr/selectableItemBackground">
@@ -371,7 +411,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/link_5"
+                    android:id="@+id/todoListButton"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:foreground="?attr/selectableItemBackground">
@@ -455,7 +495,7 @@
                     android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/purchase20"
+                        android:id="@+id/purchase20Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
@@ -464,7 +504,7 @@
                         android:text="Propina $20" />
 
                     <Button
-                        android:id="@+id/purchase50"
+                        android:id="@+id/purchase50Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"

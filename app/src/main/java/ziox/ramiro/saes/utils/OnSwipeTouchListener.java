@@ -16,6 +16,7 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        v.performClick();
         return gestureDetector.onTouchEvent(event);
     }
 
@@ -54,7 +55,7 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
                     result = true;
                 }
             } catch (Exception e) {
-                Log.e("AppException", e.toString());
+                Log.e(this.toString(), e.toString());
             }
             return result;
         }

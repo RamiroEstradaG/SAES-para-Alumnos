@@ -2,7 +2,6 @@ package ziox.ramiro.saes.utils
 
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.Color
 import android.os.Binder
 import android.view.View
@@ -11,22 +10,23 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import androidx.core.content.ContextCompat
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.databases.AgendaEscolarDatabase
+import ziox.ramiro.saes.databases.AgendaDao
+import ziox.ramiro.saes.databases.AgendaEvent
+import ziox.ramiro.saes.databases.AppLocalDatabase
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 class AgendaEscolarRemoteViewsFactory (val context: Context, val intent: Intent) : RemoteViewsService.RemoteViewsFactory {
-    private lateinit var agendaEscolarDatabase : AgendaEscolarDatabase
-    private lateinit var cursor : Cursor
+    private lateinit var agendaEscolarDatabase : AgendaDao
+    private lateinit var events : List<AgendaEvent>
     private data class EventData(val nombre: String, val fecha : GregorianCalendar?, val isFinal : Boolean?, val color : String)
     private val eventos = ArrayList<EventData>()
 
     override fun onCreate() {
-        agendaEscolarDatabase = AgendaEscolarDatabase(context)
-        agendaEscolarDatabase.createTable()
+        agendaEscolarDatabase = AppLocalDatabase.getInstance(context).agendaDao()
 
-        cursor = agendaEscolarDatabase.getAll()
+        events = agendaEscolarDatabase.getAll()
     }
 
     override fun getLoadingView(): RemoteViews? = null
@@ -40,31 +40,26 @@ class AgendaEscolarRemoteViewsFactory (val context: Context, val intent: Intent)
     }
 
     override fun onDataSetChanged() {
-        if(::cursor.isInitialized){
-            cursor.close()
-        }
-
         eventos.clear()
 
         val idToken = Binder.clearCallingIdentity()
         val now = Calendar.getInstance()
 
-        cursor = agendaEscolarDatabase.getAll()
+        events = agendaEscolarDatabase.getAll()
         val colores = context.resources.getStringArray(R.array.paletaHorario)
         val tipoEventos = context.resources.getStringArray(R.array.tipo_eventos)
 
-        while (cursor.moveToNext()){
-            val data = AgendaEscolarDatabase.cursorAsClaseData(cursor)
-            val inicio = data.inicio.split(" ")
-            val final = data.final.split(" ")
+        for (event in events){
+            val inicio = event.start.split(" ")
+            val final = event.finish.split(" ")
 
             val diaInicio = GregorianCalendar(inicio[2].toInt(), MES.indexOf(inicio[0].toUpperCase(Locale.ROOT)), inicio[1].toInt(),0,0)
             val diaFinal = GregorianCalendar(final[2].toInt(), MES.indexOf(final[0].toUpperCase(Locale.ROOT)), final[1].toInt(),0,0)
 
-            val color = if(data.laborable == 0){
+            val color = if(!event.isWorkingDay){
                 "#CCCCCC"
             }else{
-                val index = tipoEventos.indexOf(data.tipoEvento)
+                val index = tipoEventos.indexOf(event.eventType)
                 colores[if(index >= 0){
                     index
                 }else{
@@ -74,16 +69,17 @@ class AgendaEscolarRemoteViewsFactory (val context: Context, val intent: Intent)
 
             if (diaInicio == diaFinal) {
                 if(diaInicio >= now)
-                    eventos.add(EventData(data.nombre, diaInicio, null, color))
+                    eventos.add(EventData(event.title, diaInicio, null, color))
             } else {
                 if(diaInicio >= now)
-                    eventos.add(EventData(data.nombre, diaInicio, false, color))
+                    eventos.add(EventData(event.title, diaInicio, false, color))
 
 
                 if(diaFinal >= now)
-                    eventos.add(EventData(data.nombre, diaFinal, true, color))
+                    eventos.add(EventData(event.title, diaFinal, true, color))
             }
         }
+
 
         eventos.sortBy {
             it.fecha
@@ -99,34 +95,34 @@ class AgendaEscolarRemoteViewsFactory (val context: Context, val intent: Intent)
     override fun hasStableIds(): Boolean = true
 
     override fun getViewAt(position: Int): RemoteViews? {
-        if (position == AdapterView.INVALID_POSITION || !::cursor.isInitialized || position >= eventos.size) {
+        if (position == AdapterView.INVALID_POSITION || !::events.isInitialized || position >= eventos.size) {
             return null
         }
 
-        val rv = RemoteViews(context.packageName, R.layout.widget_view_agenda_event_item)
+        val remoteViews = RemoteViews(context.packageName, R.layout.widget_view_agenda_event_item)
 
-        rv.setTextViewText(R.id.itemNombreEvento, eventos[position].nombre)
+        remoteViews.setTextViewText(R.id.itemNombreEvento, eventos[position].nombre)
         if(eventos[position].fecha != null){
-            rv.setTextViewText(R.id.itemDiaEvento, eventos[position].fecha!!.get(Calendar.DAY_OF_MONTH).toString())
-            rv.setTextViewText(R.id.itemMesEvento, MES_COMPLETO[eventos[position].fecha!!.get(Calendar.MONTH)])
+            remoteViews.setTextViewText(R.id.itemDiaEvento, eventos[position].fecha!!.get(Calendar.DAY_OF_MONTH).toString())
+            remoteViews.setTextViewText(R.id.itemMesEvento, MES_COMPLETO[eventos[position].fecha!!.get(Calendar.MONTH)])
         }else{
-            rv.setTextColor(R.id.itemNombreEvento, ContextCompat.getColor(context, R.color.colorPrimaryText))
+            remoteViews.setTextColor(R.id.itemNombreEvento, ContextCompat.getColor(context, R.color.colorPrimaryText))
         }
-        rv.setInt(R.id.itemNombreEvento, "setBackgroundColor", Color.parseColor(eventos[position].color))
+        remoteViews.setInt(R.id.itemNombreEvento, "setBackgroundColor", Color.parseColor(eventos[position].color))
 
         if(eventos[position].isFinal == true){
-            rv.setInt(R.id.itemInOut,"setBackgroundResource", R.drawable.ic_keyboard_arrow_up_black_24dp)
+            remoteViews.setInt(R.id.itemInOut,"setBackgroundResource", R.drawable.ic_keyboard_arrow_up_black_24dp)
         }else if(eventos[position].isFinal == false){
-            rv.setInt(R.id.itemInOut,"setBackgroundResource", R.drawable.ic_keyboard_arrow_down_black_24dp)
+            remoteViews.setInt(R.id.itemInOut,"setBackgroundResource", R.drawable.ic_keyboard_arrow_down_black_24dp)
         }
 
         if(eventos[position].isFinal == null){
-            rv.setViewVisibility(R.id.itemInOut, View.INVISIBLE)
+            remoteViews.setViewVisibility(R.id.itemInOut, View.INVISIBLE)
         }else{
-            rv.setViewVisibility(R.id.itemInOut, View.VISIBLE)
+            remoteViews.setViewVisibility(R.id.itemInOut, View.VISIBLE)
         }
 
-        return rv
+        return remoteViews
     }
 
     override fun getCount(): Int {
@@ -135,13 +131,5 @@ class AgendaEscolarRemoteViewsFactory (val context: Context, val intent: Intent)
 
     override fun getViewTypeCount(): Int = 1
 
-    override fun onDestroy() {
-        if(::cursor.isInitialized){
-            cursor.close()
-        }
-
-        if(::agendaEscolarDatabase.isInitialized){
-            agendaEscolarDatabase.close()
-        }
-    }
+    override fun onDestroy() {}
 }

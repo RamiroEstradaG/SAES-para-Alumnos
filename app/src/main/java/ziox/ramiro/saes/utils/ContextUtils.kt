@@ -10,7 +10,7 @@ import com.anjlab.android.iab.v3.TransactionDetails
 import ziox.ramiro.saes.R
 
 fun Context.haveDonated() : Boolean {
-    val bp = BillingProcessor(
+    val billingProcessor = BillingProcessor(
         this,
         this.resources.getString(R.string.billingKey),
         object : BillingProcessor.IBillingHandler{
@@ -22,7 +22,7 @@ fun Context.haveDonated() : Boolean {
     )
 
 
-    return bp.listOwnedProducts().isNotEmpty()
+    return billingProcessor.listOwnedProducts().isNotEmpty()
 }
 
 @Suppress("DEPRECATION")
@@ -49,7 +49,7 @@ fun Context.isNetworkAvailable() : Boolean{
                 return true
             }
         } catch (e: Exception) {
-            Log.e("AppException", e.toString())
+            Log.e(this.javaClass.canonicalName, e.toString())
         }
     }
 
