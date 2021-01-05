@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.activities
 
+import android.annotation.SuppressLint
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
@@ -30,9 +31,9 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.perf.metrics.AddTrace
-import kotlinx.android.synthetic.main.activity_saes.*
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.dialogs.MenuDrawerSaesModal
+import ziox.ramiro.saes.databinding.ActivitySaesBinding
+import ziox.ramiro.saes.dialogs.SAESMenuDrawerDialogFragment
 import ziox.ramiro.saes.fragments.*
 import ziox.ramiro.saes.utils.*
 import ziox.ramiro.saes.widgets.AgendaEscolarWidget
@@ -42,10 +43,9 @@ import ziox.ramiro.saes.widgets.HorarioListWidget
 /**
  * Creado por Ramiro el 10/13/2018 a las 1:22 PM para SAESv2.
  */
-class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-    SharedPreferences.OnSharedPreferenceChangeListener {
-
+class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, SharedPreferences.OnSharedPreferenceChangeListener {
     private val crashlytics = FirebaseCrashlytics.getInstance()
+    private lateinit var binding: ActivitySaesBinding
 
     companion object{
         const val INTENT_EXTRA_REDIRECT = "redirect"
@@ -59,13 +59,15 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var swipeHorizontalyFun : (direction: Boolean) -> Unit
     private var shortcutManager : ShortcutManager? = null
 
+    @SuppressLint("ClickableViewAccessibility")
     @AddTrace(name = "onCreateSAES", enabled = true)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_saes)
+        binding = ActivitySaesBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initTheme(this)
-        setSupportActionBar(bottomAppBar)
-        bottomAppBar.addBottomInsetPadding()
+        setSupportActionBar(binding.bottomAppBar)
+        binding.bottomAppBar.addBottomInsetPadding()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             shortcutManager = getSystemService(ShortcutManager::class.java)
@@ -84,14 +86,14 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }, null)
 
-        bottomAppBar.setOnTouchListener(object : OnSwipeTouchListener(this){
+        binding.bottomAppBar.setOnTouchListener(object : OnSwipeTouchListener(this){
             override fun onSwipeTop() {
                 try {
                     crashlytics.log("DragUp en MenuModalButton en la clase ${this@SAESActivity.localClassName}")
-                    MenuDrawerSaesModal().show(supportFragmentManager, "menu_modal")
+                    SAESMenuDrawerDialogFragment().show(supportFragmentManager, "menu_modal")
                 } catch (e: Exception) {
                     crashlytics.recordException(e)
-                    Log.e("AppException", e.toString())
+                    Log.e(this.javaClass.canonicalName, e.toString())
                 }
             }
 
@@ -130,13 +132,13 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             Context.MODE_PRIVATE
         ).registerOnSharedPreferenceChangeListener(this)
 
-        bottomAppBar?.setNavigationOnClickListener {
+        binding.bottomAppBar.setNavigationOnClickListener {
             try {
                 crashlytics.log("Click en MenuModalButton en la clase ${this.localClassName}")
-                MenuDrawerSaesModal().show(supportFragmentManager, "menu_modal")
+                SAESMenuDrawerDialogFragment().show(supportFragmentManager, "menu_modal")
             } catch (e: Exception) {
                 crashlytics.recordException(e)
-                Log.e("AppException", e.toString())
+                Log.e(this.javaClass.canonicalName, e.toString())
             }
         }
 
@@ -151,7 +153,7 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initDragViewAnimation(){
         val animation = AnimationUtils.loadAnimation(this, R.anim.pulse)
-        dragHorizontalView.startAnimation(animation)
+        binding.dragHorizontalView.startAnimation(animation)
     }
 
     private fun registerEvent(itemId: String, itemName: String, contentType: String, event: String) {
@@ -180,8 +182,8 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun updateDragView(){
-        (dragHorizontalView.layoutParams as CoordinatorLayout.LayoutParams).apply {
-            gravity = when(bottomAppBar.fabAlignmentMode){
+        (binding.dragHorizontalView.layoutParams as CoordinatorLayout.LayoutParams).apply {
+            gravity = when(binding.bottomAppBar.fabAlignmentMode){
                 BottomAppBar.FAB_ALIGNMENT_MODE_END -> Gravity.CENTER
                 BottomAppBar.FAB_ALIGNMENT_MODE_CENTER -> Gravity.CENTER_VERTICAL or Gravity.END
                 else -> Gravity.CENTER
@@ -190,14 +192,14 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun hideDragIcon(){
-        dragHorizontalView.clearAnimation()
-        dragHorizontalView.visibility = View.GONE
+        binding.dragHorizontalView.clearAnimation()
+        binding.dragHorizontalView.visibility = View.GONE
     }
 
     fun showDragIcon(){
         updateDragView()
         initDragViewAnimation()
-        dragHorizontalView.visibility = View.VISIBLE
+        binding.dragHorizontalView.visibility = View.VISIBLE
     }
 
     fun postNavigationItemSelected(id: Int, isBackPressed: Boolean){
@@ -209,7 +211,7 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 FirebaseAnalytics.Event.SELECT_CONTENT
             )
         } catch (e: Exception) {
-            Log.e("AppException", e.toString())
+            Log.e(this.javaClass.canonicalName, e.toString())
         }
         when (id) {
             R.id.nav_about -> {
@@ -246,17 +248,18 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun showEmptyText(text: String) {
         runOnUiThread {
-            emptyText.text = text
+            binding.emptyText.text = text
         }
     }
 
     fun hideEmptyText() {
         runOnUiThread {
-            emptyText.text = ""
+            binding.emptyText.text = ""
         }
     }
 
     private fun changeFragment(id: Int, isBackPressed: Boolean) {
+        binding.mainProgress.visibility = View.GONE
         if(id != -1){
             crashlytics.log("Se encuentra en ${resources.getResourceName(id)}")
         }
@@ -264,33 +267,33 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val fragment = if (this.isNetworkAvailable()) {
             when (id) {
                 R.id.nav_kardex -> KardexFragment()
-                R.id.nav_horario -> HorarioFragment()
-                R.id.nav_estado_general -> EstadoGeneralFragment()
-                R.id.nav_calific -> CalificacionesFragment()
-                R.id.nav_eval_prof -> EvaluacionProfesoresFragment()
-                R.id.nav_reinsc -> CitaReinscripcionFragment()
-                R.id.nav_calendario_trabajo -> CalendarioTrabajoFragment()
-                R.id.perfilButton -> PerfilFragment()
-                R.id.nav_ets -> ETSFragment()
-                R.id.nav_agenda_escolar -> AgendaEscolarFragment()
-                R.id.nav_horarios_clase -> HorarioGeneralFragment()
-                R.id.nav_calendario_ets -> CalendarioETSFragment()
-                R.id.nav_ocupabilidad -> OcupabilidadFragment()
-                R.id.nav_equivalencias -> EquivalenciasFragment()
+                R.id.nav_horario -> ClassScheduleFragment()
+                R.id.nav_estado_general -> OverallStatusFragment()
+                R.id.nav_calific -> GradesFragment()
+                R.id.nav_eval_prof -> TeacherEvaluationListFragment()
+                R.id.nav_reinsc -> ReEnrollmentAppointmentFragment()
+                R.id.nav_calendario_trabajo -> UserCalendarFragment()
+                R.id.profile_button -> ProfileFragment()
+                R.id.nav_ets -> ETSRegisterFragment()
+                R.id.nav_agenda_escolar -> AgendaFragment()
+                R.id.nav_horarios_clase -> AllCareersScheduleFragment()
+                R.id.nav_calendario_ets -> ETSCalendarFragment()
+                R.id.nav_ocupabilidad -> ScheduleOccupancyFragment()
+                R.id.nav_equivalencias -> CourseEquivalencesFragment()
                 else -> Fragment()
             }
         } else {
             when (id) {
                 R.id.nav_kardex -> KardexFragment()
-                R.id.nav_horario -> HorarioFragment()
-                R.id.nav_calific -> CalificacionesFragment()
-                R.id.nav_calendario_trabajo -> CalendarioTrabajoFragment()
-                R.id.nav_reinsc -> CitaReinscripcionFragment()
-                R.id.nav_agenda_escolar -> AgendaEscolarFragment()
+                R.id.nav_horario -> ClassScheduleFragment()
+                R.id.nav_calific -> GradesFragment()
+                R.id.nav_calendario_trabajo -> UserCalendarFragment()
+                R.id.nav_reinsc -> ReEnrollmentAppointmentFragment()
+                R.id.nav_agenda_escolar -> AgendaFragment()
                 R.id.nav_horarios_clase -> {
-                    showFab(R.drawable.ic_add_schedule, View.OnClickListener {
+                    showFab(R.drawable.ic_add_schedule, {
                         crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
-                        startActivity(Intent(this, CreateHorarioActivity::class.java))
+                        startActivity(Intent(this, ScheduleGeneratorActivity::class.java))
                     }, BottomAppBar.FAB_ALIGNMENT_MODE_END)
                     showEmptyText("No hay conexión a internet")
                     Fragment()
@@ -328,7 +331,7 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return if (getPreference(this, "offline_mode", false)) {
             null
         } else {
-            mainProgress
+            binding.mainProgress
         }
     }
 
@@ -344,15 +347,15 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun showFab(icon: Int, listener: View.OnClickListener, alignMode: Int) {
-        floatingActionButton.show()
-        floatingActionButton.setImageResource(icon)
-        bottomAppBar.fabAlignmentMode = alignMode
-        floatingActionButton.setOnClickListener(listener)
+        binding.floatingActionButton.show()
+        binding.floatingActionButton.setImageResource(icon)
+        binding.bottomAppBar.fabAlignmentMode = alignMode
+        binding.floatingActionButton.setOnClickListener(listener)
         updateDragView()
     }
 
     fun getMainLayout(): CoordinatorLayout {
-        return mainLayout
+        return binding.mainLayout
     }
 
     fun updateWidgets() {
@@ -379,16 +382,16 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun hideFab() {
-        floatingActionButton.hide()
+        binding.floatingActionButton.hide()
     }
 
     fun showFab() {
-        floatingActionButton.show()
+        binding.floatingActionButton.show()
         updateDragView()
     }
 
     fun changeFabIcon(res : Int){
-        floatingActionButton.setImageResource(res)
+        binding.floatingActionButton.setImageResource(res)
     }
 
     fun supportShortcutPin() : Boolean{
@@ -399,7 +402,7 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun initShortcut(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val intent = Intent(this, AddEventoActivity::class.java)
+            val intent = Intent(this, AddEventToAgendaActivity::class.java)
             val icon = Icon.createWithResource(this, R.drawable.ic_add_shortcut)
             intent.action = "random"
 

@@ -118,7 +118,7 @@ fun String.toDate() : Date {
     try {
         return format.parse(str2)?: Date()
     } catch (e: Exception) {
-        Log.e("AppException", e.toString())
+        Log.e(this.javaClass.canonicalName, e.toString())
     }
     return Date()
 }
@@ -147,10 +147,10 @@ fun String.toDateString() : String{
             val strFormat = SimpleDateFormat("EEEE, d 'de' MMMM 'del' yyyy 'a las' HH:mm", Locale.US)
             return strFormat.format(date?: Date())
         } catch (e: Exception) {
-            Log.e("AppException", e.toString())
+            Log.e(this.javaClass.canonicalName, e.toString())
         }
     } catch (e: Exception) {
-        Log.e("AppException", e.toString())
+        Log.e(this.javaClass.canonicalName, e.toString())
     }
     return ""
 }
@@ -161,4 +161,4 @@ fun hourToDouble(hora: String) : Double{
     return horaValue[0].toDouble()+(horaValue[1].toDouble()/60.0)
 }
 
-fun getHashUserId(context: Context?) = HashUtils.sha256(getBoleta(context)+getNameEscuela(context))
+fun getHashUserId(context: Context?) = HashUtils.sha256(getBoleta(context)+getSchoolName(context))

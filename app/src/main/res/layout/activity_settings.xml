@@ -9,7 +9,7 @@
     android:baselineAligned="false">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -87,13 +87,13 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="@color/colorSecondaryText"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/switch_offline"
+                        app:layout_constraintEnd_toStartOf="@+id/offline_enabler_switch"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
                     <Switch
-                        android:id="@+id/switch_offline"
+                        android:id="@+id/offline_enabler_switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -116,7 +116,7 @@
                     android:layout_marginStart="8dp">
 
                     <Button
-                        android:id="@+id/btnMoreOffline"
+                        android:id="@+id/offline_sections_list_button"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -181,7 +181,7 @@
 
 
                     <Spinner
-                        android:id="@+id/switch_dark_theme"
+                        android:id="@+id/theme_selector_spinner"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -247,13 +247,13 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/switch_expand"
+                        app:layout_constraintEnd_toStartOf="@+id/automatic_schedule_expand_switch"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
                     <Switch
-                        android:id="@+id/switch_expand"
+                        android:id="@+id/automatic_schedule_expand_switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -306,13 +306,13 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/switch_expand"
+                        app:layout_constraintEnd_toStartOf="@+id/automatic_schedule_expand_switch"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
                     <Spinner
-                        android:id="@+id/spinner_seccion"
+                        android:id="@+id/start_section_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
@@ -381,12 +381,12 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/spinnerMinsInterval"
+                        app:layout_constraintEnd_toStartOf="@+id/schedule_update_interval_spinner"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
                     <Spinner
-                        android:id="@+id/spinnerMinsInterval"
+                        android:id="@+id/schedule_update_interval_spinner"
                         style="@android:style/Widget.Holo.Light.Spinner"
                         android:layout_width="75dp"
                         android:layout_height="wrap_content"
@@ -436,7 +436,7 @@
                             app:layout_constraintVertical_bias="0.0" />
 
                         <ImageView
-                            android:id="@+id/tooltipWidget"
+                            android:id="@+id/widget_range_tooltip"
                             android:layout_width="20dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center_vertical"
@@ -447,7 +447,7 @@
                             app:srcCompat="@drawable/ic_info_outline_black_24dp" />
 
                         <TextView
-                            android:id="@+id/textViewWidgetCounter"
+                            android:id="@+id/calibrator_count_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -457,7 +457,7 @@
                     </LinearLayout>
 
                     <SeekBar
-                        android:id="@+id/seekBarWidgetLevel"
+                        android:id="@+id/schedule_widget_calibrator"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"

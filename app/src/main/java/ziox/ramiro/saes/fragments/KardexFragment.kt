@@ -12,21 +12,19 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.bottomappbar.BottomAppBar
-import kotlinx.android.synthetic.main.fragment_kardex.view.*
-import kotlinx.android.synthetic.main.item_kardex_content.view.*
-import kotlinx.android.synthetic.main.item_kardex_content_materia.view.*
-import kotlinx.android.synthetic.main.item_kardex_header.view.*
-import net.cachapa.expandablelayout.ExpandableLayout
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
-import ziox.ramiro.saes.activities.VisualizarKardexActivity
-import ziox.ramiro.saes.databases.KardexDatabase
+import ziox.ramiro.saes.activities.StudentPerformanceActivity
+import ziox.ramiro.saes.databases.AppLocalDatabase
+import ziox.ramiro.saes.databases.KardexClass
+import ziox.ramiro.saes.databases.KardexDao
+import ziox.ramiro.saes.databinding.FragmentKardexBinding
+import ziox.ramiro.saes.databinding.ViewKardexSemesterCourseItemBinding
+import ziox.ramiro.saes.databinding.ViewKardexSemesterSectionItemBinding
 import ziox.ramiro.saes.utils.*
 
 /**
@@ -35,27 +33,26 @@ import ziox.ramiro.saes.utils.*
 class KardexFragment : Fragment() {
     private val kardexList = ArrayList<KardexData>()
     private val crashlytics = FirebaseCrashlytics.getInstance()
-    private lateinit var kardexDatabase: KardexDatabase
+    private lateinit var kardexDatabase: KardexDao
 
-    data class KardexData(val semestre: String, val data: ArrayList<MateriaData>?)
-    data class MateriaData(
-        val nombre: String,
-        val clave: String,
-        val periodo: String,
-        val formaEval: String,
-        val calif: String
+    data class KardexData(val semester: String, val data: ArrayList<KardexItemData>?)
+    data class KardexItemData(
+        val courseName: String,
+        val courseKey: String,
+        val period: String,
+        val evaluationMethod: String,
+        val finalScore: String
     )
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_kardex, container, false)
-        kardexDatabase = KardexDatabase(activity)
-        rootView.kardexMain.addBottomInsetPadding()
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val rootView = FragmentKardexBinding.inflate(inflater, container, false)
+        kardexDatabase = AppLocalDatabase.getInstance(requireContext()).kardexDao()
+        rootView.parent.addBottomInsetPadding()
         val jsi = JSInterface(rootView)
 
         (activity as SAESActivity?)?.showFab(
             R.drawable.ic_unfold_more_black_24dp,
-            View.OnClickListener {
+            {
                 crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
                 if(jsi.expanded){
                     (activity as? SAESActivity)?.changeFabIcon(R.drawable.ic_unfold_more_black_24dp)
@@ -67,9 +64,9 @@ class KardexFragment : Fragment() {
             BottomAppBar.FAB_ALIGNMENT_MODE_END
         )
 
-        rootView.buttonKardexStats.setOnClickListener {
+        rootView.header.studentPerformanceButton.setOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
-            activity?.startActivity(Intent(activity, VisualizarKardexActivity::class.java))
+            activity?.startActivity(Intent(activity, StudentPerformanceActivity::class.java))
         }
 
         if (activity?.isNetworkAvailable() == true) {
@@ -81,23 +78,23 @@ class KardexFragment : Fragment() {
                                 "if(table == null)" +
                                 "   window.JSI.notFound();" +
                                 "else{" +
-                                "   window.JSI.addPromedio(document.getElementById(\"ctl00_mainCopy_Lbl_Promedio\").innerText);" +
-                                "   window.JSI.setNombre(document.getElementById(\"ctl00_mainCopy_Lbl_Nombre\").getElementsByTagName(\"td\")[3].innerText);" +
-                                "   window.JSI.setCarrera(document.getElementById(\"ctl00_mainCopy_Lbl_Carrera\").innerText);" +
+                                "   window.JSI.setFinalScore(document.getElementById(\"ctl00_mainCopy_Lbl_Promedio\").innerText);" +
+                                "   window.JSI.setUserName(document.getElementById(\"ctl00_mainCopy_Lbl_Nombre\").getElementsByTagName(\"td\")[3].innerText);" +
+                                "   window.JSI.setCareerName(document.getElementById(\"ctl00_mainCopy_Lbl_Carrera\").innerText);" +
                                 "   for(var i = 0 ; i < table.length ; i++){" +
                                 "       var row = table[i].getElementsByTagName(\"tr\");" +
                                 "       var titulo = row[0].innerText;" +
                                 "       if(titulo.toLowerCase().match(/semestre\$/g).length > 0){" +
-                                "           window.JSI.addSemestre(titulo);" +
+                                "           window.JSI.addSemesterData(titulo);" +
                                 "           for(var e = 2; e < row.length ; ++e){" +
                                 "               var col = row[e].getElementsByTagName(\"td\");" +
                                 "               var data = [];" +
                                 "               for(var k = 0; k < col.length ; ++k){" +
                                 "                   data.push(col[k].innerText);" +
                                 "               }" +
-                                "               window.JSI.addMateria(data);" +
+                                "               window.JSI.addItem(data);" +
                                 "           }" +
-                                "           window.JSI.onSemestreCompleted();" +
+                                "           window.JSI.onSemesterCompleted();" +
                                 "       }" +
                                 "    }" +
                                 "}" +
@@ -111,90 +108,80 @@ class KardexFragment : Fragment() {
             kardexWebView.loadUrl(getUrl(activity) + "Alumnos/boleta/kardex.aspx")
         } else {
             jsi.isOffline = true
-            kardexDatabase.createTable()
             val data = kardexDatabase.getAll()
-            var currentSemestre = "_"
-            while (data.moveToNext()) {
-                val v = KardexDatabase.cursorAsData(data)
-                if (v.semestre != currentSemestre) {
-                    jsi.addSemestre(v.semestre)
-                    currentSemestre = v.semestre
+            var currentSemester = "_"
+            for (item in data){
+                if (item.semester != currentSemester) {
+                    jsi.addSemesterData(item.semester)
+                    currentSemester = item.semester
                 }
 
-                if (v.name != "_") {
-                    jsi.addMateria(arrayOf("", v.name, v.semestre, "", "", v.calificacion))
+                if (item.courseName != "_") {
+                    jsi.addItem(arrayOf("", item.courseName, item.semester, "", "", item.finalScore))
                 } else {
-                    jsi.addPromedio(v.calificacion)
+                    jsi.setFinalScore(item.finalScore)
                 }
             }
 
             jsi.onComplete()
         }
 
-        return rootView
+        return rootView.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if(::kardexDatabase.isInitialized){
-            kardexDatabase.close()
-        }
-    }
-
-    inner class JSInterface(val rootView: View, var isOffline: Boolean = false) {
+    inner class JSInterface(val rootView: FragmentKardexBinding, var isOffline: Boolean = false) {
         var expanded = false
             private set
-        private val items = ArrayList<Pair<LinearLayout, ExpandableLayout>>()
+        private val items = ArrayList<ViewKardexSemesterSectionItemBinding>()
 
         @JavascriptInterface
-        fun setNombre(nombre: String) {
-            setPreference(activity, "nombre", nombre.toProperCase())
+        fun setUserName(userName: String) {
+            setPreference(activity, "nombre", userName.toProperCase())
         }
 
         @JavascriptInterface
-        fun addPromedio(promedio: String) {
+        fun setFinalScore(finalScore: String) {
             if (!isOffline) {
-                kardexDatabase.deleteTable()
-                kardexDatabase.createTable()
+                kardexDatabase.deleteAll()
 
-                kardexDatabase.addMateria(KardexDatabase.Data("_", "_", promedio))
+                kardexDatabase.insert(KardexClass("_", "_", finalScore))
             }
 
             activity?.runOnUiThread {
-                rootView.kardexItemPromedio.text = promedio
-                if(promedio.toDoubleOrNull() ?: 10.0 < 6.0){
-                    rootView.kardexItemPromedio.setTextColor(ContextCompat.getColor(activity!!, R.color.colorDanger))
+                rootView.header.finalScoreTextView.text = finalScore
+                if(finalScore.toDoubleOrNull() ?: 10.0 < 6.0){
+                    rootView.header.finalScoreTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
                 }
             }
 
             kardexList.add(
                 KardexData(
-                    promedio,
+                    finalScore,
                     null
                 )
             )
         }
 
         @JavascriptInterface
-        fun setCarrera(carrera: String) {
-            setPreference(activity, "carrera", carrera)
+        fun setCareerName(careerName: String) {
+            setPreference(activity, "carrera", careerName)
         }
 
         @JavascriptInterface
-        fun addSemestre(semestre: String) {
+        fun addSemesterData(semester: String) {
             kardexList.add(
                 KardexData(
-                    semestre,
+                    semester,
                     ArrayList()
                 )
             )
         }
 
         @JavascriptInterface
-        fun addMateria(data: Array<String>) {
+        fun addItem(data: Array<String>) {
             try {
                 kardexList.last().data?.add(
-                    MateriaData(
+                    KardexItemData(
                         data[1].toProperCase(),
                         data[0],
                         data[3],
@@ -204,98 +191,71 @@ class KardexFragment : Fragment() {
                 )
 
                 if (!isOffline) {
-                    kardexDatabase.addMateria(
-                        KardexDatabase.Data(
-                            kardexList.last().data!!.last().nombre,
-                            kardexList.last().semestre,
-                            kardexList.last().data!!.last().calif
+                    kardexDatabase.insert(
+                        KardexClass(
+                            kardexList.last().data!!.last().courseName,
+                            kardexList.last().semester,
+                            kardexList.last().data!!.last().finalScore
                         )
                     )
                 }
             } catch (e: Exception) {
-                Log.e("AppException", e.toString())
+                Log.e(this.javaClass.canonicalName, e.toString())
             }
         }
 
         @JavascriptInterface
-        fun onSemestreCompleted() {
+        fun onSemesterCompleted() {
 
         }
 
         @JavascriptInterface
         fun onComplete() {
-            for (semestre in kardexList) {
-                if (semestre.data != null) {
+            for (kardexData in kardexList) {
+                if (kardexData.data != null) {
                     if(activity !is SAESActivity) return
 
-                    val holder = (activity as SAESActivity).layoutInflater.inflate(R.layout.item_kardex_content, null, false)
-                    items.add(Pair(holder.kardexItemSemestreBtn, holder.kardexItemContent))
+                    val holder = ViewKardexSemesterSectionItemBinding.inflate(layoutInflater)
+                    items.add(holder)
 
                     activity?.runOnUiThread {
-                        holder.kardexBtnText.text = semestre.semestre.toProperCase()
+                        holder.sectionTextView.text = kardexData.semester.toProperCase()
 
-                        holder.kardexItemSemestreBtn.setOnClickListener {
+                        holder.selfButton.setOnClickListener {
                             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
-                            holder.kardexItemContent.toggle()
-                            if (!holder.kardexItemContent.isExpanded) {
-                                if (activity != null) {
-                                    holder.kardexItemSemestreBtn.findViewById<TextView>(R.id.kardexBtnText)
-                                        .setTextColor(
-                                            ContextCompat.getColor(activity!!, R.color.colorPrimaryText)
-                                        )
-                                    holder.kardexItemSemestreBtn.findViewById<ImageView>(R.id.kardexBtnArrow)
-                                        .imageTintList = ColorStateList.valueOf(ContextCompat.getColor(activity!!, R.color.colorPrimaryText))
-                                }
+                            holder.collapsibleContainer.toggle()
+                            if (!holder.collapsibleContainer.isExpanded) {
+                                holder.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryText))
+                                holder.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorPrimaryText))
                             } else {
-                                if (context != null) {
-                                    holder.kardexItemSemestreBtn.findViewById<TextView>(R.id.kardexBtnText)
-                                        .setTextColor(
-                                            ContextCompat.getColor(
-                                                context!!,
-                                                R.color.colorHighlight
-                                            )
-                                        )
-                                    holder.kardexItemSemestreBtn.findViewById<ImageView>(R.id.kardexBtnArrow)
-                                        .imageTintList = ColorStateList.valueOf(
-                                        ContextCompat.getColor(
-                                            context!!,
-                                            R.color.colorHighlight
-                                        )
-                                    )
-                                }
+                                holder.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
+                                holder.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
                             }
 
-                            rotateView(
-                                holder.kardexItemSemestreBtn.findViewById(R.id.kardexBtnArrow),
-                                !holder.kardexItemContent.isExpanded
-                            )
+                            rotateView(holder.arrowImageView, !holder.collapsibleContainer.isExpanded)
                         }
                     }
 
-                    for (materia in semestre.data) {
-                        val v = layoutInflater.inflate(
-                            R.layout.item_kardex_content_materia,
-                            null,
-                            false
-                        )
+                    for (kardexItemData in kardexData.data) {
+                        val courseItemBinding = ViewKardexSemesterCourseItemBinding.inflate(layoutInflater)
                         activity?.runOnUiThread {
-                            v.itemMateriaNombre.text = materia.nombre
+                            courseItemBinding.itemMateriaNombre.text = kardexItemData.courseName
 
-                            val calif = materia.calif.toIntOrNull()
+                            val finalScore = kardexItemData.finalScore.toIntOrNull()
 
-                            v.itemMateriaCalif.text = calif?.toString() ?: "-"
+                            courseItemBinding.itemMateriaCalif.text = finalScore?.toString() ?: "-"
 
-                            if(calif != null && activity != null){
-                                if(calif < 6){
-                                    v.itemMateriaCalif.setTextColor(ContextCompat.getColor(activity!!, R.color.colorHighlight))
+                            if(finalScore != null && activity != null){
+                                if(finalScore < 6){
+                                    courseItemBinding.itemMateriaCalif.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
                                 }
                             }
 
-                            holder.kardexContentLayout.addView(v)
+                            holder.kardexContentLayout.addView(courseItemBinding.root)
                         }
                     }
                     activity?.runOnUiThread {
-                        rootView.kardexMain.addView(holder)
+                        rootView.parent.addView(holder.root)
                     }
                 }
             }
@@ -307,46 +267,26 @@ class KardexFragment : Fragment() {
         }
 
         fun toggleViews() {
-            for (i in items) {
+            for (item in items) {
                 if (expanded) {
                     activity?.runOnUiThread {
-                        i.second.collapse()
-                        if (activity != null) {
-                            i.first.findViewById<TextView>(R.id.kardexBtnText).setTextColor(
-                                ContextCompat.getColor(activity!!, R.color.colorPrimaryText)
-                            )
-                            i.first.findViewById<ImageView>(R.id.kardexBtnArrow).imageTintList =
-                                ColorStateList.valueOf(
-                                    ContextCompat.getColor(activity!!, R.color.colorPrimaryText)
-                                )
-                        }
+                        item.collapsibleContainer.collapse()
+                        item.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryText))
+                        item.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorPrimaryText))
                     }
                 } else {
                     activity?.runOnUiThread {
-                        i.second.expand()
-                        if (context != null) {
-                            i.first.findViewById<TextView>(R.id.kardexBtnText).setTextColor(
-                                ContextCompat.getColor(
-                                    context!!,
-                                    R.color.colorHighlight
-                                )
-                            )
-                            i.first.findViewById<ImageView>(R.id.kardexBtnArrow).imageTintList =
-                                ColorStateList.valueOf(
-                                    ContextCompat.getColor(
-                                        context!!,
-                                        R.color.colorHighlight
-                                    )
-                                )
-                        }
+                        item.collapsibleContainer.expand()
+                        item.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
+                        item.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
                     }
                 }
-                rotateView(i.first.findViewById(R.id.kardexBtnArrow), expanded)
+                rotateView(item.arrowImageView, expanded)
             }
             expanded = !expanded
         }
 
-        private fun rotateView(imageView: ImageView, exp: Boolean) {
+        private fun rotateView(imageView: ImageView, expanded: Boolean) {
             val anim = RotateAnimation(
                 180f, 0f,
                 RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f
@@ -355,7 +295,7 @@ class KardexFragment : Fragment() {
 
             activity?.runOnUiThread {
                 imageView.startAnimation(anim)
-                imageView.rotation = if (exp) 0f else 180f
+                imageView.rotation = if (expanded) 0f else 180f
             }
         }
     }

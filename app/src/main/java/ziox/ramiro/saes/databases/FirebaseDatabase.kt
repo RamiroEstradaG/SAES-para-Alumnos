@@ -13,35 +13,35 @@ import kotlin.collections.ArrayList
 private val db = FirebaseFirestore.getInstance()
 
 data class User(
-    val escuela : String,
-    val carrera: String,
-    val isMediaSuperior : Boolean,
-    val calificaciones: List<Float> = listOf(),
-    val promedios: List<Float> = listOf(),
-    val lastPeriodo : String = "",
+    val schoolName : String,
+    val careerName: String,
+    val isHighSchool : Boolean,
+    val grades: List<Float> = listOf(),
+    val finalScores: List<Float> = listOf(),
+    val lastPeriod : String = "",
     val exists: Boolean = true,
-    val calendariosId : List<String> = listOf()
+    val calendarIds : List<String> = listOf()
 )
 
-data class Evento(
-    val dia: Long,
-    val titulo: String,
-    val materia: String,
-    val tipo : String,
+data class CalendarEvent(
+    val date: Long,
+    val title: String,
+    val courseName: String,
+    val type : String,
     val info: String,
-    val activado: Boolean = true,
+    val isEnable: Boolean = true,
     val parent: String,
     val id: String = ""
 )
 
-data class Calendario(
+data class UserCalendar(
     val admin : List<String>,
-    val codigo : String,
+    val code : String,
     val name : String,
     val private: Boolean = true
 )
 
-fun enablePersistance(boolean: Boolean){
+fun enablePersistence(boolean: Boolean){
     db.firestoreSettings = FirebaseFirestoreSettings.Builder()
         .setPersistenceEnabled(boolean)
         .build()
@@ -51,54 +51,54 @@ fun updateToken(context: Context?, token: String) = db.collection("users").docum
     "messagingToken" to token
 ))
 
-fun addUser(boleta: String, user: User) = db.collection("users").document(HashUtils.sha256(boleta + user.escuela)).set(mapOf(
+fun addUser(boleta: String, user: User) = db.collection("users").document(HashUtils.sha256(boleta + user.schoolName)).set(mapOf(
     "boleta" to boleta,
-    "escuela" to user.escuela,
-    "carrera" to user.carrera,
-    "isMediaSuperior" to user.isMediaSuperior,
-    "calificaciones" to user.calificaciones,
-    "promedios" to user.promedios,
-    "lastPeriodo" to user.lastPeriodo,
-    "calendariosId" to user.calendariosId
+    "escuela" to user.schoolName,
+    "carrera" to user.careerName,
+    "isMediaSuperior" to user.isHighSchool,
+    "calificaciones" to user.grades,
+    "promedios" to user.finalScores,
+    "lastPeriodo" to user.lastPeriod,
+    "calendariosId" to user.calendarIds
 ))
 
-fun updateUser(boleta: String, user: User) : Task<Void>{
+fun updateUser(studentID: String, user: User) : Task<Void>{
     val map = hashMapOf<String, Any>(
-        "boleta" to boleta,
-        "escuela" to user.escuela,
-        "carrera" to user.carrera,
-        "isMediaSuperior" to user.isMediaSuperior
+        "boleta" to studentID,
+        "escuela" to user.schoolName,
+        "carrera" to user.careerName,
+        "isMediaSuperior" to user.isHighSchool
     )
 
-    if (user.calendariosId.isNotEmpty()){
-        map["calendariosId"] = user.calendariosId
+    if (user.calendarIds.isNotEmpty()){
+        map["calendariosId"] = user.calendarIds
     }
 
-    if (user.calendariosId.isNotEmpty()){
-        map["calificaciones"] = user.calificaciones
+    if (user.calendarIds.isNotEmpty()){
+        map["calificaciones"] = user.grades
     }
 
-    if (user.calendariosId.isNotEmpty()){
-        map["promedios"] = user.promedios
+    if (user.calendarIds.isNotEmpty()){
+        map["promedios"] = user.finalScores
     }
 
-    if(user.lastPeriodo.isNotBlank()){
-        map["lastPeriodo"] = user.lastPeriodo
+    if(user.lastPeriod.isNotBlank()){
+        map["lastPeriodo"] = user.lastPeriod
     }
 
 
-    return db.collection("users").document(HashUtils.sha256(boleta + user.escuela)).update(map)
+    return db.collection("users").document(HashUtils.sha256(studentID + user.schoolName)).update(map)
 }
 
-fun initUser(context: Context?, boleta: String, user: User, onComplete: () -> Unit = {}) {
+fun initUser(context: Context?, studentID: String, user: User, onComplete: () -> Unit = {}) {
     if(context?.isNetworkAvailable() == true){
         getUserData(context){
             if(it.exists){
-                updateUser(boleta, user).addOnSuccessListener {
+                updateUser(studentID, user).addOnSuccessListener {
                     onComplete()
                 }
             }else{
-                addUser(boleta, user).addOnSuccessListener {
+                addUser(studentID, user).addOnSuccessListener {
                     onComplete()
                 }
             }
@@ -139,18 +139,18 @@ fun getUserData(context: Context?, onComplete: (user: User)->Unit = {}){
     }
 }
 
-fun getCalendarios(id: List<String>, onComplete: (calendarios: List<Calendario>) -> Unit){
+fun getUserCalendars(id: List<String>, onComplete: (calendars: List<UserCalendar>) -> Unit){
     if(id.isEmpty()){
         onComplete(listOf())
         return
     }
 
     db.collection("calendarios").whereIn("codigo", id).get().addOnSuccessListener {
-        val arr = ArrayList<Calendario>()
+        val arr = ArrayList<UserCalendar>()
         for(doc in it.documents){
             @Suppress("UNCHECKED_CAST")
             arr.add(
-                Calendario(
+                UserCalendar(
                 doc.data!!["admin"] as? List<String> ?: listOf(),
                 doc.data!!["codigo"] as String,
                 doc.data!!["nombre"] as String,
@@ -163,13 +163,13 @@ fun getCalendarios(id: List<String>, onComplete: (calendarios: List<Calendario>)
     }
 }
 
-fun removeCalendario(context: Context?, codigo: String) = db.collection("users").document(
+fun removeCalendar(context: Context?, codigo: String) = db.collection("users").document(
     getHashUserId(context)
 ).update(
     "calendariosId", FieldValue.arrayRemove(codigo)
 )
 
-fun addCalendario(context: Context? ,name: String, id : String, private: Boolean) : Task<Void>{
+fun addCalendar(context: Context?, name: String, id : String, private: Boolean) : Task<Void>{
     return db.collection("calendarios").document(id).set(hashMapOf(
         "admin" to listOf(getHashUserId(context)),
         "codigo" to id,
@@ -178,16 +178,16 @@ fun addCalendario(context: Context? ,name: String, id : String, private: Boolean
     ))
 }
 
-fun addCalendarioToUser(context: Context?, id : String) = db.collection("users").document(
+fun addCalendarToUser(context: Context?, id : String) = db.collection("users").document(
     getHashUserId(context)
 ).update(
     "calendariosId", FieldValue.arrayUnion(id)
 )
 
-fun getEventos(codigo: String, onChange: (evento: List<Evento>) -> Unit = {}){
-    db.collection("calendarios").document(codigo).collection("eventos").addSnapshotListener { documentSnapshot, _ ->
+fun getEvents(code: String, onChange: (event: List<CalendarEvent>) -> Unit = {}){
+    db.collection("calendarios").document(code).collection("eventos").addSnapshotListener { documentSnapshot, _ ->
         onChange(documentSnapshot?.documents?.map {
-            Evento(
+            CalendarEvent(
                 it.data!!["dia"] as Long,
                 it.data!!["titulo"] as String? ?: "Evento",
                 it.data!!["materia"] as String? ?: "",
@@ -201,36 +201,36 @@ fun getEventos(codigo: String, onChange: (evento: List<Evento>) -> Unit = {}){
     }
 }
 
-fun addEvento(codigo: String, evento: Evento) = db.collection("calendarios").document(codigo).collection("eventos").add(mapOf(
-    "dia" to evento.dia,
-    "titulo" to evento.titulo,
-    "materia" to evento.materia,
-    "tipo" to evento.tipo,
-    "info" to evento.info,
-    "activado" to evento.activado,
-    "parent" to codigo
+fun addEvent(code: String, event: CalendarEvent) = db.collection("calendarios").document(code).collection("eventos").add(mapOf(
+    "dia" to event.date,
+    "titulo" to event.title,
+    "materia" to event.courseName,
+    "tipo" to event.type,
+    "info" to event.info,
+    "activado" to event.isEnable,
+    "parent" to code
 ))
 
-fun updateEvento(codigo : String, evento : Evento) = db.collection("calendarios").document(codigo)
-                                                        .collection("eventos").document(evento.id).set(mapOf(
-    "dia" to evento.dia,
-    "titulo" to evento.titulo,
-    "materia" to evento.materia,
-    "tipo" to evento.tipo,
-    "info" to evento.info,
-    "activado" to evento.activado,
-    "parent" to codigo
+fun updateEvent(code : String, event : CalendarEvent) = db.collection("calendarios").document(code)
+                                                        .collection("eventos").document(event.id).set(mapOf(
+    "dia" to event.date,
+    "titulo" to event.title,
+    "materia" to event.courseName,
+    "tipo" to event.type,
+    "info" to event.info,
+    "activado" to event.isEnable,
+    "parent" to code
 ))
 
-fun removeEvento(codigo: String, id: String) = db.collection("calendarios").document(codigo).collection("eventos").document(id).delete()
+fun removeEvent(codigo: String, id: String) = db.collection("calendarios").document(codigo).collection("eventos").document(id).delete()
 
-fun getAdminCalendar(context: Context?, onComplete: (calendarios: List<Calendario>) -> Unit){
+fun getAdminCalendar(context: Context?, onComplete: (calendarios: List<UserCalendar>) -> Unit){
     db.collection("calendarios").whereArrayContains("admin", getHashUserId(context)).get().addOnSuccessListener {
-        val arr = ArrayList<Calendario>()
+        val arr = ArrayList<UserCalendar>()
         for(doc in it.documents){
             @Suppress("UNCHECKED_CAST")
             arr.add(
-                Calendario(
+                UserCalendar(
                 doc.data!!["admin"] as? List<String> ?: listOf(),
                 doc.data!!["codigo"] as String,
                 doc.data!!["nombre"] as String,
@@ -243,7 +243,7 @@ fun getAdminCalendar(context: Context?, onComplete: (calendarios: List<Calendari
     }
 }
 
-fun getAllEventosSiguientes(context: Context?, onComplete: (eventos: List<Evento>) -> Unit){
+fun getAllFollowingEvents(context: Context?, onComplete: (events: List<CalendarEvent>) -> Unit){
     val now = Calendar.getInstance()
     now.add(Calendar.DATE, 1)
     now.set(Calendar.HOUR_OF_DAY, 0)
@@ -252,16 +252,16 @@ fun getAllEventosSiguientes(context: Context?, onComplete: (eventos: List<Evento
 
     initUser(context, getBoleta(context), getBasicUser(context)){
         getUserData(context){
-            if(it.calendariosId.isEmpty()) return@getUserData
+            if(it.calendarIds.isEmpty()) return@getUserData
 
-            db.collectionGroup("eventos").whereIn("parent", it.calendariosId)
+            db.collectionGroup("eventos").whereIn("parent", it.calendarIds)
                 .whereGreaterThan("dia", now.timeInMillis)
                 .get().addOnSuccessListener { snap ->
                 onComplete(snap.documents.mapNotNull { doc->
                     if(doc.data == null){
                         null
                     }else{
-                        Evento(
+                        CalendarEvent(
                             doc.data!!["dia"] as Long,
                             doc.data!!["titulo"] as String? ?: "Evento",
                             doc.data!!["materia"] as String? ?: "",

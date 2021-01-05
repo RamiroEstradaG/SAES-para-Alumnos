@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.utils
 
-import android.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
@@ -12,15 +11,14 @@ import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ProgressBar
-import android.widget.Spinner
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.updatePadding
 import com.google.firebase.perf.FirebasePerformance
+import kotlin.math.absoluteValue
 
 fun createWebView(context: Context?, client : WebViewClient, progressBar: ProgressBar?) : WebView {
     val webView = WebView(context!!)
@@ -71,7 +69,7 @@ fun initSpinner(context: Context?, spinner: Spinner, data: Array<String>, itemSe
         val data2 = Array(data.size){
             data[it]
         }
-        val adapter : ArrayAdapter<String> = ArrayAdapter(context, R.layout.simple_dropdown_item_1line, data2)
+        val adapter : ArrayAdapter<String> = ArrayAdapter(context, android.R.layout.simple_dropdown_item_1line, data2)
         adapter.setDropDownViewResource(ziox.ramiro.saes.R.layout.view_spinner_item)
         spinner.adapter = adapter
         spinner.onItemSelectedListener = itemSelectedListener
@@ -128,7 +126,7 @@ fun initTheme(context: Context?){
 
         setStatusBarByTheme(context)
     } catch (e: Exception) {
-        Log.e("AppException", e.toString())
+        Log.e("ViewUtils", e.toString())
     }
 }
 
@@ -145,5 +143,21 @@ fun View.addBottomInsetPadding(onComplete : () -> Unit = {}){
             onComplete()
             windowInsets
         }
+    }
+}
+
+fun TextView.setTextInPercentageChange(original: Number, change: Number){
+    val difference = change.toDouble() - original.toDouble()
+
+    text = when {
+        difference > 0 -> {
+            setTextColor(ContextCompat.getColor(context, ziox.ramiro.saes.R.color.colorSuccess))
+            "+${(100*difference.absoluteValue/original.toDouble()).toStringPresition(1)}%"
+        }
+        difference < 0 -> {
+            setTextColor(ContextCompat.getColor(context, ziox.ramiro.saes.R.color.colorHighlight))
+            "-${(100*difference.absoluteValue/original.toDouble()).toStringPresition(1)}%"
+        }
+        else -> "0.0%"
     }
 }

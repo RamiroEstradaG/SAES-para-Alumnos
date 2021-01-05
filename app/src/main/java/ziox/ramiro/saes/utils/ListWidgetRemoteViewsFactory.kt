@@ -9,8 +9,8 @@ import android.widget.AdapterView
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.databases.CorreccionHorarioDatabase
-import ziox.ramiro.saes.databases.HorarioDatabase
+import ziox.ramiro.saes.databases.AppLocalDatabase
+import ziox.ramiro.saes.databases.ScheduleClass
 import java.util.*
 
 
@@ -18,7 +18,7 @@ import java.util.*
  * Creado por Ramiro el 15/04/2019 a las 03:33 PM para SAESv2.
  */
 class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : RemoteViewsService.RemoteViewsFactory {
-    val data = ArrayList<ClaseData>()
+    val data = ArrayList<ScheduleClass>()
 
     override fun onCreate() {
         getData()
@@ -28,9 +28,9 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
 
     override fun getItemId(position: Int): Long {
         return try{
-            data[position].id.hashCode().toLong()
+            data[position].uid.hashCode().toLong()
         }catch (e : Exception){
-            Log.e("AppException", e.toString())
+            Log.e(this.javaClass.canonicalName, e.toString())
             data.hashCode().toLong()
         }
     }
@@ -51,12 +51,12 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
         val rv = RemoteViews(context.packageName, R.layout.widget_view_list_item)
 
         rv.setInt(R.id.widgetHoraParent, "setBackgroundColor", Color.parseColor(data[position].color))
-        rv.setTextViewText(R.id.claseNombre, data[position].materia.toProperCase())
-        rv.setTextViewText(R.id.widgetHoraInicio, data[position].horaInicio.toHour())
-        rv.setTextViewText(R.id.widgetHoraFinal, data[position].horaFinal.toHour())
-        rv.setTextViewText(R.id.claseProfe, data[position].profesor.toProperCase())
-        rv.setTextViewText(R.id.claseEdificio, data[position].edificio)
-        rv.setTextViewText(R.id.claseSalon, data[position].salon)
+        rv.setTextViewText(R.id.course_name_text_view, data[position].courseName.toProperCase())
+        rv.setTextViewText(R.id.widgetHoraInicio, data[position].startHour.toHour())
+        rv.setTextViewText(R.id.widgetHoraFinal, data[position].finishHour.toHour())
+        rv.setTextViewText(R.id.teacher_name_text_view, data[position].teacherName.toProperCase())
+        rv.setTextViewText(R.id.building_name_text_view, data[position].buildingName)
+        rv.setTextViewText(R.id.class_room_name_text_view, data[position].classroomName)
 
         return rv
     }
@@ -72,28 +72,23 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
     override fun getViewTypeCount(): Int = 1
 
     private fun getData(){
-        val correccionHorarioDatabase = CorreccionHorarioDatabase(context)
-        correccionHorarioDatabase.createTable()
+        val correccionHorarioDatabase = AppLocalDatabase.getInstance(context).adjustedClassScheduleDao()
 
-        val horarioDatabase = HorarioDatabase(context)
-        horarioDatabase.createTable()
+        val horarioDatabase = AppLocalDatabase.getInstance(context).originalClassScheduleDao()
         val all = horarioDatabase.getAll()
         val day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2
         this.data.clear()
 
-        while (all.moveToNext()){
-            val dataHorario = HorarioDatabase.cursorAsClaseData(all)
-            val row = correccionHorarioDatabase.searchData(dataHorario) ?: dataHorario
+        for(clase in all){
+            val row = correccionHorarioDatabase.get(clase.uid) ?: clase
 
-            if(row.diaIndex == day){
+            if(row.dayIndex == day){
                 this.data.add(row)
             }
         }
 
         this.data.sortBy {
-            it.horaInicio
+            it.startHour
         }
-
-        all.close()
     }
 }

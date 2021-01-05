@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import ziox.ramiro.saes.databases.User
-import ziox.ramiro.saes.fragments.SelectSchoolNivelMedioSuperiorFragment
+import ziox.ramiro.saes.fragments.SelectHighSchoolFragment
 
 
 /**
@@ -24,9 +24,9 @@ fun downloadFile(context: Context?, name : String){
 
 
 fun getBasicUser(context: Context?) = User(
-    getNameEscuela(context),
-    getCarrera(context).toProperCase(),
-    SelectSchoolNivelMedioSuperiorFragment.medioSuperiorMap.containsKey(getCarrera(context))
+    getSchoolName(context),
+    getCareerName(context).toProperCase(),
+    SelectHighSchoolFragment.highSchoolMap.containsKey(getCareerName(context))
 )
 
 

@@ -16,7 +16,7 @@
         android:paddingBottom="16dp">
 
         <ImageView
-            android:id="@+id/logoMenu"
+            android:id="@+id/school_logo_image_view"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="16dp"
@@ -29,7 +29,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/nombreMenu"
+                android:id="@+id/student_name_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
@@ -37,7 +37,7 @@
                 android:textColor="?android:attr/textColorPrimary" />
 
             <TextView
-                android:id="@+id/boletaMenu"
+                android:id="@+id/student_id_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="0000000000"
@@ -45,7 +45,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/perfilButton"
+            android:id="@+id/profile_button"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
@@ -59,7 +59,7 @@
             app:strokeColor="@color/colorInfo" />
 
         <ImageView
-            android:id="@+id/closeMenu"
+            android:id="@+id/log_out_button"
             android:layout_width="27dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
@@ -75,7 +75,7 @@
         android:gravity="center_vertical">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonEscolarizado"
+            android:id="@+id/schooled_calendar_button"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
             app:strokeColor="@color/colorAccent" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonNoEscolarizado"
+            android:id="@+id/not_schooled_calendar_button"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -15,7 +15,7 @@
         android:textColor="@color/colorPrimaryText"
         android:textSize="18sp" />
 
-    <ziox.ramiro.saes.views.selectablebuttonview.SelectableButtonView
+    <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
         android:id="@+id/preguntaSpinner"
         android:layout_width="match_parent"
         android:layout_height="40dp"
