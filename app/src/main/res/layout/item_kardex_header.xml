@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Promedio global"
-            android:textColor="@color/colorSecondaryText"
+            android:textColor="@color/colorTextSecondary"
             android:textSize="20sp" />
 
         <TextView
@@ -40,13 +40,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:drawableTint="@color/colorAccent"
+        android:drawableTint="@color/colorSecondary"
         android:text="Rendimiento"
         android:textAllCaps="false"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorSecondary"
         app:cornerRadius="20dp"
         app:icon="@drawable/ic_show_chart_black_24dp"
-        app:iconTint="@color/colorAccent"
-        app:strokeColor="@color/colorAccent" />
+        app:iconTint="@color/colorSecondary"
+        app:strokeColor="@color/colorSecondary" />
 
 </LinearLayout>

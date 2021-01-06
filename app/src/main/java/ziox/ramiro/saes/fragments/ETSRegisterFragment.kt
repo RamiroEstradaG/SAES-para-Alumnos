@@ -225,7 +225,7 @@ class ETSRegisterFragment : Fragment() {
 
                 if(result.toIntOrNull() != null && activity != null){
                     if(result.toInt() < 6){
-                        view.resultTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
+                        view.resultTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
                     }
                 }
 

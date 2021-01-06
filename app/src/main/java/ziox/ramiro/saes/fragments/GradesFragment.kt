@@ -128,7 +128,7 @@ class GradesFragment : Fragment() {
                             cardView.partialOneTextView.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
-                                    R.color.colorHighlight
+                                    R.color.colorDanger
                                 )
                             )
                         }
@@ -138,7 +138,7 @@ class GradesFragment : Fragment() {
                             cardView.partialTwoTextView.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
-                                    R.color.colorHighlight
+                                    R.color.colorDanger
                                 )
                             )
                         }
@@ -148,7 +148,7 @@ class GradesFragment : Fragment() {
                             cardView.partialThreeTextView.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
-                                    R.color.colorHighlight
+                                    R.color.colorDanger
                                 )
                             )
                         }
@@ -158,7 +158,7 @@ class GradesFragment : Fragment() {
                             cardView.extraordinaryTextView.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
-                                    R.color.colorHighlight
+                                    R.color.colorDanger
                                 )
                             )
                         }
@@ -168,7 +168,7 @@ class GradesFragment : Fragment() {
                             cardView.finalScoreTextView.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
-                                    R.color.colorHighlight
+                                    R.color.colorDanger
                                 )
                             )
                         }

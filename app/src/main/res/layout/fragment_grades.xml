@@ -44,14 +44,14 @@
                 android:layout_margin="16dp"
                 android:text="No has calificado a tus profesores"
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorSecondary"
                 android:textSize="18sp" />
 
             <Button
                 android:id="@+id/buttonCalificarProfesor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorSecondary"
                 android:text="Ir" />
         </LinearLayout>
 

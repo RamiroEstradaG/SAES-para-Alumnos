@@ -225,11 +225,11 @@ class KardexFragment : Fragment() {
                             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
                             holder.collapsibleContainer.toggle()
                             if (!holder.collapsibleContainer.isExpanded) {
-                                holder.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryText))
-                                holder.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorPrimaryText))
+                                holder.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorTextPrimary))
+                                holder.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorTextPrimary))
                             } else {
-                                holder.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
-                                holder.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
+                                holder.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
+                                holder.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorDanger))
                             }
 
                             rotateView(holder.arrowImageView, !holder.collapsibleContainer.isExpanded)
@@ -247,7 +247,7 @@ class KardexFragment : Fragment() {
 
                             if(finalScore != null && activity != null){
                                 if(finalScore < 6){
-                                    courseItemBinding.itemMateriaCalif.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
+                                    courseItemBinding.itemMateriaCalif.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
                                 }
                             }
 
@@ -271,14 +271,14 @@ class KardexFragment : Fragment() {
                 if (expanded) {
                     activity?.runOnUiThread {
                         item.collapsibleContainer.collapse()
-                        item.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryText))
-                        item.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorPrimaryText))
+                        item.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorTextPrimary))
+                        item.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorTextPrimary))
                     }
                 } else {
                     activity?.runOnUiThread {
                         item.collapsibleContainer.expand()
-                        item.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
-                        item.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorHighlight))
+                        item.sectionTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
+                        item.arrowImageView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.colorDanger))
                     }
                 }
                 rotateView(item.arrowImageView, expanded)

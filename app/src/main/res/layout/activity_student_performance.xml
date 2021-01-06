@@ -11,16 +11,16 @@
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorToolbar">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="30dp"
-            app:navigationIcon="@drawable/ic_arrow_back_black_24dp"
+            app:titleTextColor="@color/colorOnToolbar"
             app:title="Rendimiento"
-            app:titleTextColor="@color/colorOnSecondary" />
+             />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -92,7 +92,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:text="Compartir estadísticas"
-                                    android:textColor="@color/colorPrimaryText"
+                                    android:textColor="@color/colorTextPrimary"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -100,7 +100,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="8dp"
                                     android:text="Esto permite hacer comparaciones por carrera, unidad y el IPN. Los resultados dependen de la cantidad de usuarios que deciden compartir sus estadísticas.\nLos datos que se almacenarán son:\n\n• Número de boleta.\n• Unidad académica.\n• Nombre de la carrera.\n• Promedio global.\n• Kárdex."
-                                    android:textColor="@color/colorSecondaryText" />
+                                    android:textColor="@color/colorTextSecondary" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -292,7 +292,7 @@
                                         android:gravity="center"
                                         android:text="Promedio global"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorPrimaryText"
+                                        android:textColor="@color/colorTextPrimary"
                                         android:textSize="18sp" />
 
                                     <TextView
@@ -304,7 +304,7 @@
                                         android:gravity="center"
                                         android:text="VS\nPromedio general de tu carrera"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorSecondaryText"
+                                        android:textColor="@color/colorTextSecondary"
                                         android:textSize="18sp" />
                                 </LinearLayout>
 
@@ -350,7 +350,7 @@
                                         android:gravity="center"
                                         android:text="Promedio global"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorPrimaryText"
+                                        android:textColor="@color/colorTextPrimary"
                                         android:textSize="18sp" />
 
                                     <TextView
@@ -362,7 +362,7 @@
                                         android:gravity="center"
                                         android:text="VS\nPromedio general de tu unidad"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorSecondaryText"
+                                        android:textColor="@color/colorTextSecondary"
                                         android:textSize="18sp" />
                                 </LinearLayout>
 
@@ -408,7 +408,7 @@
                                         android:gravity="center"
                                         android:text="Promedio global"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorPrimaryText"
+                                        android:textColor="@color/colorTextPrimary"
                                         android:textSize="18sp" />
 
                                     <TextView
@@ -420,7 +420,7 @@
                                         android:gravity="center"
                                         android:text="VS\nPromedio general del IPN"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorSecondaryText"
+                                        android:textColor="@color/colorTextSecondary"
                                         android:textSize="18sp" />
                                 </LinearLayout>
 
@@ -467,7 +467,7 @@
                                     android:gravity="center"
                                     android:text="Semestre en curso"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorPrimaryText"
+                                    android:textColor="@color/colorTextPrimary"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -479,7 +479,7 @@
                                     android:gravity="center"
                                     android:text="VS\nÚltimo semestre"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorSecondaryText"
+                                    android:textColor="@color/colorTextSecondary"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -525,7 +525,7 @@
                                     android:gravity="center"
                                     android:text="Último semestre"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorPrimaryText"
+                                    android:textColor="@color/colorTextPrimary"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -537,7 +537,7 @@
                                     android:gravity="center"
                                     android:text="VS\nEl anterior"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorSecondaryText"
+                                    android:textColor="@color/colorTextSecondary"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -584,7 +584,7 @@
                                     android:gravity="center"
                                     android:text="Promedio global"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorPrimaryText"
+                                    android:textColor="@color/colorTextPrimary"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -596,7 +596,7 @@
                                     android:gravity="center"
                                     android:text="VS\nPromedio global anterior"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorSecondaryText"
+                                    android:textColor="@color/colorTextSecondary"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -642,7 +642,7 @@
                                     android:gravity="center"
                                     android:text="Último semestre"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorPrimaryText"
+                                    android:textColor="@color/colorTextPrimary"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -654,7 +654,7 @@
                                     android:gravity="center"
                                     android:text="VS\nPromedio global"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorSecondaryText"
+                                    android:textColor="@color/colorTextSecondary"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -691,7 +691,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
                                 android:text="Gráfica"
-                                android:textColor="@color/colorPrimaryText"
+                                android:textColor="@color/colorTextPrimary"
                                 android:textSize="18sp" />
 
                             <com.github.mikephil.charting.charts.LineChart
@@ -721,7 +721,7 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:text="Tendencia del promedio por semestres"
-                                android:textColor="@color/colorPrimaryText"
+                                android:textColor="@color/colorTextPrimary"
                                 android:textSize="18sp" />
 
                             <TextView
@@ -755,7 +755,7 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:text="Tendencia del promedio global"
-                                android:textColor="@color/colorPrimaryText"
+                                android:textColor="@color/colorTextPrimary"
                                 android:textSize="18sp" />
 
                             <TextView

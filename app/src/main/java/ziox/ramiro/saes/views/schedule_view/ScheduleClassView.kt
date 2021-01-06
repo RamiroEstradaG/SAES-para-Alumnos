@@ -41,7 +41,6 @@ class ScheduleClassView : CardView {
         this.classData = classData
         this.scheduleView = scheduleView
         this.isUserCustomClass = isUserCustomClass
-        //Log.d(this.javaClass.canonicalName, classData.toString())
         initLayout()
     }
 
@@ -107,9 +106,10 @@ class ScheduleClassView : CardView {
             val dialog = AlertDialog.Builder(activity as Context, R.style.DialogAlert)
             dialog.setTitle("Eliminar clase")
             dialog.setMessage("¿Estás seguro de eliminar ${classData.courseName.toProperCase()}?")
-            dialog.setPositiveButton("Ok"){ _, _ ->
+            dialog.setPositiveButton("Eliminar"){ _, _ ->
                 scheduleView.removeUserCustomClass(classData)
             }
+            dialog.setNegativeButton("Cancelar"){ _, _ -> }
             dialog.show()
         }
 

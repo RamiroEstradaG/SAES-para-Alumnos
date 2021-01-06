@@ -44,13 +44,9 @@ class ScheduleGeneratorActivity : AppCompatActivity(), View.OnClickListener {
 
         scheduleGeneratorDao = AppLocalDatabase.getInstance(this).scheduleGeneratorDao()
 
-        binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
-        binding.toolbar.setNavigationOnClickListener {
-            crashlytics.log("Click en BackButtonen la clase ${this.localClassName}")
-            finish()
-        }
-
-        binding.toolbar.title = "Generador de horario"
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
 
         adapter = ScheduleGeneratorAdapter()
 
@@ -62,6 +58,11 @@ class ScheduleGeneratorActivity : AppCompatActivity(), View.OnClickListener {
 
         binding.addItemFab.setOnClickListener(this)
         binding.previewClassScheduleFab.setOnClickListener(this)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun setupRecyclerView(){

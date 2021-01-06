@@ -14,7 +14,7 @@
         android:layout_marginTop="8dp"
         android:singleLine="true"
         android:text="Nombre del profesor"
-        android:textColor="@color/colorPrimaryText"
+        android:textColor="@color/colorTextPrimary"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,7 +27,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp"
         android:text="Materia"
-        android:textColor="@color/colorSecondaryText"
+        android:textColor="@color/colorTextSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/evalProfesorNombre" />

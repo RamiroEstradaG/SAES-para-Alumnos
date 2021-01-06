@@ -16,7 +16,7 @@
         android:background="@color/colorPrimary"
         android:paddingTop="30dp"
         app:navigationIcon="@drawable/ic_arrow_back_black_24dp"
-        app:titleTextColor="@color/colorOnSecondary" />
+         />
 
     <FrameLayout
         android:layout_width="match_parent"

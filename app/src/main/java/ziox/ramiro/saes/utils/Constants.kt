@@ -31,6 +31,7 @@ val MES_COMPLETO = arrayOf(
 )
 
 var EDGE_INSET_BOTTOM : Int = -1
+var EDGE_INSET_TOP : Int = -1
 
 enum class ValType{
     INT,

@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:text="10:00"
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorSecondary"
                 android:textSize="18sp" />
 
             <TextView
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:text="A.M."
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorSecondary"
                 android:textSize="18sp" />
         </LinearLayout>
 

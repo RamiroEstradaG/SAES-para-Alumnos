@@ -12,12 +12,13 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorToolbar"
+        app:titleTextColor="@color/colorOnToolbar"
+        app:title="Configuraciones"
         android:elevation="3dp"
         android:minHeight="?attr/actionBarSize"
         android:paddingTop="30dp"
-        android:theme="?attr/actionBarTheme"
-        app:titleTextColor="@color/colorOnSecondary" />
+         />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -85,7 +86,7 @@
                         android:maxLines="4"
                         android:text="(CUIDADO) Al no tener Internet, se mostrará información de la ultima cuenta que haya entrado sin necesidad de iniciar sesión."
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/colorSecondaryText"
+                        android:textColor="@color/colorTextSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/offline_enabler_switch"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -123,7 +124,7 @@
                         android:layout_marginEnd="8dp"
                         android:singleLine="true"
                         android:text="Ver disponibles sin conexion"
-                        android:textColor="@color/colorAccent"
+                        android:textColor="@color/colorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -199,7 +200,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        app:tint="@color/colorPrimaryText"
+                        app:tint="@color/colorTextPrimary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -443,7 +444,7 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginEnd="8dp"
                             android:background="?android:attr/selectableItemBackgroundBorderless"
-                            app:tint="@color/colorPrimaryText"
+                            app:tint="@color/colorTextPrimary"
                             app:srcCompat="@drawable/ic_info_outline_black_24dp" />
 
                         <TextView

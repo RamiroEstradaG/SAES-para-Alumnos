@@ -22,10 +22,10 @@
             android:layout_weight="1"
             android:singleLine="true"
             android:text="Nombre"
-            android:textColor="@android:color/background_light"
+            android:textColor="@android:color/white"
             android:textSize="18sp" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/edit_button"
             android:layout_width="30dp"
             android:layout_height="match_parent"
@@ -37,7 +37,7 @@
             app:srcCompat="@drawable/ic_edit_black_24dp"
             app:tint="@android:color/white" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/remove_button"
             android:layout_width="30dp"
             android:layout_height="match_parent"
@@ -69,7 +69,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="3dp"
                 android:text="Profesor"
-                android:textColor="@color/colorRipple" />
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/teacher_name_text_view"
@@ -77,7 +77,7 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:text="Profesor"
-                android:textColor="@android:color/background_light"
+                android:textColor="@android:color/white"
                 android:textSize="15sp" />
         </LinearLayout>
 
@@ -103,7 +103,7 @@
                     android:paddingTop="3dp"
                     android:text="Edificio"
                     android:textAlignment="center"
-                    android:textColor="@color/colorRipple" />
+                    android:textColor="@android:color/white" />
 
                 <TextView
                     android:id="@+id/building_name_text_view"
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:text="Edificio"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
+                    android:textColor="@android:color/white"
                     android:textSize="15sp" />
 
             </LinearLayout>
@@ -129,7 +129,7 @@
                     android:paddingTop="3dp"
                     android:text="Salón"
                     android:textAlignment="center"
-                    android:textColor="@color/colorRipple" />
+                    android:textColor="@android:color/white" />
 
                 <TextView
                     android:id="@+id/class_room_name_text_view"
@@ -137,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:text="Salon"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
+                    android:textColor="@android:color/white"
                     android:textSize="15sp" />
 
             </LinearLayout>

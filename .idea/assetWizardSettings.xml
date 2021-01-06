@@ -216,7 +216,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material/icons/materialicons/bug_report/baseline_bug_report_24.xml" />
+                                      <entry key="url" value="file:/$PROJECT_DIR$/../../dev/androidsdk/icons/material/materialicons/arrow_back_ios_new/baseline_arrow_back_ios_new_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -226,8 +226,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_baseline_bug_report_24" />
-                            <entry key="sourceFile" value="C:\Users\PC\Downloads\Octicons-mark-github.svg" />
+                            <entry key="outputName" value="ic_baseline_arrow_back_ios_new_24" />
+                            <entry key="sourceFile" value="D:\Downloads\Untitled.svg" />
                           </map>
                         </option>
                       </PersistentState>

@@ -32,7 +32,7 @@ class CalendarView : FrameLayout, TabLayout.OnTabSelectedListener{
     }
 
     private fun initView(){
-        layout = ViewCalendarBinding.inflate(LayoutInflater.from(context))
+        layout = ViewCalendarBinding.inflate(LayoutInflater.from(context), this, true)
 
         layout.recyclerViewSchedule.addBottomInsetPadding()
 

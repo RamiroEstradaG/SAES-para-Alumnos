@@ -25,7 +25,7 @@
                 android:layout_marginEnd="8dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
-                app:tint="@color/colorPrimaryText"
+                app:tint="@color/colorTextPrimary"
                 app:srcCompat="@drawable/ic_close_black_24dp" />
         </androidx.appcompat.widget.Toolbar>
 
@@ -33,9 +33,9 @@
             android:id="@+id/selectSchoolTabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabIndicatorColor="@color/colorAccent"
+            app:tabIndicatorColor="@color/colorSecondary"
             app:tabIndicatorFullWidth="false"
-            app:tabSelectedTextColor="@color/colorAccent"
+            app:tabSelectedTextColor="@color/colorSecondary"
             app:tabTextAppearance="@style/TabStyle"
             app:tabTextColor="?android:attr/textColorSecondary" />
     </com.google.android.material.appbar.AppBarLayout>

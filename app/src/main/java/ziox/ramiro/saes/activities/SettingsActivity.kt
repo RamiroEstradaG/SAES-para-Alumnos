@@ -48,7 +48,9 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
         initTheme(this)
         setLightStatusBar(this)
         binding.parentLayout.addBottomInsetPadding()
-        initToolbar()
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         initSpinners()
         initSeekBar()
 
@@ -61,13 +63,9 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
         binding.widgetRangeTooltip.setOnClickListener(this)
     }
 
-    private fun initToolbar(){
-        binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
-        binding.toolbar.setNavigationOnClickListener {
-            crashlytics.log("Click en BackButton en la clase ${this.localClassName}")
-            finish()
-        }
-        binding.toolbar.title = "Configuraciones"
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun initSeekBar(){

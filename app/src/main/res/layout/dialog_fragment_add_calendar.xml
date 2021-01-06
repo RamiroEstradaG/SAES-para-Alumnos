@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="Nuevo calendario de trabajo"
-        android:textColor="@color/colorPrimaryText"
+        android:textColor="@color/colorTextPrimary"
         android:textSize="20sp" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -22,24 +22,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="Titulo del calendario"
-        android:textColorHint="@color/colorSecondaryText"
-        app:boxStrokeColor="@color/colorHighlight"
+        android:textColorHint="@color/colorTextSecondary"
+        app:boxStrokeColor="@color/colorDanger"
         app:errorEnabled="true"
-        app:hintTextColor="@color/colorHighlight">
+        app:hintTextColor="@color/colorDanger">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryText" />
+            android:textColor="@color/colorTextPrimary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
         android:id="@+id/grup_calendar_check"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:buttonTint="@color/colorPrimaryText"
+        android:buttonTint="@color/colorTextPrimary"
         android:text="Grupal"
-        android:textColor="@color/colorPrimaryText" />
+        android:textColor="@color/colorTextPrimary" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancelar"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/colorSecondary" />
 
         <Button
             android:id="@+id/accept_button"
@@ -61,7 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Aceptar"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@color/colorSecondary" />
     </LinearLayout>
 
     <View
@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="Unirse a un calendario"
-        android:textColor="@color/colorPrimaryText"
+        android:textColor="@color/colorTextPrimary"
         android:textSize="20sp" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -86,15 +86,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:hint="Código"
-        android:textColorHint="@color/colorSecondaryText"
-        app:boxStrokeColor="@color/colorHighlight"
+        android:textColorHint="@color/colorTextSecondary"
+        app:boxStrokeColor="@color/colorDanger"
         app:errorEnabled="true"
-        app:hintTextColor="@color/colorHighlight">
+        app:hintTextColor="@color/colorDanger">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryText" />
+            android:textColor="@color/colorTextPrimary" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -104,6 +104,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:text="Unirse"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/colorSecondary" />
 
 </LinearLayout>

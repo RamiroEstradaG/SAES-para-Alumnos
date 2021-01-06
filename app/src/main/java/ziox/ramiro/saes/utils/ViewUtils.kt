@@ -138,8 +138,26 @@ fun View.addBottomInsetPadding(onComplete : () -> Unit = {}){
         onComplete()
     }else{
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
+            EDGE_INSET_TOP = windowInsets.systemWindowInsetTop
             EDGE_INSET_BOTTOM = windowInsets.systemWindowInsetBottom
             this.updatePadding(bottom = paddingBottom + EDGE_INSET_BOTTOM)
+            onComplete()
+            windowInsets
+        }
+    }
+}
+
+fun View.addTopInsetPadding(onComplete : () -> Unit = {}){
+    val paddingTop = this.paddingTop
+
+    if(EDGE_INSET_TOP >= 0){
+        this.updatePadding(top = paddingTop + EDGE_INSET_TOP)
+        onComplete()
+    }else{
+        ViewCompat.setOnApplyWindowInsetsListener(this) { _, windowInsets ->
+            EDGE_INSET_TOP = windowInsets.systemWindowInsetTop
+            EDGE_INSET_BOTTOM = windowInsets.systemWindowInsetBottom
+            this.updatePadding(top = paddingTop + EDGE_INSET_TOP)
             onComplete()
             windowInsets
         }
@@ -155,7 +173,7 @@ fun TextView.setTextInPercentageChange(original: Number, change: Number){
             "+${(100*difference.absoluteValue/original.toDouble()).toStringPresition(1)}%"
         }
         difference < 0 -> {
-            setTextColor(ContextCompat.getColor(context, ziox.ramiro.saes.R.color.colorHighlight))
+            setTextColor(ContextCompat.getColor(context, ziox.ramiro.saes.R.color.colorDanger))
             "-${(100*difference.absoluteValue/original.toDouble()).toStringPresition(1)}%"
         }
         else -> "0.0%"

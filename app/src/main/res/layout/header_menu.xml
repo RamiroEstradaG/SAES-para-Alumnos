@@ -84,12 +84,12 @@
             android:layout_weight="1"
             android:text="Escolarizado"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             app:cornerRadius="20dp"
             app:icon="@drawable/ic_event_black_24dp"
-            app:iconTint="@color/colorAccent"
-            app:rippleColor="@color/colorAccent"
-            app:strokeColor="@color/colorAccent" />
+            app:iconTint="@color/colorSecondary"
+            app:rippleColor="@color/colorSecondary"
+            app:strokeColor="@color/colorSecondary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/not_schooled_calendar_button"
@@ -101,11 +101,11 @@
             android:layout_weight="1"
             android:text="No escolarizado"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             app:cornerRadius="20dp"
             app:icon="@drawable/ic_event_black_24dp"
-            app:iconTint="@color/colorAccent"
-            app:rippleColor="@color/colorAccent"
-            app:strokeColor="@color/colorAccent" />
+            app:iconTint="@color/colorSecondary"
+            app:rippleColor="@color/colorSecondary"
+            app:strokeColor="@color/colorSecondary" />
     </LinearLayout>
 </LinearLayout>

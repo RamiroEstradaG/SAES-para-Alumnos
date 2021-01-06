@@ -71,16 +71,16 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/loginBoleta"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/OutlineTextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
                             android:focusable="false"
                             android:hint="@string/boleta"
                             android:nextFocusDown="@id/loginPass"
-                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeColor="@color/colorSecondary"
                             app:endIconMode="none"
-                            app:hintTextColor="@color/colorAccent">
+                            app:hintTextColor="@color/colorSecondary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
@@ -91,14 +91,14 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/loginPass"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/OutlineTextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:hint="@string/contrase_a"
                             android:nextFocusDown="@id/loginCaptcha"
-                            app:boxStrokeColor="@color/colorAccent"
-                            app:hintTextColor="@color/colorAccent"
+                            app:boxStrokeColor="@color/colorSecondary"
+                            app:hintTextColor="@color/colorSecondary"
                             app:passwordToggleEnabled="true"
                             app:passwordToggleTint="?attr/colorOnSurface">
 
@@ -138,12 +138,12 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/loginCaptcha"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/OutlineTextInputLayout"
                             android:layout_width="150dp"
                             android:layout_height="wrap_content"
                             android:hint="@string/captcha"
-                            app:boxStrokeColor="@color/colorAccent"
-                            app:hintTextColor="@color/colorAccent">
+                            app:boxStrokeColor="@color/colorSecondary"
+                            app:hintTextColor="@color/colorSecondary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
@@ -159,7 +159,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:backgroundTint="@color/colorAccent"
+                            android:backgroundTint="@color/colorSecondary"
                             android:text="@string/iniciar_sesi_n"
                             android:textAllCaps="false" />
 
@@ -170,15 +170,17 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="8dp"
                             android:text="Offline"
-                            android:textColor="@color/colorAccent" />
+                            android:textColor="@color/colorSecondary" />
 
                         <Button
                             android:id="@+id/aboutButton"
                             style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Acerca de"
-                            android:textColor="@color/colorAccent" />
+                            android:textColor="@color/colorSecondary"
+                            app:icon="@drawable/ic_info_outline_black_24dp"
+                            app:iconTint="@color/colorSecondary" />
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>

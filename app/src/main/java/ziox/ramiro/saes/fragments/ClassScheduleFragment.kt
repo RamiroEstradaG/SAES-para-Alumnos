@@ -64,6 +64,7 @@ class ClassScheduleFragment : Fragment() {
         rootView.classScheduleView.isDatabaseEnabled = true
         rootView.classScheduleView.isCurrentDayVisible = true
         rootView.classScheduleView.isCurrentHourVisible = true
+        rootView.classScheduleView.isAddInsetTopEnabled = true
         rootView.classScheduleView.offsetBottom = 1
 
         if (getPreference(context, "horario_expand", false)) {

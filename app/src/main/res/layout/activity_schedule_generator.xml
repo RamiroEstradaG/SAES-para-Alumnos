@@ -27,7 +27,7 @@
             android:id="@+id/preview_class_schedule_fab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorAccent"
+            android:backgroundTint="@color/colorSecondary"
             app:tint="?attr/colorOnSecondary"
             app:layout_anchor="@+id/frameLayout2"
             app:layout_anchorGravity="top|center"
@@ -37,7 +37,7 @@
             android:id="@+id/add_item_fab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorAccent"
+            android:backgroundTint="@color/colorSecondary"
             app:tint="?attr/colorOnSecondary"
             android:layout_margin="16dp"
             app:layout_anchor="@+id/frameLayout"
@@ -67,7 +67,7 @@
         android:id="@+id/appBarCrearHorario"
         android:layout_width="match_parent"
         android:layout_height="88dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorToolbar"
         android:gravity="bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,10 +79,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:elevation="3dp"
+            app:title="Generador de Horario"
+            app:titleTextColor="@color/colorOnToolbar"
             android:minHeight="?attr/actionBarSize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:titleTextColor="@color/colorOnSecondary" />
+             />
     </com.google.android.material.appbar.AppBarLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
