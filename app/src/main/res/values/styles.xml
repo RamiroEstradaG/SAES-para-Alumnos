@@ -31,6 +31,7 @@
         <item name="colorControlHighlight">@color/colorRipple</item>
     </style>
 
+
     <style name="DialogAlert" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
         <item name="android:colorBackground">@color/colorBackground</item>
         <item name="android:windowBackground">@color/colorBackground</item>
