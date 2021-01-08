@@ -74,7 +74,7 @@ class AddEventToAgendaActivity : AppCompatActivity(), View.OnClickListener{
                 }
 
                 if(code.isBlank()){
-                    Toast.makeText(this, "Seleccione un calendario", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Seleccione una agenda", Toast.LENGTH_SHORT).show()
                 }
 
                 addEvent(code,

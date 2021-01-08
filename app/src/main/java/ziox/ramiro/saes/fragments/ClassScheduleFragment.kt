@@ -37,7 +37,7 @@ class ClassScheduleFragment : Fragment() {
                 R.drawable.ic_add_black_24dp,
                 {
                     crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
-                    rootView.classScheduleView.newClass()
+                    rootView.classScheduleView.openBottomSheetForNewClass()
                 },
                 BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
             )

@@ -34,10 +34,10 @@ class HourView: FrameLayout{
 
     private fun initView(){
         layout = ViewCalendarHourBinding.inflate(LayoutInflater.from(context), this, true)
-        layout.horaLabel.text = hora.hora
+        layout.horaLabel.text = hora.hour
         layout.meridianLabel.text = hora.meridian
 
-        for(event in hora.eventos){
+        for(event in hora.events){
             val eventLayout = ViewCalendarEventBinding.inflate(LayoutInflater.from(context))
 
             eventLayout.eventoTitle.text = event.title

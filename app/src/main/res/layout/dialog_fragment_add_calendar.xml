@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="Nuevo calendario de trabajo"
+        android:text="Nueva agenda"
         android:textColor="@color/colorTextPrimary"
         android:textSize="20sp" />
 
@@ -21,7 +21,7 @@
         android:id="@+id/calendar_title_input"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:hint="Titulo del calendario"
+        android:hint="Nombre de la agenda"
         android:textColorHint="@color/colorTextSecondary"
         app:boxStrokeColor="@color/colorDanger"
         app:errorEnabled="true"
@@ -76,7 +76,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="Unirse a un calendario"
+        android:text="Unirse a una agenda"
         android:textColor="@color/colorTextPrimary"
         android:textSize="20sp" />
 

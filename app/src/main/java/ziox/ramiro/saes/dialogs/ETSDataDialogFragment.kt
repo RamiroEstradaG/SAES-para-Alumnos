@@ -32,8 +32,8 @@ class ETSDataDialogFragment : DialogFragment() {
         val rootView = DialogFragmentEtsDataBinding.inflate(inflater, container, false)
 
         rootView.titleTextView.text = data?.title
-        rootView.buildingNameTextView.text = data?.edificio
-        rootView.classroomNameTextView.text = data?.salon
+        rootView.buildingNameTextView.text = data?.buildingName
+        rootView.classroomNameTextView.text = data?.classroomName
 
         return rootView.root
     }

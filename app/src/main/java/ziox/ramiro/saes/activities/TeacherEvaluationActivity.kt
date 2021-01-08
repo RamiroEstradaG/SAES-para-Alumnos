@@ -16,7 +16,7 @@ import ziox.ramiro.saes.databinding.ActivityTeacherEvaluationBinding
 import ziox.ramiro.saes.utils.addBottomInsetPadding
 import ziox.ramiro.saes.utils.initTheme
 import ziox.ramiro.saes.utils.initWebView
-import ziox.ramiro.saes.utils.setLightStatusBar
+import ziox.ramiro.saes.utils.setSystemUiLightStatusBar
 
 
 /**
@@ -30,7 +30,7 @@ class TeacherEvaluationActivity : AppCompatActivity() {
         binding = ActivityTeacherEvaluationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initTheme(this)
-        setLightStatusBar(this)
+        setSystemUiLightStatusBar(this, false)
         binding.contentWebView.addBottomInsetPadding()
 
         val name = intent?.extras?.getString("nombre")

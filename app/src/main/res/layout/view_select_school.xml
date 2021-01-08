@@ -2,18 +2,19 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/surfaceElevation1dp">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarlogin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/surfaceElevation4dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/selectSchoolToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorSurface"
             android:paddingTop="30dp">
 
             <ImageView
@@ -32,11 +33,12 @@
             android:id="@+id/selectSchoolTabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             app:tabIndicatorColor="@color/colorSecondary"
             app:tabIndicatorFullWidth="false"
             app:tabSelectedTextColor="@color/colorSecondary"
             app:tabTextAppearance="@style/TabStyle"
-            app:tabTextColor="?android:attr/textColorSecondary" />
+            app:tabTextColor="@color/colorTextSecondary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager.widget.ViewPager

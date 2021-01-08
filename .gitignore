@@ -14,3 +14,4 @@
 app/release/app-release.aab
 app/service-account-key.json
 keystore.properties
+app/src/debug/res/values/secrets.xml

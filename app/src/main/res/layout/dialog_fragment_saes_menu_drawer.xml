@@ -8,7 +8,7 @@
     <include
         android:id="@+id/header"
         layout="@layout/header_menu"
-        android:background="@color/colorSurface" />
+        android:background="@color/surfaceElevation4dp" />
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navParen"

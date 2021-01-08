@@ -4,7 +4,6 @@ import android.animation.LayoutTransition
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
@@ -98,7 +97,7 @@ class ScheduleClassView : CardView {
 
         mainView.editButton.setOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
-            scheduleView.editClass(classData)
+            scheduleView.openBottomSheetForEditClass(classData)
         }
 
         mainView.removeButton.setOnClickListener {

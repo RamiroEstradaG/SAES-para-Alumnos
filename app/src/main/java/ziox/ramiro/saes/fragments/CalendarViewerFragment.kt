@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.util.rangeTo
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +31,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CalendarViewerFragment (private val codigo: String, private val admin: List<String>): Fragment() {
+const val TYPE_AGENDA_SCHOOL_AGENDA = "SCHOOL_AGENDA_TYPE_ID"
+
+class CalendarViewerFragment (private val code: String, private val admins: List<String> = listOf()): Fragment() {
     private val events = ArrayList<CalendarEvent>()
     private val showingEvents = ArrayList<CalendarEvent?>()
     private var showingDate = Calendar.getInstance().time
@@ -44,7 +48,7 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
         savedInstanceState: Bundle?
     ): View {
         rootView = FragmentCalendarViewerBinding.inflate(inflater, container, false)
-        setLightStatusBar(activity)
+        setSystemUiLightStatusBar(requireActivity(), false)
 
         val adapter = CalendarEventsAdapter()
         adapter.setHasStableIds(true)
@@ -54,10 +58,10 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
         colors = requireContext().resources.getStringArray(R.array.paletaHorario)
         eventTypes = requireContext().resources.getStringArray(R.array.tipo_eventos)
 
-        if(admin.contains(getHashUserId(context))){
+        if(admins.contains(getHashUserId(context))){
             if(activity is SAESActivity){
                 (activity as SAESActivity).showFab(R.drawable.ic_add_black_24dp, {
-                    AddCalendarEventDialogFragment(codigo).show(childFragmentManager, "add_event_calendario_trabajo")
+                    AddCalendarEventDialogFragment(code).show(childFragmentManager, "add_event_calendario_trabajo")
                 }, BottomAppBar.FAB_ALIGNMENT_MODE_END)
             }
         }
@@ -77,6 +81,8 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
 
         })
 
+        rootView.calendarView.setFirstDayOfWeek(Calendar.SUNDAY)
+
         (activity as? SAESActivity)?.setOnDragHorizontaly {
             if(it){
                 rootView.calendarView.scrollLeft()
@@ -85,7 +91,11 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
             }
         }
 
-        initCalendarData()
+        if (code == TYPE_AGENDA_SCHOOL_AGENDA){
+            initSchoolAgenda()
+        }else{
+            initCalendarData()
+        }
 
         activity?.runOnUiThread {
             val cal = rootView.calendarView.firstDayOfCurrentMonth.toCalendar()
@@ -95,20 +105,57 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
         return rootView.root
     }
 
+    private fun Long.toDays() = this.div(86400000.0)
+    private fun Double.toMillis() = this.times(86400000.0).toLong()
+
+    private fun initSchoolAgenda(){
+        SchoolAgendaHelper(requireContext()).getEvents { agendaEvents ->
+            activity?.runOnUiThread {
+                this.events.clear()
+                for ((i, agendaData) in agendaEvents.withIndex()){
+                    val startCalendar = agendaData.start.toCalendar()
+                    val finishCalendar = agendaData.finish.toCalendar()
+                    val dayRange = startCalendar.timeInMillis.toDays().toLong()..finishCalendar.timeInMillis.toDays().toLong()
+                    for ((e, day) in dayRange.withIndex()){
+                        this.events.add(CalendarEvent(
+                            when(day){
+                                dayRange.first -> startCalendar.timeInMillis
+                                dayRange.last -> finishCalendar.timeInMillis
+                                else -> day.toDouble().toMillis()
+                            },
+                            agendaData.title,
+                            getSchoolName(context),
+                            "Académico",
+                            "",
+                            true,
+                            "",
+                            "${i}_$e"
+                        ))
+                    }
+                }
+                rootView.calendarView.removeAllEvents()
+                this.updateEvents()
+                this.updateShowingEvents(this.showingDate, isShowingMonth)
+            }
+        }
+    }
+
     private fun initCalendarData(){
-        getEvents(codigo){
-            this.events.clear()
-            this.events.addAll(it)
-            rootView.calendarView.removeAllEvents()
-            this.updateEvents()
-            this.updateDatabase(it)
-            this.updateShowingEvents(this.showingDate, isShowingMonth)
+        getEvents(code){
+            activity?.runOnUiThread {
+                this.events.clear()
+                this.events.addAll(it)
+                rootView.calendarView.removeAllEvents()
+                this.updateEvents()
+                this.updateDatabase(it)
+                this.updateShowingEvents(this.showingDate, isShowingMonth)
+            }
         }
     }
 
     private fun updateDatabase(events: List<CalendarEvent>){
         val agenda = AppLocalDatabase.getInstance(requireContext()).agendaDao()
-        agenda.deleteAllOfGroup(codigo)
+        agenda.deleteAllOfGroup(code)
         for (event in events){
             val date = Calendar.getInstance()
             date.timeInMillis = event.date
@@ -118,7 +165,7 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
                     event.title,
                     TYPE_CALENDARIO_TRABAJO,
                     event.type,
-                    codigo,
+                    code,
                     format,
                     format,
                     true
@@ -135,11 +182,11 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
             val index = eventTypes.indexOf(it.type)
 
             return@map Event(
-                Color.parseColor(colors[if(index >= 0){
-                    index
+                if(index >= 0){
+                    Color.parseColor(colors[index])
                 }else{
-                    colors.lastIndex
-                }]),
+                    ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
+                },
                 it.date, it)
         })
     }
@@ -149,7 +196,9 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
         this.isShowingMonth = isMonth
 
         showingEvents.clear()
-        showingEvents.add(null)
+        if(context?.haveDonated() == false){
+            showingEvents.add(null)
+        }
         showingEvents.addAll(if(!isMonth){
             rootView.calendarView.getEvents(date).map {
                 it.data as CalendarEvent
@@ -167,9 +216,7 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
         private lateinit var adViewHolder : AdHolder
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return if(context?.haveDonated() == true && viewType == 0){
-                EmptyHolder(View(context))
-            }else if(viewType == 0){
+            return if(viewType == 0){
                 if(!::adViewHolder.isInitialized){
                     adViewHolder = AdHolder(ViewUserCalendarAdItemBinding.inflate(layoutInflater, parent, false))
                     adViewHolder.adView.loadAd(AdRequest.Builder().build())
@@ -181,7 +228,7 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
         }
 
         override fun getItemId(position: Int): Long {
-            return if(position == 0){
+            return if(showingEvents[position] == null){
                 HashUtils.sha1("AD_ID").hashCode().toLong()
             }else{
                 HashUtils.sha1(showingEvents[position]!!.id).hashCode().toLong()
@@ -209,11 +256,11 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
                 holder.type.text = data.type
 
                 val index = eventTypes.indexOf(data.type)
-                holder.type.setTextColor(Color.parseColor(colors[if(index >= 0){
-                    index
+                holder.type.setTextColor(if(index >= 0){
+                    Color.parseColor(colors[index])
                 }else{
-                    colors.lastIndex
-                }]))
+                    ContextCompat.getColor(requireContext(), R.color.colorTextPrimary)
+                })
 
                 if(data.courseName.isNotBlank()){
                     holder.courseName.text = data.courseName
@@ -223,14 +270,18 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
                 holder.info.text = data.info
                 holder.date.text = calendar.format()
 
-                if(admin.contains(getHashUserId(activity))){
+                if (code == TYPE_AGENDA_SCHOOL_AGENDA){
+                    holder.infoLayout.visibility = View.GONE
+                }
+
+                if(admins.contains(getHashUserId(activity))){
                     holder.removeButton.setOnClickListener {
                         val alertDialog = AlertDialog.Builder(activity, R.style.DialogAlert)
 
                         alertDialog.setTitle("Borrar ${data.title}")
                         alertDialog.setMessage("¿Desea borrar este elemento?")
                         alertDialog.setPositiveButton("Borrar"){ _, _ ->
-                            removeEvent(codigo, data.id)
+                            removeEvent(code, data.id)
                         }
                         alertDialog.setNegativeButton("Cancelar", null)
 
@@ -238,7 +289,7 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
                     }
 
                     holder.editButton.setOnClickListener {
-                        AddCalendarEventDialogFragment(codigo, data).show(childFragmentManager, "edit_evento_trabajo")
+                        AddCalendarEventDialogFragment(code, data).show(childFragmentManager, "edit_evento_trabajo")
                     }
                 }else{
                     holder.removeButton.visibility = View.GONE
@@ -255,6 +306,7 @@ class CalendarViewerFragment (private val codigo: String, private val admin: Lis
             val date: TextView = itemBinding.eventDateTextView
             val removeButton: ImageView = itemBinding.removeButton
             val editButton : ImageView = itemBinding.editButton
+            val infoLayout = itemBinding.infoLayout
         }
 
         inner class AdHolder(adItemBinding: ViewUserCalendarAdItemBinding) : RecyclerView.ViewHolder(adItemBinding.root) {

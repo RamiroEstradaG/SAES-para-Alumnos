@@ -9,6 +9,7 @@ import android.content.SharedPreferences
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.content.res.Configuration
+import android.database.sqlite.SQLiteConstraintException
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import android.os.Build
@@ -31,7 +32,11 @@ import com.google.android.material.bottomappbar.BottomAppBar
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.perf.metrics.AddTrace
+import com.twitter.sdk.android.core.Twitter
 import ziox.ramiro.saes.R
+import ziox.ramiro.saes.databases.AppLocalDatabase
+import ziox.ramiro.saes.databases.RecentActivity
+import ziox.ramiro.saes.databases.RecentActivityDao
 import ziox.ramiro.saes.databinding.ActivitySaesBinding
 import ziox.ramiro.saes.dialogs.SAESMenuDrawerDialogFragment
 import ziox.ramiro.saes.fragments.*
@@ -39,6 +44,8 @@ import ziox.ramiro.saes.utils.*
 import ziox.ramiro.saes.widgets.AgendaEscolarWidget
 import ziox.ramiro.saes.widgets.HorarioLargeWidget
 import ziox.ramiro.saes.widgets.HorarioListWidget
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Creado por Ramiro el 10/13/2018 a las 1:22 PM para SAESv2.
@@ -57,6 +64,7 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var sessionChecker: WebView
     private lateinit var firebaseAnalytics: FirebaseAnalytics
     private lateinit var swipeHorizontalyFun : (direction: Boolean) -> Unit
+    private lateinit var recentActivityDao: RecentActivityDao
     private var shortcutManager : ShortcutManager? = null
 
     @SuppressLint("ClickableViewAccessibility")
@@ -68,6 +76,8 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         initTheme(this)
         setSupportActionBar(binding.bottomAppBar)
         binding.bottomAppBar.addBottomInsetPadding()
+        Twitter.initialize(this)
+        recentActivityDao = AppLocalDatabase.getInstance(this).recentActivityDao()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             shortcutManager = getSystemService(ShortcutManager::class.java)
@@ -168,8 +178,8 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun getActivatedItem() = selectedItemId
 
-    override fun onNavigationItemSelected(p0: MenuItem): Boolean {
-        postNavigationItemSelected(p0.itemId, false)
+    override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
+        postNavigationItemSelected(menuItem, false)
         return true
     }
 
@@ -202,25 +212,47 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.dragHorizontalView.visibility = View.VISIBLE
     }
 
-    fun postNavigationItemSelected(id: Int, isBackPressed: Boolean){
+    fun postNavigationItemSelected(menuItem: MenuItem, isBackPressed: Boolean){
         try {
             registerEvent(
-                id.toString(),
-                resources.getResourceName(id),
+                menuItem.toString(),
+                resources.getResourceName(menuItem.itemId),
                 "menu",
                 FirebaseAnalytics.Event.SELECT_CONTENT
             )
         } catch (e: Exception) {
             Log.e(this.javaClass.canonicalName, e.toString())
         }
-        when (id) {
+        when (menuItem.itemId) {
             R.id.nav_about -> {
                 startActivity(Intent(this, AboutActivity::class.java))
             }
             R.id.nav_pref -> {
                 startActivity(Intent(this, SettingsActivity::class.java))
             }
-            else -> changeFragment(id, isBackPressed)
+            else -> changeFragment(menuItem, isBackPressed)
+        }
+    }
+
+    fun postNavigationItemSelected(menuItemId: Int, isBackPressed: Boolean){
+        try {
+            registerEvent(
+                menuItemId.toString(),
+                resources.getResourceName(menuItemId),
+                "menu",
+                FirebaseAnalytics.Event.SELECT_CONTENT
+            )
+        } catch (e: Exception) {
+            Log.e(this.javaClass.canonicalName, e.toString())
+        }
+        when (menuItemId) {
+            R.id.nav_about -> {
+                startActivity(Intent(this, AboutActivity::class.java))
+            }
+            R.id.nav_pref -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+            }
+            else -> fragmentReplace(getFragmentById(menuItemId), menuItemId, isBackPressed)
         }
     }
 
@@ -249,63 +281,83 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun showEmptyText(text: String) {
         runOnUiThread {
             binding.emptyText.text = text
+            binding.emptyText.visibility = View.VISIBLE
         }
     }
 
     fun hideEmptyText() {
         runOnUiThread {
+            binding.emptyText.visibility = View.GONE
             binding.emptyText.text = ""
         }
     }
 
-    private fun changeFragment(id: Int, isBackPressed: Boolean) {
-        binding.mainProgress.visibility = View.GONE
-        if(id != -1){
-            crashlytics.log("Se encuentra en ${resources.getResourceName(id)}")
-        }
-
-        val fragment = if (this.isNetworkAvailable()) {
-            when (id) {
-                R.id.nav_kardex -> KardexFragment()
-                R.id.nav_horario -> ClassScheduleFragment()
-                R.id.nav_estado_general -> OverallStatusFragment()
-                R.id.nav_calific -> GradesFragment()
-                R.id.nav_eval_prof -> TeacherEvaluationListFragment()
-                R.id.nav_reinsc -> ReEnrollmentAppointmentFragment()
-                R.id.nav_calendario_trabajo -> UserCalendarFragment()
-                R.id.profile_button -> ProfileFragment()
-                R.id.nav_ets -> ETSRegisterFragment()
-                R.id.nav_agenda_escolar -> AgendaFragment()
-                R.id.nav_horarios_clase -> AllCareersScheduleFragment()
-                R.id.nav_calendario_ets -> ETSCalendarFragment()
-                R.id.nav_ocupabilidad -> ScheduleOccupancyFragment()
-                R.id.nav_equivalencias -> CourseEquivalencesFragment()
-                else -> Fragment()
-            }
-        } else {
-            when (id) {
-                R.id.nav_kardex -> KardexFragment()
-                R.id.nav_horario -> ClassScheduleFragment()
-                R.id.nav_calific -> GradesFragment()
-                R.id.nav_calendario_trabajo -> UserCalendarFragment()
-                R.id.nav_reinsc -> ReEnrollmentAppointmentFragment()
-                R.id.nav_agenda_escolar -> AgendaFragment()
-                R.id.nav_horarios_clase -> {
+    private fun getFragmentById(id: Int) : Fragment{
+        return when (id) {
+            R.id.nav_home -> HomeFragment()
+            R.id.nav_kardex -> KardexFragment()
+            R.id.nav_horario -> ClassScheduleFragment()
+            R.id.nav_calific -> GradesFragment()
+            R.id.nav_reinsc -> ReEnrollmentAppointmentFragment()
+            R.id.nav_personal_agenda -> UserCalendarFragment()
+            R.id.nav_horarios_clase -> {
+                if (isNetworkAvailable()){
+                    AllCareersScheduleFragment()
+                }else{
                     showFab(R.drawable.ic_add_schedule, {
                         crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
                         startActivity(Intent(this, ScheduleGeneratorActivity::class.java))
                     }, BottomAppBar.FAB_ALIGNMENT_MODE_END)
-                    showEmptyText("No hay conexión a internet")
-                    Fragment()
+                    OfflineFragment()
                 }
-                else -> {
-                    showEmptyText("No hay conexión a internet")
-                    Fragment()
+            }
+            else -> {
+                if (isNetworkAvailable()){
+                    when (id) {
+                        R.id.nav_eval_prof -> TeacherEvaluationListFragment()
+                        R.id.nav_calendario_ets -> ETSCalendarFragment()
+                        R.id.nav_ocupabilidad -> ScheduleOccupancyFragment()
+                        R.id.nav_equivalencias -> CourseEquivalencesFragment()
+                        R.id.profile_button -> ProfileFragment()
+                        R.id.nav_ets -> ETSRegisterFragment()
+                        R.id.nav_estado_general -> OverallStatusFragment()
+                        else -> {
+                            Fragment()
+                        }
+                    }
+                }else{
+                    OfflineFragment()
                 }
             }
         }
+    }
 
-        fragmentReplace(fragment, id, isBackPressed)
+    private fun changeFragment(menuItem: MenuItem, isBackPressed: Boolean) {
+        binding.mainProgress.visibility = View.GONE
+        if(menuItem.itemId != -1){
+            crashlytics.log("Se encuentra en ${resources.getResourceName(menuItem.itemId)}")
+        }
+
+        val fragment = getFragmentById(menuItem.itemId)
+
+        try {
+            if(menuItem.itemId != R.id.nav_home){
+                this.recentActivityDao.insert(RecentActivity(
+                    resources.getResourceName(menuItem.itemId),
+                    menuItem.title.toString(),
+                    menuItem.icon.toByteArray(),
+                    Calendar.getInstance().timeInMillis
+                ))
+            }
+        }catch (e : SQLiteConstraintException){
+            this.recentActivityDao.update(
+                resources.getResourceName(menuItem.itemId),
+                Calendar.getInstance().timeInMillis,
+                menuItem.icon.toByteArray(),
+            )
+        }finally { }
+
+        fragmentReplace(fragment, menuItem.itemId, isBackPressed)
     }
 
     fun fragmentReplace(fragment: Fragment, id: Int, isBackPressed: Boolean = false){

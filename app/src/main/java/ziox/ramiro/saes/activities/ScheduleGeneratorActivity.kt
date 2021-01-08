@@ -2,6 +2,7 @@ package ziox.ramiro.saes.activities
 
 import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -26,7 +27,7 @@ import kotlin.collections.ArrayList
  * Creado por Ramiro el 1/19/2019 a las 4:44 AM para SAESv2.
  */
 class ScheduleGeneratorActivity : AppCompatActivity(), View.OnClickListener {
-    lateinit var scheduleGeneratorDao: ScheduleGeneratorDao
+    private lateinit var scheduleGeneratorDao: ScheduleGeneratorDao
     lateinit var adapter: ScheduleGeneratorAdapter
     private val crashlytics = FirebaseCrashlytics.getInstance()
     private lateinit var binding: ActivityScheduleGeneratorBinding
@@ -38,7 +39,7 @@ class ScheduleGeneratorActivity : AppCompatActivity(), View.OnClickListener {
         binding = ActivityScheduleGeneratorBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initTheme(this)
-        setLightStatusBar(this)
+        setSystemUiLightStatusBar(this, false)
         binding.frameLayout.addBottomInsetPadding()
         binding.itemContainer.addBottomInsetPadding()
 
@@ -148,11 +149,11 @@ class ScheduleGeneratorActivity : AppCompatActivity(), View.OnClickListener {
                 ).show()
             } else {
                 (supportFragmentManager.findFragmentByTag("dialog_anadir_materia") as AddCourseDialogFragment?)?.dismiss()
-                scheduleGeneratorDao.insert(newItem)
-                (binding.itemContainer.adapter as ScheduleGeneratorAdapter).addItem(
-                    classes.size,
-                    newItem
-                )
+                val rowId = scheduleGeneratorDao.insert(newItem)
+                val databaseResult = scheduleGeneratorDao.get(rowId)
+                if (databaseResult != null) {
+                    (binding.itemContainer.adapter as ScheduleGeneratorAdapter).addItem(databaseResult)
+                }
             }
 
         } else {
@@ -165,9 +166,7 @@ class ScheduleGeneratorActivity : AppCompatActivity(), View.OnClickListener {
             return ViewHolder(ViewScheduleGeneratorItemBinding.inflate(layoutInflater, parent, false))
         }
 
-        override fun getItemCount(): Int {
-            return classes.size
-        }
+        override fun getItemCount() = classes.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = classes[position]
@@ -176,9 +175,14 @@ class ScheduleGeneratorActivity : AppCompatActivity(), View.OnClickListener {
             holder.teacherName.text = item.teacherName.toProperCase()
             holder.group.text = item.group
             holder.careerName.text = item.careerName.toProperCase()
+            holder.uid = item.uid
+
+            Log.d(this.javaClass.canonicalName, "Holder UID: ${holder.uid}")
         }
 
-        fun addItem(position: Int, insertData: ScheduleGeneratorClass) {
+        override fun getItemId(position: Int) = classes[position].uid.toLong()
+
+        fun addItem(insertData: ScheduleGeneratorClass, position: Int = classes.size) {
             classes.add(position, insertData)
             runOnUiThread {
                 notifyItemInserted(position)
@@ -199,93 +203,97 @@ class ScheduleGeneratorActivity : AppCompatActivity(), View.OnClickListener {
             val teacherName = itemBinding.teacherNameTextView
             val group = itemBinding.groupTextView
             val careerName = itemBinding.careerNameTextView
+            var uid : Int = -1
 
             fun getSwipeView(): View {
                 return itemBinding.itemForeground
             }
         }
     }
-}
 
-
-class CustomTouchHelper(val adapter : ScheduleGeneratorActivity.ScheduleGeneratorAdapter, val scheduleGeneratorDao: ScheduleGeneratorDao) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-    override fun onSwiped(holder: RecyclerView.ViewHolder, p1: Int) {
-        if(holder is ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder){
-            adapter.itemDismiss(holder.adapterPosition)
-            scheduleGeneratorDao.deleteByCourseName(holder.title.text.toString())
+    inner class CustomTouchHelper(val adapter : ScheduleGeneratorActivity.ScheduleGeneratorAdapter, private val scheduleGeneratorDao: ScheduleGeneratorDao) : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        override fun onSwiped(holder: RecyclerView.ViewHolder, p1: Int) {
+            if(holder is ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder){
+                Log.d(this.javaClass.canonicalName, "Delete Holder UID: ${holder.uid}")
+                if(scheduleGeneratorDao.deleteByUid(holder.uid) > 0){
+                    adapter.itemDismiss(holder.adapterPosition)
+                }else{
+                    Snackbar.make(binding.container, "No se ha podido eliminar la materia", Snackbar.LENGTH_LONG).show()
+                }
+            }
         }
-    }
 
-    override fun onMove(
-        p0: RecyclerView,
-        p1: RecyclerView.ViewHolder,
-        p2: RecyclerView.ViewHolder
-    ): Boolean = true
+        override fun onMove(
+            p0: RecyclerView,
+            p1: RecyclerView.ViewHolder,
+            p2: RecyclerView.ViewHolder
+        ): Boolean = true
 
-    override fun getMovementFlags(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder
-    ): Int {
-        return if (viewHolder is ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder) {
-            val swipeFlags = ItemTouchHelper.RIGHT
-            makeMovementFlags(0, swipeFlags)
-        } else
-            0
-    }
-
-    override fun clearView(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder
-    ) {
-        getDefaultUIUtil().clearView((viewHolder as ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder).getSwipeView())
-    }
-
-    override fun onSelectedChanged(
-        viewHolder: RecyclerView.ViewHolder?,
-        actionState: Int
-    ) {
-        if (viewHolder != null) {
-            getDefaultUIUtil().onSelected((viewHolder as ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder).getSwipeView())
+        override fun getMovementFlags(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder
+        ): Int {
+            return if (viewHolder is ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder) {
+                val swipeFlags = ItemTouchHelper.RIGHT
+                makeMovementFlags(0, swipeFlags)
+            } else
+                0
         }
-    }
 
-    override fun onChildDraw(
-        c: Canvas,
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        dX: Float,
-        dY: Float,
-        actionState: Int,
-        isCurrentlyActive: Boolean
-    ) {
-        getDefaultUIUtil().onDraw(
-            c,
-            recyclerView,
-            (viewHolder as ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder).getSwipeView(),
-            dX,
-            dY,
-            actionState,
-            isCurrentlyActive
-        )
-    }
+        override fun clearView(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder
+        ) {
+            getDefaultUIUtil().clearView((viewHolder as ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder).getSwipeView())
+        }
 
-    override fun onChildDrawOver(
-        c: Canvas,
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        dX: Float,
-        dY: Float,
-        actionState: Int,
-        isCurrentlyActive: Boolean
-    ) {
-        getDefaultUIUtil().onDrawOver(
-            c,
-            recyclerView,
-            (viewHolder as ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder).getSwipeView(),
-            dX,
-            dY,
-            actionState,
-            isCurrentlyActive
-        )
+        override fun onSelectedChanged(
+            viewHolder: RecyclerView.ViewHolder?,
+            actionState: Int
+        ) {
+            if (viewHolder != null) {
+                getDefaultUIUtil().onSelected((viewHolder as ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder).getSwipeView())
+            }
+        }
+
+        override fun onChildDraw(
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
+        ) {
+            getDefaultUIUtil().onDraw(
+                c,
+                recyclerView,
+                (viewHolder as ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder).getSwipeView(),
+                dX,
+                dY,
+                actionState,
+                isCurrentlyActive
+            )
+        }
+
+        override fun onChildDrawOver(
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
+        ) {
+            getDefaultUIUtil().onDrawOver(
+                c,
+                recyclerView,
+                (viewHolder as ScheduleGeneratorActivity.ScheduleGeneratorAdapter.ViewHolder).getSwipeView(),
+                dX,
+                dY,
+                actionState,
+                isCurrentlyActive
+            )
+        }
     }
 }

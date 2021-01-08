@@ -161,7 +161,8 @@
                             android:layout_marginTop="8dp"
                             android:backgroundTint="@color/colorSecondary"
                             android:text="@string/iniciar_sesi_n"
-                            android:textAllCaps="false" />
+                            android:textAllCaps="false"
+                            app:cornerRadius="24dp" />
 
                         <Button
                             android:id="@+id/offlineButton"
@@ -192,6 +193,7 @@
             layout="@layout/fragment_loading"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            tools:visibility="gone"
             android:visibility="visible" />
 
         <LinearLayout
@@ -202,6 +204,7 @@
             android:visibility="visible"
             app:behavior_hideable="false"
             app:behavior_peekHeight="40dp"
+            tools:behavior_peekHeight="500dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
             <LinearLayout

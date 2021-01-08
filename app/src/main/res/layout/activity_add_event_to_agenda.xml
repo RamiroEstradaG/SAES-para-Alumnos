@@ -32,7 +32,7 @@
                 android:id="@+id/textView27"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Calendario de trabajo"
+                android:text="Agenda personal"
                 android:textColor="@color/colorTextSecondary" />
 
             <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView

@@ -385,7 +385,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/editClaseGrupo"
+                    android:id="@+id/group_edit_input"
                     style="@style/OutlineTextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -434,10 +434,10 @@
                     </LinearLayout>
 
                     <ImageView
-                        android:id="@+id/restoreDia"
+                        android:id="@+id/day_index_restore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:tint="@color/colorSecondary"
+                        app:tint="@color/colorSecondary"
                         app:srcCompat="@drawable/ic_baseline_restore_24" />
                 </LinearLayout>
 

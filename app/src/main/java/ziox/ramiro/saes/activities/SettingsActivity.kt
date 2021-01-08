@@ -33,10 +33,11 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
     }
 
     val sectionIds = arrayOf(
+        R.id.nav_home,
         R.id.nav_kardex,
         R.id.nav_estado_general,
         R.id.nav_horario,
-        R.id.nav_calendario_trabajo,
+        R.id.nav_personal_agenda,
         R.id.nav_calific,
         R.id.nav_reinsc
     )
@@ -46,7 +47,7 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initTheme(this)
-        setLightStatusBar(this)
+        setSystemUiLightStatusBar(this, false)
         binding.parentLayout.addBottomInsetPadding()
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -100,7 +101,7 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
         val sectionId = getPreference(
             this,
             "seccion_inicio_v2",
-            resources.getResourceEntryName(R.id.nav_kardex)
+            resources.getResourceEntryName(R.id.nav_home)
         ) as String
         var isInitDark = false
 
@@ -123,10 +124,11 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
         }
 
         binding.startSectionSpinner.setOptions(arrayOf(
+            "Inicio",
             "Kárdex",
             "Estado General",
             "Horario",
-            "Calendario de trabajo",
+            "Agenda personal",
             "Calificaciones",
             "Cita de reinscripción"
         ))

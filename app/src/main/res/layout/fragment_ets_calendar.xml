@@ -16,7 +16,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorToolbar"
             android:orientation="vertical"
             android:paddingTop="30dp">
 
@@ -27,7 +27,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="Periodo de ETS"
-                android:textColor="@color/colorOnSecondary" />
+                android:textColor="@color/colorOnToolbar" />
 
             <TextView
                 android:id="@+id/period_text_view"
@@ -35,12 +35,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:textColor="@color/colorOnSecondary"
+                android:textColor="@color/colorOnToolbar"
                 android:textSize="24sp" />
         </LinearLayout>
 
         <ziox.ramiro.saes.views.calendar_view.CalendarView
-            android:id="@+id/ets_schedule"
+            android:id="@+id/ets_calendar_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>

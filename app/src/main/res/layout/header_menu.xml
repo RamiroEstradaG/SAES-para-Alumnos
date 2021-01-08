@@ -67,7 +67,7 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_exit_to_app_black_24dp"
             android:tintMode="src_in"
-            app:tint="@android:color/holo_red_light" />
+            app:tint="@color/colorDanger" />
 
     </LinearLayout>
     <LinearLayout

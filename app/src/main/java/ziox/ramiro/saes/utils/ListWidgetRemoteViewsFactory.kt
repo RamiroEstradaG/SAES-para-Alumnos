@@ -52,8 +52,8 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
 
         rv.setInt(R.id.widgetHoraParent, "setBackgroundColor", Color.parseColor(data[position].color))
         rv.setTextViewText(R.id.course_name_text_view, data[position].courseName.toProperCase())
-        rv.setTextViewText(R.id.widgetHoraInicio, data[position].startHour.toHour())
-        rv.setTextViewText(R.id.widgetHoraFinal, data[position].finishHour.toHour())
+        rv.setTextViewText(R.id.widgetHoraInicio, data[position].startHour.toHourString())
+        rv.setTextViewText(R.id.widgetHoraFinal, data[position].finishHour.toHourString())
         rv.setTextViewText(R.id.teacher_name_text_view, data[position].teacherName.toProperCase())
         rv.setTextViewText(R.id.building_name_text_view, data[position].buildingName)
         rv.setTextViewText(R.id.class_room_name_text_view, data[position].classroomName)

@@ -26,17 +26,23 @@ interface ScheduleGeneratorDao {
     @Query("SELECT * FROM $SCHEDULE_GENERATOR_TABLE_NAME")
     fun getAll() : List<ScheduleGeneratorClass>
 
+    @Query("SELECT * FROM $SCHEDULE_GENERATOR_TABLE_NAME WHERE rowId = :rowId")
+    fun get(rowId: Long) : ScheduleGeneratorClass?
+
     @Query("SELECT * FROM $SCHEDULE_GENERATOR_TABLE_NAME WHERE course_name = :courseName")
     fun getByCourseName(courseName: String) : List<ScheduleGeneratorClass>
 
     @Insert
-    fun insert(generatorClass: ScheduleGeneratorClass)
+    fun insert(generatorClass: ScheduleGeneratorClass) : Long
 
     @Delete
     fun delete(generatorClass: ScheduleGeneratorClass)
 
     @Query("DELETE FROM $SCHEDULE_GENERATOR_TABLE_NAME WHERE course_name = :courseName")
     fun deleteByCourseName(courseName: String)
+
+    @Query("DELETE FROM $SCHEDULE_GENERATOR_TABLE_NAME WHERE uid = :uid")
+    fun deleteByUid(uid: Int) : Int
 
     @Query("DELETE FROM $SCHEDULE_GENERATOR_TABLE_NAME")
     fun deleteAll()

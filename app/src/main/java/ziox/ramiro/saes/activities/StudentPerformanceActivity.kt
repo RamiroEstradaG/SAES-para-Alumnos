@@ -37,7 +37,7 @@ class StudentPerformanceActivity : AppCompatActivity() {
         binding = ActivityStudentPerformanceBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initTheme(this)
-        setLightStatusBar(this)
+        setSystemUiLightStatusBar(this, false)
         binding.scrollView.addBottomInsetPadding()
         initChart()
         setSupportActionBar(binding.toolbar)
@@ -275,7 +275,7 @@ class StudentPerformanceActivity : AppCompatActivity() {
 
                     if(index >= 0){
                         binding.nombreMejorSemestre.text = "${index+1}° Semestre"
-                        binding.promedioMejorSemestre.text = (entry?.y?.toDouble() ?: 0.0).toStringPresition(
+                        binding.promedioMejorSemestre.text = (entry?.y?.toDouble() ?: 0.0).toStringPrecision(
                             1
                         )
                     }else{
@@ -291,7 +291,7 @@ class StudentPerformanceActivity : AppCompatActivity() {
 
                     if(index >= 0){
                         binding.nombrePeorSemestre.text = "${index+1}° Semestre"
-                        binding.promedioPeorSemestre.text = (entry?.y?.toDouble()?:0.0).toStringPresition(
+                        binding.promedioPeorSemestre.text = (entry?.y?.toDouble()?:0.0).toStringPrecision(
                             1
                         )
                     }else{

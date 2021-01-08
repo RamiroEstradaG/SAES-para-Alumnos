@@ -41,11 +41,11 @@
     </string-array>
 
     <string-array name="tipo_eventos">
-       <item>Tarea</item>
-       <item>Examen</item>
-       <item>Proyecto</item>
-       <item>Recordatorio</item>
-       <item>Evento</item>
+        <item>Tarea</item>
+        <item>Examen</item>
+        <item>Proyecto</item>
+        <item>Recordatorio</item>
+        <item>Evento</item>
     </string-array>
 
     <string-array name="evaluacion_recomendacion">
@@ -65,4 +65,6 @@
         <item>Oscuro</item>
         <item>Predeterminado del sistema</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
