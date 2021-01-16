@@ -17,9 +17,9 @@
         <item name="colorButtonNormal">@color/colorSecondary</item>
         <item name="android:textColorPrimary">@color/colorTextPrimary</item>
         <item name="android:textColorSecondary">@color/colorTextSecondary</item>
-        <item name="isLightTheme">true</item>
+        <item name="isLightTheme">@bool/is_light_theme</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">@bool/is_light_theme</item>
         <item name="android:navigationBarColor">@color/colorNavigationBar</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">true</item>
@@ -56,6 +56,13 @@
         <item name="suffixTextColor">@color/colorTextSecondary</item>
         <item name="android:textColorHint">@color/colorTextSecondary</item>
         <item name="android:textSelectHandle">@color/colorSecondary</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="shapeAppearanceOverlay">@style/CustomShapeAppearance</item>
+    </style>
+
+    <style name="CustomShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
     </style>
 
     <style name="ButtonAlertDialog" parent="Widget.MaterialComponents.Button.TextButton.Dialog.Flush">

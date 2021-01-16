@@ -23,11 +23,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?android:attr/selectableItemBackground"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -38,7 +39,6 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_weight="1"
                     android:singleLine="true"
                     android:text="Titulo"
                     android:textColor="?android:attr/textColorPrimary"
@@ -50,7 +50,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_weight="1"
                     android:text="Materia"
                     android:textColor="?android:attr/textColorSecondary" />
 
@@ -61,6 +60,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
                     android:text="Tipo"
                     android:textColor="?android:attr/textColorSecondary" />
 
@@ -72,7 +72,6 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
-                    android:layout_weight="1"
                     android:text="01/01/1970 00:00"
                     android:textColor="?android:attr/textColorSecondary" />
 
@@ -96,7 +95,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="?android:attr/selectableItemBackground"
-                        android:padding="4dp"
+                        android:padding="8dp"
                         app:srcCompat="@drawable/ic_edit_black_24dp"
                         app:tint="@color/colorTextPrimary" />
 
@@ -105,7 +104,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="?android:attr/selectableItemBackground"
-                        android:padding="4dp"
+                        android:padding="8dp"
                         app:srcCompat="@drawable/ic_delete_black_24dp"
                         app:tint="@color/colorTextPrimary" />
                 </LinearLayout>

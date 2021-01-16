@@ -37,8 +37,8 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     app:cardBackgroundColor="@color/colorSurface"
-                    app:cardCornerRadius="8dp"
-                    app:contentPadding="8dp">
+                    app:cardCornerRadius="16dp"
+                    app:contentPadding="24dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -158,10 +158,9 @@
                             android:id="@+id/login_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="24dp"
                             android:backgroundTint="@color/colorSecondary"
                             android:text="@string/iniciar_sesi_n"
-                            android:textAllCaps="false"
                             app:cornerRadius="24dp" />
 
                         <Button
@@ -169,22 +168,23 @@
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
                             android:text="Offline"
                             android:textColor="@color/colorSecondary" />
 
-                        <Button
-                            android:id="@+id/aboutButton"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Acerca de"
-                            android:textColor="@color/colorSecondary"
-                            app:icon="@drawable/ic_info_outline_black_24dp"
-                            app:iconTint="@color/colorSecondary" />
-
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+
+                <Button
+                    android:id="@+id/aboutButton"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Acerca de"
+                    android:textColor="@color/colorSecondary"
+                    app:icon="@drawable/ic_info_outline_black_24dp"
+                    app:iconTint="@color/colorSecondary" />
+
             </LinearLayout>
         </ScrollView>
 

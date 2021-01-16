@@ -50,8 +50,10 @@ class ClassScheduleFragment : Fragment() {
                 }
             }
 
+            (activity as SAESActivity).hideDragIcon()
+
             if(!getPreference(activity, "horario_expand", false)){
-                (activity as SAESActivity).hideDragIcon()
+                (activity as SAESActivity).showDragIcon()
             }
         }
 

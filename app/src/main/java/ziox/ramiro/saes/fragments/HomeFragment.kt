@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.fragments
 
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +12,12 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.twitter.sdk.android.core.Callback
 import com.twitter.sdk.android.core.Result
 import com.twitter.sdk.android.core.TwitterException
@@ -28,6 +35,8 @@ import ziox.ramiro.saes.databinding.ViewTweetCardBinding
 import ziox.ramiro.saes.utils.addBottomInsetPadding
 import ziox.ramiro.saes.utils.addTopInsetPadding
 import ziox.ramiro.saes.utils.getInitials
+import ziox.ramiro.saes.utils.isDarkTheme
+import kotlin.math.max
 
 class HomeFragment : Fragment() {
     private val tweets = ArrayList<Tweet>()
@@ -51,6 +60,7 @@ class HomeFragment : Fragment() {
         rootView.gradesRecycler.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         rootView.root.addTopInsetPadding()
         rootView.root.addBottomInsetPadding()
+        rootView.tweetsRecycler.recycledViewPool.setMaxRecycledViews(0,0)
 
         fetchKardexData()
         fetchGradesData()
@@ -61,14 +71,45 @@ class HomeFragment : Fragment() {
     }
 
     private fun fetchKardexData(){
-        val kardexData = kardexDao.getAll()
-
-        rootView.kardexSection.visibility = View.GONE
+        val kardexData = kardexDao.getAll().filter { it.semester != "_" }
 
         if(kardexData.isEmpty()){
             rootView.kardexSection.visibility = View.GONE
             return
         }
+
+        initChart()
+
+        val scores = ArrayList<Entry>()
+        val overallScores = ArrayList<Entry>()
+
+        scores.addAll(kardexData.groupBy { it.semester }.values.mapIndexed { index, entry ->
+            Entry(
+                index.toFloat(),
+                entry.sumBy { it.finalScore.toIntOrNull() ?: 0 }.div(entry.size.toDouble()).toFloat()
+            )
+        })
+
+        val entries = ArrayList<KardexClass>()
+
+        overallScores.addAll(kardexData.groupBy { it.semester }.values.mapIndexed { index, entry ->
+            entries.addAll(entry)
+            Entry(
+                index.toFloat(),
+                entries.sumBy { it.finalScore.toIntOrNull() ?: 0 }.div(entries.size.toDouble()).toFloat()
+            )
+        })
+
+        val scoresDataSet = getScoresDataSet(scores)
+        val overallScoresDataSet = getOverallScoresDataSet(overallScores)
+
+        val dataSets = listOf<ILineDataSet>(scoresDataSet, overallScoresDataSet)
+        val maxX = max(scores.size, overallScores.size)
+        rootView.kardexChart.data = LineData(dataSets)
+        rootView.kardexChart.setVisibleXRange(-0.1f, maxX - 0.8f)
+        rootView.kardexChart.data.isHighlightEnabled = false
+        rootView.kardexChart.invalidate()
+        rootView.kardexChart.visibility = View.VISIBLE
     }
 
     private fun fetchGradesData(){
@@ -135,21 +176,138 @@ class HomeFragment : Fragment() {
     }
 
     private fun fetchTweets(){
+        val progressBar = (activity as SAESActivity).getProgressBar()
+
+        progressBar?.visibility = View.VISIBLE
+
         tweets.clear()
-        val timeline = UserTimeline.Builder()
+        val timelineSec = UserTimeline.Builder()
             .screenName("SecretariaIPN")
             .includeRetweets(false)
             .includeReplies(false)
-            .maxItemsPerRequest(10).build()
-        timeline.next(null, object : Callback<TimelineResult<Tweet>>(){
+            .maxItemsPerRequest(5).build()
+
+        val timelineIPN = UserTimeline.Builder()
+            .screenName("IPN_MX")
+            .includeRetweets(false)
+            .includeReplies(false)
+            .maxItemsPerRequest(5).build()
+
+        timelineSec.next(null, object : Callback<TimelineResult<Tweet>>(){
             override fun success(result: Result<TimelineResult<Tweet>>) {
                 tweets.addAll(result.data.items)
+                tweets.sortByDescending { it.createdAt }
                 activity?.runOnUiThread {
                     rootView.tweetsRecycler.adapter?.notifyDataSetChanged()
+                    progressBar?.visibility = View.GONE
                 }
             }
             override fun failure(exception: TwitterException?) {}
         })
+
+        timelineIPN.next(null, object : Callback<TimelineResult<Tweet>>(){
+            override fun success(result: Result<TimelineResult<Tweet>>) {
+                tweets.addAll(result.data.items)
+                tweets.sortByDescending { it.createdAt }
+                activity?.runOnUiThread {
+                    rootView.tweetsRecycler.adapter?.notifyDataSetChanged()
+                    progressBar?.visibility = View.GONE
+                }
+            }
+            override fun failure(exception: TwitterException?) {}
+        })
+    }
+
+    private fun initChart(){
+        rootView.kardexChart.description.text = ""
+
+        rootView.kardexChart.setDrawBorders(false)
+        rootView.kardexChart.setNoDataText("Esperando datos")
+        rootView.kardexChart.isDoubleTapToZoomEnabled = false
+        rootView.kardexChart.setScaleEnabled(false)
+        rootView.kardexChart.xAxis.axisMinimum = -0.1f
+        rootView.kardexChart.xAxis.setDrawGridLines(false)
+        rootView.kardexChart.xAxis.granularity = 1f
+
+        rootView.kardexChart.xAxis.axisLineWidth = 2f
+        rootView.kardexChart.xAxis.axisLineColor = ContextCompat.getColor(
+            requireContext(),
+            R.color.colorTextPrimary
+        )
+        rootView.kardexChart.xAxis.textColor = ContextCompat.getColor(
+            requireContext(),
+            R.color.colorTextPrimary
+        )
+        rootView.kardexChart.xAxis.valueFormatter = IAxisValueFormatter { value, _ -> "${value.toInt() + 1}º" }
+        rootView.kardexChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        rootView.kardexChart.xAxis.textSize = 14f
+
+        rootView.kardexChart.axisLeft.granularity = 0.5f
+        rootView.kardexChart.axisLeft.setDrawGridLines(true)
+        rootView.kardexChart.axisLeft.setDrawZeroLine(false)
+        rootView.kardexChart.axisLeft.disableGridDashedLine()
+        rootView.kardexChart.axisLeft.gridLineWidth = 1.5f
+        rootView.kardexChart.axisLeft.setDrawAxisLine(false)
+        rootView.kardexChart.axisLeft.textColor = ContextCompat.getColor(
+            requireContext(),
+            R.color.colorTextPrimary
+        )
+        rootView.kardexChart.axisLeft.setLabelCount(2, false)
+        rootView.kardexChart.axisLeft.textSize = 12f
+
+        rootView.kardexChart.axisRight.isEnabled = false
+
+        rootView.kardexChart.isDragXEnabled = true
+        rootView.kardexChart.scaleX = 1f
+        rootView.kardexChart.scaleY = 1f
+
+        rootView.kardexChart.legend.textSize = 12f
+        rootView.kardexChart.legend.textColor = ContextCompat.getColor(
+            requireContext(),
+            R.color.colorTextPrimary
+        )
+
+        rootView.kardexChart.invalidate()
+    }
+
+    private fun getScoresDataSet(scores : ArrayList<Entry>) : LineDataSet {
+        val scoresDataSet = LineDataSet(scores, "Promedio por semestre")
+        scoresDataSet.color =
+            ContextCompat.getColor(requireContext(), R.color.colorDanger)
+        scoresDataSet.valueTextColor = ContextCompat.getColor(
+            requireContext(),
+            R.color.colorDanger
+        )
+        scoresDataSet.valueTextSize = 10f
+        scoresDataSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
+        scoresDataSet.lineWidth = 4f
+        scoresDataSet.setCircleColor(Color.TRANSPARENT)
+        scoresDataSet.circleHoleColor = Color.TRANSPARENT
+
+        return scoresDataSet
+    }
+
+    private fun getOverallScoresDataSet(overallScores : ArrayList<Entry>) : LineDataSet {
+        val promedioDataSet = LineDataSet(overallScores, "Promedio global")
+        promedioDataSet.color = ContextCompat.getColor(
+            requireContext(),
+            R.color.colorInfo
+        )
+        promedioDataSet.setCircleColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.colorTextPrimary
+            )
+        )
+        promedioDataSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
+        promedioDataSet.enableDashedLine(32f, 12f, 1f)
+        promedioDataSet.lineWidth = 4f
+        promedioDataSet.valueTextSize = 10f
+        promedioDataSet.valueTextColor = ContextCompat.getColor(
+            requireContext(),
+            R.color.colorTextPrimary
+        )
+        return promedioDataSet
     }
 
     inner class TwitterAdapter : RecyclerView.Adapter<TwitterAdapter.ViewHolder>(){
@@ -157,8 +315,17 @@ class HomeFragment : Fragment() {
             return ViewHolder(ViewTweetCardBinding.inflate(LayoutInflater.from(context), parent, false))
         }
 
+        override fun getItemId(position: Int) = tweets[position].getId()
+
+        override fun getItemViewType(position: Int) = 0
+
         override fun onBindViewHolder(holder: TwitterAdapter.ViewHolder, position: Int) {
-            holder.tweetCard.root.addView(TweetView(context, tweets[position]))
+            holder.tweetCard.root.addView(TweetView(context, tweets[position], if(isDarkTheme(context)){
+                com.twitter.sdk.android.tweetui.R.style.tw__TweetDarkStyle
+            }else{
+                com.twitter.sdk.android.tweetui.R.style.tw__TweetLightStyle
+            }))
+            holder.setIsRecyclable(false)
         }
 
         override fun getItemCount() = tweets.size

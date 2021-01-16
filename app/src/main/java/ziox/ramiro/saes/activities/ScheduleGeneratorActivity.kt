@@ -7,6 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,8 +43,11 @@ class ScheduleGeneratorActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
         initTheme(this)
         setSystemUiLightStatusBar(this, false)
-        binding.frameLayout.addBottomInsetPadding()
-        binding.itemContainer.addBottomInsetPadding()
+        binding.itemContainer.addBottomInsetPadding{
+            binding.addItemFab.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                bottomMargin += EDGE_INSET_BOTTOM
+            }
+        }
 
         scheduleGeneratorDao = AppLocalDatabase.getInstance(this).scheduleGeneratorDao()
 

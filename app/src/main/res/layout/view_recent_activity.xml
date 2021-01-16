@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="150dp"
     android:layout_margin="4dp"
-    app:cardBackgroundColor="@color/primary50"
+    app:cardBackgroundColor="@color/surfaceElevation1dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp">
 
@@ -31,6 +31,6 @@
             android:text="Seccion de ejemplo"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="#444444" />
+            android:textColor="@color/colorTextPrimary" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -40,7 +40,9 @@ class UserCalendarFragment : Fragment() {
 
         initUser(activity, getBoleta(activity), getBasicUser(activity)){
             getUserData(activity){
-                initCalendars(it)
+                activity?.runOnUiThread {
+                    initCalendars(it)
+                }
             }
         }
 
@@ -57,7 +59,7 @@ class UserCalendarFragment : Fragment() {
     }
 
     private fun addSchoolAgenda(){
-        val calendarItem = ViewUserCalendarItemBinding.inflate(layoutInflater)
+        val calendarItem = ViewUserCalendarItemBinding.inflate(LayoutInflater.from(context))
 
         calendarItem.calendarTitleTextView.text = "Agenda escolar"
         calendarItem.calendarTypeTextView.text = "Académico"
@@ -92,7 +94,7 @@ class UserCalendarFragment : Fragment() {
 
             if(snap.isNotEmpty() && activity != null){
                 for (doc in snap){
-                    val calendarItem = ViewUserCalendarItemBinding.inflate(layoutInflater)
+                    val calendarItem = ViewUserCalendarItemBinding.inflate(LayoutInflater.from(context))
 
                     calendarItem.calendarTitleTextView.text = doc.name
                     calendarItem.calendarTypeTextView.text = if(!doc.private){
@@ -130,7 +132,9 @@ class UserCalendarFragment : Fragment() {
                         alertDialog.show()
                     }
 
-                    rootView.userCalendarLayout.addView(calendarItem.root)
+                    activity?.runOnUiThread {
+                        rootView.userCalendarLayout.addView(calendarItem.root)
+                    }
                 }
             }
         }

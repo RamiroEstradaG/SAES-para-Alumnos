@@ -124,10 +124,23 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         sessionChecker.addJavascriptInterface(CheckerInterface(), "JSI")
 
+        val defaultFragment : () -> String = {
+            var defaultFragment = resources.getResourceEntryName(R.id.nav_kardex)
+            val preferenceFragment = getPreference(this, ValType.STRING, "seccion_inicio_v2") as String
+
+            if (preferenceFragment != ""){
+                defaultFragment = preferenceFragment
+            }else{
+                setPreference(this, "seccion_inicio_v2", resources.getResourceEntryName(R.id.nav_home))
+            }
+
+            defaultFragment
+        }
+
         val fragmentId = getPreference(
             this.applicationContext,
             "seccion_inicio_v2",
-            resources.getResourceEntryName(R.id.nav_kardex)
+            defaultFragment()
         )
 
         postNavigationItemSelected(
@@ -300,20 +313,10 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_calific -> GradesFragment()
             R.id.nav_reinsc -> ReEnrollmentAppointmentFragment()
             R.id.nav_personal_agenda -> UserCalendarFragment()
-            R.id.nav_horarios_clase -> {
-                if (isNetworkAvailable()){
-                    AllCareersScheduleFragment()
-                }else{
-                    showFab(R.drawable.ic_add_schedule, {
-                        crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
-                        startActivity(Intent(this, ScheduleGeneratorActivity::class.java))
-                    }, BottomAppBar.FAB_ALIGNMENT_MODE_END)
-                    OfflineFragment()
-                }
-            }
             else -> {
                 if (isNetworkAvailable()){
                     when (id) {
+                        R.id.nav_horarios_clase -> AllCareersScheduleFragment()
                         R.id.nav_eval_prof -> TeacherEvaluationListFragment()
                         R.id.nav_calendario_ets -> ETSCalendarFragment()
                         R.id.nav_ocupabilidad -> ScheduleOccupancyFragment()
@@ -367,6 +370,13 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         hideEmptyText()
         setStatusBarByTheme(this)
 
+        if (id == R.id.nav_horarios_clase && !isNetworkAvailable()){
+            showFab(R.drawable.ic_add_schedule, {
+                crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.localClassName}")
+                startActivity(Intent(this, ScheduleGeneratorActivity::class.java))
+            }, BottomAppBar.FAB_ALIGNMENT_MODE_CENTER)
+        }
+
         if (!isBackPressed) {
             fragmentHistory.add(id)
         }
@@ -399,11 +409,13 @@ class SAESActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun showFab(icon: Int, listener: View.OnClickListener, alignMode: Int) {
-        binding.floatingActionButton.show()
-        binding.floatingActionButton.setImageResource(icon)
-        binding.bottomAppBar.fabAlignmentMode = alignMode
-        binding.floatingActionButton.setOnClickListener(listener)
-        updateDragView()
+        runOnUiThread {
+            binding.floatingActionButton.show()
+            binding.floatingActionButton.setImageResource(icon)
+            binding.bottomAppBar.fabAlignmentMode = alignMode
+            binding.floatingActionButton.setOnClickListener(listener)
+            updateDragView()
+        }
     }
 
     fun getMainLayout(): CoordinatorLayout {
