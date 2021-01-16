@@ -11,16 +11,16 @@
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorToolbar">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="30dp"
-            app:navigationIcon="@drawable/ic_arrow_back_black_24dp"
+            app:titleTextColor="@color/colorOnToolbar"
             app:title="Rendimiento"
-            app:titleTextColor="@color/colorOnSecondary" />
+             />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -60,7 +60,9 @@
                     android:layout_height="wrap_content"
                     android:animateLayoutChanges="true"
                     android:orientation="vertical"
+                    android:paddingStart="8dp"
                     android:paddingTop="8dp"
+                    android:paddingEnd="8dp"
                     android:paddingBottom="8dp"
                     android:visibility="gone"
                     tools:visibility="visible">
@@ -73,7 +75,7 @@
                         android:visibility="gone"
                         app:cardBackgroundColor="@color/colorSurface"
                         app:cardCornerRadius="16dp"
-                        app:contentPadding="8dp"
+                        app:contentPadding="16dp"
                         tools:visibility="visible">
 
                         <LinearLayout
@@ -91,16 +93,18 @@
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
                                     android:text="Compartir estadísticas"
-                                    android:textColor="@color/colorPrimaryText"
-                                    android:textSize="18sp" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                                    android:textColor="@color/colorTextPrimary" />
 
                                 <TextView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="8dp"
                                     android:text="Esto permite hacer comparaciones por carrera, unidad y el IPN. Los resultados dependen de la cantidad de usuarios que deciden compartir sus estadísticas.\nLos datos que se almacenarán son:\n\n• Número de boleta.\n• Unidad académica.\n• Nombre de la carrera.\n• Promedio global.\n• Kárdex."
-                                    android:textColor="@color/colorSecondaryText" />
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                    android:textColor="@color/colorTextSecondary" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -127,133 +131,92 @@
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
-                    <androidx.cardview.widget.CardView
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:cardBackgroundColor="@color/colorSuccess"
-                        app:cardCornerRadius="16dp">
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
 
-                        <LinearLayout
+                        <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="8dp"
-                                android:text="Mejor semestre"
-                                android:textColor="@color/colorOnPrimary"
-                                android:textSize="18sp" />
+                            android:layout_margin="8dp"
+                            android:layout_weight="1"
+                            app:cardBackgroundColor="@color/colorSuccess"
+                            app:cardCornerRadius="16dp"
+                            app:contentPadding="8dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginEnd="16dp"
-                                android:layout_marginBottom="8dp"
-                                android:orientation="horizontal">
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginTop="8dp"
+                                    android:text="Mejor semestre"
+                                    android:textColor="@color/colorOnPrimary"
+                                    android:textSize="18sp" />
 
                                 <TextView
                                     android:id="@+id/nombreMejorSemestre"
-                                    android:layout_width="0dp"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginTop="8dp"
+                                    android:layout_marginEnd="16dp"
+                                    android:layout_marginBottom="8dp"
                                     android:layout_weight="1"
                                     android:text="Datos insuficientes"
                                     android:textColor="@color/colorOnPrimary"
                                     android:textSize="24sp" />
 
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Promedio"
-                                        android:textColor="@color/colorOnPrimary" />
-
-                                    <TextView
-                                        android:id="@+id/promedioMejorSemestre"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:textAlignment="textEnd"
-                                        android:textColor="@color/colorOnPrimary"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
                             </LinearLayout>
+                        </androidx.cardview.widget.CardView>
 
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:cardBackgroundColor="@color/colorDanger"
-                        app:cardCornerRadius="16dp">
-
-                        <LinearLayout
+                        <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginTop="8dp"
-                                android:text="Peor semestre"
-                                android:textColor="@color/colorOnPrimary"
-                                android:textSize="18sp" />
+                            android:layout_margin="8dp"
+                            android:layout_weight="1"
+                            app:cardBackgroundColor="@color/colorDanger"
+                            app:cardCornerRadius="16dp"
+                            app:contentPadding="8dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginEnd="16dp"
-                                android:layout_marginBottom="8dp"
-                                android:orientation="horizontal">
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginTop="8dp"
+                                    android:text="Peor semestre"
+                                    android:textColor="@color/colorOnPrimary"
+                                    android:textSize="18sp" />
 
                                 <TextView
                                     android:id="@+id/nombrePeorSemestre"
-                                    android:layout_width="0dp"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
+                                    android:layout_marginStart="16dp"
+                                    android:layout_marginTop="8dp"
+                                    android:layout_marginEnd="16dp"
+                                    android:layout_marginBottom="8dp"
                                     android:layout_weight="1"
                                     android:text="Datos insuficientes"
                                     android:textColor="@color/colorOnPrimary"
                                     android:textSize="24sp" />
 
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Promedio"
-                                        android:textColor="@color/colorOnPrimary" />
-
-                                    <TextView
-                                        android:id="@+id/promedioPeorSemestre"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:textAlignment="textEnd"
-                                        android:textColor="@color/colorOnPrimary"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
                             </LinearLayout>
+                        </androidx.cardview.widget.CardView>
 
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
+                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/sharedStatsLayout"
@@ -268,7 +231,8 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
                             app:cardBackgroundColor="@color/colorSurface"
-                            app:cardCornerRadius="16dp">
+                            app:cardCornerRadius="16dp"
+                            app:contentPadding="8dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -292,7 +256,7 @@
                                         android:gravity="center"
                                         android:text="Promedio global"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorPrimaryText"
+                                        android:textColor="@color/colorTextPrimary"
                                         android:textSize="18sp" />
 
                                     <TextView
@@ -304,7 +268,7 @@
                                         android:gravity="center"
                                         android:text="VS\nPromedio general de tu carrera"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorSecondaryText"
+                                        android:textColor="@color/colorTextSecondary"
                                         android:textSize="18sp" />
                                 </LinearLayout>
 
@@ -326,7 +290,8 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
                             app:cardBackgroundColor="@color/colorSurface"
-                            app:cardCornerRadius="16dp">
+                            app:cardCornerRadius="16dp"
+                            app:contentPadding="8dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -350,7 +315,7 @@
                                         android:gravity="center"
                                         android:text="Promedio global"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorPrimaryText"
+                                        android:textColor="@color/colorTextPrimary"
                                         android:textSize="18sp" />
 
                                     <TextView
@@ -362,7 +327,7 @@
                                         android:gravity="center"
                                         android:text="VS\nPromedio general de tu unidad"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorSecondaryText"
+                                        android:textColor="@color/colorTextSecondary"
                                         android:textSize="18sp" />
                                 </LinearLayout>
 
@@ -384,7 +349,8 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
                             app:cardBackgroundColor="@color/colorSurface"
-                            app:cardCornerRadius="16dp">
+                            app:cardCornerRadius="16dp"
+                            app:contentPadding="8dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -408,7 +374,7 @@
                                         android:gravity="center"
                                         android:text="Promedio global"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorPrimaryText"
+                                        android:textColor="@color/colorTextPrimary"
                                         android:textSize="18sp" />
 
                                     <TextView
@@ -420,7 +386,7 @@
                                         android:gravity="center"
                                         android:text="VS\nPromedio general del IPN"
                                         android:textAlignment="center"
-                                        android:textColor="@color/colorSecondaryText"
+                                        android:textColor="@color/colorTextSecondary"
                                         android:textSize="18sp" />
                                 </LinearLayout>
 
@@ -443,7 +409,8 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         app:cardBackgroundColor="@color/colorSurface"
-                        app:cardCornerRadius="16dp">
+                        app:cardCornerRadius="16dp"
+                        app:contentPadding="8dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -467,7 +434,7 @@
                                     android:gravity="center"
                                     android:text="Semestre en curso"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorPrimaryText"
+                                    android:textColor="@color/colorTextPrimary"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -479,7 +446,7 @@
                                     android:gravity="center"
                                     android:text="VS\nÚltimo semestre"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorSecondaryText"
+                                    android:textColor="@color/colorTextSecondary"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -501,7 +468,8 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         app:cardBackgroundColor="@color/colorSurface"
-                        app:cardCornerRadius="16dp">
+                        app:cardCornerRadius="16dp"
+                        app:contentPadding="8dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -525,7 +493,7 @@
                                     android:gravity="center"
                                     android:text="Último semestre"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorPrimaryText"
+                                    android:textColor="@color/colorTextPrimary"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -537,7 +505,7 @@
                                     android:gravity="center"
                                     android:text="VS\nEl anterior"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorSecondaryText"
+                                    android:textColor="@color/colorTextSecondary"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -560,7 +528,8 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         app:cardBackgroundColor="@color/colorSurface"
-                        app:cardCornerRadius="16dp">
+                        app:cardCornerRadius="16dp"
+                        app:contentPadding="8dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -584,7 +553,7 @@
                                     android:gravity="center"
                                     android:text="Promedio global"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorPrimaryText"
+                                    android:textColor="@color/colorTextPrimary"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -596,7 +565,7 @@
                                     android:gravity="center"
                                     android:text="VS\nPromedio global anterior"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorSecondaryText"
+                                    android:textColor="@color/colorTextSecondary"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -618,7 +587,8 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         app:cardBackgroundColor="@color/colorSurface"
-                        app:cardCornerRadius="16dp">
+                        app:cardCornerRadius="16dp"
+                        app:contentPadding="8dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -642,7 +612,7 @@
                                     android:gravity="center"
                                     android:text="Último semestre"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorPrimaryText"
+                                    android:textColor="@color/colorTextPrimary"
                                     android:textSize="18sp" />
 
                                 <TextView
@@ -654,7 +624,7 @@
                                     android:gravity="center"
                                     android:text="VS\nPromedio global"
                                     android:textAlignment="center"
-                                    android:textColor="@color/colorSecondaryText"
+                                    android:textColor="@color/colorTextSecondary"
                                     android:textSize="18sp" />
                             </LinearLayout>
 
@@ -672,13 +642,13 @@
                     </androidx.cardview.widget.CardView>
 
 
-
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         app:cardBackgroundColor="@color/colorSurface"
-                        app:cardCornerRadius="16dp">
+                        app:cardCornerRadius="16dp"
+                        app:contentPadding="8dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -691,13 +661,13 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
                                 android:text="Gráfica"
-                                android:textColor="@color/colorPrimaryText"
+                                android:textColor="@color/colorTextPrimary"
                                 android:textSize="18sp" />
 
                             <com.github.mikephil.charting.charts.LineChart
                                 android:id="@+id/personal_progress_chart"
                                 android:layout_width="match_parent"
-                                android:layout_height="182dp"
+                                android:layout_height="225dp"
                                 android:layout_margin="8dp"
                                 android:orientation="vertical" />
                         </LinearLayout>
@@ -708,7 +678,8 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         app:cardBackgroundColor="@color/colorSurface"
-                        app:cardCornerRadius="16dp">
+                        app:cardCornerRadius="16dp"
+                        app:contentPadding="8dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -721,7 +692,7 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:text="Tendencia del promedio por semestres"
-                                android:textColor="@color/colorPrimaryText"
+                                android:textColor="@color/colorTextPrimary"
                                 android:textSize="18sp" />
 
                             <TextView
@@ -742,7 +713,8 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         app:cardBackgroundColor="@color/colorSurface"
-                        app:cardCornerRadius="16dp">
+                        app:cardCornerRadius="16dp"
+                        app:contentPadding="8dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -755,7 +727,7 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginTop="8dp"
                                 android:text="Tendencia del promedio global"
-                                android:textColor="@color/colorPrimaryText"
+                                android:textColor="@color/colorTextPrimary"
                                 android:textSize="18sp" />
 
                             <TextView

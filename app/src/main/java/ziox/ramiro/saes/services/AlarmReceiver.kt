@@ -21,7 +21,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 if (it.isEmpty()) return@getAllFollowingEvents
 
                 if(it.size == 1){
-                    Notification(context, "Calendario de trabajo", "Para mañana: ${it.first().title}", "nav_calendario_trabajo")
+                    Notification(context, "Agenda personal", "Para mañana: ${it.first().title}", "nav_calendario_trabajo")
                         .sendNotification(Notification.NOTIFICATION_ID_CALENDARIO_TRABAJO)
                     return@getAllFollowingEvents
                 }
@@ -83,7 +83,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     }
                 }
 
-                Notification(context, "Calendario de trabajo", "Tienes " + grupos.joinToSentence() + " para mañana", "nav_calendario_trabajo")
+                Notification(context, "Agenda personal", "Tienes " + grupos.joinToSentence() + " para mañana", "nav_calendario_trabajo")
                     .sendNotification(Notification.NOTIFICATION_ID_CALENDARIO_TRABAJO)
             }
         }else{

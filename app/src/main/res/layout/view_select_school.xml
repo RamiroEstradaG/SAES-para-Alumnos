@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorOnSurface">
+    android:background="@color/surfaceElevation1dp">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarlogin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/surfaceElevation4dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/selectSchoolToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorSurface"
             android:paddingTop="30dp">
 
             <ImageView
@@ -25,19 +25,20 @@
                 android:layout_marginEnd="8dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
-                app:tint="@color/colorPrimaryText"
-                app:srcCompat="@drawable/ic_close_black_24dp" />
+                app:srcCompat="@drawable/ic_close_black_24dp"
+                app:tint="@color/colorTextPrimary" />
         </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/selectSchoolTabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabIndicatorColor="@color/colorAccent"
+            android:background="@android:color/transparent"
+            app:tabIndicatorColor="@color/colorSecondary"
             app:tabIndicatorFullWidth="false"
-            app:tabSelectedTextColor="@color/colorAccent"
+            app:tabSelectedTextColor="@color/colorSecondary"
             app:tabTextAppearance="@style/TabStyle"
-            app:tabTextColor="?android:attr/textColorSecondary" />
+            app:tabTextColor="@color/colorTextSecondary" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager.widget.ViewPager

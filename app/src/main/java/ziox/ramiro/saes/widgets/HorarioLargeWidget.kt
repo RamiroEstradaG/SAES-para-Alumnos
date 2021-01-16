@@ -47,10 +47,10 @@ class HorarioLargeWidget : AppWidgetProvider() {
         val all = horarioDb.getAll()
 
         for(titulo in tituloHorario){
-            views.setTextColor(titulo, ContextCompat.getColor(context, R.color.colorPrimaryText))
+            views.setTextColor(titulo, ContextCompat.getColor(context, R.color.colorTextPrimary))
         }
         if(calendar.get(Calendar.DAY_OF_WEEK)-2 in 0..4){
-            views.setTextColor(tituloHorario[calendar.get(Calendar.DAY_OF_WEEK)-2], ContextCompat.getColor(context, R.color.colorHighlight))
+            views.setTextColor(tituloHorario[calendar.get(Calendar.DAY_OF_WEEK)-2], ContextCompat.getColor(context, R.color.colorDanger))
         }
 
 
@@ -120,11 +120,11 @@ class HorarioLargeWidget : AppWidgetProvider() {
             if(i < (horaFinal-horaInicio).toInt()){
                 val horasRemote = RemoteViews(context.packageName, R.layout.sample_widget_horario_hora_item)
                 horasRemote.setTextViewText(R.id.widget_horas_item, "${horaInicio.toInt()+i}:00")
-                horasRemote.setTextColor(R.id.widget_horas_item, ContextCompat.getColor(context, R.color.colorPrimaryText))
+                horasRemote.setTextColor(R.id.widget_horas_item, ContextCompat.getColor(context, R.color.colorTextPrimary))
                 views.addView(R.id.horasHorarioWidgetLayout, horasRemote)
             }else{
                 views.setTextViewText(R.id.limiteTextView, "${horaInicio.toInt()+i}:00")
-                views.setTextColor(R.id.limiteTextView, ContextCompat.getColor(context, R.color.colorPrimaryText))
+                views.setTextColor(R.id.limiteTextView, ContextCompat.getColor(context, R.color.colorTextPrimary))
             }
         }
     }

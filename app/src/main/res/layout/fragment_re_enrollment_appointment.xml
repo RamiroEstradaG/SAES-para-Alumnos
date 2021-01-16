@@ -20,62 +20,66 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
             android:layout_weight="1"
             android:text="Fecha de inscripción"
-            android:textColor="@color/colorPrimaryText"
+            android:textColor="@color/colorTextPrimary"
             android:textSize="24sp" />
 
         <TextView
             android:id="@+id/loadingText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
             android:text="Cargando..."
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             android:textSize="18sp" />
 
         <LinearLayout
             android:id="@+id/appointment_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="Desde"
-                android:textColor="@color/colorSecondaryText" />
+                android:textColor="@color/colorTextSecondary" />
 
             <TextView
                 android:id="@+id/start_date_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="16dp"
                 android:text="00 de Enero del 0000"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="18sp" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorTextPrimary" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Hasta"
-                android:textColor="@color/colorSecondaryText" />
+                android:textColor="@color/colorTextSecondary" />
 
             <TextView
                 android:id="@+id/finish_date_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="16dp"
                 android:text="00 de Enero del 0000"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="18sp" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorTextPrimary" />
 
             <Button
                 android:id="@+id/add_to_personal_calendar_button"
@@ -85,10 +89,10 @@
                 android:layout_gravity="center"
                 android:text="Establecer recordatorio"
                 android:textAllCaps="true"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorSecondary"
                 app:icon="@drawable/ic_event_black_24dp"
-                app:iconTint="@color/colorAccent"
-                app:strokeColor="@color/colorAccent" />
+                app:iconTint="@color/colorSecondary"
+                app:strokeColor="@color/colorSecondary" />
 
             <Button
                 android:id="@+id/schedule_generator_button"
@@ -98,10 +102,10 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="0"
                 android:text="Generar borrador de horario"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorSecondary"
                 app:icon="@drawable/ic_add_schedule"
-                app:iconTint="@color/colorAccent"
-                app:strokeColor="@color/colorAccent" />
+                app:iconTint="@color/colorSecondary"
+                app:strokeColor="@color/colorSecondary" />
 
             <Button
                 android:id="@+id/occupancy_button"
@@ -111,10 +115,10 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="0"
                 android:text="Revisar cupos de las materias"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorSecondary"
                 app:icon="@drawable/ic_add_schedule"
-                app:iconTint="@color/colorAccent"
-                app:strokeColor="@color/colorAccent" />
+                app:iconTint="@color/colorSecondary"
+                app:strokeColor="@color/colorSecondary" />
         </LinearLayout>
 
         <TextView
@@ -124,7 +128,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="Aún no puedes reinscribirte"
-            android:textColor="@color/colorSecondaryText"
+            android:textColor="@color/colorTextSecondary"
             android:textSize="18sp"
             android:visibility="gone" />
 
@@ -132,21 +136,22 @@
             android:id="@+id/view2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:background="?attr/dividerHorizontal" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="24dp"
+            android:baselineAligned="false"
             android:orientation="horizontal"
             android:paddingStart="8dp"
-            android:baselineAligned="false"
             android:paddingEnd="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -176,6 +181,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -205,6 +211,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -236,8 +243,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginBottom="8dp"
             android:text="Periodos escolares"
             android:textColor="?android:attr/textColorSecondary"
@@ -250,10 +257,10 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                app:cardCornerRadius="8dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
                 app:cardBackgroundColor="@color/colorSurface"
+                app:cardCornerRadius="8dp"
                 app:cardElevation="0dp">
 
                 <ProgressBar
@@ -275,7 +282,7 @@
                     android:max="0"
                     android:progress="0"
                     android:progressBackgroundTint="@android:color/transparent"
-                    android:progressTint="@color/colorAccent"
+                    android:progressTint="@color/colorSecondary"
                     android:scaleY="30" />
             </androidx.cardview.widget.CardView>
 
@@ -284,17 +291,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="24dp"
             android:orientation="horizontal">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/colorSecondary"
                 app:cardCornerRadius="4dp"
-                app:cardBackgroundColor="@color/colorAccent" />
+                app:cardElevation="0dp" />
 
             <TextView
                 android:id="@+id/current_completed_periods_text_view"
@@ -309,9 +316,9 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                app:cardElevation="0dp"
+                app:cardBackgroundColor="@android:color/holo_red_light"
                 app:cardCornerRadius="4dp"
-                app:cardBackgroundColor="@android:color/holo_red_light" />
+                app:cardElevation="0dp" />
 
             <TextView
                 android:id="@+id/normal_finish_period_text_view"
@@ -327,9 +334,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="24dp"
             android:layout_marginBottom="8dp"
             android:text="Créditos"
             android:textColor="?android:attr/textColorSecondary"
@@ -342,10 +349,10 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                app:cardCornerRadius="8dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
                 app:cardBackgroundColor="@color/colorSurface"
+                app:cardCornerRadius="8dp"
                 app:cardElevation="0dp">
 
                 <ProgressBar
@@ -364,17 +371,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="24dp"
             android:orientation="horizontal">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/design_default_color_primary"
                 app:cardCornerRadius="4dp"
-                app:cardBackgroundColor="@color/design_default_color_primary" />
+                app:cardElevation="0dp" />
 
             <TextView
                 android:id="@+id/obtained_credits_text_view"

@@ -25,49 +25,44 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/preview_class_schedule_fab"
-            android:layout_width="match_parent"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorAccent"
-            app:tint="?attr/colorOnSecondary"
-            app:layout_anchor="@+id/frameLayout2"
-            app:layout_anchorGravity="top|center"
-            app:srcCompat="@drawable/ic_remove_red_eye_black_24dp" />
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/colorSecondary"
+            android:src="@drawable/ic_remove_red_eye_black_24dp"
+            android:text="Ver horario"
+            android:textColor="@color/colorOnSecondary"
+            android:translationY="-32dp"
+            app:icon="@drawable/ic_remove_red_eye_black_24dp"
+            app:iconTint="@color/colorOnSecondary"
+            app:layout_anchor="@+id/add_item_fab"
+            app:layout_anchorGravity="top|end" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/add_item_fab"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorAccent"
-            app:tint="?attr/colorOnSecondary"
-            android:layout_margin="16dp"
-            app:layout_anchor="@+id/frameLayout"
-            app:layout_anchorGravity="top|center"
-            app:srcCompat="@drawable/ic_add_black_24dp" />
-
-        <FrameLayout
-            android:id="@+id/frameLayout2"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="74dp"
-            app:layout_anchor="@+id/add_item_fab"
-            app:layout_anchorGravity="top|center">
-
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/frameLayout"
-            android:layout_width="76dp"
-            android:layout_height="wrap_content"
-            android:paddingTop="40dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/colorSecondary"
+            android:src="@drawable/ic_add_black_24dp"
+            android:text="Agregar curso"
+            android:textColor="@color/colorOnSecondary"
+            app:icon="@drawable/ic_add_black_24dp"
+            app:iconTint="@color/colorOnSecondary"
             app:layout_anchor="@+id/itemContainer"
-            app:layout_anchorGravity="end|bottom" />
+            app:layout_anchorGravity="bottom|end"
+            app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior" />
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarCrearHorario"
         android:layout_width="match_parent"
         android:layout_height="88dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorToolbar"
         android:gravity="bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,10 +74,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:elevation="3dp"
+            app:title="Generador de Horario"
+            app:titleTextColor="@color/colorOnToolbar"
             android:minHeight="?attr/actionBarSize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:titleTextColor="@color/colorOnSecondary" />
+             />
     </com.google.android.material.appbar.AppBarLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

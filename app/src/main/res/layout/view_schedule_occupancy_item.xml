@@ -12,7 +12,7 @@
         android:layout_marginTop="0dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="1dp"
-        app:cardBackgroundColor="@color/colorCardOnSurface"
+        app:cardBackgroundColor="@color/colorSurface"
         app:cardCornerRadius="16dp"
         app:cardElevation="0dp"
         app:cardPreventCornerOverlap="true">
@@ -31,7 +31,7 @@
                 android:layout_weight="1"
                 android:singleLine="true"
                 android:text="Materia"
-                android:textColor="@color/colorPrimaryText" />
+                android:textColor="@color/colorTextPrimary" />
 
             <TextView
                 android:id="@+id/registered_count_text_view"

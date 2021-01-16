@@ -50,6 +50,8 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginEnd="8dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             android:singleLine="true"
             android:text="Perfil"
             android:textAllCaps="false"
@@ -65,7 +67,7 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_exit_to_app_black_24dp"
             android:tintMode="src_in"
-            app:tint="@android:color/holo_red_light" />
+            app:tint="@color/colorDanger" />
 
     </LinearLayout>
     <LinearLayout
@@ -84,12 +86,12 @@
             android:layout_weight="1"
             android:text="Escolarizado"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             app:cornerRadius="20dp"
             app:icon="@drawable/ic_event_black_24dp"
-            app:iconTint="@color/colorAccent"
-            app:rippleColor="@color/colorAccent"
-            app:strokeColor="@color/colorAccent" />
+            app:iconTint="@color/colorSecondary"
+            app:rippleColor="@color/colorSecondary"
+            app:strokeColor="@color/colorSecondary" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/not_schooled_calendar_button"
@@ -101,11 +103,11 @@
             android:layout_weight="1"
             android:text="No escolarizado"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             app:cornerRadius="20dp"
             app:icon="@drawable/ic_event_black_24dp"
-            app:iconTint="@color/colorAccent"
-            app:rippleColor="@color/colorAccent"
-            app:strokeColor="@color/colorAccent" />
+            app:iconTint="@color/colorSecondary"
+            app:rippleColor="@color/colorSecondary"
+            app:strokeColor="@color/colorSecondary" />
     </LinearLayout>
 </LinearLayout>

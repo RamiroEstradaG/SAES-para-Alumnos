@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.activities
 
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.os.Bundle
 import android.view.View
 import android.webkit.JavascriptInterface
@@ -8,7 +9,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -29,9 +29,8 @@ const val CHANGE_THRESHOLD = 0.5
  * Creado por Ramiro el 12/15/2018 a las 5:08 PM para SAESv2.
  */
 class StudentPerformanceActivity : AppCompatActivity() {
-    private val ratings = ArrayList<Entry>()
-    private val overallRatings = ArrayList<Entry>()
-    private val crashlytics = FirebaseCrashlytics.getInstance()
+    private val scores = ArrayList<Entry>()
+    private val overallScores = ArrayList<Entry>()
     private lateinit var binding: ActivityStudentPerformanceBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,14 +38,12 @@ class StudentPerformanceActivity : AppCompatActivity() {
         binding = ActivityStudentPerformanceBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initTheme(this)
-        setLightStatusBar(this)
+        setSystemUiLightStatusBar(this, false)
         binding.scrollView.addBottomInsetPadding()
         initChart()
-
-        binding.toolbar.setNavigationOnClickListener {
-            crashlytics.log("Click en BackButton en la clase ${this.localClassName}")
-            finish()
-        }
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
 
         if (this.isNetworkAvailable()) {
             initWebView(binding.dataVisualizador, object : WebViewClient() {
@@ -98,7 +95,16 @@ class StudentPerformanceActivity : AppCompatActivity() {
                 }
 
                 if (course.courseName != "_") {
-                    jsi.addItem(arrayOf("", course.courseName, course.semester, "", "", course.finalScore))
+                    jsi.addItem(
+                        arrayOf(
+                            "",
+                            course.courseName,
+                            course.semester,
+                            "",
+                            "",
+                            course.finalScore
+                        )
+                    )
                 }
             }
 
@@ -109,31 +115,47 @@ class StudentPerformanceActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
     private fun initChart(){
-        val description = Description()
-        description.text = "Calificaciones a través del tiempo"
-        description.textColor = ContextCompat.getColor(this, R.color.colorPrimaryText)
-        binding.personalProgressChart.description = description
+        binding.personalProgressChart.description.text = ""
 
         binding.personalProgressChart.setDrawBorders(false)
         binding.personalProgressChart.setNoDataText("Esperando datos")
         binding.personalProgressChart.isDoubleTapToZoomEnabled = false
         binding.personalProgressChart.setScaleEnabled(false)
-
+        binding.personalProgressChart.xAxis.axisMinimum = -0.1f
         binding.personalProgressChart.xAxis.setDrawGridLines(false)
         binding.personalProgressChart.xAxis.granularity = 1f
-        binding.personalProgressChart.xAxis.textColor = ContextCompat.getColor(this, R.color.colorPrimaryText)
-        binding.personalProgressChart.xAxis.valueFormatter =
-            IAxisValueFormatter { value, _ -> "${value.toInt() + 1}º Semestre" }
 
+        binding.personalProgressChart.xAxis.axisLineWidth = 2f
+        binding.personalProgressChart.xAxis.axisLineColor = ContextCompat.getColor(
+            this,
+            R.color.colorTextPrimary
+        )
+        binding.personalProgressChart.xAxis.textColor = ContextCompat.getColor(
+            this,
+            R.color.colorTextPrimary
+        )
+        binding.personalProgressChart.xAxis.valueFormatter = IAxisValueFormatter { value, _ -> "${value.toInt() + 1}º" }
         binding.personalProgressChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        binding.personalProgressChart.xAxis.labelRotationAngle = 33f
+        binding.personalProgressChart.xAxis.textSize = 14f
 
         binding.personalProgressChart.axisLeft.granularity = 0.5f
-        binding.personalProgressChart.axisLeft.setDrawZeroLine(true)
-        binding.personalProgressChart.axisLeft.textColor = ContextCompat.getColor(this, R.color.colorPrimaryText)
+        binding.personalProgressChart.axisLeft.setDrawGridLines(true)
+        binding.personalProgressChart.axisLeft.setDrawZeroLine(false)
+        binding.personalProgressChart.axisLeft.disableGridDashedLine()
+        binding.personalProgressChart.axisLeft.gridLineWidth = 1.5f
+        binding.personalProgressChart.axisLeft.setDrawAxisLine(false)
+        binding.personalProgressChart.axisLeft.textColor = ContextCompat.getColor(
+            this,
+            R.color.colorTextPrimary
+        )
         binding.personalProgressChart.axisLeft.setLabelCount(2, false)
-        binding.personalProgressChart.axisLeft.enableGridDashedLine(12f, 12f, 1f)
+        binding.personalProgressChart.axisLeft.textSize = 12f
 
         binding.personalProgressChart.axisRight.isEnabled = false
 
@@ -141,8 +163,11 @@ class StudentPerformanceActivity : AppCompatActivity() {
         binding.personalProgressChart.scaleX = 1f
         binding.personalProgressChart.scaleY = 1f
 
-        binding.personalProgressChart.legend.textSize = 14f
-        binding.personalProgressChart.legend.textColor = ContextCompat.getColor(this, R.color.colorPrimaryText)
+        binding.personalProgressChart.legend.textSize = 12f
+        binding.personalProgressChart.legend.textColor = ContextCompat.getColor(
+            this,
+            R.color.colorTextPrimary
+        )
 
         binding.personalProgressChart.invalidate()
     }
@@ -150,19 +175,19 @@ class StudentPerformanceActivity : AppCompatActivity() {
     inner class JSI {
         private var items = 0
         private var totalItems = 0
-        private var tmpOverallRating = 0f
+        private var tmpOverallScore = 0f
         private var lastPeriod = ""
 
         @JavascriptInterface
         fun addSemester() {
             items = 0
-            ratings.add(Entry(ratings.size.toFloat(), 0f))
+            scores.add(Entry(scores.size.toFloat(), 0f))
         }
 
         @JavascriptInterface
         fun addItem(data: Array<String>) {
-            ratings.last().y += data[5].toIntOrNull()?.toFloat() ?: 0f
-            tmpOverallRating += data[5].toIntOrNull()?.toFloat() ?: 0f
+            scores.last().y += data[5].toIntOrNull()?.toFloat() ?: 0f
+            tmpOverallScore += data[5].toIntOrNull()?.toFloat() ?: 0f
             items++
             totalItems++
             if(lastPeriod < data[3]){
@@ -173,43 +198,57 @@ class StudentPerformanceActivity : AppCompatActivity() {
         @JavascriptInterface
         fun onSemesterCompleted() {
             if (items > 0) {
-                ratings.last().y = ratings.last().y / items
+                scores.last().y = scores.last().y / items
             }
 
-            overallRatings.add(Entry(overallRatings.size.toFloat(), tmpOverallRating / totalItems))
+            overallScores.add(Entry(overallScores.size.toFloat(), tmpOverallScore / totalItems))
         }
 
-        private fun getRatingsDataSet() : LineDataSet{
-            val ratingsDataSet = LineDataSet(ratings, "Promedio por semestre")
-            ratingsDataSet.color =
-                ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorHighlight)
-            ratingsDataSet.valueTextColor = ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorHighlight)
-            ratingsDataSet.valueTextSize = 14f
-            ratingsDataSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
-            ratingsDataSet.lineWidth = 2f
-            ratingsDataSet.setCircleColor(Color.TRANSPARENT)
-            ratingsDataSet.circleHoleColor = Color.TRANSPARENT
+        private fun getScoresDataSet() : LineDataSet{
+            val scoresDataSet = LineDataSet(scores, "Promedio por semestre")
+            scoresDataSet.color =
+                ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorDanger)
+            scoresDataSet.valueTextColor = ContextCompat.getColor(
+                this@StudentPerformanceActivity,
+                R.color.colorDanger
+            )
+            scoresDataSet.valueTextSize = 10f
+            scoresDataSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
+            scoresDataSet.lineWidth = 4f
+            scoresDataSet.setCircleColor(Color.TRANSPARENT)
+            scoresDataSet.circleHoleColor = Color.TRANSPARENT
 
-            return ratingsDataSet
+            return scoresDataSet
         }
 
-        private fun getOverallRatingsDataSet() : LineDataSet{
-            val promedioDataSet = LineDataSet(overallRatings, "Promedio global")
-            promedioDataSet.color = ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorInfo)
-            promedioDataSet.setCircleColor(ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorPrimaryText))
+        private fun getOverallScoresDataSet() : LineDataSet{
+            val promedioDataSet = LineDataSet(overallScores, "Promedio global")
+            promedioDataSet.color = ContextCompat.getColor(
+                this@StudentPerformanceActivity,
+                R.color.colorInfo
+            )
+            promedioDataSet.setCircleColor(
+                ContextCompat.getColor(
+                    this@StudentPerformanceActivity,
+                    R.color.colorTextPrimary
+                )
+            )
             promedioDataSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER
-            promedioDataSet.enableDashedLine(24f, 12f, 1f)
-            promedioDataSet.lineWidth = 2f
-            promedioDataSet.valueTextSize = 14f
-            promedioDataSet.valueTextColor = ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorPrimaryText)
+            promedioDataSet.enableDashedLine(32f, 12f, 1f)
+            promedioDataSet.lineWidth = 4f
+            promedioDataSet.valueTextSize = 10f
+            promedioDataSet.valueTextColor = ContextCompat.getColor(
+                this@StudentPerformanceActivity,
+                R.color.colorTextPrimary
+            )
             return promedioDataSet
         }
 
         @JavascriptInterface
         fun onComplete() {
             runOnUiThread {
-                val ratingsDataSet = getRatingsDataSet()
-                val overallRatingsDataSet = getOverallRatingsDataSet()
+                val scoresDataSet = getScoresDataSet()
+                val overallScoresDataSet = getOverallScoresDataSet()
 
                 val isShareStatsEnable = isShareStatsEnable(this@StudentPerformanceActivity)
 
@@ -217,7 +256,7 @@ class StudentPerformanceActivity : AppCompatActivity() {
                     binding.shareStatsPermissionCard.visibility = View.GONE
 
                     if (isShareStatsEnable == 1){
-                        initSharedStatsData(overallRatings, lastPeriod)
+                        initSharedStatsData(overallScores, lastPeriod)
                     }
                 }else{
                     binding.shareStatsPermissionCard.visibility = View.VISIBLE
@@ -231,39 +270,37 @@ class StudentPerformanceActivity : AppCompatActivity() {
                 binding.buttonStatsPermission.setOnClickListener {
                     binding.shareStatsPermissionCard.visibility = View.GONE
                     setShareStatsEnable(this@StudentPerformanceActivity, 1)
-                    initSharedStatsData(overallRatings, lastPeriod)
+                    initSharedStatsData(overallScores, lastPeriod)
                 }
 
-                if(ratings.size > 0){
-                    val entry = ratings.maxByOrNull {
+                if(scores.size > 0){
+                    val entry = scores.maxByOrNull {
                         it.y
                     }
-                    val index = ratings.indexOf(entry)
+                    val index = scores.indexOf(entry)
 
                     if(index >= 0){
                         binding.nombreMejorSemestre.text = "${index+1}° Semestre"
-                        binding.promedioMejorSemestre.text = (entry?.y?.toDouble() ?: 0.0).toStringPresition(1)
                     }else{
                         binding.nombreMejorSemestre.text = "Sin datos"
                     }
                 }
 
-                if(ratings.size > 0){
-                    val entry = ratings.minByOrNull {
+                if(scores.size > 0){
+                    val entry = scores.minByOrNull {
                         it.y
                     }
-                    val index = ratings.indexOf(entry)
+                    val index = scores.indexOf(entry)
 
                     if(index >= 0){
                         binding.nombrePeorSemestre.text = "${index+1}° Semestre"
-                        binding.promedioPeorSemestre.text = (entry?.y?.toDouble()?:0.0).toStringPresition(1)
                     }else{
                         binding.nombrePeorSemestre.text = "Sin datos"
                     }
                 }
 
-                if(ratings.isNotEmpty()){
-                    val last = ratings.last()
+                if(scores.isNotEmpty()){
+                    val last = scores.last()
                     val currentDatabase = AppLocalDatabase.getInstance(this@StudentPerformanceActivity).gradesDao()
                     val data = currentDatabase.getAll()
                     var currentSum = 0.0
@@ -281,31 +318,41 @@ class StudentPerformanceActivity : AppCompatActivity() {
                     currentSum /= notNullElements
 
                     if (notNullElements > 0){
-                        binding.ahoraVsUltimo.setTextInPercentageChange(last.y, currentSum.toFloat())
+                        binding.ahoraVsUltimo.setTextInPercentageChange(
+                            last.y,
+                            currentSum.toFloat()
+                        )
                     }
                 }
 
-                if(ratings.isNotEmpty() && overallRatings.isNotEmpty()){
-                    binding.ultimoVsPromedio.setTextInPercentageChange(overallRatings.last().y, ratings.last().y)
+                if(scores.isNotEmpty() && overallScores.isNotEmpty()){
+                    binding.ultimoVsPromedio.setTextInPercentageChange(
+                        overallScores.last().y,
+                        scores.last().y
+                    )
                 }
 
-                if(overallRatings.size >= 2){
-                    binding.promedioVsElAnterior.setTextInPercentageChange(overallRatings[overallRatings.size-2].y, overallRatings.last().y)
+                if(overallScores.size >= 2){
+                    binding.promedioVsElAnterior.setTextInPercentageChange(
+                        overallScores[overallScores.size - 2].y,
+                        overallScores.last().y
+                    )
 
-                    val typedArray = overallRatings.map {
+                    val typedArray = overallScores.map {
                         it.y
                     }.subList(
                         when {
-                            overallRatings.size >= 4 -> {
-                                overallRatings.size-4
+                            overallScores.size >= 4 -> {
+                                overallScores.size - 4
                             }
-                            overallRatings.size == 3 -> {
-                                overallRatings.size-3
+                            overallScores.size == 3 -> {
+                                overallScores.size - 3
                             }
                             else -> {
                                 0
                             }
-                        }, overallRatings.size).toTypedArray()
+                        }, overallScores.size
+                    ).toTypedArray()
 
                     val piv = typedArray.size/2
 
@@ -314,12 +361,22 @@ class StudentPerformanceActivity : AppCompatActivity() {
 
                     binding.tendenciaLabel.text = when{
                         mean1.minus(mean2) < -CHANGE_THRESHOLD ->{
-                            binding.tendenciaLabel.setTextColor(ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorSuccess))
+                            binding.tendenciaLabel.setTextColor(
+                                ContextCompat.getColor(
+                                    this@StudentPerformanceActivity,
+                                    R.color.colorSuccess
+                                )
+                            )
                             "Al alza"
                         }
 
                         mean1.minus(mean2) > CHANGE_THRESHOLD -> {
-                            binding.tendenciaLabel.setTextColor(ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorHighlight))
+                            binding.tendenciaLabel.setTextColor(
+                                ContextCompat.getColor(
+                                    this@StudentPerformanceActivity,
+                                    R.color.colorDanger
+                                )
+                            )
                             "A la baja"
                         }
 
@@ -329,22 +386,27 @@ class StudentPerformanceActivity : AppCompatActivity() {
                     }
                 }
 
-                if(ratings.size >= 2){
-                    binding.ultimoVsAnterior.setTextInPercentageChange(ratings[ratings.size-2].y, ratings.last().y)
+                if(scores.size >= 2){
+                    binding.ultimoVsAnterior.setTextInPercentageChange(
+                        scores[scores.size - 2].y,
+                        scores.last().y
+                    )
 
-                    val typedArray = ratings.map {
+                    val typedArray = scores.map {
                         it.y
-                    }.subList(when {
-                        ratings.size >= 4 -> {
-                            ratings.size-4
-                        }
-                        ratings.size == 3 -> {
-                            ratings.size-3
-                        }
-                        else -> {
-                            0
-                        }
-                    }, ratings.size).toTypedArray()
+                    }.subList(
+                        when {
+                            scores.size >= 4 -> {
+                                scores.size - 4
+                            }
+                            scores.size == 3 -> {
+                                scores.size - 3
+                            }
+                            else -> {
+                                0
+                            }
+                        }, scores.size
+                    ).toTypedArray()
 
                     val piv = typedArray.size/2
 
@@ -353,12 +415,22 @@ class StudentPerformanceActivity : AppCompatActivity() {
 
                     binding.tendenciaCalificacionesLabel.text = when{
                         mean1.minus(mean2) < -CHANGE_THRESHOLD ->{
-                            binding.tendenciaCalificacionesLabel.setTextColor(ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorSuccess))
+                            binding.tendenciaCalificacionesLabel.setTextColor(
+                                ContextCompat.getColor(
+                                    this@StudentPerformanceActivity,
+                                    R.color.colorSuccess
+                                )
+                            )
                             "Al alza"
                         }
 
                         mean1.minus(mean2) > CHANGE_THRESHOLD ->{
-                            binding.tendenciaCalificacionesLabel.setTextColor(ContextCompat.getColor(this@StudentPerformanceActivity, R.color.colorHighlight))
+                            binding.tendenciaCalificacionesLabel.setTextColor(
+                                ContextCompat.getColor(
+                                    this@StudentPerformanceActivity,
+                                    R.color.colorDanger
+                                )
+                            )
                             "A la baja"
                         }
 
@@ -370,12 +442,12 @@ class StudentPerformanceActivity : AppCompatActivity() {
 
 
 
-                val dataSets = listOf<ILineDataSet>(ratingsDataSet, overallRatingsDataSet)
-                val maxX = max(ratings.size, overallRatings.size)
+                val dataSets = listOf<ILineDataSet>(scoresDataSet, overallScoresDataSet)
+                val maxX = max(scores.size, overallScores.size)
                 binding.personalProgressChart.data = LineData(dataSets)
-                binding.personalProgressChart.invalidate()
-                binding.personalProgressChart.setVisibleXRange(0f, maxX-0.3f)
+                binding.personalProgressChart.setVisibleXRange(-0.1f, maxX - 0.8f)
                 binding.personalProgressChart.data.isHighlightEnabled = false
+                binding.personalProgressChart.invalidate()
                 binding.mainLayoutPerformance.visibility = View.VISIBLE
             }
         }
@@ -386,32 +458,35 @@ class StudentPerformanceActivity : AppCompatActivity() {
         }
     }
 
-    private fun initSharedStatsData(overallRatings : ArrayList<Entry>, lastPeriod : String){
-        if (overallRatings.isNotEmpty()){
-            getSharedStatsData(lastPeriod, overallRatings.last().y)
+    private fun initSharedStatsData(overallScores: ArrayList<Entry>, lastPeriod: String){
+        if (overallScores.isNotEmpty()){
+            getSharedStatsData(lastPeriod, overallScores.last().y)
         }else{
             getSharedStatsData(lastPeriod)
         }
     }
 
-    private fun getSharedStatsData(lastPeriod : String, lastRating : Float = 0f){
+    private fun getSharedStatsData(lastPeriod: String, lastScore: Float = 0f){
         binding.sharedStatsLayout.visibility = View.VISIBLE
 
         val schoolName = getSchoolName(this)
         val careerName = getCareerName(this)
 
-        initUser(this, getBoleta(this), User(
-            schoolName,
-            getCareerName(this).toProperCase(),
-            SelectHighSchoolFragment.highSchoolMap.containsKey(schoolName),
-            ratings.map { it.y },
-            overallRatings.map { it.y },
-            lastPeriod
-        )
+        initUser(
+            this, getBoleta(this), User(
+                schoolName,
+                getCareerName(this).toProperCase(),
+                SelectHighSchoolFragment.highSchoolMap.containsKey(schoolName),
+                scores.map { it.y },
+                overallScores.map { it.y },
+                lastPeriod
+            )
         ){
             getStatistics().addOnSuccessListener {
                 if(it.data != null){
-                    binding.ultimoVsIpn.setTextInPercentageChange(it.data!!["promedio"] as? Double ?: 0.0, lastRating)
+                    binding.ultimoVsIpn.setTextInPercentageChange(
+                        it.data!!["promedio"] as? Double ?: 0.0, lastScore
+                    )
                 }else{
                     binding.ultimoVsIpn.text = "—%"
                 }
@@ -419,7 +494,9 @@ class StudentPerformanceActivity : AppCompatActivity() {
 
             getStatistics(schoolName).addOnSuccessListener {
                 if(it.data != null){
-                    binding.ultimoVsUnidad.setTextInPercentageChange(it.data!!["promedio"] as? Double ?: 0.0, lastRating)
+                    binding.ultimoVsUnidad.setTextInPercentageChange(
+                        it.data!!["promedio"] as? Double ?: 0.0, lastScore
+                    )
                 }else{
                     binding.ultimoVsUnidad.text = "—%"
                 }
@@ -427,7 +504,9 @@ class StudentPerformanceActivity : AppCompatActivity() {
 
             getStatistics(careerName.toProperCase()).addOnSuccessListener {
                 if(it.data != null){
-                    binding.ultimoVsCarrera.setTextInPercentageChange(it.data!!["promedio"] as? Double ?: 0.0, lastRating)
+                    binding.ultimoVsCarrera.setTextInPercentageChange(
+                        it.data!!["promedio"] as? Double ?: 0.0, lastScore
+                    )
                 }else{
                     binding.ultimoVsCarrera.text = "—%"
                 }

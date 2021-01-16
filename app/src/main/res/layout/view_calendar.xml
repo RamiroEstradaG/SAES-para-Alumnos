@@ -10,24 +10,24 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorToolbar">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabSchedule"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:background="@android:color/transparent"
             app:tabGravity="center"
             app:tabIndicator="@drawable/tab_indicator_schedule"
-            app:tabIndicatorColor="@color/colorAccent"
+            app:tabIndicatorColor="@color/colorSecondary"
             app:tabIndicatorGravity="center"
             app:tabIndicatorHeight="32dp"
             app:tabMode="fixed"
-            app:tabSelectedTextColor="@color/colorOnPrimary"
+            app:tabSelectedTextColor="@color/colorOnSecondary"
             app:tabTextAppearance="@style/TabStyle"
-            app:tabTextColor="@color/colorOnSecondary"/>
+            app:tabTextColor="@color/colorOnToolbar" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView

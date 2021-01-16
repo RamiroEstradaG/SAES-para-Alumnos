@@ -37,8 +37,8 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     app:cardBackgroundColor="@color/colorSurface"
-                    app:cardCornerRadius="8dp"
-                    app:contentPadding="8dp">
+                    app:cardCornerRadius="16dp"
+                    app:contentPadding="24dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -71,16 +71,16 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/loginBoleta"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/OutlineTextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
                             android:focusable="false"
                             android:hint="@string/boleta"
                             android:nextFocusDown="@id/loginPass"
-                            app:boxStrokeColor="@color/colorAccent"
+                            app:boxStrokeColor="@color/colorSecondary"
                             app:endIconMode="none"
-                            app:hintTextColor="@color/colorAccent">
+                            app:hintTextColor="@color/colorSecondary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
@@ -91,14 +91,14 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/loginPass"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/OutlineTextInputLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:hint="@string/contrase_a"
                             android:nextFocusDown="@id/loginCaptcha"
-                            app:boxStrokeColor="@color/colorAccent"
-                            app:hintTextColor="@color/colorAccent"
+                            app:boxStrokeColor="@color/colorSecondary"
+                            app:hintTextColor="@color/colorSecondary"
                             app:passwordToggleEnabled="true"
                             app:passwordToggleTint="?attr/colorOnSurface">
 
@@ -138,12 +138,12 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/loginCaptcha"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/OutlineTextInputLayout"
                             android:layout_width="150dp"
                             android:layout_height="wrap_content"
                             android:hint="@string/captcha"
-                            app:boxStrokeColor="@color/colorAccent"
-                            app:hintTextColor="@color/colorAccent">
+                            app:boxStrokeColor="@color/colorSecondary"
+                            app:hintTextColor="@color/colorSecondary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:layout_width="match_parent"
@@ -158,30 +158,33 @@
                             android:id="@+id/login_button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:backgroundTint="@color/colorAccent"
+                            android:layout_marginTop="24dp"
+                            android:backgroundTint="@color/colorSecondary"
                             android:text="@string/iniciar_sesi_n"
-                            android:textAllCaps="false" />
+                            app:cornerRadius="24dp" />
 
                         <Button
                             android:id="@+id/offlineButton"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="8dp"
                             android:text="Offline"
-                            android:textColor="@color/colorAccent" />
-
-                        <Button
-                            android:id="@+id/aboutButton"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Acerca de"
-                            android:textColor="@color/colorAccent" />
+                            android:textColor="@color/colorSecondary" />
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+
+                <Button
+                    android:id="@+id/aboutButton"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Acerca de"
+                    android:textColor="@color/colorSecondary"
+                    app:icon="@drawable/ic_info_outline_black_24dp"
+                    app:iconTint="@color/colorSecondary" />
+
             </LinearLayout>
         </ScrollView>
 
@@ -190,6 +193,7 @@
             layout="@layout/fragment_loading"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            tools:visibility="gone"
             android:visibility="visible" />
 
         <LinearLayout
@@ -200,6 +204,7 @@
             android:visibility="visible"
             app:behavior_hideable="false"
             app:behavior_peekHeight="40dp"
+            tools:behavior_peekHeight="500dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
             <LinearLayout

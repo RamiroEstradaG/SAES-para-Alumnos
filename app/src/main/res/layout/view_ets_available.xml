@@ -25,5 +25,5 @@
         android:layout_height="wrap_content"
         android:text="Inscribir"
         android:textAllCaps="false"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/colorSecondary" />
 </LinearLayout>

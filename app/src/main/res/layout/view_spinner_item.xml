@@ -8,5 +8,5 @@
     android:paddingEnd="8dp"
     android:paddingBottom="10dp"
     android:text="Item"
-    android:textColor="@color/colorPrimaryText"
+    android:textColor="@color/colorTextPrimary"
     android:textSize="16sp" />

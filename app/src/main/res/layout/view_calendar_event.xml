@@ -20,7 +20,7 @@
             android:layout_marginBottom="12dp"
             android:layout_marginTop="12dp"
             android:text="Evento name"
-            android:textColor="@color/colorPrimaryText"
+            android:textColor="@color/colorTextPrimary"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -28,7 +28,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:tint="@color/colorPrimaryText"
+        app:tint="@color/colorTextPrimary"
         app:srcCompat="@drawable/ic_info_outline_black_24dp" />
 
 </LinearLayout>

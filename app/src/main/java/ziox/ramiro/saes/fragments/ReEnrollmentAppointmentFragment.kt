@@ -254,7 +254,7 @@ class ReEnrollmentAppointmentFragment : Fragment() {
                     addUpdateListener {
                         rootView.obtainedCreditsProgressBar.progress = (it.animatedValue as Int)
                         rootView.obtainedCreditsTextView.text =
-                            "Créditos obtenidos: ${((it.animatedValue as Int) / 100.0)} de $maximumLimit (${(((it.animatedValue as Int).div(100)).div(maximumLimit)).times(100).toStringPresition(2)}%)"
+                            "Créditos obtenidos: ${((it.animatedValue as Int) / 100.0)} de $maximumLimit (${(((it.animatedValue as Int).div(100)).div(maximumLimit)).times(100).toStringPrecision(2)}%)"
                     }
 
                     start()

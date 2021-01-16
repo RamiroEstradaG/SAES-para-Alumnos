@@ -9,11 +9,11 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
+        android:background="@color/colorToolbar"
         android:minHeight="?attr/actionBarSize"
         android:paddingTop="30dp"
         android:theme="?attr/actionBarTheme"
-        app:titleTextColor="@color/colorOnSecondary" />
+         />
 
 
     <ScrollView
@@ -32,8 +32,8 @@
                 android:id="@+id/textView27"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Calendario de trabajo"
-                android:textColor="@color/colorSecondaryText" />
+                android:text="Agenda personal"
+                android:textColor="@color/colorTextSecondary" />
 
             <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
                 android:id="@+id/selectionCalendar"
@@ -43,36 +43,36 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/eventTitleInput"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/OutlineTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Titulo*"
-                android:textColorHint="@color/colorSecondaryText"
-                app:boxStrokeColor="@color/colorHighlight"
+                android:textColorHint="@color/colorTextSecondary"
+                app:boxStrokeColor="@color/colorDanger"
                 app:errorEnabled="true"
-                app:hintTextColor="@color/colorHighlight">
+                app:hintTextColor="@color/colorDanger">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimaryText" />
+                    android:textColor="@color/colorTextPrimary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/eventCourseNameInput"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/OutlineTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Materia"
-                android:textColorHint="@color/colorSecondaryText"
-                app:boxStrokeColor="@color/colorHighlight"
+                android:textColorHint="@color/colorTextSecondary"
+                app:boxStrokeColor="@color/colorDanger"
                 app:errorEnabled="true"
-                app:hintTextColor="@color/colorHighlight">
+                app:hintTextColor="@color/colorDanger">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorPrimaryText" />
+                    android:textColor="@color/colorTextPrimary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -80,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Tipo"
-                android:textColor="@color/colorSecondaryText" />
+                android:textColor="@color/colorTextSecondary" />
 
             <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
                 android:id="@+id/eventTypeInput"
@@ -90,17 +90,17 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/eventDateInput"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/OutlineTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Dia"
-                android:textColorHint="@color/colorSecondaryText"
-                app:boxStrokeColor="@color/colorHighlight"
+                android:textColorHint="@color/colorTextSecondary"
+                app:boxStrokeColor="@color/colorDanger"
                 app:endIconDrawable="@drawable/ic_event_black_24dp"
                 app:endIconMode="custom"
-                app:endIconTint="@color/colorAccent"
+                app:endIconTint="@color/colorSecondary"
                 app:errorEnabled="true"
-                app:hintTextColor="@color/colorHighlight">
+                app:hintTextColor="@color/colorDanger">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -109,19 +109,19 @@
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:inputType="none"
-                    android:textColor="@color/colorPrimaryText" />
+                    android:textColor="@color/colorTextPrimary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/eventInfoInput"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/OutlineTextInputLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Información adicional"
-                android:textColorHint="@color/colorSecondaryText"
-                app:boxStrokeColor="@color/colorHighlight"
+                android:textColorHint="@color/colorTextSecondary"
+                app:boxStrokeColor="@color/colorDanger"
                 app:errorEnabled="true"
-                app:hintTextColor="@color/colorHighlight">
+                app:hintTextColor="@color/colorDanger">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -129,7 +129,7 @@
                     android:inputType="textMultiLine"
                     android:lines="2"
                     android:maxLines="3"
-                    android:textColor="@color/colorPrimaryText" />
+                    android:textColor="@color/colorTextPrimary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -146,7 +146,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:backgroundTint="@color/colorHighlight"
+                android:backgroundTint="@color/colorDanger"
                 android:text="Agregar" />
 
         </LinearLayout>

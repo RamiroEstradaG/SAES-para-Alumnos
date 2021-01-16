@@ -125,52 +125,37 @@ class GradesFragment : Fragment() {
                 if(activity != null){
                     if(p1.toIntOrNull() != null) {
                         if (p1.toInt() < 6) {
-                            cardView.partialOneTextView.setTextColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.colorHighlight
-                                )
-                            )
+                            cardView.partialOneTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
+                        }else{
+                            cardView.partialOneTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorInfo))
                         }
                     }
                     if(p2.toIntOrNull() != null) {
                         if (p2.toInt() < 6) {
-                            cardView.partialTwoTextView.setTextColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.colorHighlight
-                                )
-                            )
+                            cardView.partialTwoTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
+                        }else{
+                            cardView.partialTwoTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorInfo))
                         }
                     }
                     if(p3.toIntOrNull() != null) {
                         if (p3.toInt() < 6) {
-                            cardView.partialThreeTextView.setTextColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.colorHighlight
-                                )
-                            )
+                            cardView.partialThreeTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
+                        }else{
+                            cardView.partialThreeTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorInfo))
                         }
                     }
                     if(extra.toIntOrNull() != null) {
                         if (extra.toInt() < 6) {
-                            cardView.extraordinaryTextView.setTextColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.colorHighlight
-                                )
-                            )
+                            cardView.extraordinaryTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
+                        }else{
+                            cardView.extraordinaryTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorInfo))
                         }
                     }
                     if(final.toIntOrNull() != null) {
                         if (final.toInt() < 6) {
-                            cardView.finalScoreTextView.setTextColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    R.color.colorHighlight
-                                )
-                            )
+                            cardView.finalScoreTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorDanger))
+                        }else{
+                            cardView.finalScoreTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorInfo))
                         }
                     }
                 }

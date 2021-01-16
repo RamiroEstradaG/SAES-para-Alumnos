@@ -37,7 +37,7 @@ class ClassScheduleFragment : Fragment() {
                 R.drawable.ic_add_black_24dp,
                 {
                     crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
-                    rootView.classScheduleView.newClass()
+                    rootView.classScheduleView.openBottomSheetForNewClass()
                 },
                 BottomAppBar.FAB_ALIGNMENT_MODE_CENTER
             )
@@ -50,8 +50,10 @@ class ClassScheduleFragment : Fragment() {
                 }
             }
 
+            (activity as SAESActivity).hideDragIcon()
+
             if(!getPreference(activity, "horario_expand", false)){
-                (activity as SAESActivity).hideDragIcon()
+                (activity as SAESActivity).showDragIcon()
             }
         }
 
@@ -64,6 +66,7 @@ class ClassScheduleFragment : Fragment() {
         rootView.classScheduleView.isDatabaseEnabled = true
         rootView.classScheduleView.isCurrentDayVisible = true
         rootView.classScheduleView.isCurrentHourVisible = true
+        rootView.classScheduleView.isAddInsetTopEnabled = true
         rootView.classScheduleView.offsetBottom = 1
 
         if (getPreference(context, "horario_expand", false)) {

@@ -132,7 +132,7 @@ class AddCourseDialogFragment : DialogFragment(){
             if(activity is ScheduleGeneratorActivity){
                 (activity as ScheduleGeneratorActivity?)?.addItemAndDismiss(data)
             }else if(activity?.supportFragmentManager?.fragments?.first() is ClassScheduleFragment){
-                (activity?.supportFragmentManager?.fragments?.first() as ClassScheduleFragment).rootView.classScheduleView.newClass(data)
+                (activity?.supportFragmentManager?.fragments?.first() as ClassScheduleFragment).rootView.classScheduleView.addNewClass(data)
                 this@AddCourseDialogFragment.dismiss()
             }
         }

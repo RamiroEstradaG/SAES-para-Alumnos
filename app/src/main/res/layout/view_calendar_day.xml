@@ -12,7 +12,7 @@
         android:paddingBottom="16dp"
         android:text="20 de Diciembre del 2019"
         android:textAlignment="center"
-        android:textColor="@color/colorSecondaryText"
+        android:textColor="@color/colorTextSecondary"
         android:textSize="18sp"
         android:textStyle="italic" />
 

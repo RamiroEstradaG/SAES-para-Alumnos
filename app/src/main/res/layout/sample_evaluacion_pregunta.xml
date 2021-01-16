@@ -12,7 +12,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:text="Pregunta 1"
-        android:textColor="@color/colorPrimaryText"
+        android:textColor="@color/colorTextPrimary"
         android:textSize="18sp" />
 
     <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView

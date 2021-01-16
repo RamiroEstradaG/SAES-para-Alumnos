@@ -33,11 +33,11 @@ class HourView: FrameLayout{
     }
 
     private fun initView(){
-        layout = ViewCalendarHourBinding.inflate(LayoutInflater.from(context))
-        layout.horaLabel.text = hora.hora
+        layout = ViewCalendarHourBinding.inflate(LayoutInflater.from(context), this, true)
+        layout.horaLabel.text = hora.hour
         layout.meridianLabel.text = hora.meridian
 
-        for(event in hora.eventos){
+        for(event in hora.events){
             val eventLayout = ViewCalendarEventBinding.inflate(LayoutInflater.from(context))
 
             eventLayout.eventoTitle.text = event.title
@@ -53,14 +53,14 @@ class HourView: FrameLayout{
 
         this.viewTreeObserver.addOnScrollChangedListener {
             val parentHeight = layout.eventosLayout.measuredHeight
-            val changelayoutHeight = layout.changingLabelLayout.measuredHeight
+            val changeLayoutHeight = layout.changingLabelLayout.measuredHeight
             val relativeToTop = getRelativeTop(layout.changingLabelLayout)
 
             if(relativeToTop < OFFSET){
-                Log.d("HoraViewOffset", "$relativeToTop  --- ${OFFSET - relativeToTop.toFloat()} -- $parentHeight - $changelayoutHeight = ${parentHeight - changelayoutHeight}")
+                Log.d("HoraViewOffset", "$relativeToTop  --- ${OFFSET - relativeToTop.toFloat()} -- $parentHeight - $changeLayoutHeight = ${parentHeight - changeLayoutHeight}")
 
-                if(OFFSET - relativeToTop.toFloat() >= parentHeight - changelayoutHeight - dpToPixel(context, 4)){
-                    layout.changingLabelLayout.translationY = parentHeight - changelayoutHeight.toFloat() - dpToPixel(context, 4)
+                if(OFFSET - relativeToTop.toFloat() >= parentHeight - changeLayoutHeight - dpToPixel(context, 4)){
+                    layout.changingLabelLayout.translationY = parentHeight - changeLayoutHeight.toFloat() - dpToPixel(context, 4)
                 }else{
                     layout.changingLabelLayout.translationY = OFFSET - relativeToTop.toFloat()
                 }

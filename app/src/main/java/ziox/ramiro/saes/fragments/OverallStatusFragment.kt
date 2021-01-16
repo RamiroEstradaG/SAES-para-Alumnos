@@ -65,7 +65,7 @@ class OverallStatusFragment : Fragment() {
             textView.textSize = 18f
             textView.text = name.toProperCase()
             textView.setPadding(dpToPixel(activity, 8),dpToPixel(activity, 8),dpToPixel(activity, 8),dpToPixel(activity, 8))
-            textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSecondaryText))
+            textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorTextSecondary))
 
             activity?.runOnUiThread {
                 rootView.failedCoursesLayout.addView(textView)
@@ -79,7 +79,7 @@ class OverallStatusFragment : Fragment() {
             textView.textSize = 18f
             textView.text = name.toProperCase()
             textView.setPadding(dpToPixel(activity, 8),dpToPixel(activity, 8),dpToPixel(activity, 8),dpToPixel(activity, 8))
-            textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorSecondaryText))
+            textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.colorTextSecondary))
 
             activity?.runOnUiThread {
                 rootView.outdatedCoursesLayout.addView(textView)

@@ -43,7 +43,7 @@ class ETSCalendarFragment : Fragment() {
     ): View {
         rootView = FragmentEtsCalendarBinding.inflate(inflater, container, false)
         bottomSheet = BottomSheetBehavior.from(rootView.filterBottomSheet)
-        setLightStatusBar(activity)
+        setSystemUiLightStatusBar(requireActivity(), false)
         rootView.bottomSheetScrollView.addBottomInsetPadding()
 
         bottomSheet.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
@@ -64,9 +64,9 @@ class ETSCalendarFragment : Fragment() {
 
         (activity as? SAESActivity)?.setOnDragHorizontaly {
             if (it){
-                rootView.etsSchedule.scrollToPrev()
+                rootView.etsCalendarView.scrollToPrev()
             }else{
-                rootView.etsSchedule.scrollToNext()
+                rootView.etsCalendarView.scrollToNext()
             }
         }
 
@@ -445,7 +445,7 @@ class ETSCalendarFragment : Fragment() {
                     val currentDay = k.get(Calendar.DAY_OF_YEAR)
                     val currentHour = k.get(Calendar.HOUR_OF_DAY)+(k.get(Calendar.MINUTE)/60.0)
                     if(currentDay != day){
-                        rootView.etsSchedule.addDay("${k.get(Calendar.DAY_OF_MONTH)} de ${MES_COMPLETO[k.get(Calendar.MONTH)]}")
+                        rootView.etsCalendarView.addDay("${k.get(Calendar.DAY_OF_MONTH)} de ${MES_COMPLETO[k.get(Calendar.MONTH)]}")
                         day = currentDay
                         hour = -1.0
                     }
@@ -453,16 +453,16 @@ class ETSCalendarFragment : Fragment() {
                     if(currentHour != hour){
                         var hourString = k.get(Calendar.HOUR)
                         if(hourString == 0) hourString = 12
-                        rootView.etsSchedule.addHour("${hourString.toString().padStart(2,'0')}:${k.get(Calendar.MINUTE).toString().padStart(2, '0')}", if(k.get(Calendar.AM_PM) == Calendar.AM)"A.M." else "P.M.")
+                        rootView.etsCalendarView.addHour("${hourString.toString().padStart(2,'0')}:${k.get(Calendar.MINUTE).toString().padStart(2, '0')}", if(k.get(Calendar.AM_PM) == Calendar.AM)"A.M." else "P.M.")
                         hour = currentHour
                     }
 
                     for(e in etsMap[k]!!){
-                        rootView.etsSchedule.addEvent(e)
+                        rootView.etsCalendarView.addEvent(e)
                     }
                 }
 
-                rootView.etsSchedule.notifyDataSetChanged()
+                rootView.etsCalendarView.notifyDataSetChanged()
             }
         }
 
@@ -470,7 +470,7 @@ class ETSCalendarFragment : Fragment() {
         fun clear() {
             etsMap.clear()
             activity?.runOnUiThread {
-                rootView.etsSchedule.clear()
+                rootView.etsCalendarView.clear()
             }
         }
     }

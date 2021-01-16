@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Carrera"
-                android:textColor="@color/colorSecondaryText" />
+                android:textColor="@color/colorTextSecondary" />
 
             <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
                 android:id="@+id/career_selector"
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Plan de estudios"
-                android:textColor="@color/colorSecondaryText" />
+                android:textColor="@color/colorTextSecondary" />
 
             <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
                 android:id="@+id/curriculum_selector"
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Turno"
-                android:textColor="@color/colorSecondaryText" />
+                android:textColor="@color/colorTextSecondary" />
 
             <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
                 android:id="@+id/school_shift_selector"
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Periodo"
-                android:textColor="@color/colorSecondaryText" />
+                android:textColor="@color/colorTextSecondary" />
 
             <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
                 android:id="@+id/period_selector"
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Grupo"
-                android:textColor="@color/colorSecondaryText" />
+                android:textColor="@color/colorTextSecondary" />
 
             <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
                 android:id="@+id/group_selector"
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Materia"
-                android:textColor="@color/colorSecondaryText" />
+                android:textColor="@color/colorTextSecondary" />
 
             <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
                 android:id="@+id/course_name_selector"
@@ -106,10 +106,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_marginTop="16dp"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@color/colorSecondary"
                 android:text="Añadir"
                 android:textColor="@color/colorOnPrimary"
-                app:tint="@color/colorAccent" />
+                app:tint="@color/colorSecondary" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

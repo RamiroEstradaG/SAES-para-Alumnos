@@ -12,9 +12,9 @@ class NumberUtilsKtTest {
         val test2 = 12.345678
         val test3 = 1.0
 
-        assertEquals("3.1416", test.toStringPresition(4))
-        assertEquals("12.35", test2.toStringPresition(2))
-        assertEquals("1", test3.toStringPresition(5))
+        assertEquals("3.1416", test.toStringPrecision(4))
+        assertEquals("12.35", test2.toStringPrecision(2))
+        assertEquals("1", test3.toStringPrecision(5))
     }
 
     @Test
@@ -23,9 +23,9 @@ class NumberUtilsKtTest {
         val test2 = 20.25
         val test3 = 1.0
 
-        assertEquals("15:30", test.toHour())
-        assertEquals("20:15", test2.toHour())
-        assertEquals("01:00", test3.toHour())
+        assertEquals("15:30", test.toHourString())
+        assertEquals("20:15", test2.toHourString())
+        assertEquals("01:00", test3.toHourString())
     }
 
     @Test

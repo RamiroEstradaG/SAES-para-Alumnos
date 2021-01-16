@@ -32,7 +32,7 @@ class UserCalendarFragment : Fragment() {
             (activity as SAESActivity).showFab(R.drawable.ic_add_black_24dp, {
                 val dialog = AddCalendarDialogFragment()
                 dialog.setOnSuccessListener {
-                    (activity as SAESActivity).postNavigationItemSelected(R.id.nav_calendario_trabajo, false)
+                    (activity as SAESActivity).postNavigationItemSelected(R.id.nav_personal_agenda, false)
                 }
                 dialog.show(childFragmentManager, "add_calendario_trabajo")
             }, BottomAppBar.FAB_ALIGNMENT_MODE_END)
@@ -40,7 +40,9 @@ class UserCalendarFragment : Fragment() {
 
         initUser(activity, getBoleta(activity), getBasicUser(activity)){
             getUserData(activity){
-                initCalendars(it)
+                activity?.runOnUiThread {
+                    initCalendars(it)
+                }
             }
         }
 
@@ -56,11 +58,31 @@ class UserCalendarFragment : Fragment() {
         return rootView.root
     }
 
+    private fun addSchoolAgenda(){
+        val calendarItem = ViewUserCalendarItemBinding.inflate(LayoutInflater.from(context))
+
+        calendarItem.calendarTitleTextView.text = "Agenda escolar"
+        calendarItem.calendarTypeTextView.text = "Académico"
+
+        calendarItem.calendarCodeTextView.visibility = View.GONE
+
+        calendarItem.calendarButton.setOnClickListener {
+            if(activity is SAESActivity){
+                (activity as SAESActivity).fragmentReplace(CalendarViewerFragment(TYPE_AGENDA_SCHOOL_AGENDA), -1)
+            }
+        }
+
+        calendarItem.removeButton.visibility = View.GONE
+
+        rootView.userCalendarLayout.addView(calendarItem.root)
+    }
+
     private fun initCalendars(user: User){
+        addSchoolAgenda()
         if(user.calendarIds.isEmpty()) {
             activity?.runOnUiThread {
                 (activity as SAESActivity).getProgressBar()?.visibility = View.GONE
-                (activity as SAESActivity).showEmptyText("No tienes calendarios")
+                (activity as SAESActivity).showEmptyText("Presiona + para crear tu propia agenda")
             }
 
             return
@@ -72,7 +94,7 @@ class UserCalendarFragment : Fragment() {
 
             if(snap.isNotEmpty() && activity != null){
                 for (doc in snap){
-                    val calendarItem = ViewUserCalendarItemBinding.inflate(layoutInflater)
+                    val calendarItem = ViewUserCalendarItemBinding.inflate(LayoutInflater.from(context))
 
                     calendarItem.calendarTitleTextView.text = doc.name
                     calendarItem.calendarTypeTextView.text = if(!doc.private){
@@ -97,11 +119,11 @@ class UserCalendarFragment : Fragment() {
                         val alertDialog = AlertDialog.Builder(activity, R.style.DialogAlert)
 
                         alertDialog.setTitle("Borrar ${doc.name}")
-                        alertDialog.setMessage("¿Desea borrar este calendario de trabajo?")
+                        alertDialog.setMessage("¿Desea borrar esta agenda?")
                         alertDialog.setPositiveButton("Borrar"){ _, _ ->
                             removeCalendar(activity, doc.code).addOnSuccessListener {
                                 if(activity is SAESActivity){
-                                    (activity as SAESActivity).postNavigationItemSelected(R.id.nav_calendario_trabajo, false)
+                                    (activity as SAESActivity).postNavigationItemSelected(R.id.nav_personal_agenda, false)
                                 }
                             }
                         }
@@ -110,7 +132,9 @@ class UserCalendarFragment : Fragment() {
                         alertDialog.show()
                     }
 
-                    rootView.userCalendarLayout.addView(calendarItem.root)
+                    activity?.runOnUiThread {
+                        rootView.userCalendarLayout.addView(calendarItem.root)
+                    }
                 }
             }
         }

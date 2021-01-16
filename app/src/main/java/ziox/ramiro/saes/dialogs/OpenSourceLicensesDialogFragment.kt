@@ -81,7 +81,11 @@ class OpenSourceLicensesDialogFragment : DialogFragment() {
                 "Copyright © 2008 IPN, IPN-DAE. All rights reserved.<br>" +
                 "<a href='http://www.ipn.mx/'>http://www.ipn.mx/</a>" +
                 "</div><br>" +
-                "<div>", "text/html", "utf-8", null)
+                "<div>" +
+                "<b>Home screen design reference and inspiration</b><br>" +
+                "Copyright © 2021 u/SirSilentDX. All rights reserved<br>" +
+                "<a href='https://www.reddit.com/r/UI_Design/comments/kr16e3/i_made_a_redesign_of_my_campuss_academic_website/'>https://www.reddit.com/r/UI_Design/comments/kr16e3/i_made_a_redesign_of_my_campuss_academic_website/</a>" +
+                "</div><br>", "text/html", "utf-8", null)
 
         return rootView.root
     }

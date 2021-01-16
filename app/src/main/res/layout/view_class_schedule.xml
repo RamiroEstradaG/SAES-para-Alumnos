@@ -19,6 +19,7 @@
         android:visibility="gone" />
 
     <LinearLayout
+        android:id="@+id/schedule_section"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -46,7 +47,7 @@
                     android:layout_weight="1"
                     android:text="L"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
 
                 <TextView
@@ -56,7 +57,7 @@
                     android:layout_weight="1"
                     android:text="M"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
 
                 <TextView
@@ -66,7 +67,7 @@
                     android:layout_weight="1"
                     android:text="M"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
 
                 <TextView
@@ -76,7 +77,7 @@
                     android:layout_weight="1"
                     android:text="J"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
 
                 <TextView
@@ -86,7 +87,7 @@
                     android:layout_weight="1"
                     android:text="V"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -96,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:text="Dia"
                 android:textAlignment="center"
-                android:textColor="@color/colorPrimaryText"
+                android:textColor="@color/colorTextPrimary"
                 android:textSize="18sp"
                 android:visibility="gone" />
 
@@ -137,9 +138,9 @@
                             android:layout_gravity="end"
                             android:contentDescription="horario"
                             android:scaleType="fitEnd"
-                            app:tint="@color/colorHighlight"
                             android:visibility="gone"
-                            app:srcCompat="@drawable/ic_play_arrow_black_24dp" />
+                            app:srcCompat="@drawable/ic_play_arrow_black_24dp"
+                            app:tint="@color/colorDanger" />
 
                     </FrameLayout>
 
@@ -208,13 +209,14 @@
         tools:visibility="visible">
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/bottomSheetAppBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:background="@color/colorSurface">
+            android:layout_height="wrap_content"
+            android:background="@color/surfaceElevation4dp">
 
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="58dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -225,8 +227,19 @@
                     android:layout_marginStart="16dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:contentDescription="horario"
-                    app:tint="@color/colorPrimaryText"
-                    app:srcCompat="@drawable/ic_close_black_24dp" />
+                    app:srcCompat="@drawable/ic_close_black_24dp"
+                    app:tint="@color/colorTextPrimary" />
+
+                <TextView
+                    android:id="@+id/bottomSheetTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="20sp" />
 
                 <Button
                     android:id="@+id/save_edit_class_button"
@@ -236,8 +249,9 @@
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginEnd="8dp"
                     android:text="Guardar"
-                    android:textColor="@color/colorAccent" />
-            </FrameLayout>
+                    android:textColor="@color/colorSecondary" />
+
+            </LinearLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -245,6 +259,7 @@
             android:id="@+id/bottom_sheet_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/colorSurface"
             android:clipToPadding="false"
             android:fitsSystemWindows="true"
             android:paddingBottom="58dp">
@@ -265,9 +280,10 @@
 
                     <Button
                         android:id="@+id/buttonAddFromHorario"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/colorAccent"
+                        android:layout_gravity="center"
+                        android:backgroundTint="@color/colorSecondary"
                         android:text="Añadir materia predefinida"
                         android:textAllCaps="true"
                         android:textColor="@color/colorOnPrimary"
@@ -278,213 +294,127 @@
                         android:layout_height="wrap_content"
                         android:text="- O -"
                         android:textAlignment="center"
-                        android:textColor="@color/colorSecondaryText" />
+                        android:textColor="@color/colorTextSecondary" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nueva materia"
-                        android:textColor="@color/colorPrimaryText"
-                        android:textSize="18sp" />
                 </LinearLayout>
 
-                <LinearLayout
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/course_name_edit_input"
+                    style="@style/OutlineTextInputLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="Nombre de la materia"
+                    app:boxStrokeColor="@color/colorSecondary"
+                    app:endIconCheckable="true"
+                    app:endIconDrawable="@drawable/ic_baseline_restore_24"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/colorSecondary"
+                    app:hintTextColor="@color/colorSecondary">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/course_name_edit_input"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/teacher_name_edit_input"
+                    style="@style/OutlineTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="Profesor"
+                    app:boxStrokeColor="@color/colorSecondary"
+                    app:endIconDrawable="@drawable/ic_baseline_restore_24"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/colorSecondary"
+                    app:hintTextColor="@color/colorSecondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/building_name_edit_input"
+                    style="@style/OutlineTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="Edificio"
+                    app:boxStrokeColor="@color/colorSecondary"
+                    app:endIconDrawable="@drawable/ic_baseline_restore_24"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/colorSecondary"
+                    app:hintTextColor="@color/colorSecondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/classroom_name_edit_input"
+                    style="@style/OutlineTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="Salón"
+                    app:boxStrokeColor="@color/colorSecondary"
+                    app:endIconDrawable="@drawable/ic_baseline_restore_24"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/colorSecondary"
+                    app:hintTextColor="@color/colorSecondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/group_edit_input"
+                    style="@style/OutlineTextInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="Grupo"
+                    app:boxStrokeColor="@color/colorSecondary"
+                    app:endIconDrawable="@drawable/ic_baseline_restore_24"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/colorSecondary"
+                    app:hintTextColor="@color/colorSecondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:hint="Nombre de la materia"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextColor="@color/colorAccent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <ImageView
-                        android:id="@+id/restoreName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:contentDescription="horario"
-                        android:focusable="true"
-                        android:padding="8dp"
-                        app:tint="@color/colorPrimaryText"
-                        app:srcCompat="@drawable/ic_refresh_black_24dp" />
-                </LinearLayout>
+                        android:enabled="false"
+                        android:textColor="@color/colorDivider" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/teacher_name_edit_input"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:hint="Profesor"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextColor="@color/colorAccent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <ImageView
-                        android:id="@+id/restoreProfesor"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:contentDescription="horario"
-                        android:focusable="true"
-                        android:padding="8dp"
-                        app:tint="@color/colorPrimaryText"
-                        app:srcCompat="@drawable/ic_refresh_black_24dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/building_name_edit_input"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:hint="Edificio"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextColor="@color/colorAccent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <ImageView
-                        android:id="@+id/restoreEdificio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:contentDescription="horario"
-                        android:focusable="true"
-                        android:padding="8dp"
-                        app:tint="@color/colorPrimaryText"
-                        app:srcCompat="@drawable/ic_refresh_black_24dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/classroom_name_edit_input"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:hint="Salón"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextColor="@color/colorAccent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <ImageView
-                        android:id="@+id/restoreSalon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:contentDescription="horario"
-                        android:focusable="true"
-                        android:padding="8dp"
-                        app:tint="@color/colorPrimaryText"
-                        app:srcCompat="@drawable/ic_refresh_black_24dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/editClaseGrupo"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:hint="Grupo"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:hintTextColor="@color/colorAccent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:enabled="false"
-                            android:textColor="@color/colorDivider" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <ImageView
-                        android:id="@+id/restoreGrupo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:contentDescription="horario"
-                        android:focusable="true"
-                        android:padding="8dp"
-                        app:tint="@color/colorPrimaryText"
-                        android:visibility="invisible"
-                        app:srcCompat="@drawable/ic_refresh_black_24dp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
@@ -494,7 +424,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="Dia"
-                            android:textColor="@color/colorSecondaryText" />
+                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                            android:textColor="@color/colorTextSecondary" />
 
                         <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
                             android:id="@+id/day_edit_selectable"
@@ -503,109 +434,58 @@
                     </LinearLayout>
 
                     <ImageView
-                        android:id="@+id/restoreDia"
+                        android:id="@+id/day_index_restore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:contentDescription="horario"
-                        android:focusable="true"
-                        android:padding="8dp"
-                        app:tint="@color/colorPrimaryText"
-                        app:srcCompat="@drawable/ic_refresh_black_24dp" />
-
+                        app:tint="@color/colorSecondary"
+                        app:srcCompat="@drawable/ic_baseline_restore_24" />
                 </LinearLayout>
 
-                <LinearLayout
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/start_hour_edit_input"
+                    style="@style/OutlineTextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:hint="Hora de inicio"
+                    app:boxStrokeColor="@color/colorSecondary"
+                    app:endIconDrawable="@drawable/ic_baseline_restore_24"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/colorSecondary"
+                    app:hintTextColor="@color/colorSecondary"
+                    app:startIconDrawable="@drawable/ic_event_black_24dp"
+                    app:startIconTint="@color/colorSecondary">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/start_hour_edit_input"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:hint="Hora de inicio"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:endIconDrawable="@drawable/ic_event_black_24dp"
-                        app:endIconMode="custom"
-                        app:endIconTint="@color/colorAccent"
-                        app:hintTextColor="@color/colorAccent">
+                        android:cursorVisible="false"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:cursorVisible="false"
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            android:inputType="none" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <ImageView
-                        android:id="@+id/restoreHoraInicio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:contentDescription="horario"
-                        android:focusable="true"
-                        android:padding="8dp"
-                        app:tint="@color/colorPrimaryText"
-                        app:srcCompat="@drawable/ic_refresh_black_24dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/finish_hour_edit_input"
+                    style="@style/OutlineTextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:hint="Hora de finalización"
+                    app:boxStrokeColor="@color/colorSecondary"
+                    app:endIconDrawable="@drawable/ic_baseline_restore_24"
+                    app:endIconMode="custom"
+                    app:endIconTint="@color/colorSecondary"
+                    app:hintTextColor="@color/colorSecondary"
+                    app:startIconDrawable="@drawable/ic_event_black_24dp"
+                    app:startIconTint="@color/colorSecondary">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/finis_hour_edit_input"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:focusableInTouchMode="false"
-                        android:hint="Hora de finalización"
-                        app:boxStrokeColor="@color/colorAccent"
-                        app:endIconDrawable="@drawable/ic_event_black_24dp"
-                        app:endIconMode="custom"
-                        app:endIconTint="@color/colorAccent"
-                        app:hintTextColor="@color/colorAccent">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:cursorVisible="false"
-                            android:focusable="false"
-                            android:focusableInTouchMode="false"
-                            android:inputType="none" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <ImageView
-                        android:id="@+id/restoreFinal"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical|end"
-                        android:background="?android:attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:contentDescription="horario"
-                        android:focusable="true"
-                        android:padding="8dp"
-                        app:tint="@color/colorPrimaryText"
-                        app:srcCompat="@drawable/ic_refresh_black_24dp" />
-
-                </LinearLayout>
+                        android:cursorVisible="false"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <Space
                     android:layout_width="match_parent"

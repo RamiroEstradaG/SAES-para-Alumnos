@@ -33,10 +33,11 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
     }
 
     val sectionIds = arrayOf(
+        R.id.nav_home,
         R.id.nav_kardex,
         R.id.nav_estado_general,
         R.id.nav_horario,
-        R.id.nav_calendario_trabajo,
+        R.id.nav_personal_agenda,
         R.id.nav_calific,
         R.id.nav_reinsc
     )
@@ -46,9 +47,11 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initTheme(this)
-        setLightStatusBar(this)
+        setSystemUiLightStatusBar(this, false)
         binding.parentLayout.addBottomInsetPadding()
-        initToolbar()
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         initSpinners()
         initSeekBar()
 
@@ -61,13 +64,9 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
         binding.widgetRangeTooltip.setOnClickListener(this)
     }
 
-    private fun initToolbar(){
-        binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
-        binding.toolbar.setNavigationOnClickListener {
-            crashlytics.log("Click en BackButton en la clase ${this.localClassName}")
-            finish()
-        }
-        binding.toolbar.title = "Configuraciones"
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun initSeekBar(){
@@ -102,38 +101,39 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
         val sectionId = getPreference(
             this,
             "seccion_inicio_v2",
-            resources.getResourceEntryName(R.id.nav_kardex)
+            resources.getResourceEntryName(R.id.nav_home)
         ) as String
         var isInitDark = false
 
-        initSpinner(
-            this,
-            binding.scheduleUpdateIntervalSpinner,
-            arrayOf(
-                "15 minutos",
-                "20 minutos",
-                "25 minutos",
-                "30 minutos",
-                "35 minutos",
-                "40 minutos",
-                "45 minutos"
-            ),
-            object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(p0: AdapterView<*>?) {}
+        binding.scheduleUpdateIntervalSpinner.setOptions(arrayOf(
+            "15 minutos",
+            "20 minutos",
+            "25 minutos",
+            "30 minutos",
+            "35 minutos",
+            "40 minutos",
+            "45 minutos"
+        ))
 
-                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    setPreference(this@SettingsActivity, "widget_small_interval", (p2 * 5)+15)
-                }
-            })
+        binding.scheduleUpdateIntervalSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
 
-        initSpinner(this, binding.startSectionSpinner, arrayOf(
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                setPreference(this@SettingsActivity, "widget_small_interval", (p2 * 5)+15)
+            }
+        }
+
+        binding.startSectionSpinner.setOptions(arrayOf(
+            "Inicio",
             "Kárdex",
             "Estado General",
             "Horario",
-            "Calendario de trabajo",
+            "Agenda personal",
             "Calificaciones",
             "Cita de reinscripción"
-        ), object : AdapterView.OnItemSelectedListener {
+        ))
+
+        binding.startSectionSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
 
             override fun onItemSelected(
@@ -148,15 +148,17 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
                     resources.getResourceEntryName(sectionIds[position])
                 )
             }
-        })
+        }
 
-        initSpinner(this, binding.themeSelectorSpinner, resources.getStringArray(
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.P) {
+        binding.themeSelectorSpinner.setOptions(resources.getStringArray(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 R.array.themeOptionsApi29
             } else {
                 R.array.themeOptionsApi28
             }
-        ), object : AdapterView.OnItemSelectedListener {
+        ))
+
+        binding.themeSelectorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {}
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -188,8 +190,7 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener, CompoundButt
                     isInitDark = true
                 }
             }
-        })
-
+        }
 
         binding.themeSelectorSpinner.setSelection(
             when (getPreference(

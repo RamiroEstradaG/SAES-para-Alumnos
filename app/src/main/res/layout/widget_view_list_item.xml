@@ -75,7 +75,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Profesor"
-                    android:textColor="@color/colorRipple"
+                    android:textColor="@android:color/white"
                     android:textSize="12sp" />
 
                 <TextView
@@ -108,7 +108,7 @@
                         android:layout_height="wrap_content"
                         android:text="Edificio"
                         android:textAlignment="center"
-                        android:textColor="@color/colorRipple"
+                        android:textColor="@android:color/white"
                         android:textSize="12sp" />
 
                     <TextView
@@ -135,7 +135,7 @@
                         android:layout_height="wrap_content"
                         android:text="Salón"
                         android:textAlignment="center"
-                        android:textColor="@color/colorRipple"
+                        android:textColor="@android:color/white"
                         android:textSize="12sp" />
 
                     <TextView

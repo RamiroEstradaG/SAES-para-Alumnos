@@ -106,7 +106,7 @@ class AgendaEscolarRemoteViewsFactory (val context: Context, val intent: Intent)
             remoteViews.setTextViewText(R.id.itemDiaEvento, eventos[position].fecha!!.get(Calendar.DAY_OF_MONTH).toString())
             remoteViews.setTextViewText(R.id.itemMesEvento, MES_COMPLETO[eventos[position].fecha!!.get(Calendar.MONTH)])
         }else{
-            remoteViews.setTextColor(R.id.itemNombreEvento, ContextCompat.getColor(context, R.color.colorPrimaryText))
+            remoteViews.setTextColor(R.id.itemNombreEvento, ContextCompat.getColor(context, R.color.colorTextPrimary))
         }
         remoteViews.setInt(R.id.itemNombreEvento, "setBackgroundColor", Color.parseColor(eventos[position].color))
 

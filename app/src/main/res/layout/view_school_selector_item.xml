@@ -5,7 +5,6 @@
     android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorSurface"
     android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical"
     tools:ignore="HardcodedText,UnusedAttribute">
@@ -37,7 +36,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_weight="1"
                 android:text="Nombre de la escuela"
-                android:textColor="?android:attr/textColorSecondary"
+                android:textColor="@color/colorTextPrimary"
                 android:textSize="18sp" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -46,13 +45,13 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="Lugar"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textColor="@color/colorTextSecondary" />
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_weight="0"
-                android:background="?attr/dividerHorizontal" />
+                android:background="@color/colorDivider" />
         </LinearLayout>
 
     </LinearLayout>

@@ -13,8 +13,9 @@ import androidx.room.*
     CourseGrade::class,
     AgendaEvent::class,
     ReEnrollmentData::class,
-    ScheduleGeneratorClass::class
-], version = 7, exportSchema = false)
+    ScheduleGeneratorClass::class,
+    RecentActivity::class
+], version = 10, exportSchema = false)
 abstract class AppLocalDatabase : RoomDatabase() {
     abstract fun kardexDao() : KardexDao
     abstract fun overallStatusDao() : OverallStatusDao
@@ -25,6 +26,7 @@ abstract class AppLocalDatabase : RoomDatabase() {
     abstract fun agendaDao() : AgendaDao
     abstract fun reEnrollmentDao() : ReEnrollmentDao
     abstract fun scheduleGeneratorDao() : ScheduleGeneratorDao
+    abstract fun recentActivityDao() : RecentActivityDao
 
 
     companion object {

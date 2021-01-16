@@ -14,7 +14,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="6dp"
-        app:cardBackgroundColor="@color/colorCardOnSurface"
+        app:cardBackgroundColor="@color/colorSurface"
         app:cardCornerRadius="16dp"
         app:cardElevation="0dp">
 
@@ -60,11 +60,11 @@
                 android:layout_gravity="end"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:drawableTint="@color/colorAccent"
+                android:drawableTint="@color/colorSecondary"
                 android:text="Hacer un recordatorio"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/colorSecondary"
                 app:icon="@drawable/ic_event_black_24dp"
-                app:iconTint="@color/colorAccent" />
+                app:iconTint="@color/colorSecondary" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

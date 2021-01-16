@@ -15,9 +15,9 @@ import ziox.ramiro.saes.databinding.ViewCalendarDayBinding
 import ziox.ramiro.saes.utils.addBottomInsetPadding
 
 class CalendarView : FrameLayout, TabLayout.OnTabSelectedListener{
-    data class EventData(val title: String, val edificio: String, val salon: String)
-    data class HoraData(val hora : String, val meridian: String, val eventos : ArrayList<EventData> = ArrayList())
-    data class ScheduleData(val diaTitle : String, val horas : ArrayList<HoraData> = ArrayList())
+    data class EventData(val title: String, val buildingName: String, val classroomName: String)
+    data class HoraData(val hour : String, val meridian: String, val events : ArrayList<EventData> = ArrayList())
+    data class ScheduleData(val dayTitle : String, val hours : ArrayList<HoraData> = ArrayList())
 
     private lateinit var layout : ViewCalendarBinding
     private val data = ArrayList<ScheduleData>()
@@ -32,7 +32,7 @@ class CalendarView : FrameLayout, TabLayout.OnTabSelectedListener{
     }
 
     private fun initView(){
-        layout = ViewCalendarBinding.inflate(LayoutInflater.from(context))
+        layout = ViewCalendarBinding.inflate(LayoutInflater.from(context), this, true)
 
         layout.recyclerViewSchedule.addBottomInsetPadding()
 
@@ -66,14 +66,14 @@ class CalendarView : FrameLayout, TabLayout.OnTabSelectedListener{
 
     fun addHour(hour: String, meridian: String){
         if(data.isNotEmpty()){
-            data.last().horas.add(HoraData(hour, meridian))
+            data.last().hours.add(HoraData(hour, meridian))
         }
     }
 
     fun addEvent(event : EventData){
         if (data.isNotEmpty()) {
-            if (data.last().horas.isNotEmpty()) {
-                data.last().horas.last().eventos.add(event)
+            if (data.last().hours.isNotEmpty()) {
+                data.last().hours.last().events.add(event)
             }
         }
     }
@@ -124,17 +124,17 @@ class CalendarView : FrameLayout, TabLayout.OnTabSelectedListener{
         override fun onBindViewHolder(holder: ViewAdapter, position: Int) {
             val item = data[position]
 
-            holder.title.text = item.diaTitle
+            holder.title.text = item.dayTitle
 
 
             holder.horasLayout.removeAllViews()
-            for(hora in item.horas){
+            for(hora in item.hours){
                 holder.horasLayout.addView(HourView(context, hora))
             }
         }
 
         override fun getItemId(position: Int): Long {
-            return data[position].diaTitle.hashCode().toLong()
+            return data[position].dayTitle.hashCode().toLong()
         }
     }
 }

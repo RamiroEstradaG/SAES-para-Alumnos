@@ -10,7 +10,7 @@
         android:id="@+id/title_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
+        android:background="@color/colorSecondary"
         android:gravity="bottom"
         android:paddingStart="16dp"
         android:paddingTop="24dp"
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Edificio"
-            android:textColor="@color/colorSecondaryText" />
+            android:textColor="@color/colorTextSecondary" />
 
         <TextView
             android:id="@+id/building_name_text_view"
@@ -43,21 +43,21 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="Edificio"
-            android:textColor="@color/colorPrimaryText"
+            android:textColor="@color/colorTextPrimary"
             android:textSize="18sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Salón"
-            android:textColor="@color/colorSecondaryText" />
+            android:textColor="@color/colorTextSecondary" />
 
         <TextView
             android:id="@+id/classroom_name_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Salon"
-            android:textColor="@color/colorPrimaryText"
+            android:textColor="@color/colorTextPrimary"
             android:textSize="18sp" />
 
     </LinearLayout>

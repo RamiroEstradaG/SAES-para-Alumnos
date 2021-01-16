@@ -6,6 +6,7 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.util.AttributeSet
 import android.util.Log
@@ -15,14 +16,20 @@ import android.view.inputmethod.InputMethodManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.updatePadding
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.FragmentActivity
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.activities.SAESActivity
 import ziox.ramiro.saes.databases.*
@@ -36,6 +43,8 @@ import kotlin.collections.ArrayList
 /**
  * Creado por Ramiro el 11/11/2018 a las 4:29 PM para SAESv2.
  */
+
+const val TICK_UPDATE_MILLIS = 5000L
 
 class ScheduleView : FrameLayout {
     private val crashlytics = FirebaseCrashlytics.getInstance()
@@ -66,6 +75,7 @@ class ScheduleView : FrameLayout {
     )
     private val onExpandedListeners = ArrayList<(isExpanded: Boolean, index: Int) -> Unit>()
     private val classesData = ArrayList<ScheduleClass>()
+    private var tickHandler : Handler? = Handler(Looper.getMainLooper())
     val webView: WebView
 
     var minHour = 25.0
@@ -80,6 +90,19 @@ class ScheduleView : FrameLayout {
     var isExpanded = false
     var isCurrentHourVisible = false
     var selectedIndex = 0
+    var isAddInsetTopEnabled = false
+        set(value) {
+            if(::mainView.isInitialized){
+                if(value){
+                    mainView.scheduleSection.addTopInsetPadding()
+                    mainView.bottomSheetAppBarLayout.addTopInsetPadding()
+                }else{
+                    mainView.scheduleSection.updatePadding(top = 0)
+                    mainView.bottomSheetAppBarLayout.updatePadding(top = 0)
+                }
+            }
+            field = value
+        }
     private var hasClass = false
 
     private var activity: FragmentActivity? = null
@@ -176,7 +199,7 @@ class ScheduleView : FrameLayout {
                             newData.classroomName = mainView.classroomNameEditInput.editText!!.text.toString()
                             newData.dayIndex = mainView.dayEditSelectable.selectedIndex
                             newData.startHour = hourToDouble(mainView.startHourEditInput.editText!!.text.toString())
-                            newData.finishHour = hourToDouble(mainView.finisHourEditInput.editText!!.text.toString())
+                            newData.finishHour = hourToDouble(mainView.finishHourEditInput.editText!!.text.toString())
                         } catch (e: Exception) {
                             Log.e(this.javaClass.canonicalName, e.toString())
                         }
@@ -200,10 +223,10 @@ class ScheduleView : FrameLayout {
                         val teacherName = mainView.teacherNameEditInput.editText!!.text.toString()
                         val buildingName = mainView.buildingNameEditInput.editText!!.text.toString()
                         val classroomName = mainView.classroomNameEditInput.editText!!.text.toString()
-                        val group = mainView.editClaseGrupo.editText!!.text.toString()
+                        val group = mainView.groupEditInput.editText!!.text.toString()
                         val dayIndex = mainView.dayEditSelectable.selectedIndex
                         val startHour = hourToDouble(mainView.startHourEditInput.editText!!.text.toString())
-                        val finishHour = hourToDouble(mainView.finisHourEditInput.editText!!.text.toString())
+                        val finishHour = hourToDouble(mainView.finishHourEditInput.editText!!.text.toString())
 
                         when{
                             courseName.isBlank() -> mainView.courseNameEditInput.error = "Este campo está vacío"
@@ -227,14 +250,14 @@ class ScheduleView : FrameLayout {
                                 mainView.teacherNameEditInput.error = null
                                 mainView.buildingNameEditInput.error = null
                                 mainView.classroomNameEditInput.error = null
-                                mainView.finisHourEditInput.error = "La duración debe ser mayor a 0"
+                                mainView.finishHourEditInput.error = "La duración debe ser mayor a 0"
                             }
                             else -> {
                                 mainView.courseNameEditInput.error = null
                                 mainView.teacherNameEditInput.error = null
                                 mainView.buildingNameEditInput.error = null
                                 mainView.classroomNameEditInput.error = null
-                                mainView.finisHourEditInput.error = null
+                                mainView.finishHourEditInput.error = null
 
                                 val newData = ScheduleClass(
                                     courseName.toUpperCase(Locale.ROOT).replace(" ", "_")+dayIndex.toString()+startHour.toString(),
@@ -320,12 +343,12 @@ class ScheduleView : FrameLayout {
                 mainView.expandedLayout.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.colorHighlight
+                        R.color.colorDanger
                     )
                 )
             } else {
                 mainView.expandedLayout.setTextColor(
-                    ContextCompat.getColor(context, R.color.colorPrimaryText)
+                    ContextCompat.getColor(context, R.color.colorTextPrimary)
                 )
             }
 
@@ -369,12 +392,12 @@ class ScheduleView : FrameLayout {
                 mainView.expandedLayout.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.colorHighlight
+                        R.color.colorDanger
                     )
                 )
             } else {
                 mainView.expandedLayout.setTextColor(
-                    ContextCompat.getColor(context, R.color.colorPrimaryText)
+                    ContextCompat.getColor(context, R.color.colorTextPrimary)
                 )
             }
 
@@ -468,34 +491,44 @@ class ScheduleView : FrameLayout {
         jsi.onScheduleFinished()
     }
 
-    private fun initFrame(i: Int) {
+    private fun calculateCurrentHourPosition(){
         val cal = Calendar.getInstance()
 
-        viewTreeObserver.addOnGlobalLayoutListener {
-            val hora = cal.get(Calendar.HOUR_OF_DAY) + (cal.get(Calendar.MINUTE) / 60.0)
-            if (hora in minHour..maxHour && isCurrentHourVisible) {
-                mainView.arrowMarker.visibility = View.VISIBLE
-                (mainView.arrowMarker.layoutParams as LayoutParams).setMargins(
-                    0,
-                    dpToPixel(context, (((hora - minHour) * classSize) - 10).toInt()),
-                    0,
-                    0
-                )
-            } else {
-                mainView.arrowMarker.visibility = View.GONE
-            }
-
-            if (isCurrentDayVisible) {
-                when (currentDayIndex) {
-                    0 -> mainView.labelL
-                    1 -> mainView.labelMa
-                    2 -> mainView.labelMi
-                    3 -> mainView.labelJ
-                    4 -> mainView.labelV
-                    else -> null
-                }?.setTextColor(ContextCompat.getColor(context, R.color.colorHighlight))
-            }
+        val hora = cal.get(Calendar.HOUR_OF_DAY) + (cal.get(Calendar.MINUTE) / 60.0) + (cal.get(Calendar.SECOND) / 3600.0)
+        if (hora in minHour..maxHour && isCurrentHourVisible) {
+            mainView.arrowMarker.visibility = View.VISIBLE
+            Log.d(this.javaClass.canonicalName,"$hora ${dpToPixel(context, (((hora - minHour) * classSize) - 10).toInt())}")
+            (mainView.arrowMarker.layoutParams as LayoutParams).setMargins(
+                0,
+                dpToPixel(context, (((hora - minHour) * classSize) - 10).toInt()),
+                0,
+                0
+            )
+        } else {
+            mainView.arrowMarker.visibility = View.GONE
         }
+
+        if (isCurrentDayVisible) {
+            when (currentDayIndex) {
+                0 -> mainView.labelL
+                1 -> mainView.labelMa
+                2 -> mainView.labelMi
+                3 -> mainView.labelJ
+                4 -> mainView.labelV
+                else -> null
+            }?.setTextColor(ContextCompat.getColor(context, R.color.colorDanger))
+        }
+    }
+
+    private fun initFrame(i: Int) {
+        calculateCurrentHourPosition()
+        tickHandler?.postDelayed(object : Runnable{
+            override fun run() {
+                calculateCurrentHourPosition()
+
+                tickHandler?.postDelayed(this, TICK_UPDATE_MILLIS)
+            }
+        }, TICK_UPDATE_MILLIS)
 
         dayLayouts[i].setOnClickListener {
             crashlytics.log("Click en ToggleHorario en la clase ${this.javaClass.canonicalName}")
@@ -521,12 +554,12 @@ class ScheduleView : FrameLayout {
                 mainView.expandedLayout.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.colorHighlight
+                        R.color.colorDanger
                     )
                 )
             } else {
                 mainView.expandedLayout.setTextColor(
-                    ContextCompat.getColor(context, R.color.colorPrimaryText)
+                    ContextCompat.getColor(context, R.color.colorTextPrimary)
                 )
             }
 
@@ -564,8 +597,34 @@ class ScheduleView : FrameLayout {
         hasClass = false
     }
 
-    fun newClass(){
+    private fun addOnTextChange(textInputLayout: TextInputLayout, defaultValue : String = ""){
+        textInputLayout.isEndIconVisible = textInputLayout.editText?.text.toString() != defaultValue
+        Log.d(javaClass.canonicalName, "${textInputLayout.editText?.text} != $defaultValue = ${textInputLayout.editText?.text.toString() != defaultValue}")
+
+        textInputLayout.editText?.doAfterTextChanged {
+            Log.d(javaClass.canonicalName, "$it != $defaultValue = ${it?.toString() != defaultValue}")
+            textInputLayout.isEndIconVisible = it.toString() != defaultValue
+        }
+    }
+
+    private fun setBottomSheetInputEndIcon(@DrawableRes resId : Int){
+        val drawable = ResourcesCompat.getDrawable(resources, resId, context.theme)
+        drawable?.setTint(ContextCompat.getColor(context, R.color.colorSecondary))
+
+        mainView.courseNameEditInput.endIconDrawable = drawable
+        mainView.teacherNameEditInput.endIconDrawable = drawable
+        mainView.buildingNameEditInput.endIconDrawable = drawable
+        mainView.classroomNameEditInput.endIconDrawable = drawable
+        mainView.dayIndexRestore.setImageDrawable(drawable)
+        mainView.groupEditInput.endIconDrawable = drawable
+        mainView.startHourEditInput.endIconDrawable = drawable
+        mainView.finishHourEditInput.endIconDrawable = drawable
+
+    }
+
+    fun openBottomSheetForNewClass(){
         bottomSheetType = BottomSheetEditType.NEW_CLASS
+        mainView.bottomSheetTitle.text = "Nueva clase"
 
         if(activity?.isNetworkAvailable() == true){
             mainView.newClassCustomLayout.visibility = View.VISIBLE
@@ -583,74 +642,107 @@ class ScheduleView : FrameLayout {
         mainView.buildingNameEditInput.editText?.text = Editable.Factory().newEditable("")
         mainView.classroomNameEditInput.editText?.text = Editable.Factory().newEditable("")
         mainView.dayEditSelectable.setOptions(arrayOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes"))
-        mainView.editClaseGrupo.editText?.isEnabled = true
-        mainView.editClaseGrupo.editText?.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryText))
-        mainView.editClaseGrupo.editText?.text = Editable.Factory().newEditable("")
+        mainView.groupEditInput.editText?.isEnabled = true
+        mainView.groupEditInput.editText?.setTextColor(ContextCompat.getColor(context, R.color.colorTextPrimary))
+        mainView.groupEditInput.editText?.text = Editable.Factory().newEditable("")
         mainView.dayEditSelectable.setSelection(0)
         mainView.startHourEditInput.editText?.text = Editable.Factory().newEditable("12:00")
-        mainView.finisHourEditInput.editText?.text = Editable.Factory().newEditable("13:00")
+        mainView.finishHourEditInput.editText?.text = Editable.Factory().newEditable("13:00")
 
-        mainView.startHourEditInput.setEndIconOnClickListener {
-            val horaInicio = hourToDouble(mainView.startHourEditInput.editText?.text.toString())
-            TimePickerDialog(context, R.style.TimePickerTheme, { _, hour, minutes ->
-                mainView.startHourEditInput.editText?.text = Editable.Factory().newEditable((hour+(minutes/60.0)).toHour())
-            }, horaInicio.toInt(), (horaInicio.decimal()*60).toInt(), false).show()
+        addOnTextChange(mainView.courseNameEditInput)
+        addOnTextChange(mainView.teacherNameEditInput)
+        addOnTextChange(mainView.buildingNameEditInput)
+        addOnTextChange(mainView.classroomNameEditInput)
+        mainView.dayEditSelectable.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                mainView.dayIndexRestore.visibility = if (p2 != 0){
+                    View.VISIBLE
+                }else{
+                    View.GONE
+                }
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+        }
+        addOnTextChange(mainView.groupEditInput)
+        addOnTextChange(mainView.startHourEditInput, "12:00")
+        addOnTextChange(mainView.finishHourEditInput, "13:00")
+
+        mainView.dayIndexRestore.visibility = View.GONE
+
+        setBottomSheetInputEndIcon(R.drawable.ic_baseline_cancel_24)
+
+        mainView.startHourEditInput.editText?.setOnFocusChangeListener { view, isInFocus ->
+            if(isInFocus){
+                val horaInicio = hourToDouble(mainView.startHourEditInput.editText?.text.toString())
+                TimePickerDialog(context, R.style.TimePickerTheme, { _, hour, minutes ->
+                    mainView.startHourEditInput.editText?.text = Editable.Factory().newEditable((hour+(minutes/60.0)).toHourString())
+                }, horaInicio.toInt(), (horaInicio.decimal()*60).toInt(), false).show()
+            }
+            view.clearFocus()
         }
 
-        mainView.finisHourEditInput.setEndIconOnClickListener {
-            val horaFinal = hourToDouble(mainView.finisHourEditInput.editText?.text.toString())
-            TimePickerDialog(context, R.style.TimePickerTheme, { _, hour, minutes ->
-                mainView.finisHourEditInput.editText?.text = Editable.Factory().newEditable((hour+(minutes/60.0)).toHour())
-            }, horaFinal.toInt(), (horaFinal.decimal()*60).toInt(), false).show()
+        mainView.finishHourEditInput.editText?.setOnFocusChangeListener { view, isInFocus ->
+            if (isInFocus) {
+                val horaFinal = hourToDouble(mainView.finishHourEditInput.editText?.text.toString())
+                TimePickerDialog(context, R.style.TimePickerTheme, { _, hour, minutes ->
+                    mainView.finishHourEditInput.editText?.text = Editable.Factory().newEditable((hour+(minutes/60.0)).toHourString())
+                }, horaFinal.toInt(), (horaFinal.decimal()*60).toInt(), false).show()
+            }
+            view.clearFocus()
         }
 
-        mainView.restoreName.setOnClickListener {
+        mainView.courseNameEditInput.setEndIconOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
-            mainView.courseNameEditInput.editText?.text =
-                Editable.Factory().newEditable("")
+            mainView.courseNameEditInput.editText?.text = Editable.Factory().newEditable("")
         }
 
-        mainView.restoreProfesor.setOnClickListener {
+        mainView.teacherNameEditInput.setEndIconOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
             mainView.teacherNameEditInput.editText?.text =
                 Editable.Factory().newEditable("")
         }
 
-        mainView.restoreEdificio.setOnClickListener {
+        mainView.buildingNameEditInput.setEndIconOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
             mainView.buildingNameEditInput.editText?.text =
                 Editable.Factory().newEditable("")
         }
 
-        mainView.restoreSalon.setOnClickListener {
+        mainView.classroomNameEditInput.setEndIconOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
             mainView.classroomNameEditInput.editText?.text =
                 Editable.Factory().newEditable("")
         }
 
-        mainView.restoreDia.setOnClickListener {
+        mainView.groupEditInput.setEndIconOnClickListener {
+            crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
+            mainView.groupEditInput.editText?.text =
+                Editable.Factory().newEditable("")
+        }
+
+        mainView.dayIndexRestore.setOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
             mainView.dayEditSelectable.setSelection(0)
         }
 
-        mainView.restoreHoraInicio.setOnClickListener {
+        mainView.startHourEditInput.setEndIconOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
             mainView.startHourEditInput.editText?.text =
                 Editable.Factory().newEditable("12:00")
         }
 
-        mainView.restoreFinal.setOnClickListener {
+        mainView.finishHourEditInput.setEndIconOnClickListener {
             crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
-            mainView.finisHourEditInput.editText?.text =
+            mainView.finishHourEditInput.editText?.text =
                 Editable.Factory().newEditable("13:00")
 
-            mainView.finisHourEditInput.error = null
+            mainView.finishHourEditInput.error = null
         }
 
         changeBottomSheetState(BottomSheetBehavior.STATE_EXPANDED)
     }
 
-    fun newClass(scheduleGeneratorClass: ScheduleGeneratorClass){
+    fun addNewClass(scheduleGeneratorClass: ScheduleGeneratorClass){
         val generatorDataToScheduleClass = fun (dia: Int) : ScheduleClass?{
             val horas = dividirHoras(when(dia){
                 0 -> scheduleGeneratorClass.monday
@@ -698,7 +790,9 @@ class ScheduleView : FrameLayout {
         changeBottomSheetState(BottomSheetBehavior.STATE_HIDDEN)
     }
 
-    fun editClass(scheduleClass: ScheduleClass) {
+    fun openBottomSheetForEditClass(scheduleClass: ScheduleClass) {
+        mainView.bottomSheetTitle.text = "Editar clase"
+
         mainView.newClassCustomLayout.visibility = View.GONE
         bottomSheetType = BottomSheetEditType.EDIT_CLASS
         mainView.courseNameEditInput.error = null
@@ -710,69 +804,101 @@ class ScheduleView : FrameLayout {
         mainView.teacherNameEditInput.editText?.text = Editable.Factory().newEditable(scheduleClass.teacherName.toProperCase())
         mainView.buildingNameEditInput.editText?.text = Editable.Factory().newEditable(scheduleClass.buildingName)
         mainView.classroomNameEditInput.editText?.text = Editable.Factory().newEditable(scheduleClass.classroomName)
-        mainView.editClaseGrupo.editText?.text = Editable.Factory().newEditable(scheduleClass.group)
+        mainView.groupEditInput.editText?.text = Editable.Factory().newEditable(scheduleClass.group)
         mainView.dayEditSelectable.setOptions(arrayOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes"))
-        mainView.editClaseGrupo.editText?.isEnabled = false
-        mainView.editClaseGrupo.editText?.setTextColor(ContextCompat.getColor(context, R.color.colorDivider))
+        mainView.groupEditInput.editText?.isEnabled = false
+        mainView.groupEditInput.editText?.setTextColor(ContextCompat.getColor(context, R.color.colorDivider))
         mainView.dayEditSelectable.setSelection(scheduleClass.dayIndex)
-        mainView.startHourEditInput.editText?.text = Editable.Factory().newEditable(scheduleClass.startHour.toHour())
-        mainView.finisHourEditInput.editText?.text = Editable.Factory().newEditable(scheduleClass.finishHour.toHour())
+        mainView.startHourEditInput.editText?.text = Editable.Factory().newEditable(scheduleClass.startHour.toHourString())
+        mainView.finishHourEditInput.editText?.text = Editable.Factory().newEditable(scheduleClass.finishHour.toHourString())
 
-        mainView.startHourEditInput.setEndIconOnClickListener {
-            TimePickerDialog(context, R.style.TimePickerTheme, { _, hour, minutes ->
-                mainView.startHourEditInput.editText?.text = Editable.Factory().newEditable((hour+(minutes/60.0)).toHour())
-            }, scheduleClass.startHour.toInt(), (scheduleClass.startHour.decimal()*60).toInt(), false).show()
+        setBottomSheetInputEndIcon(R.drawable.ic_baseline_restore_24)
+
+        mainView.startHourEditInput.editText?.setOnFocusChangeListener { view, isInFocus ->
+            if(isInFocus){
+                TimePickerDialog(context, R.style.TimePickerTheme, { _, hour, minutes ->
+                    mainView.startHourEditInput.editText?.text = Editable.Factory().newEditable((hour+(minutes/60.0)).toHourString())
+                }, scheduleClass.startHour.toInt(), (scheduleClass.startHour.decimal()*60).toInt(), false).show()
+            }
+            view.clearFocus()
         }
 
-        mainView.finisHourEditInput.setEndIconOnClickListener {
-            TimePickerDialog(context, R.style.TimePickerTheme, { _, hour, minutes ->
-                mainView.finisHourEditInput.editText?.text = Editable.Factory().newEditable((hour+(minutes/60.0)).toHour())
-            }, scheduleClass.finishHour.toInt(), (scheduleClass.finishHour.decimal()*60).toInt(), false).show()
+        mainView.finishHourEditInput.editText?.setOnFocusChangeListener { view, isInFocus ->
+            if(isInFocus){
+                TimePickerDialog(context, R.style.TimePickerTheme, { _, hour, minutes ->
+                    mainView.finishHourEditInput.editText?.text = Editable.Factory().newEditable((hour+(minutes/60.0)).toHourString())
+                }, scheduleClass.finishHour.toInt(), (scheduleClass.finishHour.decimal()*60).toInt(), false).show()
+            }
+            view.clearFocus()
         }
 
         if (::originalClassScheduleDao.isInitialized) {
             val restoreData = originalClassScheduleDao.get(scheduleClass.uid)
 
             if (restoreData != null) {
-                mainView.restoreName.setOnClickListener {
+                addOnTextChange(mainView.courseNameEditInput, restoreData.courseName.toProperCase())
+                addOnTextChange(mainView.teacherNameEditInput, restoreData.teacherName.toProperCase())
+                addOnTextChange(mainView.buildingNameEditInput, restoreData.buildingName)
+                addOnTextChange(mainView.classroomNameEditInput, restoreData.classroomName)
+                mainView.dayEditSelectable.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                        mainView.dayIndexRestore.visibility = if (p2 != restoreData.dayIndex){
+                            View.VISIBLE
+                        }else{
+                            View.GONE
+                        }
+                    }
+                    override fun onNothingSelected(p0: AdapterView<*>?) {}
+                }
+                addOnTextChange(mainView.groupEditInput, restoreData.group)
+                addOnTextChange(mainView.startHourEditInput, restoreData.startHour.toHourString())
+                addOnTextChange(mainView.finishHourEditInput, restoreData.finishHour.toHourString())
+
+                mainView.dayIndexRestore.visibility = if (scheduleClass.dayIndex != restoreData.dayIndex){
+                    View.VISIBLE
+                }else{
+                    View.GONE
+                }
+
+                mainView.courseNameEditInput.setEndIconOnClickListener {
                     crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
                     mainView.courseNameEditInput.editText?.text =
                         Editable.Factory().newEditable(restoreData.courseName.toProperCase())
                 }
 
-                mainView.restoreProfesor.setOnClickListener {
+                mainView.teacherNameEditInput.setEndIconOnClickListener {
                     crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
                     mainView.teacherNameEditInput.editText?.text =
                         Editable.Factory().newEditable(restoreData.teacherName.toProperCase())
                 }
 
-                mainView.restoreEdificio.setOnClickListener {
+                mainView.buildingNameEditInput.setEndIconOnClickListener {
                     crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
                     mainView.buildingNameEditInput.editText?.text =
                         Editable.Factory().newEditable(restoreData.buildingName)
                 }
 
-                mainView.restoreSalon.setOnClickListener {
+                mainView.classroomNameEditInput.setEndIconOnClickListener {
                     crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
                     mainView.classroomNameEditInput.editText?.text =
                         Editable.Factory().newEditable(restoreData.classroomName)
                 }
 
-                mainView.restoreDia.setOnClickListener {
+                mainView.dayIndexRestore.setOnClickListener {
                     crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
                     mainView.dayEditSelectable.setSelection(restoreData.dayIndex)
                 }
 
-                mainView.restoreHoraInicio.setOnClickListener {
+                mainView.startHourEditInput.setEndIconOnClickListener {
                     crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
                     mainView.startHourEditInput.editText?.text =
-                        Editable.Factory().newEditable(restoreData.startHour.toHour())
+                        Editable.Factory().newEditable(restoreData.startHour.toHourString())
                 }
 
-                mainView.restoreFinal.setOnClickListener {
+                mainView.finishHourEditInput.setEndIconOnClickListener {
                     crashlytics.log("Click en ${resources.getResourceName(it.id)} en la clase ${this.javaClass.canonicalName}")
-                    mainView.finisHourEditInput.editText?.text =
-                        Editable.Factory().newEditable(restoreData.finishHour.toHour())
+                    mainView.finishHourEditInput.editText?.text =
+                        Editable.Factory().newEditable(restoreData.finishHour.toHourString())
                 }
             }
         }
@@ -963,7 +1089,7 @@ class ScheduleView : FrameLayout {
             val dividerParams =
                 LinearLayout.LayoutParams(dpToPixel(context, 45), dpToPixel(context, 1))
             val dividerColor = ContextCompat.getColor(context, R.color.colorDivider)
-            val textColor = ContextCompat.getColor(context, R.color.colorPrimaryText)
+            val textColor = ContextCompat.getColor(context, R.color.colorTextPrimary)
 
             minHour = minHour.toInt().toDouble()
             maxHour = maxHour.toInt().toDouble() + offsetBottom
@@ -989,5 +1115,10 @@ class ScheduleView : FrameLayout {
 
             classesData.clear()
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        tickHandler = null
     }
 }

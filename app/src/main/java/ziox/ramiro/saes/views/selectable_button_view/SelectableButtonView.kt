@@ -83,14 +83,14 @@ class SelectableButtonView : FlexboxLayout{
         selectedItem?.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
         selectedItem?.setTextColor(buttonColor)
 
-        val child = this.getChildAt(index) as Button
+        val child = this.getChildAt(index) as Button?
 
         if(::onItemSelectedListener.isInitialized){
             onItemSelectedListener.onItemSelected(null, child, index+padStart, (index + padStart).toLong())
         }
 
-        child.backgroundTintList = ColorStateList.valueOf(buttonColor)
-        child.setTextColor(ContextCompat.getColor(context, R.color.colorOnPrimary))
+        child?.backgroundTintList = ColorStateList.valueOf(buttonColor)
+        child?.setTextColor(ContextCompat.getColor(context, R.color.colorOnPrimary))
 
         selectedIndex = index + padStart
         selectedItem = child

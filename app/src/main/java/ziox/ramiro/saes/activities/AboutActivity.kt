@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.anjlab.android.iab.v3.BillingProcessor
 import com.anjlab.android.iab.v3.Constants
 import com.anjlab.android.iab.v3.TransactionDetails
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import ziox.ramiro.saes.R
@@ -57,6 +58,7 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler, Vie
         binding.privacyPolicyButton.setOnClickListener(this)
         binding.saesPrivacyPolicyButton.setOnClickListener(this)
         binding.todoListButton.setOnClickListener(this)
+        binding.removeAdsButton.setOnClickListener(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -111,7 +113,7 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler, Vie
                 startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?labels=bug&template=issue.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D")
+                        Uri.parse("https://github.com/RamiroEstradaG/SAES-para-Alumnos/issues/new?labels=bug&template=issue.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D")
                     )
                 )
             }
@@ -129,7 +131,7 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler, Vie
                 startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/RamiroEda/SAES-para-Alumnos/issues/new?labels=feature&template=feature.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D")
+                        Uri.parse("https://github.com/RamiroEstradaG/SAES-para-Alumnos/issues/new?labels=feature&template=feature.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D")
                     )
                 )
             }
@@ -142,6 +144,7 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler, Vie
                             Log.w("GooglePlayReview", "In-app review request failed, reason=$it")
                         }.addOnCompleteListener {
                             Log.i("GooglePlayReview", "In-app review finished")
+                            Snackbar.make(binding.root, "¡Gracias!", Snackbar.LENGTH_SHORT).show()
                         }
                     } else {
                         Log.w(
@@ -159,7 +162,7 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler, Vie
                 startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("https://ramiroeda.github.io/AppSAESv2/Politica")
+                        Uri.parse("https://ramiroestradag.github.io/SAES-para-Alumnos/Politica/")
                     )
                 )
             }
@@ -175,6 +178,9 @@ class AboutActivity : AppCompatActivity(), BillingProcessor.IBillingHandler, Vie
                         Uri.parse("https://trello.com/b/bYPns3O2")
                     )
                 )
+            }
+            R.id.removeAdsButton -> {
+                binding.removeAdsExpandableLayout.toggle()
             }
         }
     }
