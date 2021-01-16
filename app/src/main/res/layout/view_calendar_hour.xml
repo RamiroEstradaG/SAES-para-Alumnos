@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:layout_width="70dp"
+        android:layout_height="match_parent"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <LinearLayout
+            android:id="@+id/changingLabelLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/horaLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="10:00"
+                android:textAlignment="center"
+                android:textColor="@color/colorSecondary"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/meridianLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="A.M."
+                android:textAlignment="center"
+                android:textColor="@color/colorSecondary"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/eventosLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@color/colorDivider"
+        android:orientation="vertical"
+        android:showDividers="beginning">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorDivider">
+
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

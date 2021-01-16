@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/background_widget_list"
-            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTint="@color/colorToolbar"
             android:elevation="3dp"
             android:gravity="end"
             android:orientation="horizontal"
@@ -35,7 +35,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:textColor="@color/colorOnSecondary"
+                    android:textColor="@color/colorOnToolbar"
                     android:textSize="32sp" />
 
                 <TextView
@@ -43,7 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:textColor="@color/colorOnSecondary" />
+                    android:textColor="@color/colorOnToolbar" />
             </LinearLayout>
 
             <ImageView

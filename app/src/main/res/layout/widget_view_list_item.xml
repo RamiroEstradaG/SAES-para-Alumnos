@@ -45,7 +45,7 @@
             tools:ignore="UseCompoundDrawables">
 
             <TextView
-                android:id="@+id/claseNombre"
+                android:id="@+id/course_name_text_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
@@ -75,11 +75,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Profesor"
-                    android:textColor="@color/colorRipple"
+                    android:textColor="@android:color/white"
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/claseProfe"
+                    android:id="@+id/teacher_name_text_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
@@ -89,7 +89,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/impDataLayout"
+                android:id="@+id/important_data_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:baselineAligned="false"
@@ -103,16 +103,16 @@
                     tools:ignore="NestedWeights">
 
                     <TextView
-                        android:id="@+id/fieldEdificio"
+                        android:id="@+id/building_name_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Edificio"
                         android:textAlignment="center"
-                        android:textColor="@color/colorRipple"
+                        android:textColor="@android:color/white"
                         android:textSize="12sp" />
 
                     <TextView
-                        android:id="@+id/claseEdificio"
+                        android:id="@+id/building_name_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Edificio"
@@ -130,16 +130,16 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/fieldSalon"
+                        android:id="@+id/classroom_name_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Salón"
                         android:textAlignment="center"
-                        android:textColor="@color/colorRipple"
+                        android:textColor="@android:color/white"
                         android:textSize="12sp" />
 
                     <TextView
-                        android:id="@+id/claseSalon"
+                        android:id="@+id/class_room_name_text_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Salon"

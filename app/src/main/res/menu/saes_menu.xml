@@ -7,6 +7,11 @@
         android:title="Alumnos">
         <menu>
             <item
+                android:id="@+id/nav_home"
+                android:checkable="true"
+                android:icon="@drawable/ic_baseline_home_24"
+                android:title="Inicio" />
+            <item
                 android:id="@+id/nav_kardex"
                 android:checkable="true"
                 android:icon="@drawable/ic_school_black_24dp"
@@ -23,10 +28,10 @@
                 android:title="Horario de clase" />
 
             <item
-                android:id="@+id/nav_calendario_trabajo"
+                android:id="@+id/nav_personal_agenda"
                 android:checkable="true"
                 android:icon="@drawable/ic_event_black_24dp"
-                android:title="Calendario de trabajo"/>
+                android:title="Agenda personal" />
 
             <item
                 android:id="@+id/nav_calific"
@@ -55,11 +60,6 @@
         android:id="@+id/nav_academica_title"
         android:title="Academica">
         <menu>
-            <item
-                android:id="@+id/nav_agenda_escolar"
-                android:checkable="true"
-                android:icon="@drawable/ic_event_note_black_24dp"
-                android:title="Agenda escolar" />
             <item
                 android:id="@+id/nav_horarios_clase"
                 android:checkable="true"

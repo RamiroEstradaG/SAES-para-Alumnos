@@ -23,7 +23,7 @@ class MessagingService : FirebaseMessagingService() {
         try {
             updateToken(this, p0)
         }catch (e : Exception){
-            Log.e("AppException", e.toString())
+            Log.e(this.javaClass.canonicalName, e.toString())
         }
     }
 }

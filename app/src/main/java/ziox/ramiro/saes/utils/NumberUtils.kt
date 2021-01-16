@@ -3,13 +3,13 @@ package ziox.ramiro.saes.utils
 import android.content.Context
 import java.text.NumberFormat
 
-fun Double.toStringPresition(digits : Int) : String{
+fun Double.toStringPrecision(digits : Int) : String{
     val numberFormat = NumberFormat.getNumberInstance()
     numberFormat.maximumFractionDigits = digits
     return numberFormat.format(this)
 }
 
-fun Double.toHour(): String{
+fun Double.toHourString(): String{
     return "${this.toInt().toString().padStart(2, '0')}:${((this%1.0)*60).toInt().toString().padStart(2, '0')}"
 }
 

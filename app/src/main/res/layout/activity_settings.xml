@@ -9,15 +9,16 @@
     android:baselineAligned="false">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorToolbar"
+        app:titleTextColor="@color/colorOnToolbar"
+        app:title="Configuraciones"
         android:elevation="3dp"
         android:minHeight="?attr/actionBarSize"
         android:paddingTop="30dp"
-        android:theme="?attr/actionBarTheme"
-        app:titleTextColor="@color/colorOnSecondary" />
+         />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -85,15 +86,15 @@
                         android:maxLines="4"
                         android:text="(CUIDADO) Al no tener Internet, se mostrará información de la ultima cuenta que haya entrado sin necesidad de iniciar sesión."
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="@color/colorSecondaryText"
+                        android:textColor="@color/colorTextSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/switch_offline"
+                        app:layout_constraintEnd_toStartOf="@+id/offline_enabler_switch"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
-                    <Switch
-                        android:id="@+id/switch_offline"
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/offline_enabler_switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -116,14 +117,14 @@
                     android:layout_marginStart="8dp">
 
                     <Button
-                        android:id="@+id/btnMoreOffline"
+                        android:id="@+id/offline_sections_list_button"
                         style="@style/Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:singleLine="true"
                         android:text="Ver disponibles sin conexion"
-                        android:textColor="@color/colorAccent"
+                        android:textColor="@color/colorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -167,7 +168,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
                         android:ellipsize="marquee"
                         android:fadingEdge="horizontal"
                         android:singleLine="true"
@@ -175,22 +175,23 @@
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textColor="?android:attr/textColorPrimary"
                         android:textSize="16sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
                         app:layout_constraintStart_toEndOf="@+id/imageView2"
                         app:layout_constraintTop_toTopOf="parent" />
 
 
-                    <Spinner
-                        android:id="@+id/switch_dark_theme"
-                        android:layout_width="150dp"
+                    <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
+                        android:id="@+id/theme_selector_spinner"
                         android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="16dp"
                         android:layout_marginBottom="8dp"
                         android:entries="@array/themeOptionsApi28"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView91" />
 
 
                     <ImageView
@@ -198,12 +199,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        app:tint="@color/colorPrimaryText"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ic_brightness_4_black_24dp" />
+                        app:srcCompat="@drawable/ic_brightness_4_black_24dp"
+                        app:tint="@color/colorTextPrimary" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
@@ -247,13 +246,13 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/switch_expand"
+                        app:layout_constraintEnd_toStartOf="@+id/automatic_schedule_expand_switch"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
-                    <Switch
-                        android:id="@+id/switch_expand"
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/automatic_schedule_expand_switch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -306,13 +305,13 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/switch_expand"
+                        app:layout_constraintEnd_toStartOf="@+id/automatic_schedule_expand_switch"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
-                    <Spinner
-                        android:id="@+id/spinner_seccion"
+                    <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
+                        android:id="@+id/start_section_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
@@ -375,27 +374,24 @@
                         android:layout_below="@android:id/title"
                         android:layout_alignStart="@android:id/title"
                         android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
                         android:maxLines="4"
                         android:text='Es el tiempo que esperará el Widget "Clase actual" para actualizarse estando activo.'
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/spinnerMinsInterval"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
-                    <Spinner
-                        android:id="@+id/spinnerMinsInterval"
-                        style="@android:style/Widget.Holo.Light.Spinner"
-                        android:layout_width="75dp"
+                    <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
+                        android:id="@+id/schedule_update_interval_spinner"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginBottom="8dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -436,18 +432,18 @@
                             app:layout_constraintVertical_bias="0.0" />
 
                         <ImageView
-                            android:id="@+id/tooltipWidget"
+                            android:id="@+id/widget_range_tooltip"
                             android:layout_width="20dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center_vertical"
                             android:layout_marginStart="8dp"
                             android:layout_marginEnd="8dp"
                             android:background="?android:attr/selectableItemBackgroundBorderless"
-                            app:tint="@color/colorPrimaryText"
+                            app:tint="@color/colorTextPrimary"
                             app:srcCompat="@drawable/ic_info_outline_black_24dp" />
 
                         <TextView
-                            android:id="@+id/textViewWidgetCounter"
+                            android:id="@+id/calibrator_count_text_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -457,7 +453,7 @@
                     </LinearLayout>
 
                     <SeekBar
-                        android:id="@+id/seekBarWidgetLevel"
+                        android:id="@+id/schedule_widget_calibrator"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"

@@ -11,11 +11,11 @@
                  android:fullBackupContent="true"
                  android:roundIcon="@mipmap/ic_launcher_round"
                  android:supportsRtl="true"
-                 android:theme="@style/LightTheme"
+                 android:theme="@style/AppTheme"
                  android:hardwareAccelerated="true">
 
         <activity android:name="ziox.ramiro.saes.activities.MainActivity"
-            android:theme="@style/LightTheme"
+            android:theme="@style/AppTheme"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustPan">
 
@@ -365,26 +365,26 @@
 
         <activity android:name="ziox.ramiro.saes.activities.SAESActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/LightTheme"/>
+            android:theme="@style/AppTheme"/>
 
-        <activity android:name="ziox.ramiro.saes.activities.AddEventoActivity"
+        <activity android:name="ziox.ramiro.saes.activities.AddEventToAgendaActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/LightTheme"/>
+            android:theme="@style/AppTheme"/>
 
-        <activity android:name="ziox.ramiro.saes.activities.VisualizarKardexActivity"
-            android:theme="@style/LightTheme"/>
+        <activity android:name="ziox.ramiro.saes.activities.StudentPerformanceActivity"
+            android:theme="@style/AppTheme"/>
 
-        <activity android:name="ziox.ramiro.saes.activities.CreateHorarioActivity"
-            android:theme="@style/LightTheme"/>
+        <activity android:name="ziox.ramiro.saes.activities.ScheduleGeneratorActivity"
+            android:theme="@style/AppTheme"/>
 
         <activity android:name="ziox.ramiro.saes.activities.AboutActivity"
-            android:theme="@style/LightTheme"/>
+            android:theme="@style/AppTheme"/>
 
         <activity android:name="ziox.ramiro.saes.activities.SettingsActivity"
-            android:theme="@style/LightTheme"/>
+            android:theme="@style/AppTheme"/>
 
-        <activity android:name="ziox.ramiro.saes.activities.EvaluarProfesorActivity"
-            android:theme="@style/LightTheme"/>
+        <activity android:name="ziox.ramiro.saes.activities.TeacherEvaluationActivity"
+            android:theme="@style/AppTheme"/>
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
@@ -467,7 +467,7 @@
             android:resource="@drawable/ic_launcher_foreground" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorAccent" />
+            android:resource="@color/colorSecondary" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"

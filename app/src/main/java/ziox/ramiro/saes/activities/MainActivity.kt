@@ -21,15 +21,12 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.perf.metrics.AddTrace
-import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.activity_select_school.*
-import kotlinx.android.synthetic.main.fragment_loading.*
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.databases.enablePersistance
-import ziox.ramiro.saes.fragments.SelectSchoolNivelMedioSuperiorFragment
-import ziox.ramiro.saes.fragments.SelectSchoolNivelSuperiorFragment
+import ziox.ramiro.saes.databases.enablePersistence
+import ziox.ramiro.saes.databinding.ActivityMainBinding
+import ziox.ramiro.saes.fragments.SelectHighSchoolFragment
+import ziox.ramiro.saes.fragments.SelectUniversityFragment
 import ziox.ramiro.saes.utils.*
 import java.util.*
 
@@ -37,84 +34,85 @@ import java.util.*
  * Creado por Ramiro el 10/12/2018 a las 4:04 PM para SAESv2.
  */
 class MainActivity : AppCompatActivity(), View.OnClickListener {
-    lateinit var sheetBehavior: BottomSheetBehavior<LinearLayout>
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var loginWebView: WebView
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private lateinit var binding : ActivityMainBinding
     private val crashlytics = FirebaseCrashlytics.getInstance()
-    private var logsIntento = 1
+    private var loginAttemptCount = 1
 
     @AddTrace(name = "onCreateMain", enabled = true)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initTheme(this)
 
-        offlineButton.setOnClickListener(this)
-        elegirEscuelaDrag.setOnClickListener(this)
-        loginLoginBtn.setOnClickListener(this)
-        elegirCarreraClose.setOnClickListener(this)
+        binding.offlineButton.setOnClickListener(this)
+        binding.selectSchoolDragger.setOnClickListener(this)
+        binding.loginButton.setOnClickListener(this)
+        binding.bottomSheetContainer.closeButton.setOnClickListener(this)
+        binding.aboutButton.setOnClickListener(this)
 
         handleIntent()
         Notification.scheduleRepeatingRTCNotification(this)
-        enablePersistance(true)
+        enablePersistence(true)
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
         setPreference(this, "offline_mode", false)
         MobileAds.initialize(this)
         initForm()
         initBottomSheet()
 
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         loginWebView = createWebView(this, SSLWebViewClient(this), null)
         loginWebView.addJavascriptInterface(JSInterface(), "JSI")
 
-        elegirEscuelaDrag.addBottomInsetPadding{
-            sheetBehavior.peekHeight = EDGE_INSET_BOTTOM + dpToPixel(this@MainActivity, 40)
+        binding.selectSchoolDragger.addBottomInsetPadding{
+            bottomSheetBehavior.peekHeight = EDGE_INSET_BOTTOM + dpToPixel(this@MainActivity, 40)
         }
 
         if(!this.haveDonated()){
-            adView.loadAd(AdRequest.Builder().build())
+            binding.adView.loadAd(AdRequest.Builder().build())
         }else{
-            adView.visibility = View.GONE
+            binding.adView.visibility = View.GONE
         }
 
         if (!this.isNetworkAvailable()) {
-            offlineLogin()
-            offlineImage.visibility = View.VISIBLE
-            progressBar.visibility = View.GONE
+            loginInOfflineMode()
+            binding.loadingFragment.offlineImage.visibility = View.VISIBLE
+            binding.loadingFragment.progressBar.visibility = View.GONE
         }
 
         if (getUrl(this) == "") {
-            sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            elegirEscuelaDrag.visibility = View.GONE
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            binding.selectSchoolDragger.visibility = View.GONE
         } else {
-            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            loadEscuela()
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            loadSchool()
         }
     }
 
     private fun initForm(){
-        loginBoleta.editText?.text = Editable.Factory().newEditable(getBoleta(this))
-        loginPass.editText?.text = Editable.Factory().newEditable(getPreference(this, "pass", ""))
-        loginRecordarPass.isChecked = getPreference(this, "recordar_contrasena", false)
+        binding.loginBoleta.editText?.text = Editable.Factory().newEditable(getBoleta(this))
+        binding.loginPass.editText?.text = Editable.Factory().newEditable(getPreference(this, "pass", ""))
+        binding.loginRecordarPass.isChecked = getPreference(this, "recordar_contrasena", false)
     }
 
     private fun initBottomSheet(){
-        sheetBehavior = BottomSheetBehavior.from(elegirEscuelaSheet)
-        sheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.selectSchoolBottomSheet)
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
             override fun onSlide(p0: View, p1: Float) {}
 
             override fun onStateChanged(p0: View, p1: Int) {
                 when (p1) {
                     BottomSheetBehavior.STATE_EXPANDED -> {
-                        elegirEscuelaDrag.visibility = View.GONE
+                        binding.selectSchoolDragger.visibility = View.GONE
                     }
                     BottomSheetBehavior.STATE_COLLAPSED -> {
-                        sheetBehavior.peekHeight = EDGE_INSET_BOTTOM + dpToPixel(this@MainActivity, 40)
-                        elegirEscuelaDrag.visibility = View.VISIBLE
+                        bottomSheetBehavior.peekHeight = EDGE_INSET_BOTTOM + dpToPixel(this@MainActivity, 40)
+                        binding.selectSchoolDragger.visibility = View.VISIBLE
                     }
                     BottomSheetBehavior.STATE_DRAGGING -> {
-                        sheetBehavior.peekHeight = 0
-                        elegirEscuelaDrag.visibility = View.GONE
+                        bottomSheetBehavior.peekHeight = 0
+                        binding.selectSchoolDragger.visibility = View.GONE
                     }
                     BottomSheetBehavior.STATE_HIDDEN -> {
 
@@ -128,9 +126,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
         })
-        selectSchoolToolbar.title = "Selecciona tu escuela"
-        selectSchoolTabLayout.setupWithViewPager(selectSchoolViewPager)
-        selectSchoolViewPager.adapter = Adapter(supportFragmentManager)
+        binding.bottomSheetContainer.selectSchoolToolbar.title = "Selecciona tu escuela"
+        binding.bottomSheetContainer.selectSchoolTabLayout.setupWithViewPager(binding.bottomSheetContainer.selectSchoolViewPager)
+        binding.bottomSheetContainer.selectSchoolViewPager.adapter = Adapter(supportFragmentManager)
     }
 
     private fun handleIntent(){
@@ -138,20 +136,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             if (intent.data?.path != "www.saes.ipn.mx") {
                 val url = "${intent.data?.scheme}://${intent.data?.host}/"
                 setPreference(this, "new_url_escuela", url)
-                if (SelectSchoolNivelMedioSuperiorFragment.medioSuperiorMap.containsValue(url)) {
+                if (SelectHighSchoolFragment.highSchoolMap.containsValue(url)) {
                     setPreference(
                         this,
                         "name_escuela",
-                        SelectSchoolNivelMedioSuperiorFragment.medioSuperiorMap.getKeyOfValue(
+                        SelectHighSchoolFragment.highSchoolMap.getKeyOfValue(
                             url,
                             ""
                         )
                     )
-                } else if (SelectSchoolNivelSuperiorFragment.superiorMap.containsValue(url)) {
+                } else if (SelectUniversityFragment.superiorMap.containsValue(url)) {
                     setPreference(
                         this,
                         "name_escuela",
-                        SelectSchoolNivelSuperiorFragment.superiorMap.getKeyOfValue(url, "")
+                        SelectUniversityFragment.superiorMap.getKeyOfValue(url, "")
                     )
                 }
             }
@@ -173,55 +171,42 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
     }
 
-    private fun registerEvent(
-        itemId: String,
-        itemName: String,
-        contentType: String,
-        event: String
-    ) {
-        val bundle = Bundle()
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, itemId)
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, itemName)
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, contentType)
-        firebaseAnalytics.logEvent(event, bundle)
-    }
-
     fun hideLoading() {
-        loadingFragment.visibility = View.GONE
+        binding.loadingFragment.root.visibility = View.GONE
     }
 
-    private fun validarInputs(): Boolean {
-        loginBoleta.error = null
-        loginPass.error = null
-        loginCaptcha.error = null
+    private fun validate(): Boolean {
+        binding.loginBoleta.error = null
+        binding.loginPass.error = null
+        binding.loginCaptcha.error = null
 
         var hasError = false
 
-        if (loginBoleta.editText?.text!!.isEmpty()) {
+        if (binding.loginBoleta.editText?.text!!.isEmpty()) {
             hasError = true
-            loginBoleta.error = "Este campo está vacío"
+            binding.loginBoleta.error = "Este campo está vacío"
         }
 
-        if (loginPass.editText?.text!!.isEmpty()) {
+        if (binding.loginPass.editText?.text!!.isEmpty()) {
             hasError = true
-            loginPass.error = "Este campo está vacío"
+            binding.loginPass.error = "Este campo está vacío"
         }
 
-        if (loginCaptcha.editText?.text!!.isEmpty()) {
+        if (binding.loginCaptcha.editText?.text!!.isEmpty()) {
             hasError = true
-            loginCaptcha.error = "Este campo está vacío"
+            binding.loginCaptcha.error = "Este campo está vacío"
         }
 
         return !hasError
     }
 
-    fun onEscuelaSelected() {
-        sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        loadEscuela()
+    fun onSchoolSelected() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        loadSchool()
     }
 
-    private fun loadEscuela() {
-        webViewCaptcha.visibility = View.GONE
+    private fun loadSchool() {
+        binding.captchaDisplayer.visibility = View.GONE
 
         try {
             val res = resources.getIdentifier(
@@ -231,7 +216,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     "IPN"
                 ).toLowerCase(Locale.ROOT).replace(" ", ""), "drawable", packageName
             )
-            loginLogo.setImageResource(
+            binding.loginLogo.setImageResource(
                 if (res > 0) {
                     res
                 } else {
@@ -239,7 +224,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
             )
         } catch (e: Exception) {
-            Log.e("AppException", e.toString())
+            Log.e(this.javaClass.canonicalName, e.toString())
         }
 
         loginWebView.loadUrl(getUrl(this))
@@ -249,10 +234,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         @JavascriptInterface
         fun onLoginStatusChanged(isLogged: Boolean, captchaSrc: String?) {
             if (isLogged) {
-                setPreference(this@MainActivity, "recordar_contrasena", loginRecordarPass.isChecked)
-                setPreference(this@MainActivity, "boleta", loginBoleta.editText?.text!!.toString())
-                if (loginRecordarPass.isChecked) {
-                    setPreference(this@MainActivity, "pass", loginPass.editText?.text!!.toString())
+                setPreference(this@MainActivity, "recordar_contrasena", binding.loginRecordarPass.isChecked)
+                setPreference(this@MainActivity, "boleta", binding.loginBoleta.editText?.text!!.toString())
+                if (binding.loginRecordarPass.isChecked) {
+                    setPreference(this@MainActivity, "pass", binding.loginPass.editText?.text!!.toString())
                 }
                 val intentLogged = Intent(this@MainActivity, SAESActivity::class.java)
 
@@ -263,13 +248,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 this@MainActivity.finish()
             } else {
                 runOnUiThread {
-                    sheetBehavior.peekHeight = EDGE_INSET_BOTTOM + dpToPixel(this@MainActivity, 40)
-                    elegirEscuelaDrag.visibility = View.VISIBLE
+                    bottomSheetBehavior.peekHeight = EDGE_INSET_BOTTOM + dpToPixel(this@MainActivity, 40)
+                    binding.selectSchoolDragger.visibility = View.VISIBLE
                     hideLoading()
                     if (captchaSrc != null) {
-                        webViewCaptcha.loadUrl(captchaSrc)
+                        binding.captchaDisplayer.loadUrl(captchaSrc)
                     }
-                    webViewCaptcha.visibility = View.VISIBLE
+                    binding.captchaDisplayer.visibility = View.VISIBLE
                 }
             }
         }
@@ -277,21 +262,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         @JavascriptInterface
         fun error(url: String) {
             runOnUiThread {
-                Snackbar.make(loginParent, "Error: $url", Snackbar.LENGTH_SHORT).show()
-                sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                Snackbar.make(binding.loginParent, "Error: $url", Snackbar.LENGTH_SHORT).show()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
 
         @JavascriptInterface
         fun onLoginFailed(msg : String){
+
             runOnUiThread {
                 if(msg.contains("captcha", true)){
-                    loginCaptcha.error = msg
+                    binding.loginCaptcha.error = msg
                 }else{
-                    loginPass.error = msg
+                    binding.loginPass.error = msg
                 }
 
-                loginCaptcha.editText?.text?.clear()
+                binding.loginCaptcha.editText?.text?.clear()
             }
         }
     }
@@ -305,13 +291,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getItem(position: Int): Fragment {
             return when (position) {
-                0 -> SelectSchoolNivelSuperiorFragment()
-                1 -> SelectSchoolNivelMedioSuperiorFragment()
+                0 -> SelectUniversityFragment()
+                1 -> SelectHighSchoolFragment()
                 else -> Fragment()
             }
         }
 
-        override fun getPageTitle(position: Int): CharSequence? {
+        override fun getPageTitle(position: Int): CharSequence {
             return when (position) {
                 0 -> "Superior"
                 1 -> "Medio Superior"
@@ -326,24 +312,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(button: View) {
-        crashlytics.log("Click en ${resources.getResourceName(offlineButton.id)} en la clase ${this.localClassName}")
+        crashlytics.log("Click en ${resources.getResourceName(binding.offlineButton.id)} en la clase ${this.localClassName}")
         when(button.id){
-            offlineButton.id -> offlineLogin()
-            elegirEscuelaDrag.id -> sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            elegirCarreraClose.id -> sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            loginLoginBtn.id -> login()
+            binding.offlineButton.id -> loginInOfflineMode()
+            binding.selectSchoolDragger.id -> bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            binding.bottomSheetContainer.closeButton.id -> bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            binding.loginButton.id -> login()
+            binding.aboutButton.id -> startActivity(Intent(this, AboutActivity::class.java))
         }
     }
 
-    private fun offlineLogin(){
+    private fun loginInOfflineMode(){
         if (getPreference(this, "offline_switch", false)) {
             setPreference(this, "offline_mode", true)
-            registerEvent(
-                offlineButton.id.toString(),
-                "button offline",
-                "button",
-                FirebaseAnalytics.Event.SELECT_CONTENT
-            )
             val intentLogged = Intent(this@MainActivity, SAESActivity::class.java)
 
             if(intent.hasExtra(SAESActivity.INTENT_EXTRA_REDIRECT)){
@@ -353,7 +334,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             this@MainActivity.finish()
         } else {
             Snackbar.make(
-                loginParent,
+                binding.loginParent,
                 "Activa el modo offline en las configuraciones para acceder sin internet.",
                 Snackbar.LENGTH_LONG
             ).show()
@@ -361,17 +342,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun login(){
-        if (validarInputs()) {
-            if (logsIntento++ % 4 > 0) {
-                webViewCaptcha.visibility = View.GONE
+        if (validate()) {
+            if (loginAttemptCount++ % 4 > 0) {
+                binding.captchaDisplayer.visibility = View.GONE
                 loginWebView.loadUrl(
-                    "javascript: document.getElementById(\"ctl00_leftColumn_LoginUser_UserName\").value = \"${loginBoleta.editText?.text.toString()}\";" +
-                            "document.getElementById(\"ctl00_leftColumn_LoginUser_Password\").value = \"${loginPass.editText?.text.toString().replace(
+                    "javascript: document.getElementById(\"ctl00_leftColumn_LoginUser_UserName\").value = \"${binding.loginBoleta.editText?.text.toString()}\";" +
+                            "document.getElementById(\"ctl00_leftColumn_LoginUser_Password\").value = \"${binding.loginPass.editText?.text.toString().replace(
                                 Regex("[\"\\\\]")
                             ) { matchResult ->
                                 "\\${matchResult.value}"
                             }}\";" +
-                            "document.getElementById(\"ctl00_leftColumn_LoginUser_CaptchaCodeTextBox\").value = \"${loginCaptcha.editText?.text.toString()}\";" +
+                            "document.getElementById(\"ctl00_leftColumn_LoginUser_CaptchaCodeTextBox\").value = \"${binding.loginCaptcha.editText?.text.toString()}\";" +
                             "document.getElementById(\"ctl00_leftColumn_LoginUser_LoginButton\").click();"
                 )
             } else {

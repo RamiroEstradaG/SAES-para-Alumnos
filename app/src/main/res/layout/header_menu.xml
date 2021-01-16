@@ -16,7 +16,7 @@
         android:paddingBottom="16dp">
 
         <ImageView
-            android:id="@+id/logoMenu"
+            android:id="@+id/school_logo_image_view"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="16dp"
@@ -29,7 +29,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/nombreMenu"
+                android:id="@+id/student_name_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
@@ -37,7 +37,7 @@
                 android:textColor="?android:attr/textColorPrimary" />
 
             <TextView
-                android:id="@+id/boletaMenu"
+                android:id="@+id/student_id_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="0000000000"
@@ -45,11 +45,13 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/perfilButton"
+            android:id="@+id/profile_button"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_marginEnd="8dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             android:singleLine="true"
             android:text="Perfil"
             android:textAllCaps="false"
@@ -59,13 +61,13 @@
             app:strokeColor="@color/colorInfo" />
 
         <ImageView
-            android:id="@+id/closeMenu"
+            android:id="@+id/log_out_button"
             android:layout_width="27dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_exit_to_app_black_24dp"
             android:tintMode="src_in"
-            app:tint="@android:color/holo_red_light" />
+            app:tint="@color/colorDanger" />
 
     </LinearLayout>
     <LinearLayout
@@ -75,7 +77,7 @@
         android:gravity="center_vertical">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonEscolarizado"
+            android:id="@+id/schooled_calendar_button"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,15 +86,15 @@
             android:layout_weight="1"
             android:text="Escolarizado"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             app:cornerRadius="20dp"
             app:icon="@drawable/ic_event_black_24dp"
-            app:iconTint="@color/colorAccent"
-            app:rippleColor="@color/colorAccent"
-            app:strokeColor="@color/colorAccent" />
+            app:iconTint="@color/colorSecondary"
+            app:rippleColor="@color/colorSecondary"
+            app:strokeColor="@color/colorSecondary" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonNoEscolarizado"
+            android:id="@+id/not_schooled_calendar_button"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,11 +103,11 @@
             android:layout_weight="1"
             android:text="No escolarizado"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorSecondary"
             app:cornerRadius="20dp"
             app:icon="@drawable/ic_event_black_24dp"
-            app:iconTint="@color/colorAccent"
-            app:rippleColor="@color/colorAccent"
-            app:strokeColor="@color/colorAccent" />
+            app:iconTint="@color/colorSecondary"
+            app:rippleColor="@color/colorSecondary"
+            app:strokeColor="@color/colorSecondary" />
     </LinearLayout>
 </LinearLayout>

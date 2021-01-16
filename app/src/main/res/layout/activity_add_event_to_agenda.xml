@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorToolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:paddingTop="30dp"
+        android:theme="?attr/actionBarTheme"
+         />
+
+
+    <ScrollView
+        android:id="@+id/container_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/textView27"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Agenda personal"
+                android:textColor="@color/colorTextSecondary" />
+
+            <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
+                android:id="@+id/selectionCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/eventTitleInput"
+                style="@style/OutlineTextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Titulo*"
+                android:textColorHint="@color/colorTextSecondary"
+                app:boxStrokeColor="@color/colorDanger"
+                app:errorEnabled="true"
+                app:hintTextColor="@color/colorDanger">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorTextPrimary" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/eventCourseNameInput"
+                style="@style/OutlineTextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Materia"
+                android:textColorHint="@color/colorTextSecondary"
+                app:boxStrokeColor="@color/colorDanger"
+                app:errorEnabled="true"
+                app:hintTextColor="@color/colorDanger">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorTextPrimary" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tipo"
+                android:textColor="@color/colorTextSecondary" />
+
+            <ziox.ramiro.saes.views.selectable_button_view.SelectableButtonView
+                android:id="@+id/eventTypeInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/eventDateInput"
+                style="@style/OutlineTextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Dia"
+                android:textColorHint="@color/colorTextSecondary"
+                app:boxStrokeColor="@color/colorDanger"
+                app:endIconDrawable="@drawable/ic_event_black_24dp"
+                app:endIconMode="custom"
+                app:endIconTint="@color/colorSecondary"
+                app:errorEnabled="true"
+                app:hintTextColor="@color/colorDanger">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:inputType="none"
+                    android:textColor="@color/colorTextPrimary" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/eventInfoInput"
+                style="@style/OutlineTextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Información adicional"
+                android:textColorHint="@color/colorTextSecondary"
+                app:boxStrokeColor="@color/colorDanger"
+                app:errorEnabled="true"
+                app:hintTextColor="@color/colorDanger">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:lines="2"
+                    android:maxLines="3"
+                    android:textColor="@color/colorTextPrimary" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/acceptButton"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:backgroundTint="@color/colorDanger"
+                android:text="Agregar" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

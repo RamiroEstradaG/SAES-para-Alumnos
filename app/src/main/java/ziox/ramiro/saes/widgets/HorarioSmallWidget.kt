@@ -3,7 +3,6 @@ package ziox.ramiro.saes.widgets
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.database.Cursor
 import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.work.Constraints
@@ -11,9 +10,9 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import ziox.ramiro.saes.R
+import ziox.ramiro.saes.databases.AppLocalDatabase
+import ziox.ramiro.saes.databases.ScheduleClass
 import ziox.ramiro.saes.services.SmallWidgetUpdateService
-import ziox.ramiro.saes.databases.CorreccionHorarioDatabase
-import ziox.ramiro.saes.databases.HorarioDatabase
 import ziox.ramiro.saes.utils.getPreference
 import ziox.ramiro.saes.utils.setPreference
 import ziox.ramiro.saes.utils.toProperCase
@@ -57,38 +56,31 @@ class HorarioSmallWidget : AppWidgetProvider() {
         }
     }
 
-    private fun analiceHoras(all : Cursor, context: Context){
-        val correccion = CorreccionHorarioDatabase(context)
+    private fun analiceHoras(all : List<ScheduleClass>, context: Context){
+        val correccion = AppLocalDatabase.getInstance(context).adjustedClassScheduleDao()
 
-        all.moveToPosition(-1)
-
-        while(all.moveToNext()){
-            val data = HorarioDatabase.cursorAsClaseData(all)
-            val corrData = correccion.searchData(data)
+        for (clase in all){
+            val corrData = correccion.get(clase.uid)
             if (corrData != null){
-                if(corrData.horaInicio < horaInicio) horaInicio = corrData.horaInicio
-                if(corrData.horaFinal > horaFinal) horaFinal = corrData.horaFinal
+                if(corrData.startHour < horaInicio) horaInicio = corrData.startHour
+                if(corrData.finishHour > horaFinal) horaFinal = corrData.finishHour
             }else{
-                if(data.horaInicio < horaInicio) horaInicio = data.horaInicio
-                if(data.horaFinal > horaFinal) horaFinal = data.horaFinal
+                if(clase.startHour < horaInicio) horaInicio = clase.startHour
+                if(clase.finishHour > horaFinal) horaFinal = clase.finishHour
             }
         }
-
-        correccion.close()
-        all.moveToPosition(-1)
     }
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
         val views = RemoteViews(context.packageName, R.layout.widget_horario_min)
         val calendar = Calendar.getInstance()
-        val horarioDb = HorarioDatabase(context)
+        val horarioDb = AppLocalDatabase.getInstance(context).originalClassScheduleDao()
         val now = calendar.get(Calendar.HOUR_OF_DAY)+(calendar.get(Calendar.MINUTE)/60.0)
-        horarioDb.createTable()
         val all = horarioDb.getAll()
 
         analiceHoras(all, context)
 
-        if(all.count == 0){
+        if(all.isEmpty()){
             setClaseAndProgress(views, "Abre tu horario en la app para actualizar.", 0)
         }else{
             if(now !in horaInicio..horaFinal || calendar.get(Calendar.DAY_OF_WEEK) !in Calendar.MONDAY..Calendar.FRIDAY){
@@ -102,31 +94,27 @@ class HorarioSmallWidget : AppWidgetProvider() {
                 }
             }
         }
-        all.close()
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
-    private fun getMateriaActual(context : Context, all : Cursor, now : Double) : Pair<String?, Int>{
+    private fun getMateriaActual(context : Context, all : List<ScheduleClass>, now : Double) : Pair<String?, Int>{
         val calendar = Calendar.getInstance()
-        val correccionHorarioDatabase = CorreccionHorarioDatabase(context)
+        val correccionHorarioDatabase = AppLocalDatabase.getInstance(context).adjustedClassScheduleDao()
         var materia : String? = null
         var falta = 0
 
-        while(all.moveToNext()){
-            val dataHorario = HorarioDatabase.cursorAsClaseData(all)
-            val data = correccionHorarioDatabase.searchData(dataHorario)?:dataHorario
+        for(clase in all){
+            val data = correccionHorarioDatabase.get(clase.uid) ?: clase
 
-            if(data.diaIndex == calendar.get(Calendar.DAY_OF_WEEK) - 2){
-                if(now in data.horaInicio..data.horaFinal-(1/3600f)){
-                    materia = data.materia
-                    falta = ((now-data.horaInicio)/(data.horaFinal-data.horaInicio)*100f).toInt()
+            if(data.dayIndex == calendar.get(Calendar.DAY_OF_WEEK) - 2){
+                if(now in data.startHour..data.finishHour-(1/3600f)){
+                    materia = data.courseName
+                    falta = ((now-data.startHour)/(data.finishHour-data.startHour)*100f).toInt()
                     break
                 }
             }
         }
-
-        correccionHorarioDatabase.close()
 
         return Pair(materia, falta)
     }

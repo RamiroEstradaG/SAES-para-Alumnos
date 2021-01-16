@@ -3,7 +3,6 @@ package ziox.ramiro.saes.widgets
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.database.Cursor
 import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
@@ -11,8 +10,8 @@ import android.view.View
 import android.widget.RemoteViews
 import androidx.core.content.ContextCompat
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.databases.CorreccionHorarioDatabase
-import ziox.ramiro.saes.databases.HorarioDatabase
+import ziox.ramiro.saes.databases.AppLocalDatabase
+import ziox.ramiro.saes.databases.ScheduleClass
 import ziox.ramiro.saes.utils.getInitials
 import java.util.*
 
@@ -36,8 +35,8 @@ class HorarioLargeWidget : AppWidgetProvider() {
     private var horaFinal = 0.0
 
     private fun updateAppWidget(context : Context, appWidgetManager : AppWidgetManager, appWidgetId : Int) {
-        val horarioDb = HorarioDatabase(context)
-        val correccionHorarioDatabase = CorreccionHorarioDatabase(context)
+        val horarioDb = AppLocalDatabase.getInstance(context).originalClassScheduleDao()
+        val correccionHorarioDatabase = AppLocalDatabase.getInstance(context).adjustedClassScheduleDao()
         val height = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
         val views = RemoteViews(context.packageName, R.layout.widget_horario_max)
         val calendar = Calendar.getInstance()
@@ -45,15 +44,13 @@ class HorarioLargeWidget : AppWidgetProvider() {
 
         views.setInt(R.id.limiteTextView, "setHeight",TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,10f,context.resources.displayMetrics).toInt())
 
-        horarioDb.createTable()
-        correccionHorarioDatabase.createTable()
         val all = horarioDb.getAll()
 
         for(titulo in tituloHorario){
-            views.setTextColor(titulo, ContextCompat.getColor(context, R.color.colorPrimaryText))
+            views.setTextColor(titulo, ContextCompat.getColor(context, R.color.colorTextPrimary))
         }
         if(calendar.get(Calendar.DAY_OF_WEEK)-2 in 0..4){
-            views.setTextColor(tituloHorario[calendar.get(Calendar.DAY_OF_WEEK)-2], ContextCompat.getColor(context, R.color.colorHighlight))
+            views.setTextColor(tituloHorario[calendar.get(Calendar.DAY_OF_WEEK)-2], ContextCompat.getColor(context, R.color.colorDanger))
         }
 
 
@@ -67,58 +64,47 @@ class HorarioLargeWidget : AppWidgetProvider() {
         }
 
         views.setViewVisibility(R.id.progressBarWidgetLarge, View.GONE)
-        if(all.count == 0){
+        if(all.isEmpty()){
             views.setViewVisibility(R.id.widget_not_found, View.VISIBLE)
         }else{
             views.setViewVisibility(R.id.widget_not_found, View.GONE)
         }
 
-        while(all.moveToNext()){
-            val dataHorario = HorarioDatabase.cursorAsClaseData(all)
-            val data = CorreccionHorarioDatabase(context).searchData(dataHorario) ?: dataHorario
+        for (claseData in all){
+            val data = correccionHorarioDatabase.get(claseData.uid) ?: claseData
 
-            if(data.diaIndex in  0..4){
-                val duracion : Double = data.horaFinal - data.horaInicio
-                val iniciales = data.materia.getInitials()
+            if(data.dayIndex in  0..4){
+                val duracion : Double = data.finishHour - data.startHour
+                val iniciales = data.courseName.getInitials()
                 val clase = RemoteViews(context.packageName, R.layout.sample_horario_clase_item)
 
                 clase.setInt(R.id.clase_view, "setHeight",(duracion*getLayoutHeight(height,8f, nivelacion,16f,context)/horas).toInt())
-                clase.setViewPadding(R.id.clase_view_parent,0,((data.horaInicio-horaInicio)*getLayoutHeight(height,8f, nivelacion,16f,context)/horas).toInt(),0,0)
+                clase.setViewPadding(R.id.clase_view_parent,0,((data.startHour-horaInicio)*getLayoutHeight(height,8f, nivelacion,16f,context)/horas).toInt(),0,0)
 
                 clase.setInt(R.id.clase_view, "setBackgroundColor", Color.parseColor(data.color))
 
                 clase.setTextViewText(R.id.clase_view, iniciales)
 
-                views.addView(matrizHorario[data.diaIndex], clase)
+                views.addView(matrizHorario[data.dayIndex], clase)
             }
         }
-
-        all.close()
-        horarioDb.close()
-        correccionHorarioDatabase.close()
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
-    private fun analiceHoras(all : Cursor, context: Context){
-        val correccion = CorreccionHorarioDatabase(context)
+    private fun analiceHoras(all : List<ScheduleClass>, context: Context){
+        val correccion = AppLocalDatabase.getInstance(context).adjustedClassScheduleDao()
 
-        all.moveToPosition(-1)
-
-        while(all.moveToNext()){
-            val data = HorarioDatabase.cursorAsClaseData(all)
-            val corrData = correccion.searchData(data)
+        for (clase in all){
+            val corrData = correccion.get(clase.uid)
             if (corrData != null){
-                if(corrData.horaInicio < horaInicio) horaInicio = corrData.horaInicio
-                if(corrData.horaFinal > horaFinal) horaFinal = corrData.horaFinal
+                if(corrData.startHour < horaInicio) horaInicio = corrData.startHour
+                if(corrData.finishHour > horaFinal) horaFinal = corrData.finishHour
             }else{
-                if(data.horaInicio < horaInicio) horaInicio = data.horaInicio
-                if(data.horaFinal > horaFinal) horaFinal = data.horaFinal
+                if(clase.startHour < horaInicio) horaInicio = clase.startHour
+                if(clase.finishHour > horaFinal) horaFinal = clase.finishHour
             }
         }
-
-        correccion.close()
-        all.moveToPosition(-1)
     }
 
     private fun initHorario(views: RemoteViews, context: Context){
@@ -134,11 +120,11 @@ class HorarioLargeWidget : AppWidgetProvider() {
             if(i < (horaFinal-horaInicio).toInt()){
                 val horasRemote = RemoteViews(context.packageName, R.layout.sample_widget_horario_hora_item)
                 horasRemote.setTextViewText(R.id.widget_horas_item, "${horaInicio.toInt()+i}:00")
-                horasRemote.setTextColor(R.id.widget_horas_item, ContextCompat.getColor(context, R.color.colorPrimaryText))
+                horasRemote.setTextColor(R.id.widget_horas_item, ContextCompat.getColor(context, R.color.colorTextPrimary))
                 views.addView(R.id.horasHorarioWidgetLayout, horasRemote)
             }else{
                 views.setTextViewText(R.id.limiteTextView, "${horaInicio.toInt()+i}:00")
-                views.setTextColor(R.id.limiteTextView, ContextCompat.getColor(context, R.color.colorPrimaryText))
+                views.setTextColor(R.id.limiteTextView, ContextCompat.getColor(context, R.color.colorTextPrimary))
             }
         }
     }

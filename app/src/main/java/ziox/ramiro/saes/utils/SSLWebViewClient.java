@@ -71,7 +71,7 @@ public class SSLWebViewClient extends WebViewClient {
                     removePreference(context, "new_url_escuela");
                     context.startActivity(new Intent(context, MainActivity.class));
                 }catch (Exception e){
-                    Log.e("AppException", e.toString());
+                    Log.e(this.toString(), e.toString());
                 }
                 handler.cancel();
             });
@@ -79,7 +79,7 @@ public class SSLWebViewClient extends WebViewClient {
                 final AlertDialog dialog = builder.create();
                 dialog.show();
             }catch (Exception e){
-                Log.e("AppException", e.toString());
+                Log.e(this.toString(), e.toString());
             }
         }
     }

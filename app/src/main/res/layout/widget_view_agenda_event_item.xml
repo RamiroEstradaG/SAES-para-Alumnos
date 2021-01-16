@@ -14,7 +14,7 @@
         android:layout_weight="0"
         android:background="@drawable/ic_keyboard_arrow_down_black_24dp"
         android:rotation="-90"
-        android:backgroundTint="@color/colorPrimaryText"
+        android:backgroundTint="@color/colorTextPrimary"
         tools:ignore="ContentDescription" />
 
     <LinearLayout
@@ -27,7 +27,7 @@
             android:id="@+id/itemDiaEvento"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryText"
+            android:textColor="@color/colorTextPrimary"
             android:textSize="18sp" />
 
         <TextView
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:layout_marginTop="-5dp"
-            android:textColor="@color/colorPrimaryText"
+            android:textColor="@color/colorTextPrimary"
             android:textSize="10sp"
             tools:ignore="SmallSp" />
     </LinearLayout>

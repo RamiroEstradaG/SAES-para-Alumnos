@@ -8,4 +8,4 @@
     android:clipToPadding="false"
     android:nestedScrollingEnabled="false"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:listitem="@layout/item_escuelas" />
+    tools:listitem="@layout/view_school_selector_item" />

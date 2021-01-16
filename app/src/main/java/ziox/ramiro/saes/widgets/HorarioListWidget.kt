@@ -7,8 +7,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.RemoteViews
 import ziox.ramiro.saes.R
+import ziox.ramiro.saes.databases.AppLocalDatabase
 import ziox.ramiro.saes.services.ListWidgetRemoteViewService
-import ziox.ramiro.saes.databases.HorarioDatabase
 import java.util.*
 
 /**
@@ -35,10 +35,9 @@ class HorarioListWidget  : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.widget_horario_list)
         val intent = Intent(context, ListWidgetRemoteViewService::class.java)
         val dia = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-2
-        val database = HorarioDatabase(context)
-        database.createTable()
+        val database = AppLocalDatabase.getInstance(context).originalClassScheduleDao()
 
-        if(database.getAll().count == 0) {
+        if(database.getAll().isEmpty()) {
             views.setTextViewText(R.id.horarioListDia, "Abre tu horario en la app para actualizar")
             views.setInt(R.id.horarioList, "setBackgroundResource", R.drawable.background_widget_list_empty_bg)
         }else {
@@ -52,7 +51,6 @@ class HorarioListWidget  : AppWidgetProvider() {
                 }
             )
         }
-        database.close()
 
         views.setRemoteAdapter(R.id.horarioList, intent)
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.horarioList)

@@ -34,7 +34,7 @@
                     android:layout_weight="1"
                     android:text="L"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
 
                 <TextView
@@ -44,7 +44,7 @@
                     android:layout_weight="1"
                     android:text="M"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
 
                 <TextView
@@ -54,7 +54,7 @@
                     android:layout_weight="1"
                     android:text="M"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
 
                 <TextView
@@ -64,7 +64,7 @@
                     android:layout_weight="1"
                     android:text="J"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
 
                 <TextView
@@ -74,7 +74,7 @@
                     android:layout_weight="1"
                     android:text="V"
                     android:textAlignment="center"
-                    android:textColor="@color/colorPrimaryText"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:text="Dia"
                 android:textAlignment="center"
-                android:textColor="@color/colorPrimaryText"
+                android:textColor="@color/colorTextPrimary"
                 android:textSize="18sp"
                 android:visibility="gone" />
 
@@ -109,7 +109,7 @@
                         android:layout_height="match_parent">
 
                         <LinearLayout
-                            android:id="@+id/horasContainer"
+                            android:id="@+id/hours_container"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical">
@@ -129,7 +129,7 @@
                     </FrameLayout>
 
                     <LinearLayout
-                        android:id="@+id/diasContainer"
+                        android:id="@+id/days_container"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:baselineAligned="false"

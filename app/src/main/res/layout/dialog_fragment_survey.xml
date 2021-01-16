@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/colorSurface"
+    android:padding="16dp"
+    tools:ignore="HardcodedText">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Aviso de obsolescencia"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/textView22"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="A partir de la mitad del 2020 se dejará de dar soporte a las versiones de Android 5.0 y 5.1.\n\n- ¿Porqué?\nLa base de usuarios de la app que usa estas versiones representa el 1% del total. Estas versiones no son compatibles con muchas de las funciones que las versiones 6.0 y superiores nos ofrecen por lo que eleva el tiempo de desarrollo y mantenimiento al tener que desarrollar la misma funcion, una para versiones superiores y otra para las versiones 5.0 y 5.1.\n\n- ¿Y esto qué significa?\nEsto quiere decir que NO se podrá descargar o actualizar la aplicación desde la Play Store desde los dispositivos con Android 5.0 y 5.1 a partir de la mitad del 2020 en adelante.\n\n- ¿Qué puedo hacer para seguir usando la aplicación?\nA la hora de aplicar este cambio NO se desinstalará la aplicación de tu dispositivo automáticamente así que mientras no se desinstale manualmente o se borre por otros medios seguirá podiendose usar en la última versión descargada."
+            android:textColor="@color/colorTextSecondary" />
+
+        <Button
+            android:id="@+id/accept_button"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="Estoy al tanto"
+            android:backgroundTint="@color/colorSecondary"
+            android:textColor="@color/colorOnPrimary"
+            android:textAllCaps="false" />
+    </LinearLayout>
+
+</ScrollView>
