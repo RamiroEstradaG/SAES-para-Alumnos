@@ -15,6 +15,10 @@ import ziox.ramiro.saes.utils.generateRandomString
 class AddCalendarDialogFragment : DialogFragment() {
     private lateinit var onSuccessListener: () -> Unit
 
+    companion object {
+        const val CALENDAR_CODE_LENGTH = 10
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NO_TITLE, android.R.style.Theme_Material_Dialog_NoActionBar_MinWidth)
@@ -34,7 +38,7 @@ class AddCalendarDialogFragment : DialogFragment() {
                 alertPermission.setTitle("Aviso")
                 alertPermission.setMessage("Al presionar 'Aceptar' otorgas permiso a la aplicación para almacenar en la nube:\n\n• Número de boleta.\n• Recordatorios.")
                 alertPermission.setPositiveButton("Aceptar"){ _, _ ->
-                    val id = generateRandomString(10)
+                    val id = generateRandomString(CALENDAR_CODE_LENGTH)
                     addCalendar(activity ,rootView.calendarTitleInput.editText?.text.toString(), id, !rootView.grupCalendarCheck.isChecked).addOnSuccessListener {
                         addCalendarToUser(context, id).addOnSuccessListener {
                             this.onSuccessListener()
@@ -55,13 +59,13 @@ class AddCalendarDialogFragment : DialogFragment() {
 
         rootView.joinCalendarButton.setOnClickListener {
             rootView.joinCalendarInput.error = null
-            if(rootView.joinCalendarInput.editText?.text?.length == 8){
+            if(rootView.joinCalendarInput.editText?.text?.length == CALENDAR_CODE_LENGTH){
                 addCalendarToUser(context, rootView.joinCalendarInput.editText?.text.toString()).addOnSuccessListener {
                     this.onSuccessListener()
                     this.dismiss()
                 }
             }else{
-                rootView.joinCalendarInput.error = "Ingresa un código válido de 8 caracteres"
+                rootView.joinCalendarInput.error = "Ingresa un código válido de 10 caracteres"
             }
         }
 
