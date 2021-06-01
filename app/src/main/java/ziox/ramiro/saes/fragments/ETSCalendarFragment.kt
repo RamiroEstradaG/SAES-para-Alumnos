@@ -170,20 +170,27 @@ class ETSCalendarFragment : Fragment() {
         fun getLastPeriod(periods: String): Int {
             val periodsJson = JSONArray(periods)
             var indexResult = -1
+            var monthIndex = -1
             var maxValue = 0.0
 
             for (i in 0 until periodsJson.length()) {
                 val period = periodsJson.getString(i).split(Regex("20"), 2)
                 if (period.size == 2) {
-                    if (period[1].toInt() + (mesToInt(period[0]) / 12.0) > maxValue) {
+                    val periodValue = period[1].toInt() + (mesToInt(period[0]) / 12.0)
+                    if (periodValue > maxValue) {
                         indexResult = i
-                        maxValue = period[1].toInt() + (mesToInt(period[0]) / 12.0)
+                        monthIndex = mesToInt(period[0])
+                        maxValue = periodValue
                     }
                 }
             }
 
             activity?.runOnUiThread {
-                rootView.periodTextView.text = MES_COMPLETO[((maxValue % 1) * 12).toInt()] + " del 20" + maxValue.toInt()
+                rootView.periodTextView.text = if(indexResult >= 0){
+                    "${MES_COMPLETO[monthIndex]} del 20${maxValue.toInt()}"
+                }else{
+                    "No hay fechas disponibles"
+                }
             }
 
             return indexResult
