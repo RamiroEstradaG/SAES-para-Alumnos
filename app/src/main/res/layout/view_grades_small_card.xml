@@ -19,6 +19,7 @@
             android:id="@+id/courseName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:text="MAT"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textColor="@color/colorTextPrimary" />
