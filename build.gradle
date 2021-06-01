@@ -6,6 +6,7 @@ buildscript {
     ext.kotlin_version = '1.5.10'
     repositories {
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
@@ -16,13 +17,10 @@ buildscript {
     }
 }
 
-plugins {
-    id("com.github.triplet.play") version "2.6.0"
-}
-
 allprojects {
     repositories {
         google()
+        jcenter()
         maven { url 'https://jitpack.io' }
     }
 }

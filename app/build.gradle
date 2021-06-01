@@ -4,7 +4,6 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
     id 'com.google.firebase.firebase-perf'
-    id 'com.github.triplet.play'
     id 'kotlin-kapt'
 }
 
@@ -42,10 +41,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
-}
-
-play {
-    serviceAccountCredentials = rootProject.file("app/service-account-key.json")
 }
 
 dependencies {
