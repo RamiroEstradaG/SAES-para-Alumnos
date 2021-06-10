@@ -4,7 +4,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -320,11 +319,15 @@ class HomeFragment : Fragment() {
         override fun getItemViewType(position: Int) = 0
 
         override fun onBindViewHolder(holder: TwitterAdapter.ViewHolder, position: Int) {
-            holder.tweetCard.root.addView(TweetView(context, tweets[position], if(isDarkTheme(context)){
-                com.twitter.sdk.android.tweetui.R.style.tw__TweetDarkStyle
-            }else{
-                com.twitter.sdk.android.tweetui.R.style.tw__TweetLightStyle
-            }))
+            try{
+                holder.tweetCard.root.addView(TweetView(context, tweets[position], if(isDarkTheme(context)){
+                    com.twitter.sdk.android.tweetui.R.style.tw__TweetDarkStyle
+                }else{
+                    com.twitter.sdk.android.tweetui.R.style.tw__TweetLightStyle
+                }))
+            }catch (e: Exception){
+                e.printStackTrace()
+            }
             holder.setIsRecyclable(false)
         }
 
