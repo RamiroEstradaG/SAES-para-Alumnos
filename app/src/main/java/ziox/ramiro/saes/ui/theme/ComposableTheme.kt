@@ -4,29 +4,29 @@ import androidx.compose.material.*
 import androidx.compose.ui.graphics.Color
 
 val primaryColor = object : ColorShade {
-    override val s50 = Color(0xFFE2F4FA)
-    override val s100 = Color(0xFFB7E2F2)
-    override val s200 = Color(0xFF8CCFE9)
-    override val s300 = Color(0xFF68BDDF)
-    override val s400 = Color(0xFF68BDDF)
-    override val s500 = Color(0xFF49A2D3)
-    override val s600 = Color(0xFF4394C5)
-    override val s700 = Color(0xFF3B82B2)
-    override val s800 = Color(0xFF36719D)
-    override val s900 = Color(0xFF25537E)
+    override val s50 = Color(0xFFFFEBEE)
+    override val s100 = Color(0xFFFFCDD2)
+    override val s200 = Color(0xFFEF9A9A)
+    override val s300 = Color(0xFFE57373)
+    override val s400 = Color(0xFFEF5350)
+    override val s500 = Color(0xFFF44336)
+    override val s600 = Color(0xFFE53935)
+    override val s700 = Color(0xFFD32F2F)
+    override val s800 = Color(0xFFC62828)
+    override val s900 = Color(0xFFB71C1C)
 }
 
 val secondaryColor = object : ColorShade {
-    override val s50 = Color(0xFFF9EAE8)
-    override val s100 = Color(0xFFFBCFBE)
-    override val s200 = Color(0xFFF79369)
-    override val s300 = Color(0xFFF79369)
-    override val s400 = Color(0xFFF67D48)
-    override val s500 = Color(0xFFF56928)
-    override val s600 = Color(0xFFEA6324)
-    override val s700 = Color(0xFFDC5C20)
-    override val s800 = Color(0xFFCE551D)
-    override val s900 = Color(0xFFB54918)
+    override val s50 = Color(0xFFFFF8E1)
+    override val s100 = Color(0xFFFFECB3)
+    override val s200 = Color(0xFFFFE082)
+    override val s300 = Color(0xFFFFD54F)
+    override val s400 = Color(0xFFFFCA28)
+    override val s500 = Color(0xFFFFC107)
+    override val s600 = Color(0xFFFFB300)
+    override val s700 = Color(0xFFFFA000)
+    override val s800 = Color(0xFFFF8F00)
+    override val s900 = Color(0xFFFF6F00)
 }
 
 interface ComposableTheme {
