@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -28,8 +30,9 @@ import ziox.ramiro.saes.data.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.SAESActivity
+import ziox.ramiro.saes.features.presentation.SAESActivity
 import ziox.ramiro.saes.ui.components.AsyncButton
+import ziox.ramiro.saes.ui.components.BaseButton
 import ziox.ramiro.saes.ui.components.CaptchaInput
 import ziox.ramiro.saes.ui.components.SchoolButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
@@ -58,6 +61,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         schoolUrl.value = getPreference(SharedPreferenceKeys.SCHOOL_URL, "")
+        username.value = getPreference(SharedPreferenceKeys.BOLETA, "")
+        password.value = getPreference(SharedPreferenceKeys.PASSWORD, "")
 
         listenToAuthStates()
         listenToAuthEvents()
@@ -65,7 +70,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             SAESParaAlumnosTheme {
                 Scaffold {
-                    if(!isAuthDataSaved()){
+                    if(username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved()){
+                        LoginOnlyCaptcha(
+                            authViewModel,
+                            username,
+                            password
+                        )
+                    }else{
                         Login(
                             authViewModel,
                             selectSchoolLauncher,
@@ -73,8 +84,6 @@ class MainActivity : ComponentActivity() {
                             username,
                             password
                         )
-                    }else{
-
                     }
                 }
             }
@@ -95,10 +104,16 @@ class MainActivity : ComponentActivity() {
     private fun listenToAuthEvents() = lifecycleScope.launch {
         authViewModel.events.collect {
             when(it){
-                is AuthEvent.Error -> {}
+                is AuthEvent.Error -> {
+                    println(it.message)
+                }
                 is AuthEvent.LoginComplete -> if(it.auth.isLoggedIn){
                     setPreference(SharedPreferenceKeys.BOLETA, username.value)
                     setPreference(SharedPreferenceKeys.PASSWORD, password.value)
+
+                    println(getPreference(SharedPreferenceKeys.BOLETA, "a"))
+                    println(getPreference(SharedPreferenceKeys.PASSWORD, "a"))
+
                     startActivity(Intent(this@MainActivity, SAESActivity::class.java))
                     finish()
                 }
@@ -177,6 +192,10 @@ fun Login(
             singleLine = true,
             onValueChange = username.component2(),
             isError = usernameValidator.isError,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Characters,
+                keyboardType = KeyboardType.Password
+            ),
         )
         Text(
             modifier = Modifier.padding(start = 8.dp),
@@ -259,6 +278,95 @@ fun Login(
             school = School.findSchoolByUrl(schoolUrl.value)
         ){
             selectSchoolLauncher.launch()
+        }
+    }
+}
+
+
+@Composable
+fun LoginOnlyCaptcha(
+    authViewModel: AuthViewModel,
+    username: MutableState<String>,
+    password: MutableState<String>
+) {
+    val context = LocalContext.current
+
+    val captcha = remember {
+        mutableStateOf("")
+    }
+
+    val captchaValidator = validateField(captcha){
+        if(it.isEmpty()) "El campo está vacío."
+        else null
+    }
+
+    val loginErrorState = authViewModel.events
+        .filterIsInstance<AuthEvent.LoginComplete>().map {
+            val message = it.auth.message
+            if (message.isNotBlank()) message
+            else null
+        }.collectAsState(initial = null)
+
+    Column(
+        modifier = Modifier.padding(
+            top = 64.dp,
+            start = 32.dp,
+            end = 32.dp,
+            bottom = 24.dp
+        ),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Iniciar sesión como",
+            style = MaterialTheme.typography.h6
+        )
+        Text(
+            text = context.getPreference(SharedPreferenceKeys.BOLETA, ""),
+            style = MaterialTheme.typography.h4
+        )
+        Box(
+            modifier = Modifier.weight(1f)
+        )
+        CaptchaInput(
+            modifier = Modifier
+                .padding(top = 16.dp, bottom = 64.dp)
+                .fillMaxWidth(),
+            captchaWidth = 170.dp,
+            authViewModel = authViewModel,
+            captcha = captcha,
+            validationResult = captchaValidator,
+            overrideError = loginErrorState
+        )
+        AsyncButton(
+            modifier = Modifier
+                .padding(top = 24.dp, bottom = 16.dp)
+                .fillMaxWidth(),
+            isHighEmphasis = true,
+            text = "Iniciar sesión",
+            isLoadingState = authViewModel.events.filter {
+                it is AuthEvent.LoadingLogin || it is AuthEvent.LoginComplete
+            }.map {
+                when (it) {
+                    is AuthEvent.LoadingLogin -> true
+                    is AuthEvent.LoginComplete -> false
+                    else -> null
+                }
+            }.collectAsState(initial = false)
+        ){
+            if(!captchaValidator.isError){
+                authViewModel.login(
+                    username.value,
+                    password.value,
+                    captcha.value
+                )
+            }
+        }
+        BaseButton(
+            text = "USAR OTRA CUENTA"
+        ) {
+            username.value = ""
+            password.value = ""
+            context.removeAuthData()
         }
     }
 }

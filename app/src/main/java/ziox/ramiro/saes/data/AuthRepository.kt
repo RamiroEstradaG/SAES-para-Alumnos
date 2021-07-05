@@ -50,7 +50,7 @@ class AuthWebViewRepository(
                 const error = byClass("failureNotification");
                 next({
                     isLoggedIn: byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") == null,
-                    errorMessage: error != null ? error[2].innerText.trim() : ""
+                    errorMessage: error != null && error.length >= 3 ? error[2].innerText.trim() : ""
                 });
             """.trimIndent(),
             loadNewUrl = false
