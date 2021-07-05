@@ -3,7 +3,9 @@ package ziox.ramiro.saes.utils
 import android.content.Context
 
 enum class SharedPreferenceKeys(val key: String){
-    SCHOOL_URL("new_url_escuela")
+    SCHOOL_URL("new_url_escuela"),
+    BOLETA("boleta"),
+    PASSWORD("pass")
 }
 
 fun <T>Context.setPreference(preferenceKeys : SharedPreferenceKeys, value : T){
@@ -31,6 +33,14 @@ fun <T>Context.getPreference(preferenceKeys : SharedPreferenceKeys, default: T) 
     } ?:default
 }
 
+fun Context.isAuthDataSaved() : Boolean
+    = getPreference(SharedPreferenceKeys.BOLETA, "").isNotBlank()
+        && getPreference(SharedPreferenceKeys.PASSWORD, "").isNotBlank()
+
+fun Context.removeAuthData(){
+    removePreference(SharedPreferenceKeys.BOLETA)
+    removePreference(SharedPreferenceKeys.PASSWORD)
+}
 
 fun Context.removePreference(preferenceKeys: SharedPreferenceKeys){
     getSharedPreferences("preferences", Context.MODE_PRIVATE).edit().remove(preferenceKeys.key).apply()

@@ -27,6 +27,7 @@ data class ScrapResult(
 suspend fun <T>WebView.scrap(
     script: String,
     path: String = "/",
+    loadNewUrl : Boolean = true,
     resultAdapter: (ScrapResult) -> T
 ): T {
     val url = context.getPreference(SharedPreferenceKeys.SCHOOL_URL, "")+path
@@ -76,9 +77,20 @@ suspend fun <T>WebView.scrap(
                 error: WebResourceError?
             ) {
                 super.onReceivedError(view, request, error)
-                it.resumeWith(Result.failure(Exception("Error: ${if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                    error?.description
-                } else "Inesperado"}")))
+                if(!isResumed) {
+                    it.resumeWith(
+                        Result.failure(
+                            Exception(
+                                "Error: ${
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        error?.description
+                                    } else "Inesperado"
+                                }"
+                            )
+                        )
+                    )
+                    isResumed = true
+                }
             }
 
             override fun onReceivedHttpError(
@@ -87,7 +99,10 @@ suspend fun <T>WebView.scrap(
                 errorResponse: WebResourceResponse?
             ) {
                 super.onReceivedHttpError(view, request, errorResponse)
-                it.resumeWith(Result.failure(Exception("Error HTTP ${errorResponse?.statusCode}")))
+                if(!isResumed) {
+                    it.resumeWith(Result.failure(Exception("Error HTTP ${errorResponse?.statusCode}")))
+                    isResumed = true
+                }
             }
 
             override fun onReceivedSslError(
@@ -96,17 +111,26 @@ suspend fun <T>WebView.scrap(
                 error: SslError?
             ) {
                 super.onReceivedSslError(view, handler, error)
-                it.resumeWith(Result.failure(Exception("Error SSL ${error?.primaryError}")))
+                if(!isResumed) {
+                    it.resumeWith(Result.failure(Exception("Error SSL ${error?.primaryError}")))
+                    isResumed = true
+                }
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 
-                view?.loadUrl(scriptBase)
+                if (loadNewUrl){
+                    view?.loadUrl(scriptBase)
+                }
             }
         }
 
-        loadUrl(url)
+        if(loadNewUrl){
+            loadUrl(url)
+        }else{
+            loadUrl(scriptBase)
+        }
     }
 }
 
@@ -115,6 +139,7 @@ suspend fun <T>WebView.runThenScrap(
     preRequest: String,
     postRequest: String,
     path: String = "/",
+    loadNewUrl: Boolean = true,
     resultAdapter: (ScrapResult) -> T
 ): T {
     val url = context.getPreference(SharedPreferenceKeys.SCHOOL_URL, "")+path
@@ -179,9 +204,20 @@ suspend fun <T>WebView.runThenScrap(
                 error: WebResourceError?
             ) {
                 super.onReceivedError(view, request, error)
-                it.resumeWith(Result.failure(Exception("Error: ${if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                    error?.description
-                } else "Inesperado"}")))
+                if(!isResumed) {
+                    it.resumeWith(
+                        Result.failure(
+                            Exception(
+                                "Error: ${
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        error?.description
+                                    } else "Inesperado"
+                                }"
+                            )
+                        )
+                    )
+                    isResumed = true
+                }
             }
 
             override fun onReceivedHttpError(
@@ -190,7 +226,10 @@ suspend fun <T>WebView.runThenScrap(
                 errorResponse: WebResourceResponse?
             ) {
                 super.onReceivedHttpError(view, request, errorResponse)
-                it.resumeWith(Result.failure(Exception("Error HTTP ${errorResponse?.statusCode}")))
+                if(!isResumed) {
+                    it.resumeWith(Result.failure(Exception("Error HTTP ${errorResponse?.statusCode}")))
+                    isResumed = true
+                }
             }
 
             override fun onReceivedSslError(
@@ -199,13 +238,16 @@ suspend fun <T>WebView.runThenScrap(
                 error: SslError?
             ) {
                 super.onReceivedSslError(view, handler, error)
-                it.resumeWith(Result.failure(Exception("Error SSL ${error?.primaryError}")))
+                if(!isResumed) {
+                    it.resumeWith(Result.failure(Exception("Error SSL ${error?.primaryError}")))
+                    isResumed = true
+                }
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 
-                if (isFirstLoad){
+                if(loadNewUrl && isFirstLoad){
                     view?.loadUrl(preRequestScript)
                     isFirstLoad = false
                 }else{
@@ -214,7 +256,11 @@ suspend fun <T>WebView.runThenScrap(
             }
         }
 
-        loadUrl(url)
+        if(loadNewUrl){
+            loadUrl(url)
+        }else{
+            loadUrl(preRequestScript)
+        }
     }
 }
 

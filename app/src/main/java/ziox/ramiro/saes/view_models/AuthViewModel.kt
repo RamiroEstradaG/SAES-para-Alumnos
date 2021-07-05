@@ -23,12 +23,12 @@ class AuthViewModel(
 
 
     fun login(username: String, password: String, captcha: String) = viewModelScope.launch {
-        emitState(AuthState.LoadingLogin())
+        emitEvent(AuthEvent.LoadingLogin())
 
         kotlin.runCatching {
             authRepository.login(username, password, captcha)
         }.onSuccess {
-            emitState(AuthState.LoginComplete(it))
+            emitEvent(AuthEvent.LoginComplete(it))
             if (!it.isLoggedIn){
                 fetchCaptcha()
             }
@@ -38,9 +38,7 @@ class AuthViewModel(
         }
     }
 
-    fun logout(){
-        CookieManager.getInstance().removeAllCookies {
-            emitState(AuthState.LogoutSuccess())
-        }
+    fun logout() = CookieManager.getInstance().removeAllCookies {
+        emitEvent(AuthEvent.LogoutSuccess())
     }
 }

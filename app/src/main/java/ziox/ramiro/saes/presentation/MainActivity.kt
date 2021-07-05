@@ -7,51 +7,34 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
 import androidx.activity.viewModels
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.request.ImageRequest
-import com.google.accompanist.coil.rememberCoilPainter
-import compose.icons.FontAwesomeIcons
-import compose.icons.fontawesomeicons.Regular
-import compose.icons.fontawesomeicons.Solid
-import compose.icons.fontawesomeicons.solid.ChevronRight
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
-import ziox.ramiro.saes.data.models.universities
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.features.SAESActivity
 import ziox.ramiro.saes.ui.components.AsyncButton
 import ziox.ramiro.saes.ui.components.CaptchaInput
 import ziox.ramiro.saes.ui.components.SchoolButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
-import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.*
+import ziox.ramiro.saes.view_models.AuthEvent
 import ziox.ramiro.saes.view_models.AuthState
 import ziox.ramiro.saes.view_models.AuthViewModel
 
@@ -61,6 +44,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private val schoolUrl = MutableStateFlow("")
+    private val username = mutableStateOf("")
+    private val password = mutableStateOf("")
 
     private val selectSchoolLauncher = registerForActivityResult(SelectSchoolContract()){
         if (it == null) return@registerForActivityResult
@@ -74,15 +59,50 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         schoolUrl.value = getPreference(SharedPreferenceKeys.SCHOOL_URL, "")
 
+        listenToAuthStates()
+        listenToAuthEvents()
+
         setContent {
             SAESParaAlumnosTheme {
                 Scaffold {
-                    Login(
-                        authViewModel,
-                        selectSchoolLauncher,
-                        schoolUrl.collectAsState()
-                    )
+                    if(!isAuthDataSaved()){
+                        Login(
+                            authViewModel,
+                            selectSchoolLauncher,
+                            schoolUrl.collectAsState(),
+                            username,
+                            password
+                        )
+                    }else{
+
+                    }
                 }
+            }
+        }
+    }
+
+    private fun listenToAuthStates() = lifecycleScope.launch {
+        authViewModel.states.collect {
+            if (it is AuthState.CaptchaComplete){
+                if(it.captcha.isLoggedIn){
+                    startActivity(Intent(this@MainActivity, SAESActivity::class.java))
+                    finish()
+                }
+            }
+        }
+    }
+
+    private fun listenToAuthEvents() = lifecycleScope.launch {
+        authViewModel.events.collect {
+            when(it){
+                is AuthEvent.Error -> {}
+                is AuthEvent.LoginComplete -> if(it.auth.isLoggedIn){
+                    setPreference(SharedPreferenceKeys.BOLETA, username.value)
+                    setPreference(SharedPreferenceKeys.PASSWORD, password.value)
+                    startActivity(Intent(this@MainActivity, SAESActivity::class.java))
+                    finish()
+                }
+                else -> {}
             }
         }
     }
@@ -100,16 +120,16 @@ class MainActivity : ComponentActivity() {
 fun Login(
     authViewModel: AuthViewModel,
     selectSchoolLauncher: ActivityResultLauncher<Unit>,
-    schoolUrl: State<String>
+    schoolUrl: State<String>,
+    username: MutableState<String>,
+    password: MutableState<String>
 ) {
-    val username = remember {
-        mutableStateOf("")
-    }
-    val password = remember {
-        mutableStateOf("")
-    }
     val captcha = remember {
         mutableStateOf("")
+    }
+
+    val passwordVisible = remember {
+        mutableStateOf(false)
     }
 
     val usernameValidator = validateField(username){
@@ -127,15 +147,12 @@ fun Login(
         else null
     }
 
-    val loginErrorState = remember {
-        authViewModel.states
-            .filterIsInstance<AuthState.LoginComplete>().map {
-                print(it.auth)
-                val message = it.auth.message
-                if (message.isNotBlank()) message
-                else null
-            }
-    }
+    val loginErrorState = authViewModel.events
+        .filterIsInstance<AuthEvent.LoginComplete>().map {
+            val message = it.auth.message
+            if (message.isNotBlank()) message
+            else null
+        }.collectAsState(initial = null)
 
     Column(
         modifier = Modifier.padding(
@@ -177,17 +194,35 @@ fun Login(
             },
             singleLine = true,
             onValueChange = password.component2(),
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (!passwordVisible.value){
+                PasswordVisualTransformation()
+            } else VisualTransformation.None,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Characters,
                 keyboardType = KeyboardType.Password
             ),
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        passwordVisible.value = !passwordVisible.value
+                    }
+                ) {
+                    Icon(
+                        imageVector = if (!passwordVisible.value){
+                             Icons.Rounded.Visibility
+                        }else{
+                             Icons.Rounded.VisibilityOff
+                        },
+                        contentDescription = "Visibility"
+                    )
+                }
+            },
             isError = passwordValidator.isError
         )
         Text(
             modifier = Modifier.padding(start = 8.dp),
             color = MaterialTheme.colors.error,
-            text = loginErrorState.collectAsState(initial = null).value ?: passwordValidator.errorMessage,
+            text = loginErrorState.value ?: passwordValidator.errorMessage,
             style = MaterialTheme.typography.body2
         )
         CaptchaInput(
@@ -204,12 +239,12 @@ fun Login(
                 .fillMaxWidth(),
             isHighEmphasis = true,
             text = "Iniciar sesión",
-            isLoadingState = authViewModel.states.filter {
-                it is AuthState.LoadingLogin || it is AuthState.LoadingCaptcha
+            isLoadingState = authViewModel.events.filter {
+                it is AuthEvent.LoadingLogin || it is AuthEvent.LoginComplete
             }.map {
                 when (it) {
-                    is AuthState.LoadingLogin -> true
-                    is AuthState.LoginComplete -> false
+                    is AuthEvent.LoadingLogin -> true
+                    is AuthEvent.LoginComplete -> false
                     else -> null
                 }
             }.collectAsState(initial = false)

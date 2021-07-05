@@ -14,26 +14,32 @@ interface AuthRepository {
 
 
 class AuthWebViewRepository(
-    private val context: Context
+    context: Context
 ) : AuthRepository {
+    private val webView = createWebView(context)
+
     override suspend fun getCaptcha(): Captcha {
-        return createWebView(context).scrap(
+        return webView.scrap(
             """
+            const isLoggedIn = byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") == null;
             next({
-                url: byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src
+                isLoggedIn: isLoggedIn,
+                url: !isLoggedIn ? byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src : ""
             });
-            """.trimIndent()
+            """.trimIndent(),
+            loadNewUrl = true
         ){
             val data = it.result.getJSONObject("data")
             Captcha(
                 data.getString("url"),
+                data.getBoolean("isLoggedIn"),
                 it.headers
             )
         }
     }
 
     override suspend fun login(username: String, password: String, captcha: String): Auth {
-        return createWebView(context).runThenScrap(
+        return webView.runThenScrap(
             preRequest = """
                 byId("ctl00_leftColumn_LoginUser_UserName").value = "$username";
                 byId("ctl00_leftColumn_LoginUser_Password").value = "${password.replace(Regex("[\"\\\\]")) { matchResult -> "\\${matchResult.value}" }}";
@@ -41,11 +47,13 @@ class AuthWebViewRepository(
                 byId("ctl00_leftColumn_LoginUser_LoginButton").click();
             """.trimIndent(),
             postRequest = """
+                const error = byClass("failureNotification");
                 next({
                     isLoggedIn: byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") == null,
-                    errorMessage: byClass("failureNotification")[2].innerText.trim()
+                    errorMessage: error != null ? error[2].innerText.trim() : ""
                 });
             """.trimIndent(),
+            loadNewUrl = false
         ){
             val data = it.result.getJSONObject("data")
             Auth(

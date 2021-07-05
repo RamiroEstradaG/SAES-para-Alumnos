@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 object LightTheme : ComposableTheme {
     override val primaryText = Color(0xFF292929)
     override val secondaryText = Color(0xFF575757)
+    override val dangerColor = Color.Red
     override val toolbarColor = primaryColor.s500
     override val surfaceElevation = object : ColorElevation {
         override val e0 = Color(0xFFFFFFFF)

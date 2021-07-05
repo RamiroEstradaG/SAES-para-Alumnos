@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 object DarkTheme : ComposableTheme {
     override val primaryText = Color(0xFFFFFFFF)
     override val secondaryText = Color(0xFFBFBFBF)
+    override val dangerColor = Color.Red
     override val surfaceElevation = object : ColorElevation {
         override val e0 = Color(0xFF121212)
         override val e1 = Color(0xFF1e1e1e)

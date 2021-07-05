@@ -31,8 +31,12 @@ val secondaryColor = object : ColorShade {
 
 interface ComposableTheme {
     val colors: Colors
+
     val primaryText: Color
     val secondaryText: Color
+
+    val dangerColor: Color
+
     val toolbarColor: Color
     val surfaceElevation: ColorElevation
 }
