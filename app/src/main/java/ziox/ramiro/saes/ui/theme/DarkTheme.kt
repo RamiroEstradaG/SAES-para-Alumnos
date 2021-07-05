@@ -4,9 +4,15 @@ import androidx.compose.material.darkColors
 import androidx.compose.ui.graphics.Color
 
 object DarkTheme : ComposableTheme {
-    override val primaryText = Color(0xFFFFFFFF)
-    override val secondaryText = Color(0xFFBFBFBF)
-    override val dangerColor = Color.Red
+    override val primaryText = Color(0xFF292929)
+    override val secondaryText = Color(0xFF575757)
+    override val hintText = Color(0xFF959595)
+
+    override val success = Color(0xFFA5D6A7)
+    override val info = Color(0xFF81D4FA)
+    override val warning = Color(0xFFFFE082)
+    override val danger = Color(0xFFEF9A9A)
+
     override val surfaceElevation = object : ColorElevation {
         override val e0 = Color(0xFF121212)
         override val e1 = Color(0xFF1e1e1e)
@@ -19,19 +25,26 @@ object DarkTheme : ComposableTheme {
         override val e16 = Color(0xFF363636)
         override val e24 = Color(0xFF383838)
     }
-    override val toolbarColor = surfaceElevation.e3
+
+    override val toolbar = surfaceElevation.e4
+    override val onToolbar = Color.White
+
     override val colors = darkColors(
-        primary = primaryColor.s500,
-        primaryVariant = primaryColor.s700,
-        secondary = secondaryColor.s500,
-        secondaryVariant = secondaryColor.s700,
-        background = Color(0xFFEDF0F3),
+        primary = primaryColor.s200,
+        primaryVariant = primaryColor.s500,
+        onPrimary = Color.Black,
+
+        secondary = secondaryColor.s200,
+        secondaryVariant = secondaryColor.s500,
+        onSecondary = Color.Black,
+
+        background = surfaceElevation.e0,
         onBackground = primaryText,
-        surface = Color.White,
+
+        surface = surfaceElevation.e1,
         onSurface = primaryText,
-        error = Color(0xFFB00020),
-        onError = Color.White,
-        onPrimary = Color.White,
-        onSecondary = Color.White
+
+        error = Color(0xFFE57373),
+        onError = Color.Black
     )
 }

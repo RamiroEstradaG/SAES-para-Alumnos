@@ -34,10 +34,16 @@ interface ComposableTheme {
 
     val primaryText: Color
     val secondaryText: Color
+    val hintText: Color
 
-    val dangerColor: Color
+    val success: Color
+    val info: Color
+    val warning: Color
+    val danger: Color
 
-    val toolbarColor: Color
+    val toolbar: Color
+    val onToolbar: Color
+
     val surfaceElevation: ColorElevation
 }
 
