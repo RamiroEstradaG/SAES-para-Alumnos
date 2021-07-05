@@ -18,4 +18,4 @@ jobs:
         run: echo $FIREBASE_CONFIG > ./app/google-services.json  
         
       - name: Unit Test
-        run: bash ./gradlew testDebugUnitTest
+        run: bash ./gradlew test
