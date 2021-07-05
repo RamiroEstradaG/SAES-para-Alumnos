@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -25,6 +26,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ziox.ramiro.saes.features.ui.components.GradesItem
+import ziox.ramiro.saes.features.ui.components.RecentActivityItem
+import ziox.ramiro.saes.ui.theme.getCurrentTheme
+import kotlin.random.Random
 
 @Composable
 fun Home() = Column {
@@ -58,7 +63,15 @@ fun Home() = Column {
         title = "Calificaciones",
         icon = Icons.Rounded.FactCheck
     ){
-
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 28.dp)
+        ) {
+            items(15){
+                GradesItem(
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+            }
+        }
     }
     HomeItem(
         modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
@@ -66,42 +79,6 @@ fun Home() = Column {
         icon = Icons.Rounded.Feed
     ){
 
-    }
-}
-
-@Preview
-@Composable
-fun RecentActivityItem(
-    modifier: Modifier = Modifier,
-    icon: ImageVector = Icons.Rounded.History,
-    title: String = "Calificaciones",
-    onClick: () -> Unit = {}
-) = Card(
-    modifier = modifier
-        .clip(MaterialTheme.shapes.medium)
-        .height(132.dp)
-        .clickable(
-            interactionSource = MutableInteractionSource(),
-            onClick = onClick,
-            indication = rememberRipple()
-        )
-) {
-    Column(
-        modifier = Modifier.padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            modifier = Modifier.size(38.dp).padding(bottom = 8.dp),
-            imageVector = icon,
-            contentDescription = "Recent activity",
-            tint = MaterialTheme.colors.primary
-        )
-        Text(
-            text = title,
-            style = MaterialTheme.typography.h6,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.primary
-        )
     }
 }
 
