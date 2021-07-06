@@ -16,7 +16,6 @@ import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,7 +29,7 @@ import ziox.ramiro.saes.data.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.presentation.SAESActivity
+import ziox.ramiro.saes.features.saes.presentation.SAESActivity
 import ziox.ramiro.saes.ui.components.AsyncButton
 import ziox.ramiro.saes.ui.components.BaseButton
 import ziox.ramiro.saes.ui.components.CaptchaInput

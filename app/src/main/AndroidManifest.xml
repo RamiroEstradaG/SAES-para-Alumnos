@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SAESParaAlumnos">
         <activity
-            android:name=".features.presentation.SAESActivity"
+            android:name="ziox.ramiro.saes.features.saes.presentation.SAESActivity"
             android:exported="true"
             android:label="@string/title_activity_saesactivity"
             android:theme="@style/Theme.SAESParaAlumnos.NoActionBar" />
