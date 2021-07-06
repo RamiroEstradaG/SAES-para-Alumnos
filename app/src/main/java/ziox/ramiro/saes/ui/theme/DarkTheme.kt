@@ -4,9 +4,9 @@ import androidx.compose.material.darkColors
 import androidx.compose.ui.graphics.Color
 
 object DarkTheme : ComposableTheme {
-    override val primaryText = Color(0xFF292929)
-    override val secondaryText = Color(0xFF575757)
-    override val hintText = Color(0xFF959595)
+    override val primaryText = Color(0xFFFFFFFF)
+    override val secondaryText = Color(0xFFB6B6B6)
+    override val hintText = Color(0xFF686868)
 
     override val success = Color(0xFFA5D6A7)
     override val info = Color(0xFF81D4FA)

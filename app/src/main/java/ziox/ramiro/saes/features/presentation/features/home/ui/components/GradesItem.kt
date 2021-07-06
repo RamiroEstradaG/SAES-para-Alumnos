@@ -14,16 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
+import ziox.ramiro.saes.utils.getInitials
 import kotlin.random.Random
 
 @Preview
 @Composable
 fun GradesItem(
     modifier: Modifier = Modifier,
-    className: String = "Calificaciones",
+    className: String = "Nombre de Una Materia Extremadamente Larga XI",
     finalGrade: Int = Random.nextInt(10),
     onClick: () -> Unit = {}
 ) = Card(
@@ -37,13 +39,14 @@ fun GradesItem(
         )
 ) {
     Column(
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = className,
+            text = className.getInitials(),
             style = MaterialTheme.typography.h5,
             textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
         Text(

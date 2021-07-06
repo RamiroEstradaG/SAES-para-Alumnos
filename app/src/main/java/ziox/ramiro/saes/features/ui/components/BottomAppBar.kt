@@ -17,13 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.features.presentation.MenuSection
+import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
 @Preview
 @Composable
 fun BottomAppBar(
     selectedItemMenu: MutableState<MenuSection> = mutableStateOf(MenuSection.HOME)
 ){
-    androidx.compose.material.BottomAppBar {
+    androidx.compose.material.BottomAppBar(
+        backgroundColor = getCurrentTheme().toolbar
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -44,7 +47,7 @@ fun BottomAppBar(
                     contentDescription = "Home",
                     tint = if (selectedItemMenu.value == MenuSection.HOME) {
                         MaterialTheme.colors.secondary
-                    } else MaterialTheme.colors.onPrimary
+                    } else getCurrentTheme().onToolbar
                 )
             }
             IconButton(onClick = {
@@ -56,7 +59,7 @@ fun BottomAppBar(
                     contentDescription = "Schedule",
                     tint = if (selectedItemMenu.value == MenuSection.SCHEDULE) {
                         MaterialTheme.colors.secondary
-                    } else MaterialTheme.colors.onPrimary
+                    } else getCurrentTheme().onToolbar
                 )
             }
             IconButton(onClick = {
@@ -68,7 +71,7 @@ fun BottomAppBar(
                     contentDescription = "Grades",
                     tint = if (selectedItemMenu.value == MenuSection.GRADES) {
                         MaterialTheme.colors.secondary
-                    } else MaterialTheme.colors.onPrimary
+                    } else getCurrentTheme().onToolbar
                 )
             }
             IconButton(onClick = {
@@ -80,7 +83,7 @@ fun BottomAppBar(
                     contentDescription = "Profile",
                     tint = if (selectedItemMenu.value == MenuSection.PROFILE) {
                         MaterialTheme.colors.secondary
-                    } else MaterialTheme.colors.onPrimary
+                    } else getCurrentTheme().onToolbar
                 )
             }
         }

@@ -1,38 +1,40 @@
 package ziox.ramiro.saes.features.presentation.features.home.presentation
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FactCheck
 import androidx.compose.material.icons.rounded.Feed
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Undo
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.filter
+import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.features.presentation.features.home.data.repositories.TwitterRetrofitRepository
+import ziox.ramiro.saes.features.presentation.features.home.ui.components.TwitterItem
+import ziox.ramiro.saes.features.presentation.features.home.view_models.HomeState
+import ziox.ramiro.saes.features.presentation.features.home.view_models.HomeViewModel
 import ziox.ramiro.saes.features.ui.components.GradesItem
 import ziox.ramiro.saes.features.ui.components.RecentActivityItem
-import ziox.ramiro.saes.ui.theme.getCurrentTheme
-import kotlin.random.Random
 
+@ExperimentalMaterialApi
 @Composable
-fun Home() = Column {
+fun Home(
+    homeViewModel: HomeViewModel = viewModel(
+        factory = viewModelFactory { HomeViewModel(TwitterRetrofitRepository()) }
+    )
+) = Column(
+    modifier = Modifier.padding(bottom = 64.dp).verticalScroll(rememberScrollState())
+) {
     HomeItem(
         modifier = Modifier.padding(start = 32.dp, end = 32.dp),
         title = "Actividad reciente",
@@ -78,7 +80,31 @@ fun Home() = Column {
         title = "Noticias",
         icon = Icons.Rounded.Feed
     ){
-
+        when(val state = homeViewModel.states.filter { it is HomeState.TweetsLoading || it is HomeState.TweetsComplete }.collectAsState(
+            initial = null
+        ).value){
+            is HomeState.TweetsLoading -> Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 32.dp)
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            is HomeState.TweetsComplete -> Column {
+                state.tweets.forEach {
+                    TwitterItem(
+                        modifier = Modifier.padding(
+                            horizontal = 32.dp,
+                            vertical = 4.dp
+                        ),
+                        tweet = it
+                    )
+                }
+            }
+            else -> homeViewModel.fetchTweets()
+        }
     }
 }
 

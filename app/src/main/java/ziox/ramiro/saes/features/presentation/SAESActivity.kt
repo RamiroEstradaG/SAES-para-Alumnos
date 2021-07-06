@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
@@ -29,6 +30,7 @@ class SAESActivity : ComponentActivity() {
 
     private val selectedMenuItem = mutableStateOf(MenuSection.HOME)
 
+    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -65,6 +67,7 @@ enum class MenuSection{
 }
 
 
+@ExperimentalMaterialApi
 @Composable
 fun PageController(
     selectedItemMenu: MutableState<MenuSection> = mutableStateOf(MenuSection.HOME)
