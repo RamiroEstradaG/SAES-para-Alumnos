@@ -1,10 +1,10 @@
-package ziox.ramiro.saes.features.saes.presentation.features.grades.data.repositories
+package ziox.ramiro.saes.features.saes.features.grades.data.repositories
 
 import android.content.Context
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_provider.createWebView
 import ziox.ramiro.saes.data.data_provider.scrap
-import ziox.ramiro.saes.features.saes.presentation.features.grades.data.models.ClassGrades
+import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 
 interface GradesRepository {
     suspend fun getMyGrades() : List<ClassGrades>

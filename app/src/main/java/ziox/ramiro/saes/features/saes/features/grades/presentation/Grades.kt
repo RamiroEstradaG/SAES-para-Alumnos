@@ -1,5 +1,6 @@
-package ziox.ramiro.saes.features.saes.presentation.features.grades.presentation
+package ziox.ramiro.saes.features.saes.features.grades.presentation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,12 +18,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.filter
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.presentation.features.grades.data.repositories.GradesWebViewRepository
-import ziox.ramiro.saes.features.saes.presentation.features.grades.view_models.GradesState
-import ziox.ramiro.saes.features.saes.presentation.features.grades.view_models.GradesViewModel
+import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
+import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesState
+import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
 import ziox.ramiro.saes.features.saes.ui.components.GradeItem
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Grades(
     gradesViewModel: GradesViewModel = viewModel(

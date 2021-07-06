@@ -1,8 +1,8 @@
-package ziox.ramiro.saes.features.saes.presentation.features.grades.view_models
+package ziox.ramiro.saes.features.saes.features.grades.view_models
 
 import ziox.ramiro.saes.data.models.ViewModelEvent
 import ziox.ramiro.saes.data.models.ViewModelState
-import ziox.ramiro.saes.features.saes.presentation.features.grades.data.models.ClassGrades
+import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 
 sealed class GradesState : ViewModelState {
     class GradesLoading : GradesState()

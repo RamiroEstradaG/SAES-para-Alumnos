@@ -1,9 +1,9 @@
-package ziox.ramiro.saes.features.saes.presentation.features.grades.view_models
+package ziox.ramiro.saes.features.saes.features.grades.view_models
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.BaseViewModel
-import ziox.ramiro.saes.features.saes.presentation.features.grades.data.repositories.GradesRepository
+import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesRepository
 
 class GradesViewModel(
     private val gradesRepository: GradesRepository

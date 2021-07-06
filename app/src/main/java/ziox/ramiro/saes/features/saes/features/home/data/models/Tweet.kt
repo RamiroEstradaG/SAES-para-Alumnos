@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.presentation.features.home.data.models
+package ziox.ramiro.saes.features.saes.features.home.data.models
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

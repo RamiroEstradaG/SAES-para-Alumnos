@@ -16,8 +16,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.presentation.features.grades.presentation.Grades
-import ziox.ramiro.saes.features.saes.presentation.features.home.presentation.Home
+import ziox.ramiro.saes.features.saes.features.grades.presentation.Grades
+import ziox.ramiro.saes.features.saes.features.home.presentation.Home
+import ziox.ramiro.saes.features.saes.features.schedule.presentation.Schedule
 import ziox.ramiro.saes.features.saes.ui.components.BottomAppBar
 import ziox.ramiro.saes.presentation.MainActivity
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
@@ -76,6 +77,7 @@ fun PageController(
     when(it){
         MenuSection.HOME -> Home()
         MenuSection.GRADES -> Grades()
+        MenuSection.SCHEDULE -> Schedule()
         else -> {
             Box{}
         }

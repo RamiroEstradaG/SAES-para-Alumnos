@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ziox.ramiro.saes.features.saes.presentation.features.grades.data.models.ClassGrades
+import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.getInitials
 import kotlin.random.Random

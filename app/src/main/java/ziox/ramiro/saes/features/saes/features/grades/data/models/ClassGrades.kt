@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.presentation.features.grades.data.models
+package ziox.ramiro.saes.features.saes.features.grades.data.models
 
 data class ClassGrades(
     val className: String,

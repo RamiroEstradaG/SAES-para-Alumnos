@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.presentation.features.home.presentation
+package ziox.ramiro.saes.features.saes.features.home.presentation
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -19,10 +19,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.filter
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.presentation.features.home.data.repositories.TwitterRetrofitRepository
-import ziox.ramiro.saes.features.saes.presentation.features.home.ui.components.TwitterItem
-import ziox.ramiro.saes.features.saes.presentation.features.home.view_models.HomeState
-import ziox.ramiro.saes.features.saes.presentation.features.home.view_models.HomeViewModel
+import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterRetrofitRepository
+import ziox.ramiro.saes.features.saes.features.home.ui.components.TwitterItem
+import ziox.ramiro.saes.features.saes.features.home.view_models.HomeState
+import ziox.ramiro.saes.features.saes.features.home.view_models.HomeViewModel
 import ziox.ramiro.saes.features.saes.ui.components.SmallGradeItem
 import ziox.ramiro.saes.features.saes.ui.components.RecentActivityItem
 

@@ -1,10 +1,10 @@
-package ziox.ramiro.saes.features.saes.presentation.features.home.data.repositories
+package ziox.ramiro.saes.features.saes.features.home.data.repositories
 
 import retrofit2.http.GET
 import retrofit2.http.Path
 import ziox.ramiro.saes.data.data_provider.retrofitProvider
-import ziox.ramiro.saes.features.saes.presentation.features.home.data.models.MappedTweet
-import ziox.ramiro.saes.features.saes.presentation.features.home.data.models.TimelineResponse
+import ziox.ramiro.saes.features.saes.features.home.data.models.MappedTweet
+import ziox.ramiro.saes.features.saes.features.home.data.models.TimelineResponse
 
 interface TwitterRepository {
     suspend fun getTimelineTweets() : List<MappedTweet>

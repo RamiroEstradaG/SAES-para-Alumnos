@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.presentation.features.home.ui.components
+package ziox.ramiro.saes.features.saes.features.home.ui.components
 
 import android.text.util.Linkify
 import android.widget.TextView
@@ -17,8 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.accompanist.coil.rememberCoilPainter
-import ziox.ramiro.saes.features.saes.presentation.features.home.data.models.MappedTweet
-import ziox.ramiro.saes.features.saes.presentation.features.home.data.models.TwitterUser
+import ziox.ramiro.saes.features.saes.features.home.data.models.MappedTweet
+import ziox.ramiro.saes.features.saes.features.home.data.models.TwitterUser
 import java.util.*
 
 @ExperimentalMaterialApi

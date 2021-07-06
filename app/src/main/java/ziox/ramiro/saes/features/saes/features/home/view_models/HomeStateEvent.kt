@@ -1,8 +1,8 @@
-package ziox.ramiro.saes.features.saes.presentation.features.home.view_models
+package ziox.ramiro.saes.features.saes.features.home.view_models
 
 import ziox.ramiro.saes.data.models.ViewModelEvent
 import ziox.ramiro.saes.data.models.ViewModelState
-import ziox.ramiro.saes.features.saes.presentation.features.home.data.models.MappedTweet
+import ziox.ramiro.saes.features.saes.features.home.data.models.MappedTweet
 
 sealed class HomeState : ViewModelState {
     class TweetsLoading : HomeState()

@@ -1,9 +1,9 @@
-package ziox.ramiro.saes.features.saes.presentation.features.home.view_models
+package ziox.ramiro.saes.features.saes.features.home.view_models
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.BaseViewModel
-import ziox.ramiro.saes.features.saes.presentation.features.home.data.repositories.TwitterRepository
+import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterRepository
 
 class HomeViewModel(
     private val twitterRepository: TwitterRepository
