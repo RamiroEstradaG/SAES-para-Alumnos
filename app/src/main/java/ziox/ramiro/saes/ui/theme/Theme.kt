@@ -23,7 +23,7 @@ fun SAESParaAlumnosTheme(content: @Composable () -> Unit) {
     ){
         rememberSystemUiController().setStatusBarColor(
             theme.colors.background,
-            true
+            !isSystemInDarkTheme()
         )
         content()
     }

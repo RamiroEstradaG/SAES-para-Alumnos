@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.features.presentation.features.grades.presentation.Grades
 import ziox.ramiro.saes.features.presentation.features.home.presentation.Home
 import ziox.ramiro.saes.features.ui.components.BottomAppBar
 import ziox.ramiro.saes.presentation.MainActivity
@@ -74,6 +75,7 @@ fun PageController(
 ) = Crossfade(targetState = selectedItemMenu.value) {
     when(it){
         MenuSection.HOME -> Home()
+        MenuSection.GRADES -> Grades()
         else -> {
             Box{}
         }

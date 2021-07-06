@@ -23,7 +23,7 @@ import ziox.ramiro.saes.features.presentation.features.home.data.repositories.Tw
 import ziox.ramiro.saes.features.presentation.features.home.ui.components.TwitterItem
 import ziox.ramiro.saes.features.presentation.features.home.view_models.HomeState
 import ziox.ramiro.saes.features.presentation.features.home.view_models.HomeViewModel
-import ziox.ramiro.saes.features.ui.components.GradesItem
+import ziox.ramiro.saes.features.ui.components.SmallGradeItem
 import ziox.ramiro.saes.features.ui.components.RecentActivityItem
 
 @ExperimentalMaterialApi
@@ -69,7 +69,7 @@ fun Home(
             contentPadding = PaddingValues(horizontal = 28.dp)
         ) {
             items(15){
-                GradesItem(
+                SmallGradeItem(
                     modifier = Modifier.padding(horizontal = 4.dp)
                 )
             }

@@ -21,7 +21,7 @@ class AuthWebViewRepository(
     override suspend fun getCaptcha(): Captcha {
         return webView.scrap(
             """
-            const isLoggedIn = byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") == null;
+            var isLoggedIn = byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") == null;
             next({
                 isLoggedIn: isLoggedIn,
                 url: !isLoggedIn ? byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src : ""
@@ -47,7 +47,7 @@ class AuthWebViewRepository(
                 byId("ctl00_leftColumn_LoginUser_LoginButton").click();
             """.trimIndent(),
             postRequest = """
-                const error = byClass("failureNotification");
+                var error = byClass("failureNotification");
                 next({
                     isLoggedIn: byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") == null,
                     errorMessage: error != null && error.length >= 3 ? error[2].innerText.trim() : ""
