@@ -33,7 +33,7 @@ fun Home(
         factory = viewModelFactory { HomeViewModel(TwitterRetrofitRepository()) }
     )
 ) = Column(
-    modifier = Modifier.padding(bottom = 64.dp).verticalScroll(rememberScrollState())
+    modifier = Modifier.verticalScroll(rememberScrollState()).padding(top = 32.dp, bottom = 64.dp)
 ) {
     HomeItem(
         modifier = Modifier.padding(start = 32.dp, end = 32.dp),
@@ -97,7 +97,7 @@ fun Home(
                     TwitterItem(
                         modifier = Modifier.padding(
                             horizontal = 32.dp,
-                            vertical = 4.dp
+                            vertical = 6.dp
                         ),
                         tweet = it
                     )
@@ -112,7 +112,7 @@ fun Home(
 @Composable
 fun HomeItem(
     modifier: Modifier = Modifier,
-    title: String = "Title",
+    title: String = "Title Long",
     icon: ImageVector = Icons.Rounded.History,
     content: @Composable () -> Unit = {}
 ) = Column {

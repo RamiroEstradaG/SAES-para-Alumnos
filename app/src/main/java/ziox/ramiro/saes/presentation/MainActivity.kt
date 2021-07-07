@@ -110,9 +110,6 @@ class MainActivity : ComponentActivity() {
                     setPreference(SharedPreferenceKeys.BOLETA, username.value)
                     setPreference(SharedPreferenceKeys.PASSWORD, password.value)
 
-                    println(getPreference(SharedPreferenceKeys.BOLETA, "a"))
-                    println(getPreference(SharedPreferenceKeys.PASSWORD, "a"))
-
                     startActivity(Intent(this@MainActivity, SAESActivity::class.java))
                     finish()
                 }

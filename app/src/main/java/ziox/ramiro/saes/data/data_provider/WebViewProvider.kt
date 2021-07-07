@@ -6,10 +6,17 @@ import android.content.Context
 import android.net.http.SslError
 import android.os.Build
 import android.webkit.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import okhttp3.Headers
+import org.json.JSONArray
 import org.json.JSONObject
 import ziox.ramiro.saes.utils.SharedPreferenceKeys
+import ziox.ramiro.saes.utils.UtilsJavascriptInterface
 import ziox.ramiro.saes.utils.getPreference
+import java.util.concurrent.TimeoutException
+import kotlin.concurrent.thread
 import kotlin.coroutines.suspendCoroutine
 
 
@@ -59,7 +66,11 @@ suspend fun <T>WebView.scrap(
                         if(!isResumed){
                             it.resumeWith(Result.success(resultAdapter(ScrapResult(
                                 result = JSONObject(mapOf(
-                                    "data" to JSONObject(resultJson)
+                                    "data" to try{
+                                        JSONObject(resultJson)
+                                    }catch (e: Exception){
+                                        JSONArray(resultJson)
+                                    }
                                 )),
                                 headers = this@scrap.getCookies()
                             ))))
@@ -71,28 +82,6 @@ suspend fun <T>WebView.scrap(
         }, "JSI")
 
         webViewClient = object : WebViewClient(){
-            override fun onReceivedError(
-                view: WebView?,
-                request: WebResourceRequest?,
-                error: WebResourceError?
-            ) {
-                super.onReceivedError(view, request, error)
-                if(!isResumed) {
-                    it.resumeWith(
-                        Result.failure(
-                            Exception(
-                                "Error: ${
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        error?.description
-                                    } else "Inesperado"
-                                }"
-                            )
-                        )
-                    )
-                    isResumed = true
-                }
-            }
-
             override fun onReceivedHttpError(
                 view: WebView?,
                 request: WebResourceRequest?,
@@ -130,6 +119,15 @@ suspend fun <T>WebView.scrap(
             loadUrl(url)
         }else{
             loadUrl(scriptBase)
+        }
+
+        thread(start = true) {
+            Thread.sleep(10 * 1000)
+
+            if(!isResumed){
+                it.resumeWith(Result.failure(TimeoutException()))
+                isResumed = true
+            }
         }
     }
 }
@@ -198,27 +196,6 @@ suspend fun <T>WebView.runThenScrap(
         }, "JSI")
 
         webViewClient = object : WebViewClient(){
-            override fun onReceivedError(
-                view: WebView?,
-                request: WebResourceRequest?,
-                error: WebResourceError?
-            ) {
-                super.onReceivedError(view, request, error)
-                if(!isResumed) {
-                    it.resumeWith(
-                        Result.failure(
-                            Exception(
-                                "Error: ${
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        error?.description
-                                    } else "Inesperado"
-                                }"
-                            )
-                        )
-                    )
-                    isResumed = true
-                }
-            }
 
             override fun onReceivedHttpError(
                 view: WebView?,
@@ -261,6 +238,15 @@ suspend fun <T>WebView.runThenScrap(
         }else{
             loadUrl(preRequestScript)
         }
+
+        thread(start = true) {
+            Thread.sleep(10 * 1000)
+
+            if(!isResumed){
+                it.resumeWith(Result.failure(TimeoutException()))
+                isResumed = true
+            }
+        }
     }
 }
 
@@ -278,6 +264,8 @@ fun createWebView(context: Context) : WebView {
             if(newProgress > 95) view?.stopLoading()
         }
     }
+
+    webView.addJavascriptInterface(UtilsJavascriptInterface(), "Utils")
 
     return webView
 }

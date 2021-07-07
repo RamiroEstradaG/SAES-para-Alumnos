@@ -35,7 +35,8 @@ fun BottomAppBar(
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     imageVector = Icons.Rounded.Menu,
-                    contentDescription = "Menu"
+                    contentDescription = "Menu",
+                    tint = getCurrentTheme().onToolbar
                 )
             }
             IconButton(onClick = {

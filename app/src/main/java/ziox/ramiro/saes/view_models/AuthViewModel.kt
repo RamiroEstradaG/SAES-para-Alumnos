@@ -9,15 +9,18 @@ import ziox.ramiro.saes.data.models.BaseViewModel
 class AuthViewModel(
     private val authRepository: AuthRepository
 ) : BaseViewModel<AuthState, AuthEvent>(){
-    fun fetchCaptcha() = viewModelScope.launch {
-        emitState(AuthState.LoadingCaptcha())
+    fun fetchCaptcha() {
+        viewModelScope.launch {
+            emitState(AuthState.LoadingCaptcha())
 
-        kotlin.runCatching {
-            authRepository.getCaptcha()
-        }.onSuccess {
-            emitState(AuthState.CaptchaComplete(it))
-        }.onFailure {
-            emitEvent(AuthEvent.Error("Error al obtener el captcha"))
+            kotlin.runCatching {
+                authRepository.getCaptcha()
+            }.onSuccess {
+                emitState(AuthState.CaptchaComplete(it))
+            }.onFailure {
+                fetchCaptcha()
+                emitEvent(AuthEvent.Error("Error al obtener el captcha"))
+            }
         }
     }
 

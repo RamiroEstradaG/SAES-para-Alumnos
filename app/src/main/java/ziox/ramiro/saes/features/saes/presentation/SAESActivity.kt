@@ -6,11 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -30,8 +32,7 @@ class SAESActivity : ComponentActivity() {
         viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
     }
 
-    private val selectedMenuItem = mutableStateOf(MenuSection.SCHEDULE)
-
+    @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +40,10 @@ class SAESActivity : ComponentActivity() {
         listenToAuthEvents()
 
         setContent {
+            val selectedMenuItem = rememberSaveable {
+                mutableStateOf(MenuSection.SCHEDULE)
+            }
+
             SAESParaAlumnosTheme {
                 Scaffold(
                     bottomBar = {
@@ -69,6 +74,7 @@ enum class MenuSection{
 }
 
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
 fun PageController(

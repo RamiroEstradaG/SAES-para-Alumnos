@@ -21,10 +21,17 @@ fun SAESParaAlumnosTheme(content: @Composable () -> Unit) {
         typography = Typography(theme),
         shapes = Shapes
     ){
-        rememberSystemUiController().setStatusBarColor(
+        val uiController = rememberSystemUiController()
+
+        uiController.setStatusBarColor(
             theme.colors.background,
             !isSystemInDarkTheme()
         )
+
+        uiController.setNavigationBarColor(
+            theme.toolbar
+        )
+
         content()
     }
 }

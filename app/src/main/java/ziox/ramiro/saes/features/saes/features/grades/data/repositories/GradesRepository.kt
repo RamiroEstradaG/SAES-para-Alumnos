@@ -5,6 +5,7 @@ import org.json.JSONObject
 import ziox.ramiro.saes.data.data_provider.createWebView
 import ziox.ramiro.saes.data.data_provider.scrap
 import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
+import ziox.ramiro.saes.utils.toProperCase
 
 interface GradesRepository {
     suspend fun getMyGrades() : List<ClassGrades>
@@ -23,8 +24,9 @@ class GradesWebViewRepository(
                 
                 if(gradesTable != null){
                     var grades = gradesTable.children[0];
+                    grades.splice(0,1);
                     next({
-                        grades: grades.splice(0,1).map((value) => ({
+                        grades: grades.map((value) => ({
                             className: value[1],
                             p1: parseInt(value[2]),
                             p2: parseInt(value[3]),
@@ -48,7 +50,7 @@ class GradesWebViewRepository(
             List(data.length()){ i ->
                 val item = data[i] as JSONObject
                 ClassGrades(
-                    item.getString("className"),
+                    item.getString("className").toProperCase(),
                     item.get("p1") as? Int,
                     item.get("p2") as? Int,
                     item.get("p3") as? Int,

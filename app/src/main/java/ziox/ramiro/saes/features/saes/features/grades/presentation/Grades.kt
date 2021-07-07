@@ -39,6 +39,7 @@ fun Grades(
         modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
     ) {
         Text(
+            modifier = Modifier.padding(top = 16.dp),
             text = "Calificaciones",
             style = MaterialTheme.typography.h4
         )

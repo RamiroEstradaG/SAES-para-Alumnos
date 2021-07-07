@@ -62,3 +62,9 @@ fun String.getInitials(): String {
 
     return siglas
 }
+
+
+fun Double.toHour()
+    = "${toInt().toString().padStart(2,'0')}:${(this%1).times(60).toInt().toString().padStart(2,'0')}"
+
+fun String.isSchoolGroup() = this.matches(Regex("[0-9]{1,3}[a-zA-Z]+[0-9]{1,3}"))
