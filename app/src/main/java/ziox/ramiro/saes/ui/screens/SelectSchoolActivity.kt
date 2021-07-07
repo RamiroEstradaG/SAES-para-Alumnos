@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.presentation
+package ziox.ramiro.saes.ui.screens
 
 import android.app.Activity
 import android.app.Activity.RESULT_OK

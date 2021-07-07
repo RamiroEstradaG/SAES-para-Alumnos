@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.features.grades.presentation
+package ziox.ramiro.saes.features.saes.features.grades.ui.screens
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*

@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
-import ziox.ramiro.saes.presentation.SelectSchoolActivity
+import ziox.ramiro.saes.ui.screens.SelectSchoolActivity
 
 class SelectSchoolContract : ActivityResultContract<Unit, School?>() {
     companion object {

@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.presentation
+package ziox.ramiro.saes.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
@@ -29,7 +29,7 @@ import ziox.ramiro.saes.data.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.presentation.SAESActivity
+import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
 import ziox.ramiro.saes.ui.components.AsyncButton
 import ziox.ramiro.saes.ui.components.BaseButton
 import ziox.ramiro.saes.ui.components.CaptchaInput

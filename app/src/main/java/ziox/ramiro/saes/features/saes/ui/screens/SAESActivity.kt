@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.presentation
+package ziox.ramiro.saes.features.saes.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
@@ -18,11 +18,12 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.features.grades.presentation.Grades
-import ziox.ramiro.saes.features.saes.features.home.presentation.Home
-import ziox.ramiro.saes.features.saes.features.schedule.presentation.Schedule
+import ziox.ramiro.saes.features.saes.features.grades.ui.screens.Grades
+import ziox.ramiro.saes.features.saes.features.home.ui.screens.Home
+import ziox.ramiro.saes.features.saes.features.profile.ui.screens.Profile
+import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.Schedule
 import ziox.ramiro.saes.features.saes.ui.components.BottomAppBar
-import ziox.ramiro.saes.presentation.MainActivity
+import ziox.ramiro.saes.ui.screens.MainActivity
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.view_models.AuthEvent
 import ziox.ramiro.saes.view_models.AuthViewModel
@@ -84,6 +85,7 @@ fun PageController(
         MenuSection.HOME -> Home()
         MenuSection.GRADES -> Grades()
         MenuSection.SCHEDULE -> Schedule()
+        MenuSection.PROFILE -> Profile()
         else -> {
             Box{}
         }

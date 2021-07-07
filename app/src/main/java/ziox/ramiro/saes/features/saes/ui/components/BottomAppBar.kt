@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ziox.ramiro.saes.features.saes.presentation.MenuSection
+import ziox.ramiro.saes.features.saes.ui.screens.MenuSection
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
 @Preview

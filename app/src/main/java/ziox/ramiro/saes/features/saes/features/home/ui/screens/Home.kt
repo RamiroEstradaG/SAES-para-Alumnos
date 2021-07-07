@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.features.home.presentation
+package ziox.ramiro.saes.features.saes.features.home.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
