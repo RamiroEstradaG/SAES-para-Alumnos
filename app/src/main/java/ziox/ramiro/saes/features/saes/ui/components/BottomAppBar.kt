@@ -1,5 +1,8 @@
 package ziox.ramiro.saes.features.saes.ui.components
 
+import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,20 +13,32 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import ziox.ramiro.saes.features.saes.ui.screens.MenuSection
+import androidx.fragment.app.FragmentManager
+import ziox.ramiro.saes.features.saes.view_models.MenuSection
+import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
-@Preview
+fun getFragmentManager(context: Context): FragmentManager?{
+    return when (context) {
+        is AppCompatActivity -> context.supportFragmentManager
+        is ContextThemeWrapper -> getFragmentManager(context.baseContext)
+        else -> null
+    }
+}
+
+
 @Composable
 fun BottomAppBar(
-    selectedItemMenu: MutableState<MenuSection> = mutableStateOf(MenuSection.HOME)
+    saesViewModel : SAESViewModel
 ){
+    val fragmentManager = getFragmentManager(LocalContext.current)!!
+    val selectedItemMenu = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
+
     androidx.compose.material.BottomAppBar(
         backgroundColor = getCurrentTheme().toolbar
     ) {
@@ -32,7 +47,9 @@ fun BottomAppBar(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = {
+                BottomSheetDrawerModal().show(fragmentManager, "menu")
+            }) {
                 Icon(
                     imageVector = Icons.Rounded.Menu,
                     contentDescription = "Menu",
@@ -40,7 +57,7 @@ fun BottomAppBar(
                 )
             }
             IconButton(onClick = {
-                selectedItemMenu.value = MenuSection.HOME
+                saesViewModel.changeSection(MenuSection.HOME)
             }) {
                 Icon(
                     modifier = Modifier.size(if (selectedItemMenu.value == MenuSection.HOME) 32.dp else 24.dp),
@@ -52,7 +69,7 @@ fun BottomAppBar(
                 )
             }
             IconButton(onClick = {
-                selectedItemMenu.value = MenuSection.SCHEDULE
+                saesViewModel.changeSection(MenuSection.SCHEDULE)
             }) {
                 Icon(
                     modifier = Modifier.size(if (selectedItemMenu.value == MenuSection.SCHEDULE) 32.dp else 24.dp),
@@ -64,7 +81,7 @@ fun BottomAppBar(
                 )
             }
             IconButton(onClick = {
-                selectedItemMenu.value = MenuSection.GRADES
+                saesViewModel.changeSection(MenuSection.GRADES)
             }) {
                 Icon(
                     modifier = Modifier.size(if (selectedItemMenu.value == MenuSection.GRADES) 32.dp else 24.dp),
@@ -76,7 +93,7 @@ fun BottomAppBar(
                 )
             }
             IconButton(onClick = {
-                selectedItemMenu.value = MenuSection.PROFILE
+                saesViewModel.changeSection(MenuSection.PROFILE)
             }) {
                 Icon(
                     modifier = Modifier.size(if (selectedItemMenu.value == MenuSection.PROFILE) 32.dp else 24.dp),

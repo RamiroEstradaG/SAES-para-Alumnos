@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.data
+package ziox.ramiro.saes.data.repositories
 
 import android.content.Context
 import ziox.ramiro.saes.data.data_provider.createWebView
@@ -21,10 +21,10 @@ class AuthWebViewRepository(
     override suspend fun getCaptcha(): Captcha {
         return webView.scrap(
             """
-            var isLoggedIn = byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") == null;
+            var isNotLoggedIn = byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null;
             next({
-                isLoggedIn: isLoggedIn,
-                url: !isLoggedIn ? byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src : ""
+                isNotLoggedIn: isNotLoggedIn,
+                url: isNotLoggedIn ? byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src : ""
             });
             """.trimIndent(),
             loadNewUrl = true
@@ -32,7 +32,7 @@ class AuthWebViewRepository(
             val data = it.result.getJSONObject("data")
             Captcha(
                 data.getString("url"),
-                data.getBoolean("isLoggedIn"),
+                data.getBoolean("isNotLoggedIn"),
                 it.headers
             )
         }
@@ -49,7 +49,7 @@ class AuthWebViewRepository(
             postRequest = """
                 var error = byClass("failureNotification");
                 next({
-                    isLoggedIn: byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") == null,
+                    isNotLoggedIn: byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null,
                     errorMessage: error != null && error.length >= 3 ? error[2].innerText.trim() : ""
                 });
             """.trimIndent(),
@@ -57,7 +57,7 @@ class AuthWebViewRepository(
         ){
             val data = it.result.getJSONObject("data")
             Auth(
-                data.getBoolean("isLoggedIn"),
+                data.getBoolean("isNotLoggedIn"),
                 data.getString("errorMessage")
             )
         }

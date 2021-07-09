@@ -3,7 +3,7 @@ package ziox.ramiro.saes.view_models
 import android.webkit.CookieManager
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.AuthRepository
+import ziox.ramiro.saes.data.repositories.AuthRepository
 import ziox.ramiro.saes.data.models.BaseViewModel
 
 class AuthViewModel(
@@ -32,7 +32,7 @@ class AuthViewModel(
             authRepository.login(username, password, captcha)
         }.onSuccess {
             emitEvent(AuthEvent.LoginComplete(it))
-            if (!it.isLoggedIn){
+            if (it.isNotLoggedIn){
                 fetchCaptcha()
             }
         }.onFailure {

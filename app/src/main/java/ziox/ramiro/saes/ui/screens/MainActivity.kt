@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.AuthWebViewRepository
+import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
     private fun listenToAuthStates() = lifecycleScope.launch {
         authViewModel.states.collect {
             if (it is AuthState.CaptchaComplete){
-                if(it.captcha.isLoggedIn){
+                if(!it.captcha.isNotLoggedIn){
                     startActivity(Intent(this@MainActivity, SAESActivity::class.java))
                     finish()
                 }
@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
                 is AuthEvent.Error -> {
                     println(it.message)
                 }
-                is AuthEvent.LoginComplete -> if(it.auth.isLoggedIn){
+                is AuthEvent.LoginComplete -> if(!it.auth.isNotLoggedIn){
                     setPreference(SharedPreferenceKeys.BOLETA, username.value)
                     setPreference(SharedPreferenceKeys.PASSWORD, password.value)
 

@@ -5,7 +5,8 @@ import android.content.Context
 enum class SharedPreferenceKeys(val key: String){
     SCHOOL_URL("new_url_escuela"),
     BOLETA("boleta"),
-    PASSWORD("pass")
+    PASSWORD("pass"),
+    QR_URL("qr_url")
 }
 
 fun <T>Context.setPreference(preferenceKeys : SharedPreferenceKeys, value : T){
