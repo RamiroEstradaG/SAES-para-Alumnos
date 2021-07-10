@@ -8,6 +8,9 @@ import ziox.ramiro.saes.data.models.ViewModelState
 sealed class AuthState : ViewModelState {
     class LoadingCaptcha : AuthState()
     class CaptchaComplete(val captcha: Captcha) : AuthState()
+
+    class SessionCheckLoading : AuthState()
+    class SessionCheckComplete(val isNotLoggedIn: Boolean) : AuthState()
 }
 
 sealed class AuthEvent : ViewModelEvent {

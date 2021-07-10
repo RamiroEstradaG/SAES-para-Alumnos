@@ -10,11 +10,12 @@ import ziox.ramiro.saes.data.models.Captcha
 interface AuthRepository {
     suspend fun getCaptcha() : Captcha
     suspend fun login(username: String, password: String, captcha: String) : Auth
+    suspend fun isNotLoggedIn() : Boolean
 }
 
 
 class AuthWebViewRepository(
-    context: Context
+    private val context: Context
 ) : AuthRepository {
     private val webView = createWebView(context)
 
@@ -60,6 +61,18 @@ class AuthWebViewRepository(
                 data.getBoolean("isNotLoggedIn"),
                 data.getString("errorMessage")
             )
+        }
+    }
+
+    override suspend fun isNotLoggedIn(): Boolean {
+        return createWebView(context).scrap(
+            """
+            next({
+                isNotLoggedIn: byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null
+            });
+            """.trimIndent()
+        ){
+            it.result.getJSONObject("data").getBoolean("isNotLoggedIn")
         }
     }
 }

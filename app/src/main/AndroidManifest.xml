@@ -20,6 +20,10 @@
             android:label="@string/title_activity_saesactivity"
             android:theme="@style/Theme.SAESParaAlumnos.NoActionBar" />
         <activity
+            android:name="ziox.ramiro.saes.ui.screens.LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SAESParaAlumnos.NoActionBar" />
+        <activity
             android:name=".ui.screens.SelectSchoolActivity"
             android:exported="true"
             android:label="@string/title_activity_select_school"
