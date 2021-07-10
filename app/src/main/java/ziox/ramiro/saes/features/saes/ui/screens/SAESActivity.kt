@@ -39,6 +39,7 @@ import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.screens.MainActivity
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.view_models.AuthEvent
+import ziox.ramiro.saes.view_models.AuthState
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 class SAESActivity : AppCompatActivity() {
@@ -61,6 +62,7 @@ class SAESActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        listenToAuthStates()
         listenToAuthEvents()
 
         setContent {
@@ -96,11 +98,27 @@ class SAESActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        authViewModel.checkSession()
+    }
+
     private fun listenToAuthEvents() = lifecycleScope.launch {
         authViewModel.events.collect {
             if(it is AuthEvent.LogoutSuccess){
                 startActivity(Intent(this@SAESActivity, MainActivity::class.java))
                 finish()
+            }
+        }
+    }
+
+    private fun listenToAuthStates() = lifecycleScope.launch {
+        authViewModel.states.collect {
+            if(it is AuthState.SessionCheckComplete){
+                if (it.isNotLoggedIn){
+                    startActivity(Intent(this@SAESActivity, MainActivity::class.java))
+                    finish()
+                }
             }
         }
     }
