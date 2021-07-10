@@ -105,10 +105,13 @@ private fun Grade(
     Text(
         text = grade?.toString() ?: "-",
         style = MaterialTheme.typography.h4,
-        color = when{
-            grade == null -> getCurrentTheme().primaryText
-            grade < 6 -> getCurrentTheme().danger
-            else -> getCurrentTheme().info
-        }
+        color = gradeColor(grade)
     )
+}
+
+@Composable
+fun gradeColor(grade: Int?) = when{
+    grade == null -> getCurrentTheme().primaryText
+    grade < 6 -> getCurrentTheme().danger
+    else -> getCurrentTheme().info
 }

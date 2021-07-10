@@ -31,7 +31,6 @@ import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
 import ziox.ramiro.saes.ui.components.AsyncButton
-import ziox.ramiro.saes.ui.components.BaseButton
 import ziox.ramiro.saes.ui.components.CaptchaInput
 import ziox.ramiro.saes.ui.components.SchoolButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
@@ -357,7 +356,7 @@ fun LoginOnlyCaptcha(
                 )
             }
         }
-        BaseButton(
+        ziox.ramiro.saes.ui.components.TextButton(
             text = "USAR OTRA CUENTA"
         ) {
             username.value = ""

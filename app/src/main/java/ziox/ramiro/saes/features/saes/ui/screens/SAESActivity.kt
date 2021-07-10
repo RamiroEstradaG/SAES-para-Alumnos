@@ -14,6 +14,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,6 +22,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
+import ziox.ramiro.saes.features.saes.features.ets.ui.screens.ETS
+import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.grades.ui.screens.Grades
 import ziox.ramiro.saes.features.saes.features.home.ui.screens.Home
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserWebViewRepository
@@ -44,6 +48,10 @@ class SAESActivity : AppCompatActivity() {
         viewModelFactory { ProfileViewModel(UserWebViewRepository(this)) }
     }
 
+    private val etsViewModel : ETSViewModel by viewModels {
+        viewModelFactory { ETSViewModel(ETSWebViewRepository(this)) }
+    }
+
     private val saesViewModel : SAESViewModel by viewModels()
 
     @ExperimentalAnimationApi
@@ -59,7 +67,11 @@ class SAESActivity : AppCompatActivity() {
 
                 Scaffold(
                     bottomBar = {
-                        BottomAppBar(saesViewModel)
+                        BottomAppBar(
+                            saesViewModel,
+                            profileViewModel,
+                            etsViewModel
+                        )
                     }
                 ) {
                     Crossfade(targetState = selectedMenuItem.value) {
@@ -70,6 +82,7 @@ class SAESActivity : AppCompatActivity() {
                             MenuSection.PROFILE -> Profile(
                                 profileViewModel = profileViewModel
                             )
+                            MenuSection.ETS -> ETS()
                         }
                     }
                 }

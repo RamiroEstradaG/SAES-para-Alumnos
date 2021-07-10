@@ -20,8 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -37,9 +36,10 @@ import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 
-class BottomSheetDrawerModal : BottomSheetDialogFragment() {
-    private val profileViewModel : ProfileViewModel by activityViewModels()
-    private val saesViewModel: SAESViewModel by activityViewModels()
+class BottomSheetDrawerModal(
+    private var profileViewModel: ProfileViewModel,
+    private var saesViewModel: SAESViewModel
+): BottomSheetDialogFragment() {
 
     @ExperimentalMaterialApi
     override fun onCreateView(
@@ -53,25 +53,12 @@ class BottomSheetDrawerModal : BottomSheetDialogFragment() {
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        ProfileHeader(profileState = profileViewModel.states.filter { it is ProfileState.UserComplete || it is ProfileState.UserLoading }.collectAsState(initial = null))
+                        ProfileHeader(profileState = profileViewModel.statesAsState())
                         Column(
                             modifier = Modifier
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            ListItem(
-                                modifier = Modifier.clickable {
-                                    saesViewModel.changeSection(MenuSection.ETS)
-                                },
-                                icon = {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Flaky,
-                                        contentDescription = "ETS"
-                                    )
-                                },
-                                text = {
-                                    Text(text = "ETS")
-                                }
-                            )
+
                         }
                     }
                 }
@@ -79,6 +66,28 @@ class BottomSheetDrawerModal : BottomSheetDialogFragment() {
         }
     }
 }
+
+@ExperimentalMaterialApi
+@Composable
+fun MenuItem(
+    saesViewModel: SAESViewModel,
+    section: MenuSection,
+    icon: ImageVector,
+    name: String
+) = ListItem(
+    modifier = Modifier.clickable {
+        saesViewModel.changeSection(section)
+    },
+    icon = {
+        Icon(
+            imageVector = icon,
+            contentDescription = section.name
+        )
+    },
+    text = {
+        Text(text = name)
+    }
+)
 
 @Composable
 fun ProfileHeader(

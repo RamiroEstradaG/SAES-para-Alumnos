@@ -4,16 +4,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
+import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
 @Composable
 fun AsyncButton(
@@ -23,7 +21,6 @@ fun AsyncButton(
     isLoadingState: State<Boolean?> = remember { mutableStateOf(false) },
     onClick: () -> Unit
 ) {
-
     Button(
         modifier = modifier,
         onClick = {
@@ -31,9 +28,8 @@ fun AsyncButton(
                 onClick()
             }
         },
-        shape = RoundedCornerShape(100),
-
-        ) {
+        shape = RoundedCornerShape(100)
+    ) {
         if (isLoadingState.value != true){
             Text(
                 text = text.uppercase(),
@@ -63,8 +59,7 @@ fun BaseButton(
     modifier = modifier,
     onClick = onClick,
     shape = RoundedCornerShape(100),
-
-    ) {
+) {
     Text(
         text = text.uppercase(),
         modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
@@ -72,14 +67,67 @@ fun BaseButton(
 }
 
 
-@Preview
+@Composable
+fun TextButton(
+    modifier: Modifier = Modifier,
+    text: String = "button",
+    textColor: Color = MaterialTheme.colors.primary,
+    onClick: () -> Unit = {}
+) = TextButton(
+    onClick = onClick,
+    modifier = modifier,
+) {
+    Text(
+        text = text.uppercase(),
+        color = textColor
+    )
+}
+
+@Composable
+fun OutlineButton(
+    modifier: Modifier = Modifier,
+    text: String = "button",
+    isHighEmphasis: Boolean = false,
+    textColor: Color = MaterialTheme.colors.primary,
+    enabled: Boolean = true,
+    onClick: () -> Unit = {}
+) = OutlinedButton(
+    modifier = modifier,
+    onClick = onClick,
+    shape = RoundedCornerShape(100),
+    colors = ButtonDefaults.outlinedButtonColors(
+        backgroundColor = Color.Transparent
+    ),
+    enabled = enabled
+) {
+    Text(
+        text = text.uppercase(),
+        color = if(enabled) textColor else getCurrentTheme().hintText,
+        modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
+    )
+}
+
+
+@Preview(showBackground = true)
 @Composable
 fun BaseButtonPreview() = SAESParaAlumnosTheme {
     BaseButton()
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AsyncButtonPreview() = SAESParaAlumnosTheme {
     BaseButton()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OutlineButtonPreview() = SAESParaAlumnosTheme {
+    OutlineButton()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TextButtonPreview() = SAESParaAlumnosTheme {
+    TextButton()
 }

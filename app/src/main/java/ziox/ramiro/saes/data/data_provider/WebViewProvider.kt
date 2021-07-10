@@ -184,7 +184,11 @@ suspend fun <T>WebView.runThenScrap(
                         if (!isResumed){
                             it.resumeWith(Result.success(resultAdapter(ScrapResult(
                                 result = JSONObject(mapOf(
-                                    "data" to JSONObject(resultJson)
+                                    "data" to try{
+                                        JSONObject(resultJson)
+                                    }catch (e: Exception){
+                                        JSONArray(resultJson)
+                                    }
                                 )),
                                 headers = this@runThenScrap.getCookies()
                             ))))

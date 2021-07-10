@@ -24,7 +24,8 @@ import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewMode
 import ziox.ramiro.saes.features.saes.ui.components.GradeItem
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
-@OptIn(ExperimentalAnimationApi::class)
+
+@ExperimentalAnimationApi
 @Composable
 fun Grades(
     gradesViewModel: GradesViewModel = viewModel(
