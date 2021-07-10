@@ -8,7 +8,7 @@ import ziox.ramiro.saes.data.models.BaseViewModel
 
 class SAESViewModel : BaseViewModel<SAESState, SAESEvent>() {
     companion object {
-        val SECTION_INITIAL = MenuSection.ETS
+        val SECTION_INITIAL = MenuSection.KARDEX
     }
 
     private val _currentSection = MutableStateFlow(SECTION_INITIAL)
@@ -25,5 +25,6 @@ enum class MenuSection{
     SCHEDULE,
     GRADES,
     PROFILE,
-    ETS
+    ETS,
+    KARDEX
 }

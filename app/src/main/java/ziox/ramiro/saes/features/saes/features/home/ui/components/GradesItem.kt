@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.ui.components
+package ziox.ramiro.saes.features.saes.features.home.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -24,8 +24,7 @@ import kotlin.random.Random
 @Composable
 fun SmallGradeItem(
     modifier: Modifier = Modifier,
-    className: String = "Nombre de Una Materia Extremadamente Larga XI",
-    finalGrade: Int = Random.nextInt(10),
+    classGrades: ClassGrades,
     onClick: () -> Unit = {}
 ) = Card(
     modifier = modifier
@@ -42,21 +41,17 @@ fun SmallGradeItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = className.getInitials(),
+            text = classGrades.className.getInitials(),
             style = MaterialTheme.typography.h5,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
         Text(
-            text = finalGrade.toString(),
+            text = classGrades.final?.toString() ?: "-",
             style = MaterialTheme.typography.h4,
             textAlign = TextAlign.Center,
-            color = if(finalGrade < 6){
-                getCurrentTheme().danger
-            }else{
-                getCurrentTheme().info
-            }
+            color = gradeColor(classGrades.final)
         )
     }
 }

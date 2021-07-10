@@ -32,6 +32,7 @@ import ziox.ramiro.saes.features.saes.features.profile.ui.screens.Profile
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.Schedule
 import ziox.ramiro.saes.features.saes.ui.components.BottomAppBar
+import ziox.ramiro.saes.features.saes.ui.components.BottomSheetDrawerModal
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.screens.MainActivity
@@ -69,9 +70,12 @@ class SAESActivity : AppCompatActivity() {
                     bottomBar = {
                         BottomAppBar(
                             saesViewModel,
-                            profileViewModel,
                             etsViewModel
-                        )
+                        ){
+                            BottomSheetDrawerModal(
+                                profileViewModel, saesViewModel, authViewModel
+                            ).show(supportFragmentManager, "menu")
+                        }
                     }
                 ) {
                     Crossfade(targetState = selectedMenuItem.value) {
@@ -83,6 +87,7 @@ class SAESActivity : AppCompatActivity() {
                                 profileViewModel = profileViewModel
                             )
                             MenuSection.ETS -> ETS()
+                            //MenuSection.KARDEX -> TODO()
                         }
                     }
                 }

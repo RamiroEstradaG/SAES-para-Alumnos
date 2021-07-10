@@ -21,7 +21,7 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesState
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
-import ziox.ramiro.saes.features.saes.ui.components.GradeItem
+import ziox.ramiro.saes.features.saes.features.home.ui.components.GradeItem
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
 

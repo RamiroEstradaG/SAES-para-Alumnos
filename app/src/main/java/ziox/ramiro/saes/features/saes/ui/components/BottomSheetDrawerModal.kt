@@ -5,25 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Flaky
+import androidx.compose.material.icons.rounded.ListAlt
+import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
 import coil.request.ImageRequest
@@ -35,13 +36,15 @@ import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewMo
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
+import ziox.ramiro.saes.ui.theme.getCurrentTheme
+import ziox.ramiro.saes.view_models.AuthViewModel
 
 class BottomSheetDrawerModal(
     private var profileViewModel: ProfileViewModel,
-    private var saesViewModel: SAESViewModel
+    private var saesViewModel: SAESViewModel,
+    private var authViewModel: AuthViewModel
 ): BottomSheetDialogFragment() {
 
-    @ExperimentalMaterialApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,42 +54,119 @@ class BottomSheetDrawerModal(
             setContent {
                 SAESParaAlumnosTheme {
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         ProfileHeader(profileState = profileViewModel.statesAsState())
                         Column(
                             modifier = Modifier
                                 .verticalScroll(rememberScrollState())
                         ) {
-
+                            MenuHeader(name = "Alumno")
+                            SectionMenuItem(section = MenuSection.KARDEX, icon = Icons.Rounded.ListAlt, name = "Kárdex")
+                            MenuHeader(name = "Aplicación")
+                            ActionMenuItem(icon = Icons.Rounded.Logout, name = "Cerrar sesión"){
+                                authViewModel.logout()
+                            }
                         }
                     }
                 }
             }
         }
     }
+
+    @Composable
+    fun SectionMenuItem(
+        section: MenuSection,
+        icon: ImageVector,
+        name: String
+    ) {
+        val currentSection = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
+
+        Box(
+            Modifier.padding(
+                horizontal = 8.dp,
+                vertical = 4.dp
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.medium)
+                    .clickable {
+                        saesViewModel.changeSection(section)
+                        dismiss()
+                    }
+                    .background(
+                        if (currentSection.value == section) MaterialTheme.colors.primary.copy(alpha = 0.2f) else Color.Transparent
+                    )
+                    .height(43.dp)
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = section.name,
+                    tint = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText
+                )
+                Text(
+                    modifier = Modifier.padding(start = 24.dp),
+                    text = name,
+                    color = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText,
+                    fontWeight = if (currentSection.value == section) FontWeight.Bold else FontWeight.Normal,
+                )
+            }
+        }
+    }
+
+
+    @Composable
+    fun ActionMenuItem(
+        icon: ImageVector,
+        name: String,
+        action: () -> Unit
+    ) {
+        Box(
+            Modifier.padding(
+                horizontal = 8.dp,
+                vertical = 4.dp
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.medium)
+                    .clickable {
+                        action()
+                        dismiss()
+                    }
+                    .height(43.dp)
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = name,
+                    tint = getCurrentTheme().primaryText
+                )
+                Text(
+                    modifier = Modifier.padding(start = 24.dp),
+                    text = name,
+                    color = getCurrentTheme().primaryText,
+                    fontWeight = FontWeight.Normal
+                )
+            }
+        }
+    }
 }
 
-@ExperimentalMaterialApi
 @Composable
-fun MenuItem(
-    saesViewModel: SAESViewModel,
-    section: MenuSection,
-    icon: ImageVector,
+fun MenuHeader(
     name: String
-) = ListItem(
-    modifier = Modifier.clickable {
-        saesViewModel.changeSection(section)
-    },
-    icon = {
-        Icon(
-            imageVector = icon,
-            contentDescription = section.name
-        )
-    },
-    text = {
-        Text(text = name)
-    }
+) = Text(
+    modifier = Modifier.padding(top = 16.dp, start = 16.dp),
+    text = name,
+    style = MaterialTheme.typography.subtitle2,
+    color = getCurrentTheme().secondaryText
 )
 
 @Composable

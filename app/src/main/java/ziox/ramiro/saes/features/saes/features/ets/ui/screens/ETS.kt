@@ -21,7 +21,7 @@ import ziox.ramiro.saes.features.saes.features.ets.data.models.ETSScore
 import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSState
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
-import ziox.ramiro.saes.features.saes.ui.components.gradeColor
+import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.ui.components.OutlineButton
 
 @Composable
