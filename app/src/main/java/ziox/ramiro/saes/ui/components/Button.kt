@@ -1,13 +1,18 @@
 package ziox.ramiro.saes.ui.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Event
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
@@ -89,6 +94,7 @@ fun OutlineButton(
     text: String = "button",
     isHighEmphasis: Boolean = false,
     textColor: Color = MaterialTheme.colors.primary,
+    icon: ImageVector? = null,
     enabled: Boolean = true,
     onClick: () -> Unit = {}
 ) = OutlinedButton(
@@ -100,11 +106,22 @@ fun OutlineButton(
     ),
     enabled = enabled
 ) {
-    Text(
-        text = text.uppercase(),
-        color = if(enabled) textColor else getCurrentTheme().hintText,
-        modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
-    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if(icon != null){
+            Icon(
+                modifier = Modifier.padding(end = 8.dp),
+                imageVector = icon,
+                contentDescription = "Button icon"
+            )
+        }
+        Text(
+            text = text.uppercase(),
+            color = if(enabled) textColor else getCurrentTheme().hintText,
+            modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
+        )
+    }
 }
 
 
@@ -123,7 +140,9 @@ fun AsyncButtonPreview() = SAESParaAlumnosTheme {
 @Preview(showBackground = true)
 @Composable
 fun OutlineButtonPreview() = SAESParaAlumnosTheme {
-    OutlineButton()
+    OutlineButton(
+        icon = Icons.Rounded.Event
+    )
 }
 
 @Preview(showBackground = true)

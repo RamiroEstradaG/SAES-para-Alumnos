@@ -6,6 +6,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Event
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -22,13 +24,17 @@ import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewR
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSState
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
+import ziox.ramiro.saes.features.saes.view_models.MenuSection
+import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.components.OutlineButton
+import ziox.ramiro.saes.ui.components.TextButton
 
 @Composable
 fun ETS(
     etsViewModel: ETSViewModel = viewModel(
         factory = viewModelFactory { ETSViewModel(ETSWebViewRepository(LocalContext.current)) }
-    )
+    ),
+    saesViewModel: SAESViewModel = viewModel()
 ) = Box(
     modifier = Modifier.verticalScroll(rememberScrollState())
 ) {
@@ -92,6 +98,14 @@ fun ETS(
                     ETSScoreItem(it, etsState)
                 }
             }
+        }
+
+        OutlineButton(
+            modifier = Modifier.padding(top = 32.dp).align(Alignment.CenterHorizontally),
+            text = "Calendario de ETS",
+            icon = Icons.Rounded.Event
+        ){
+            saesViewModel.changeSection(MenuSection.ETS_CALENDAR)
         }
     }
 }

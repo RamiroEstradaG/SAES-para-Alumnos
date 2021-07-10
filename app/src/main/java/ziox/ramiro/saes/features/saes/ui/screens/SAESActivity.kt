@@ -27,6 +27,7 @@ import ziox.ramiro.saes.features.saes.features.ets.ui.screens.ETS
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.grades.ui.screens.Grades
 import ziox.ramiro.saes.features.saes.features.home.ui.screens.Home
+import ziox.ramiro.saes.features.saes.features.kardex.ui.screens.Kardex
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.screens.Profile
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
@@ -87,7 +88,7 @@ class SAESActivity : AppCompatActivity() {
                                 profileViewModel = profileViewModel
                             )
                             MenuSection.ETS -> ETS()
-                            //MenuSection.KARDEX -> TODO()
+                            MenuSection.KARDEX -> Kardex()
                         }
                     }
                 }

@@ -48,3 +48,18 @@ fun String.ddMMMyyyy_toDate() : Date{
         Date()
     }
 }
+
+
+fun String.MMMddyyyy_toDate() : Date{
+    val values = split(" ")
+
+    return if(values.size == 3){
+        Calendar.getInstance().apply {
+            set(Calendar.YEAR, values[2].toInt())
+            set(Calendar.MONTH, MES.indexOf(values[0].uppercase()))
+            set(Calendar.DAY_OF_MONTH, values[1].toInt())
+        }.time
+    }else{
+        Date()
+    }
+}

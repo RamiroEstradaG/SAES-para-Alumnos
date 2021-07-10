@@ -26,5 +26,6 @@ enum class MenuSection{
     GRADES,
     PROFILE,
     ETS,
-    KARDEX
+    KARDEX,
+    ETS_CALENDAR
 }
