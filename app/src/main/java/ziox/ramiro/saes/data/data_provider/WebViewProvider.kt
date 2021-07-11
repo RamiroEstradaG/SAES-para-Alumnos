@@ -8,6 +8,7 @@ import android.os.Build
 import android.webkit.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import okhttp3.Headers
 import org.json.JSONArray
@@ -20,9 +21,11 @@ import kotlin.concurrent.thread
 import kotlin.coroutines.suspendCoroutine
 
 
-fun WebView.getCookies() : Headers = Headers.of(mapOf(
-    "Cookie" to CookieManager.getInstance().getCookie(this.url)
-))
+fun WebView.getCookies() : Headers = runBlocking(Dispatchers.Main){
+    Headers.Builder()
+        .add("Cookie", CookieManager.getInstance()?.getCookie(this@getCookies.url) ?: "")
+        .build()
+}
 
 
 data class ScrapResult(
@@ -61,21 +64,19 @@ suspend fun <T>WebView.scrap(
         addJavascriptInterface(object {
             @JavascriptInterface
             fun result(resultJson: String){
-                if(context is Activity){
-                    (context as Activity).runOnUiThread {
-                        if(!isResumed){
-                            it.resumeWith(Result.success(resultAdapter(ScrapResult(
-                                result = JSONObject(mapOf(
-                                    "data" to try{
-                                        JSONObject(resultJson)
-                                    }catch (e: Exception){
-                                        JSONArray(resultJson)
-                                    }
-                                )),
-                                headers = this@scrap.getCookies()
-                            ))))
-                            isResumed = true
-                        }
+                runBlocking {
+                    if(!isResumed){
+                        it.resumeWith(Result.success(resultAdapter(ScrapResult(
+                            result = JSONObject(mapOf(
+                                "data" to try{
+                                    JSONObject(resultJson)
+                                }catch (e: Exception){
+                                    JSONArray(resultJson)
+                                }
+                            )),
+                            headers = this@scrap.getCookies()
+                        ))))
+                        isResumed = true
                     }
                 }
             }
@@ -179,21 +180,19 @@ suspend fun <T>WebView.runThenScrap(
         addJavascriptInterface(object {
             @JavascriptInterface
             fun result(resultJson: String){
-                if(context is Activity){
-                    (context as Activity).runOnUiThread {
-                        if (!isResumed){
-                            it.resumeWith(Result.success(resultAdapter(ScrapResult(
-                                result = JSONObject(mapOf(
-                                    "data" to try{
-                                        JSONObject(resultJson)
-                                    }catch (e: Exception){
-                                        JSONArray(resultJson)
-                                    }
-                                )),
-                                headers = this@runThenScrap.getCookies()
-                            ))))
-                            isResumed = true
-                        }
+                runBlocking {
+                    if(!isResumed){
+                        it.resumeWith(Result.success(resultAdapter(ScrapResult(
+                            result = JSONObject(mapOf(
+                                "data" to try{
+                                    JSONObject(resultJson)
+                                }catch (e: Exception){
+                                    JSONArray(resultJson)
+                                }
+                            )),
+                            headers = this@runThenScrap.getCookies()
+                        ))))
+                        isResumed = true
                     }
                 }
             }

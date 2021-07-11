@@ -10,16 +10,17 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourHeight
 
 @Composable
 fun ScheduleDayContainer(
     modifier: Modifier = Modifier,
     classSchedules: List<ClassSchedule>,
-    weekDay: ClassSchedule.WeekDay,
-    selectedDayOfWeek: MutableState<ClassSchedule.WeekDay?> = mutableStateOf(null),
+    weekDay: WeekDay,
+    selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null),
     hourRange: IntRange,
-    onClick: (ClassSchedule.WeekDay) -> Unit
+    onClick: (WeekDay) -> Unit
 ) = Box(
     modifier = modifier
         .height(

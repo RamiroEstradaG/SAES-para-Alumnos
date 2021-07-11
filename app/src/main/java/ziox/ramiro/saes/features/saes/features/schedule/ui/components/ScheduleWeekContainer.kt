@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourHeight
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourRange
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
@@ -21,7 +22,7 @@ import ziox.ramiro.saes.utils.toHour
 @Composable
 fun ScheduleWeekContainer(
     classSchedules: List<ClassSchedule>,
-    selectedDayOfWeek: MutableState<ClassSchedule.WeekDay?> = mutableStateOf(null)
+    selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null)
 ) {
     val hourRange = classSchedules.getHourRange()
 
@@ -37,13 +38,13 @@ fun ScheduleWeekContainer(
         ScheduleDayContainer(
             selectedDayOfWeek = selectedDayOfWeek,
             modifier = Modifier.animateContentSize().run {
-                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == ClassSchedule.WeekDay.MONDAY){
+                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == WeekDay.MONDAY){
                     weight(1f)
                 }else{
                     width(0.dp)
                 }
             },
-            weekDay = ClassSchedule.WeekDay.MONDAY,
+            weekDay = WeekDay.MONDAY,
             classSchedules = classSchedules,
             hourRange = hourRange
         ){
@@ -53,31 +54,14 @@ fun ScheduleWeekContainer(
         }
         ScheduleDayContainer(
             selectedDayOfWeek = selectedDayOfWeek,
-            weekDay = ClassSchedule.WeekDay.TUESDAY,
+            weekDay = WeekDay.TUESDAY,
             modifier = Modifier.animateContentSize().run {
-                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == ClassSchedule.WeekDay.TUESDAY){
+                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == WeekDay.TUESDAY){
                     weight(1f)
                 }else{
                     width(0.dp)
                 }
             },
-            classSchedules = classSchedules,
-            hourRange = hourRange
-        ){
-            selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
-                it
-            }else null
-        }
-        ScheduleDayContainer(
-            selectedDayOfWeek = selectedDayOfWeek,
-            modifier = Modifier.animateContentSize().run {
-                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == ClassSchedule.WeekDay.WEDNESDAY){
-                    weight(1f)
-                }else{
-                    width(0.dp)
-                }
-            },
-            weekDay = ClassSchedule.WeekDay.WEDNESDAY,
             classSchedules = classSchedules,
             hourRange = hourRange
         ){
@@ -88,13 +72,13 @@ fun ScheduleWeekContainer(
         ScheduleDayContainer(
             selectedDayOfWeek = selectedDayOfWeek,
             modifier = Modifier.animateContentSize().run {
-                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == ClassSchedule.WeekDay.THURSDAY){
+                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == WeekDay.WEDNESDAY){
                     weight(1f)
                 }else{
                     width(0.dp)
                 }
             },
-            weekDay = ClassSchedule.WeekDay.THURSDAY,
+            weekDay = WeekDay.WEDNESDAY,
             classSchedules = classSchedules,
             hourRange = hourRange
         ){
@@ -105,13 +89,30 @@ fun ScheduleWeekContainer(
         ScheduleDayContainer(
             selectedDayOfWeek = selectedDayOfWeek,
             modifier = Modifier.animateContentSize().run {
-                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == ClassSchedule.WeekDay.FRIDAY){
+                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == WeekDay.THURSDAY){
                     weight(1f)
                 }else{
                     width(0.dp)
                 }
             },
-            weekDay = ClassSchedule.WeekDay.FRIDAY,
+            weekDay = WeekDay.THURSDAY,
+            classSchedules = classSchedules,
+            hourRange = hourRange
+        ){
+            selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
+                it
+            }else null
+        }
+        ScheduleDayContainer(
+            selectedDayOfWeek = selectedDayOfWeek,
+            modifier = Modifier.animateContentSize().run {
+                if(selectedDayOfWeek.value == null || selectedDayOfWeek.value == WeekDay.FRIDAY){
+                    weight(1f)
+                }else{
+                    width(0.dp)
+                }
+            },
+            weekDay = WeekDay.FRIDAY,
             classSchedules = classSchedules,
             hourRange = hourRange
         ){

@@ -1,26 +1,34 @@
 package ziox.ramiro.saes.features.saes.features.profile.data.repositories
 
 import android.content.Context
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import ziox.ramiro.saes.data.data_provider.createWebView
 import ziox.ramiro.saes.data.data_provider.scrap
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.profile.data.models.*
-import ziox.ramiro.saes.utils.SharedPreferenceKeys
-import ziox.ramiro.saes.utils.ddMMMyyyy_toDate
-import ziox.ramiro.saes.utils.getPreference
-import ziox.ramiro.saes.utils.toProperCase
+import ziox.ramiro.saes.utils.*
 
 interface UserRepository {
     suspend fun getMyUserData() : User
 }
 
 class UserWebViewRepository(
-    context: Context
+    private val context: Context
 ) : UserRepository{
     private val webView = createWebView(context)
+    private val persistenceRepository = LocalAppDatabase.invoke(context).userRepository()
 
     override suspend fun getMyUserData(): User {
-        return webView.scrap(
-            script = """
+        return if(context.isNetworkAvailable()){
+            webView.scrap(
+                script = """
                 next({
                     id: byId("ctl00_mainCopy_TabContainer1_Tab_Generales_Lbl_Boleta").innerText.trim(),
                     name: byId("ctl00_mainCopy_TabContainer1_Tab_Generales_Lbl_Nombre").innerText.trim(),
@@ -61,58 +69,79 @@ class UserWebViewRepository(
                     }
                 });
             """.trimIndent(),
-            path = "/Alumnos/info_alumnos/Datos_Alumno.aspx"
-        ){
-            val data = it.result.getJSONObject("data")
-            val address = data.getJSONObject("address")
-            val contact = data.getJSONObject("contact")
-            val education = data.getJSONObject("education")
-            val parents = data.getJSONObject("parents")
+                path = "/Alumnos/info_alumnos/Datos_Alumno.aspx"
+            ){
+                val data = it.result.getJSONObject("data")
+                val address = data.getJSONObject("address")
+                val contact = data.getJSONObject("contact")
+                val education = data.getJSONObject("education")
+                val parents = data.getJSONObject("parents")
 
-            User(
-                data.getString("id"),
-                data.getString("name").toProperCase(),
-                data.getString("school"),
-                data.getString("curp"),
-                data.getString("rfc"),
-                data.getString("gender").lowercase() == "hombre",
-                ProfilePicture(
-                    webView.context.getPreference(SharedPreferenceKeys.SCHOOL_URL, "")+"/Alumnos/info_alumnos/Fotografia.aspx",
-                    it.headers
-                ),
-                data.getString("birthday").ddMMMyyyy_toDate(),
-                data.getString("nationality").toProperCase(),
-                data.getString("state").toProperCase(),
-                data.getString("isWorking").uppercase() == "SI",
-                Address(
-                    address.getString("street"),
-                    address.getString("extNumber"),
-                    address.getString("intNumber"),
-                    address.getString("suburb"),
-                    address.getString("zip"),
-                    address.getString("state"),
-                    address.getString("municipality"),
-                ),
-                ContactInformation(
-                    contact.getString("phone"),
-                    contact.getString("mobilePhone"),
-                    contact.getString("email"),
-                    contact.getString("officePhone")
-                ),
-                Education(
-                    education.getString("highSchoolName"),
-                    education.getString("highSchoolState"),
-                    education.getString("highSchoolFinalGrade").toDouble(),
-                    education.getString("middleSchoolFinalGrade").toDouble()
-                ),
-                Parent(
-                    parents.getString("guardianName"),
-                    parents.getString("guardianRfc"),
-                    parents.getString("father"),
-                    parents.getString("mother")
+                User(
+                    data.getString("id"),
+                    data.getString("name").toProperCase(),
+                    data.getString("school"),
+                    data.getString("curp"),
+                    data.getString("rfc"),
+                    data.getString("gender").lowercase() == "hombre",
+                    ProfilePicture(
+                        webView.context.getPreference(SharedPreferenceKeys.SCHOOL_URL, "")+"/Alumnos/info_alumnos/Fotografia.aspx",
+                        it.headers
+                    ),
+                    data.getString("birthday").ddMMMyyyy_toDate(),
+                    data.getString("nationality").toProperCase(),
+                    data.getString("state").toProperCase(),
+                    data.getString("isWorking").uppercase() == "SI",
+                    Address(
+                        address.getString("street"),
+                        address.getString("extNumber"),
+                        address.getString("intNumber"),
+                        address.getString("suburb"),
+                        address.getString("zip"),
+                        address.getString("state"),
+                        address.getString("municipality"),
+                    ),
+                    ContactInformation(
+                        contact.getString("phone"),
+                        contact.getString("mobilePhone"),
+                        contact.getString("email"),
+                        contact.getString("officePhone")
+                    ),
+                    Education(
+                        education.getString("highSchoolName"),
+                        education.getString("highSchoolState"),
+                        education.getString("highSchoolFinalGrade").toDouble(),
+                        education.getString("middleSchoolFinalGrade").toDouble()
+                    ),
+                    Parent(
+                        parents.getString("guardianName"),
+                        parents.getString("guardianRfc"),
+                        parents.getString("father"),
+                        parents.getString("mother")
+                    )
                 )
-            )
+            }.also {
+                runOnDefaultThread {
+                    persistenceRepository.removeUserData(it.id)
+                    persistenceRepository.addUserData(it)
+                }
+            }
+        }else{
+            runOnDefaultThread {
+                persistenceRepository.getMyUserData(context.getPreference(SharedPreferenceKeys.BOLETA, ""))
+            }!!
         }
     }
+}
 
+@Dao
+interface UserRoomRepository {
+    @Query("SELECT * FROM profiles WHERE id = :id")
+    fun getMyUserData(id: String) : User?
+
+    @Insert
+    fun addUserData(user: User)
+
+    @Query("DELETE FROM profiles WHERE id = :id")
+    fun removeUserData(id: String)
 }

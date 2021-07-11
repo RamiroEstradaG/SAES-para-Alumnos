@@ -6,7 +6,8 @@ enum class SharedPreferenceKeys(val key: String){
     SCHOOL_URL("new_url_escuela"),
     BOLETA("boleta"),
     PASSWORD("pass"),
-    QR_URL("qr_url")
+    QR_URL("qr_url"),
+    OFFLINE_MODE("offline_mode")
 }
 
 fun <T>Context.setPreference(preferenceKeys : SharedPreferenceKeys, value : T){

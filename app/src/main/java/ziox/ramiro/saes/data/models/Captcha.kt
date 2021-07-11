@@ -4,6 +4,6 @@ import okhttp3.Headers
 
 data class Captcha(
     val url: String,
-    val isNotLoggedIn: Boolean,
+    val isLoggedIn: Boolean,
     val headers: Headers
 )

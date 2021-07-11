@@ -1,16 +1,21 @@
 package ziox.ramiro.saes.data.repositories
 
 import android.content.Context
+import okhttp3.Headers
 import ziox.ramiro.saes.data.data_provider.createWebView
 import ziox.ramiro.saes.data.data_provider.runThenScrap
 import ziox.ramiro.saes.data.data_provider.scrap
 import ziox.ramiro.saes.data.models.Auth
 import ziox.ramiro.saes.data.models.Captcha
+import ziox.ramiro.saes.utils.SharedPreferenceKeys
+import ziox.ramiro.saes.utils.getPreference
+import ziox.ramiro.saes.utils.isAuthDataSaved
+import ziox.ramiro.saes.utils.isNetworkAvailable
 
 interface AuthRepository {
     suspend fun getCaptcha() : Captcha
     suspend fun login(username: String, password: String, captcha: String) : Auth
-    suspend fun isNotLoggedIn() : Boolean
+    suspend fun isLoggedIn() : Boolean
 }
 
 
@@ -20,22 +25,26 @@ class AuthWebViewRepository(
     private val webView = createWebView(context)
 
     override suspend fun getCaptcha(): Captcha {
-        return webView.scrap(
-            """
-            var isNotLoggedIn = byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null;
-            next({
-                isNotLoggedIn: isNotLoggedIn,
-                url: isNotLoggedIn ? byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src : ""
-            });
-            """.trimIndent(),
-            loadNewUrl = true
-        ){
-            val data = it.result.getJSONObject("data")
-            Captcha(
-                data.getString("url"),
-                data.getBoolean("isNotLoggedIn"),
-                it.headers
-            )
+        return if(context.isNetworkAvailable()){
+            webView.scrap(
+                """
+                var isLoggedIn = !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null);
+                next({
+                    isLoggedIn: isLoggedIn,
+                    url: isLoggedIn ? "" : byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src
+                });
+                """.trimIndent(),
+                loadNewUrl = true
+            ){
+                val data = it.result.getJSONObject("data")
+                Captcha(
+                    data.getString("url"),
+                    data.getBoolean("isLoggedIn"),
+                    it.headers
+                )
+            }
+        }else{
+            Captcha("", true, Headers.of(mapOf()))
         }
     }
 
@@ -50,7 +59,7 @@ class AuthWebViewRepository(
             postRequest = """
                 var error = byClass("failureNotification");
                 next({
-                    isNotLoggedIn: byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null,
+                    isLoggedIn: !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null),
                     errorMessage: error != null && error.length >= 3 ? error[2].innerText.trim() : ""
                 });
             """.trimIndent(),
@@ -58,21 +67,23 @@ class AuthWebViewRepository(
         ){
             val data = it.result.getJSONObject("data")
             Auth(
-                data.getBoolean("isNotLoggedIn"),
+                data.getBoolean("isLoggedIn"),
                 data.getString("errorMessage")
             )
         }
     }
 
-    override suspend fun isNotLoggedIn(): Boolean {
-        return createWebView(context).scrap(
+    override suspend fun isLoggedIn() = when {
+        context.getPreference(SharedPreferenceKeys.OFFLINE_MODE, false) -> true
+        context.isNetworkAvailable() -> createWebView(context).scrap(
             """
             next({
-                isNotLoggedIn: byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null
+                isLoggedIn: !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null)
             });
             """.trimIndent()
         ){
-            it.result.getJSONObject("data").getBoolean("isNotLoggedIn")
+            it.result.getJSONObject("data").getBoolean("isLoggedIn")
         }
+        else -> context.isAuthDataSaved()
     }
 }

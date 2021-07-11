@@ -38,6 +38,7 @@ import ziox.ramiro.saes.ui.components.CaptchaInput
 import ziox.ramiro.saes.ui.components.SchoolButton
 import ziox.ramiro.saes.ui.components.TextButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
+import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.*
 import ziox.ramiro.saes.view_models.AuthEvent
 import ziox.ramiro.saes.view_models.AuthState
@@ -72,20 +73,22 @@ class LoginActivity : ComponentActivity() {
 
         setContent {
             SAESParaAlumnosTheme {
-                if(username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved()){
-                    LoginOnlyCaptcha(
-                        authViewModel,
-                        username,
-                        password
-                    )
-                }else{
-                    Login(
-                        authViewModel,
-                        selectSchoolLauncher,
-                        schoolUrl.collectAsState(),
-                        username,
-                        password
-                    )
+                Scaffold {
+                    if(username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved()){
+                        LoginOnlyCaptcha(
+                            authViewModel,
+                            username,
+                            password
+                        )
+                    }else{
+                        Login(
+                            authViewModel,
+                            selectSchoolLauncher,
+                            schoolUrl.collectAsState(),
+                            username,
+                            password
+                        )
+                    }
                 }
             }
         }
@@ -94,11 +97,11 @@ class LoginActivity : ComponentActivity() {
     private fun listenToAuthStates() = lifecycleScope.launch {
         authViewModel.states.collect {
             when(it){
-                is AuthState.CaptchaComplete -> if(!it.captcha.isNotLoggedIn){
+                is AuthState.CaptchaComplete -> if(it.captcha.isLoggedIn){
                     startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
                     finish()
                 }
-                is AuthState.SessionCheckComplete -> if(!it.isNotLoggedIn){
+                is AuthState.SessionCheckComplete -> if(it.isLoggedIn){
                     startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
                     finish()
                 }
@@ -362,6 +365,13 @@ fun LoginOnlyCaptcha(
                     captcha.value
                 )
             }
+        }
+        TextButton(
+            text = "MODO OFFLINE",
+            textColor = getCurrentTheme().info
+        ) {
+            context.setPreference(SharedPreferenceKeys.OFFLINE_MODE, true)
+            authViewModel.checkSession()
         }
         TextButton(
             text = "USAR OTRA CUENTA"

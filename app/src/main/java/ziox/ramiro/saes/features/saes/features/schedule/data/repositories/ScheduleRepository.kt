@@ -2,10 +2,18 @@ package ziox.ramiro.saes.features.saes.features.schedule.data.repositories
 
 import android.content.Context
 import androidx.compose.ui.graphics.Color
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_provider.createWebView
 import ziox.ramiro.saes.data.data_provider.scrap
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
+import ziox.ramiro.saes.utils.isNetworkAvailable
+import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
 
 interface ScheduleRepository {
@@ -14,13 +22,32 @@ interface ScheduleRepository {
 
 
 class ScheduleWebViewRepository(
-    context: Context
+    private val context: Context
 ) : ScheduleRepository {
     private val webView = createWebView(context)
+    private val persistenceRepository = LocalAppDatabase.invoke(context).scheduleRepository()
+
+    private val scheduleColors = arrayOf(
+        Color(0xFFE91E63),
+        Color(0xFFFF9800),
+        Color(0xFF9C27B0),
+        Color(0xFF4CAF50),
+        Color(0xFF2196F3),
+        Color(0xFFF44336),
+        Color(0xFF673AB7),
+        Color(0xFF8BC34A),
+        Color(0xFF03A9F4),
+        Color(0xFFFF5722),
+        Color(0xFFFFC107),
+        Color(0xFF009688),
+        Color(0xFF3F51B5),
+        Color(0xFFCDDC39)
+    )
 
     override suspend fun getMySchedule(): List<ClassSchedule> {
-        return webView.scrap(
-            script = """
+        return if(context.isNetworkAvailable()){
+            webView.scrap(
+                script = """
                 var scheduleTable = document.getElementById("ctl00_mainCopy_PnlDatos");
 
                 if(scheduleTable != null){
@@ -54,25 +81,47 @@ class ScheduleWebViewRepository(
                     next([]);
                 }
             """.trimIndent(),
-            path = "/Alumnos/Informacion_semestral/Horario_Alumno.aspx"
-        ){
-            val data = it.result.getJSONArray("data")
+                path = "/Alumnos/Informacion_semestral/Horario_Alumno.aspx"
+            ){
+                val data = it.result.getJSONArray("data")
 
-            List(data.length()){ i ->
-                val classSchedule = data[i] as JSONObject
+                List(data.length()){ i ->
+                    val classSchedule = data[i] as JSONObject
 
-                ClassSchedule(
-                    classSchedule.getString("id"),
-                    classSchedule.getString("className").toProperCase(),
-                    classSchedule.getString("building"),
-                    classSchedule.getString("classroom"),
-                    classSchedule.getString("teacherName").toProperCase(),
-                    Color.Red,
-                    ClassSchedule.Hour(classSchedule.getString("hours"), ClassSchedule.WeekDay.byDayOfWeek(classSchedule.getInt("dayIndex")))
-                )
-            }.filter { f ->
-                f.hour.duration > 0
+                    ClassSchedule(
+                        classSchedule.getString("id"),
+                        classSchedule.getString("className").toProperCase(),
+                        classSchedule.getString("building"),
+                        classSchedule.getString("classroom"),
+                        classSchedule.getString("teacherName").toProperCase(),
+                        scheduleColors[i%scheduleColors.size].value.toLong(),
+                        Hour(classSchedule.getString("hours"), WeekDay.byDayOfWeek(classSchedule.getInt("dayIndex")))
+                    )
+                }.filter { f ->
+                    f.hour.duration > 0
+                }
+            }.also {
+                runOnDefaultThread {
+                    persistenceRepository.removeSchedule()
+                    persistenceRepository.addSchedule(it)
+                }
+            }
+        }else{
+            runOnDefaultThread {
+                persistenceRepository.getMySchedule()
             }
         }
     }
+}
+
+@Dao
+interface ScheduleRoomRepository{
+    @Query("SELECT * FROM class_schedule")
+    fun getMySchedule() : List<ClassSchedule>
+
+    @Insert
+    fun addSchedule(schedule: List<ClassSchedule>)
+
+    @Query("DELETE FROM class_schedule")
+    fun removeSchedule()
 }

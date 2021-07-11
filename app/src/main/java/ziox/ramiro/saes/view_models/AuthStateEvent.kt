@@ -10,7 +10,7 @@ sealed class AuthState : ViewModelState {
     class CaptchaComplete(val captcha: Captcha) : AuthState()
 
     class SessionCheckLoading : AuthState()
-    class SessionCheckComplete(val isNotLoggedIn: Boolean) : AuthState()
+    class SessionCheckComplete(val isLoggedIn: Boolean) : AuthState()
 }
 
 sealed class AuthEvent : ViewModelEvent {

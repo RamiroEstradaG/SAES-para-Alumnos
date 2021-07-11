@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.getInitials
-import kotlin.random.Random
 
 @Preview
 @Composable
@@ -48,10 +47,10 @@ fun SmallGradeItem(
             maxLines = 1
         )
         Text(
-            text = classGrades.final?.toString() ?: "-",
+            text = classGrades.finalScore?.toString() ?: "-",
             style = MaterialTheme.typography.h4,
             textAlign = TextAlign.Center,
-            color = gradeColor(classGrades.final)
+            color = gradeColor(classGrades.finalScore)
         )
     }
 }
@@ -81,7 +80,7 @@ fun GradeItem(
             Grade(title = "2do", grade = classGrades.p2)
             Grade(title = "3ro", grade = classGrades.p3)
             Grade(title = "Extra", grade = classGrades.extra)
-            Grade(title = "Final", grade = classGrades.final)
+            Grade(title = "Final", grade = classGrades.finalScore)
         }
     }
 }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.filter
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleHeader
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleWeekContainer
@@ -23,7 +24,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleView
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
 val hourWidth = 70.dp
-val today = ClassSchedule.WeekDay.todayByCalendar()
+val today = WeekDay.todayByCalendar()
 
 @ExperimentalAnimationApi
 @Composable
@@ -38,7 +39,7 @@ fun Schedule(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            val selectedDayOfWeek: MutableState<ClassSchedule.WeekDay?> = remember {
+            val selectedDayOfWeek: MutableState<WeekDay?> = remember {
                 mutableStateOf(null)
             }
 

@@ -1,56 +1,61 @@
 package ziox.ramiro.saes.features.saes.features.home.data.repositories
 
-import retrofit2.http.GET
-import retrofit2.http.Path
-import ziox.ramiro.saes.data.data_provider.retrofitProvider
-import ziox.ramiro.saes.features.saes.features.home.data.models.MappedTweet
-import ziox.ramiro.saes.features.saes.features.home.data.models.TimelineResponse
+import com.twitter.sdk.android.core.Callback
+import com.twitter.sdk.android.core.TwitterException
+import com.twitter.sdk.android.core.models.Tweet
+import com.twitter.sdk.android.tweetui.TimelineResult
+import com.twitter.sdk.android.tweetui.UserTimeline
+import java.util.*
+import java.util.concurrent.TimeoutException
+import kotlin.collections.ArrayList
+import kotlin.coroutines.suspendCoroutine
 
 interface TwitterRepository {
-    suspend fun getTimelineTweets() : List<MappedTweet>
+    suspend fun getTimelineTweets() : List<Tweet>
 }
 
 
-class TwitterRetrofitRepository : TwitterRepository {
-    private interface RetrofitAPI {
-        companion object {
-            fun create(): RetrofitAPI =
-                retrofitProvider("https://api.twitter.com/", "Bearer AAAAAAAAAAAAAAAAAAAAAMHqLQEAAAAA1laskL%2BW5HNYSZu8jCdZuiswwZo%3DquFrNWN7RwS8Ixroz9JRDOyAhixm7lQ6MlU0e4PItaYHHHWbke")
-                .create(RetrofitAPI::class.java)
-        }
+class TwitterAPIRepository : TwitterRepository {
+    override suspend fun getTimelineTweets(): List<Tweet> {
+        val tweetList = ArrayList<Tweet>()
 
-        @GET("/2/users/{id}/tweets?max_results=5&user.fields=username,name,profile_image_url&tweet.fields=created_at&expansions=author_id")
-        suspend fun getTimelineTweets(
-            @Path("id") userId: String
-        ) : TimelineResponse
-    }
+        val secretariaIpn = UserTimeline.Builder()
+            .screenName("SecretariaIPN")
+            .includeRetweets(false)
+            .includeReplies(false)
+            .maxItemsPerRequest(5).build()
 
-    override suspend fun getTimelineTweets(): List<MappedTweet> {
-        val tweetList = ArrayList<MappedTweet>()
-        val api = RetrofitAPI.create()
+        val ipnMx = UserTimeline.Builder()
+            .screenName("IPN_MX")
+            .includeRetweets(false)
+            .includeReplies(false)
+            .maxItemsPerRequest(5).build()
 
-        val ipnMx = api.getTimelineTweets("302901861")
-        val secretariaIpn = api.getTimelineTweets("3030986693")
 
-        tweetList.addAll(ipnMx.data.map {
-            MappedTweet(
-                it.id,
-                it.date,
-                ipnMx.includes.user.first { user -> user.userId == it.userId },
-                it.content
-            )
+        tweetList.addAll(suspendCoroutine<List<Tweet>> {
+            ipnMx.next(null, object : Callback<TimelineResult<Tweet>>(){
+                override fun success(result: com.twitter.sdk.android.core.Result<TimelineResult<Tweet>>) {
+                    it.resumeWith(Result.success(result.data.items))
+                }
+                override fun failure(exception: TwitterException?) {
+                    it.resumeWith(Result.failure(exception ?: TimeoutException()))
+                }
+            })
         })
-        tweetList.addAll(secretariaIpn.data.map {
-            MappedTweet(
-                it.id,
-                it.date,
-                secretariaIpn.includes.user.first { user -> user.userId == it.userId },
-                it.content
-            )
+
+        tweetList.addAll(suspendCoroutine<List<Tweet>> {
+            secretariaIpn.next(null, object : Callback<TimelineResult<Tweet>>(){
+                override fun success(result: com.twitter.sdk.android.core.Result<TimelineResult<Tweet>>) {
+                    it.resumeWith(Result.success(result.data.items))
+                }
+                override fun failure(exception: TwitterException?) {
+                    it.resumeWith(Result.failure(exception ?: TimeoutException()))
+                }
+            })
         })
 
         return tweetList.sortedByDescending {
-            it.date
+            Date.parse(it.createdAt)
         }
     }
 }

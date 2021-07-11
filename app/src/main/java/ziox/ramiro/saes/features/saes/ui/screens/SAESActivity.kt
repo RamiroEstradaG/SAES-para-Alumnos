@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.twitter.sdk.android.core.Twitter
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
@@ -61,6 +62,8 @@ class SAESActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Twitter.initialize(this)
 
         listenToAuthStates()
         listenToAuthEvents()
@@ -115,7 +118,7 @@ class SAESActivity : AppCompatActivity() {
     private fun listenToAuthStates() = lifecycleScope.launch {
         authViewModel.states.collect {
             if(it is AuthState.SessionCheckComplete){
-                if (it.isNotLoggedIn){
+                if (!it.isLoggedIn){
                     startActivity(Intent(this@SAESActivity, MainActivity::class.java))
                     finish()
                 }

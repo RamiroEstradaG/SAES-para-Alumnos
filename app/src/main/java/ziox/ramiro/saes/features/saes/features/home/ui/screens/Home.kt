@@ -20,11 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.filter
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesState
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
-import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterRetrofitRepository
+import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterAPIRepository
 import ziox.ramiro.saes.features.saes.features.home.ui.components.TwitterItem
 import ziox.ramiro.saes.features.saes.features.home.view_models.HomeState
 import ziox.ramiro.saes.features.saes.features.home.view_models.HomeViewModel
@@ -32,12 +31,13 @@ import ziox.ramiro.saes.features.saes.features.home.ui.components.SmallGradeItem
 import ziox.ramiro.saes.features.saes.ui.components.RecentActivityItem
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
+import ziox.ramiro.saes.utils.isNetworkAvailable
 
 @ExperimentalMaterialApi
 @Composable
 fun Home(
     homeViewModel: HomeViewModel = viewModel(
-        factory = viewModelFactory { HomeViewModel(TwitterRetrofitRepository()) }
+        factory = viewModelFactory { HomeViewModel(TwitterAPIRepository()) }
     ),
     gradesViewModel: GradesViewModel = viewModel(
         factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(LocalContext.current)) }
@@ -96,35 +96,37 @@ fun Home(
         }
         null -> gradesViewModel.fetchGrades()
     }
-    HomeItem(
-        modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
-        title = "Noticias",
-        icon = Icons.Rounded.Feed
-    ){
-        when(val state = homeViewModel.states.filter { it is HomeState.TweetsLoading || it is HomeState.TweetsComplete }.collectAsState(
-            initial = null
-        ).value){
-            is HomeState.TweetsLoading -> Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 32.dp)
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-            is HomeState.TweetsComplete -> Column {
-                state.tweets.forEach {
-                    TwitterItem(
-                        modifier = Modifier.padding(
-                            horizontal = 32.dp,
-                            vertical = 6.dp
-                        ),
-                        tweet = it
+    if(LocalContext.current.isNetworkAvailable()){
+        HomeItem(
+            modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+            title = "Noticias",
+            icon = Icons.Rounded.Feed
+        ){
+            when(val state = homeViewModel.states.filter { it is HomeState.TweetsLoading || it is HomeState.TweetsComplete }.collectAsState(
+                initial = null
+            ).value){
+                is HomeState.TweetsLoading -> Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
+                is HomeState.TweetsComplete -> Column {
+                    state.tweets.forEach {
+                        TwitterItem(
+                            modifier = Modifier.padding(
+                                horizontal = 32.dp,
+                                vertical = 6.dp
+                            ),
+                            tweet = it
+                        )
+                    }
+                }
+                else -> homeViewModel.fetchTweets()
             }
-            else -> homeViewModel.fetchTweets()
         }
     }
 }

@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -25,7 +26,7 @@ fun ScheduleClassView(
         .padding(top = hourHeight.times((classSchedule.hour.start - startHour).toFloat()))
         .height(hourHeight.times(classSchedule.hour.duration.toFloat()))
         .fillMaxWidth(),
-    backgroundColor = classSchedule.color,
+    backgroundColor = Color(classSchedule.color),
     shape = MaterialTheme.shapes.small,
     elevation = 0.dp
 ) {

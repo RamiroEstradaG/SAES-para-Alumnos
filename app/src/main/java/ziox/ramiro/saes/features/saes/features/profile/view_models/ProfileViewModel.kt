@@ -20,6 +20,7 @@ class ProfileViewModel(
         }.onSuccess {
             emitState(ProfileState.UserComplete(it))
         }.onFailure {
+            it.printStackTrace()
             emitEvent(ProfileEvent.Error("Error al obtener los datos del usuario"))
         }
     }

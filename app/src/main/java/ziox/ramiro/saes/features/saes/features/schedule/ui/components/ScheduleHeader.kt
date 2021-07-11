@@ -14,13 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.today
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
 @Composable
 fun ScheduleHeader(
-    selectedDayOfWeek: MutableState<ClassSchedule.WeekDay?> = mutableStateOf(null)
+    selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null)
 ) = Crossfade(
     targetState = selectedDayOfWeek.value
 ) {
@@ -64,7 +65,7 @@ fun ScheduleHeader(
                 text = "L",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.subtitle2,
-                color = if(today == ClassSchedule.WeekDay.MONDAY) getCurrentTheme().info
+                color = if(today == WeekDay.MONDAY) getCurrentTheme().info
                 else getCurrentTheme().primaryText
             )
             Text(
@@ -72,7 +73,7 @@ fun ScheduleHeader(
                 text = "M",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.subtitle2,
-                color = if(today == ClassSchedule.WeekDay.TUESDAY) getCurrentTheme().info
+                color = if(today == WeekDay.TUESDAY) getCurrentTheme().info
                 else getCurrentTheme().primaryText
             )
             Text(
@@ -80,7 +81,7 @@ fun ScheduleHeader(
                 text = "M",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.subtitle2,
-                color = if(today == ClassSchedule.WeekDay.WEDNESDAY) getCurrentTheme().info
+                color = if(today == WeekDay.WEDNESDAY) getCurrentTheme().info
                 else getCurrentTheme().primaryText
             )
             Text(
@@ -88,7 +89,7 @@ fun ScheduleHeader(
                 text = "J",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.subtitle2,
-                color = if(today == ClassSchedule.WeekDay.THURSDAY) getCurrentTheme().info
+                color = if(today == WeekDay.THURSDAY) getCurrentTheme().info
                 else getCurrentTheme().primaryText
             )
             Text(
@@ -96,7 +97,7 @@ fun ScheduleHeader(
                 text = "V",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.subtitle2,
-                color = if(today == ClassSchedule.WeekDay.FRIDAY) getCurrentTheme().info
+                color = if(today == WeekDay.FRIDAY) getCurrentTheme().info
                 else getCurrentTheme().primaryText
             )
         }

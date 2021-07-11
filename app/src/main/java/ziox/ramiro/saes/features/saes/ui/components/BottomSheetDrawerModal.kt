@@ -79,7 +79,7 @@ class BottomSheetDrawerModal(
                             ActionMenuItem(icon = Icons.Rounded.Info, name = "Acerca de la aplicación"){
                                 startActivity(Intent(requireContext(), AboutActivity::class.java))
                             }
-                            ActionMenuItem(icon = Icons.Rounded.Logout, name = "Cerrar sesión"){
+                            ActionMenuItem(icon = Icons.Rounded.Logout, name = "Cerrar sesión", contentColor = getCurrentTheme().danger){
                                 authViewModel.logout()
                             }
                         }
@@ -138,6 +138,7 @@ class BottomSheetDrawerModal(
     fun ActionMenuItem(
         icon: ImageVector,
         name: String,
+        contentColor: Color? = null,
         action: () -> Unit
     ) {
         Box(
@@ -161,12 +162,12 @@ class BottomSheetDrawerModal(
                 Icon(
                     imageVector = icon,
                     contentDescription = name,
-                    tint = getCurrentTheme().primaryText
+                    tint = contentColor ?: getCurrentTheme().primaryText
                 )
                 Text(
                     modifier = Modifier.padding(start = 16.dp),
                     text = name,
-                    color = getCurrentTheme().primaryText,
+                    color = contentColor ?: getCurrentTheme().primaryText,
                     fontWeight = FontWeight.Normal
                 )
             }

@@ -49,7 +49,10 @@ class KardexWebViewRepository(
                         })
                     });
                 }else{
-                    next([]);
+                    next({
+                        generalScore: "-",
+                        periods: []
+                    });
                 }
             """.trimIndent(),
             path = "/Alumnos/boleta/kardex.aspx"

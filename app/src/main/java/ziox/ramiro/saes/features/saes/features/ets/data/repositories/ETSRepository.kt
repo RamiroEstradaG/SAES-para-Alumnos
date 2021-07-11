@@ -1,13 +1,21 @@
 package ziox.ramiro.saes.features.saes.features.ets.data.repositories
 
 import android.content.Context
-import kotlinx.coroutines.delay
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_provider.createWebView
 import ziox.ramiro.saes.data.data_provider.runThenScrap
 import ziox.ramiro.saes.data.data_provider.scrap
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETS
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETSScore
+import ziox.ramiro.saes.utils.isNetworkAvailable
+import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
 
 interface ETSRepository {
@@ -21,12 +29,15 @@ interface ETSRepository {
 class ETSWebViewRepository(
     private val context: Context
 ) : ETSRepository {
+    private val persistenceRepository = LocalAppDatabase.invoke(context).etsRepository()
+
     override suspend fun getAvailableETS(): List<ETS> {
-        return createWebView(context).runThenScrap(
-            preRequest = """
+        return if(context.isNetworkAvailable()){
+            createWebView(context).runThenScrap(
+                preRequest = """
                 byId("ctl00_mainCopy_cmbinformacion").click();
             """.trimIndent(),
-            postRequest = """
+                postRequest = """
                 var etsTable = byId("ctl00_mainCopy_Grvmateriasofertadas");
                 
                 if(etsTable != null){
@@ -43,24 +54,35 @@ class ETSWebViewRepository(
                     next([]);
                 }
             """.trimIndent(),
-            path = "/Alumnos/ETS/inscripcion_ets.aspx"
-        ){
-            val data = it.result.getJSONArray("data")
+                path = "/Alumnos/ETS/inscripcion_ets.aspx"
+            ){
+                val data = it.result.getJSONArray("data")
 
-            List(data.length()){ i ->
-                val element = data[i] as JSONObject
-                ETS(
-                    element.getString("id"),
-                    element.getString("name").toProperCase(),
-                    element.getInt("index")
-                )
+                List(data.length()){ i ->
+                    val element = data[i] as JSONObject
+                    ETS(
+                        element.getString("id"),
+                        element.getString("name").toProperCase(),
+                        element.getInt("index")
+                    )
+                }
+            }.also {
+                runOnDefaultThread {
+                    persistenceRepository.removeAllAvailableETS()
+                    persistenceRepository.addAllETS(it)
+                }
+            }
+        }else{
+            runOnDefaultThread {
+                persistenceRepository.getAvailableETS()
             }
         }
     }
 
     override suspend fun getETSScores(): List<ETSScore> {
-        return createWebView(context).scrap(
-            script = """
+        return if (context.isNetworkAvailable()){
+            createWebView(context).scrap(
+                script = """
                 var etsTable = byId("ctl00_mainCopy_GridView1");
                 
                 if(etsTable != null){
@@ -78,18 +100,28 @@ class ETSWebViewRepository(
                     next([]);
                 }
             """.trimIndent(),
-            path = "/Alumnos/ETS/calificaciones_ets.aspx"
-        ){
-            val data = it.result.getJSONArray("data")
+                path = "/Alumnos/ETS/calificaciones_ets.aspx"
+            ){
+                val data = it.result.getJSONArray("data")
 
-            List(data.length()){ i ->
-                val element = data[i] as JSONObject
-                ETSScore(
-                    element.getString("id"),
-                    element.getString("period"),
-                    element.getString("name").toProperCase(),
-                    element.getString("grade").toIntOrNull(),
-                )
+                List(data.length()){ i ->
+                    val element = data[i] as JSONObject
+                    ETSScore(
+                        element.getString("id"),
+                        element.getString("period"),
+                        element.getString("name").toProperCase(),
+                        element.getString("grade").toIntOrNull(),
+                    )
+                }
+            }.also {
+                runOnDefaultThread {
+                    persistenceRepository.removeAllScores()
+                    persistenceRepository.addAllETSScores(it)
+                }
+            }
+        }else{
+            runOnDefaultThread {
+                persistenceRepository.getETSScores()
             }
         }
     }
@@ -99,5 +131,25 @@ class ETSWebViewRepository(
 
         return getAvailableETS()
     }
+}
 
+@Dao
+interface ETSRoomRepository {
+    @Query("SELECT * FROM available_ets")
+    fun getAvailableETS(): List<ETS>
+
+    @Query("SELECT * FROM ets_scores")
+    fun getETSScores(): List<ETSScore>
+
+    @Insert
+    fun addAllETS(ets: List<ETS>)
+
+    @Insert
+    fun addAllETSScores(scores: List<ETSScore>)
+
+    @Query("DELETE FROM available_ets")
+    fun removeAllAvailableETS()
+
+    @Query("DELETE FROM ets_scores")
+    fun removeAllScores()
 }

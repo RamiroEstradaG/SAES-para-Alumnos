@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.ui.screens
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -7,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -19,14 +21,24 @@ import ziox.ramiro.saes.view_models.AuthState
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 class MainActivity : ComponentActivity() {
-    private val authViewModel: AuthViewModel by viewModels {
-        viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
-    }
+    private lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        listenToAuthStates()
+        setPreference(SharedPreferenceKeys.OFFLINE_MODE, false)
+
+        authViewModel = ViewModelProvider(
+            this,
+            viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
+        ).get(AuthViewModel::class.java)
+
+        if(getPreference(SharedPreferenceKeys.SCHOOL_URL, "").isBlank()){
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }else{
+            listenToAuthStates()
+        }
 
         setContent {
             SAESParaAlumnosTheme {
@@ -40,23 +52,12 @@ class MainActivity : ComponentActivity() {
     private fun listenToAuthStates() = lifecycleScope.launch {
         authViewModel.states.collect {
             if(it is AuthState.SessionCheckComplete){
-                 if(it.isNotLoggedIn){
-                     startActivity(
-                         android.content.Intent(
-                             this@MainActivity,
-                             LoginActivity::class.java
-                         )
-                     )
-                     finish()
-                 }else{
-                     startActivity(
-                         android.content.Intent(
-                             this@MainActivity,
-                             SAESActivity::class.java
-                         )
-                     )
-                     finish()
-                 }
+                if (it.isLoggedIn) {
+                    startActivity(Intent(this@MainActivity, SAESActivity::class.java))
+                } else {
+                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                }
+                finish()
             }
         }
     }
