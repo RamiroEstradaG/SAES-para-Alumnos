@@ -30,7 +30,8 @@ fun BottomAppBar(
     onMenuIconClick: () -> Unit = {}
 ){
     val selectedItemMenu = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
-    val etsState = etsViewModel.filterStates(ETSState.ScoresComplete::class, ETSState.ETSComplete::class)
+    val etsStates = etsViewModel.availableETSStates.collectAsState(initial = null)
+    val scoreStates = etsViewModel.scoresStates.collectAsState(initial = null)
 
     androidx.compose.material.BottomAppBar(
         backgroundColor = getCurrentTheme().toolbar
@@ -72,7 +73,7 @@ fun BottomAppBar(
                 )
             }
 
-            if(!(etsState.value as? ETSState.ETSComplete)?.etsList.isNullOrEmpty() || !(etsState.value as? ETSState.ScoresComplete)?.scores.isNullOrEmpty()){
+            if(!(etsStates.value as? ETSState.ETSComplete)?.etsList.isNullOrEmpty() || !(scoreStates.value as? ETSState.ScoresComplete)?.scores.isNullOrEmpty()){
                 IconButton(onClick = {
                     saesViewModel.changeSection(MenuSection.ETS)
                 }) {

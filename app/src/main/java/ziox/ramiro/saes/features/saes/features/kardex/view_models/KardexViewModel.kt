@@ -16,7 +16,7 @@ class KardexViewModel(
         emitState(KardexState.Loading())
 
         kotlin.runCatching {
-            kardexRepository.fetchKardexData()
+            kardexRepository.getMyKardexData()
         }.onSuccess {
             emitState(KardexState.Complete(it))
         }.onFailure {

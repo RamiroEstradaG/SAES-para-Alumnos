@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.twitter.sdk.android.core.Twitter
@@ -48,9 +49,7 @@ class SAESActivity : AppCompatActivity() {
         viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
     }
 
-    private val profileViewModel : ProfileViewModel by viewModels{
-        viewModelFactory { ProfileViewModel(UserWebViewRepository(this)) }
-    }
+    private lateinit var profileViewModel : ProfileViewModel
 
     private val etsViewModel : ETSViewModel by viewModels {
         viewModelFactory { ETSViewModel(ETSWebViewRepository(this)) }
@@ -62,6 +61,11 @@ class SAESActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        profileViewModel = ViewModelProvider(
+            this,
+            viewModelFactory { ProfileViewModel(UserWebViewRepository(this)) }
+        ).get(ProfileViewModel::class.java)
 
         Twitter.initialize(this)
 

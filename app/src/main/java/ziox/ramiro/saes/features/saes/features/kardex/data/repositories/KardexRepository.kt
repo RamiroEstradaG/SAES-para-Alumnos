@@ -1,29 +1,32 @@
 package ziox.ramiro.saes.features.saes.features.kardex.data.repositories
 
 import android.content.Context
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_provider.createWebView
 import ziox.ramiro.saes.data.data_provider.scrap
-import ziox.ramiro.saes.features.saes.features.kardex.data.models.EvaluationType
-import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexClass
-import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
-import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexPeriod
-import ziox.ramiro.saes.utils.MMMddyyyy_toDate
-import ziox.ramiro.saes.utils.toProperCase
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.features.kardex.data.models.*
+import ziox.ramiro.saes.utils.*
 
 interface KardexRepository {
-    suspend fun fetchKardexData() : KardexData
+    suspend fun getMyKardexData() : KardexData
 }
 
 
 class KardexWebViewRepository(
-    context: Context
+    private val context: Context
 ) : KardexRepository {
     private val webView = createWebView(context)
+    private val persistenceRepository = LocalAppDatabase.invoke(context).kardexRepository()
 
-    override suspend fun fetchKardexData(): KardexData {
-        return webView.scrap(
-            script = """
+    override suspend fun getMyKardexData(): KardexData {
+        val userId = context.getPreference(SharedPreferenceKeys.BOLETA, "")
+        return if(context.isNetworkAvailable()){
+            webView.scrap(
+                script = """
                 var kardexTable = byId("ctl00_mainCopy_Lbl_Kardex");
                 
                 if(kardexTable != null){
@@ -55,34 +58,38 @@ class KardexWebViewRepository(
                     });
                 }
             """.trimIndent(),
-            path = "/Alumnos/boleta/kardex.aspx"
-        ){
-            val data = it.result.getJSONObject("data")
-            val periods = data.getJSONArray("periods")
-
-            KardexData(
-                data.getString("generalScore").toDoubleOrNull(),
-                List(periods.length()){ i ->
-                    val period = periods[i] as JSONObject
-                    val periodClasses = period.getJSONArray("classes")
-
-                    KardexPeriod(
-                        period.getString("periodName").toProperCase(),
-                        List(periodClasses.length()){ e ->
-                            val kardexClass = periodClasses[e] as JSONObject
-                            KardexClass(
-                                kardexClass.getString("id"),
-                                kardexClass.getString("name").toProperCase(),
-                                kardexClass.getString("date").MMMddyyyy_toDate(),
-                                kardexClass.getString("period"),
-                                EvaluationType.fromSAES(kardexClass.getString("evaluationType")),
-                                kardexClass.getString("score").toIntOrNull()
-                            )
-                        }
-                    )
+                path = "/Alumnos/boleta/kardex.aspx"
+            ){
+                KardexDataRoom(
+                    userId,
+                    it.result
+                )
+            }.also {
+                runOnDefaultThread {
+                    persistenceRepository.removeKardexData(userId)
+                    persistenceRepository.addKardexData(it)
                 }
-            )
+            }.toKardexData()
+        }else{
+            runOnDefaultThread {
+                persistenceRepository.getMyKardexData(userId)?.toKardexData() ?: KardexData(
+                    null,
+                    emptyList()
+                )
+            }
         }
     }
+}
 
+
+@Dao
+interface KardexRoomRepository{
+    @Query("SELECT * FROM kardex WHERE userId = :userId LIMIT 1")
+    fun getMyKardexData(userId: String) : KardexDataRoom?
+
+    @Insert
+    fun addKardexData(kardexData: KardexDataRoom)
+
+    @Query("DELETE FROM kardex WHERE userId = :userId")
+    fun removeKardexData(userId: String)
 }

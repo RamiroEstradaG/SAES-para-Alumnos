@@ -4,11 +4,14 @@ import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.room.*
 import okhttp3.Headers
+import org.json.JSONObject
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETS
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETSScore
 import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSRoomRepository
 import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesRoomRepository
+import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexDataRoom
+import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRoomRepository
 import ziox.ramiro.saes.features.saes.features.profile.data.models.User
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserRoomRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
@@ -20,8 +23,9 @@ import java.util.*
     ETSScore::class,
     User::class,
     ClassGrades::class,
-    ClassSchedule::class
-], version = 5, exportSchema = false)
+    ClassSchedule::class,
+    KardexDataRoom::class
+], version = 6, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class LocalAppDatabase : RoomDatabase() {
     companion object {
@@ -42,6 +46,7 @@ abstract class LocalAppDatabase : RoomDatabase() {
     abstract fun userRepository(): UserRoomRepository
     abstract fun gradesRepository(): GradesRoomRepository
     abstract fun scheduleRepository(): ScheduleRoomRepository
+    abstract fun kardexRepository(): KardexRoomRepository
 }
 
 class Converters {
@@ -56,4 +61,10 @@ class Converters {
 
     @TypeConverter
     fun stringToHeaders(value: String): Headers = Headers.Builder().add("Cookie", value).build()
+
+    @TypeConverter
+    fun jsonToString(value: JSONObject): String = value.toString()
+
+    @TypeConverter
+    fun stringToJson(value: String): JSONObject = JSONObject(value)
 }
