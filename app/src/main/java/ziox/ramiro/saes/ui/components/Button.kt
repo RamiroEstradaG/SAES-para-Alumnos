@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -94,17 +95,20 @@ fun OutlineButton(
     text: String = "button",
     isHighEmphasis: Boolean = false,
     textColor: Color = MaterialTheme.colors.primary,
-    icon: ImageVector? = null,
     enabled: Boolean = true,
+    icon: ImageVector? = null,
+    backgroundColor: Color? = null,
+    borderColor: Color? = null,
     onClick: () -> Unit = {}
 ) = OutlinedButton(
     modifier = modifier,
     onClick = onClick,
     shape = RoundedCornerShape(100),
     colors = ButtonDefaults.outlinedButtonColors(
-        backgroundColor = Color.Transparent
+        backgroundColor = backgroundColor ?: Color.Transparent
     ),
-    enabled = enabled
+    enabled = enabled,
+    border = BorderStroke(1.dp, borderColor ?: Color.LightGray) // TODO
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically

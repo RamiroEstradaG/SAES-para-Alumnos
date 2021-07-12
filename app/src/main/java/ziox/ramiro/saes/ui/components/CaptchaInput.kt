@@ -36,9 +36,7 @@ fun CaptchaInput(
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
-    when(val state = authViewModel.states.filter {
-        it is AuthState.LoadingCaptcha || it is AuthState.CaptchaComplete
-    }.collectAsState(initial = null).value){
+    when(val state = authViewModel.filterStates(AuthState.LoadingCaptcha::class, AuthState.CaptchaComplete::class).value){
         is AuthState.LoadingCaptcha -> Box(
             modifier = Modifier.size(captchaWidth, captchaWidth.div(2f)),
         ) {

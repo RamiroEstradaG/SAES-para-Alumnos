@@ -58,6 +58,7 @@ class AuthViewModel(
             }.onSuccess {
                 emitState(AuthState.SessionCheckComplete(it))
             }.onFailure {
+                checkSession()
                 emitEvent(AuthEvent.Error("Error al revisar la sesion"))
             }
         }

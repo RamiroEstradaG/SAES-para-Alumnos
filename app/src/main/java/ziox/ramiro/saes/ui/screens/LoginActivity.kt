@@ -274,6 +274,7 @@ fun Login(
         ){
             if(listOf(usernameValidator, passwordValidator, captchaValidator).areAllValid()){
                 authViewModel.login(username.value, password.value, captcha.value)
+                captcha.value = ""
             }
         }
         Box(modifier = Modifier.weight(1f))
@@ -364,6 +365,7 @@ fun LoginOnlyCaptcha(
                     password.value,
                     captcha.value
                 )
+                captcha.value = ""
             }
         }
         TextButton(

@@ -28,6 +28,7 @@ import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.ui.screens.ETS
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
+import ziox.ramiro.saes.features.saes.features.ets_calendar.ui.screens.ETSCalendar
 import ziox.ramiro.saes.features.saes.features.grades.ui.screens.Grades
 import ziox.ramiro.saes.features.saes.features.home.ui.screens.Home
 import ziox.ramiro.saes.features.saes.features.kardex.ui.screens.Kardex
@@ -101,6 +102,7 @@ class SAESActivity : AppCompatActivity() {
                             )
                             MenuSection.ETS -> ETS()
                             MenuSection.KARDEX -> Kardex()
+                            MenuSection.ETS_CALENDAR -> ETSCalendar()
                         }
                     }
                 }

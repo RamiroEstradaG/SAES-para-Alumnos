@@ -12,7 +12,7 @@ fun String.toProperCase(): String {
         var res = ""
         for ((i, arr) in str.withIndex()) {
             res += if (i == str.lastIndex) {
-                if (arr.matches(Regex("[ivx]+"))) {
+                if (arr.matches(Regex("[ivx]+|(ETS)"))) {
                     arr.uppercase()
                 } else {
                     arr.replaceFirstChar{ it.uppercase() }

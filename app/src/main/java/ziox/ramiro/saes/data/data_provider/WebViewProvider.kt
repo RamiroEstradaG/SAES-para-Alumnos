@@ -29,6 +29,35 @@ data class ScrapResult(
     val headers: Headers
 )
 
+private val scriptTemplate = """
+    javascript:
+    function next(obj){
+        window.JSI.result(JSON.stringify(obj));
+    }
+    function byId(id){
+        return document.getElementById(id);
+    }
+    function byClass(className){
+        return document.getElementsByClassName(className);
+    }
+    function byTag(tag){
+        return document.getElementsByTagName(tag);
+    }
+    function selectToFilterField(elementId, fieldName, offset){
+        var element = byId(elementId);
+        var options = [...element.getElementsByTagName("option")];
+        
+        options.splice(0, offset);
+        
+        return {
+            id: elementId,
+            name: fieldName,
+            selectedIndex: element.selectedIndex >= offset ? element.selectedIndex - offset : null,
+            offset: offset,
+            options: [...options].map((value) => value.innerText.trim())
+        };
+    }
+""".trimIndent()
 
 suspend fun <T>WebView.scrap(
     script: String,
@@ -40,22 +69,7 @@ suspend fun <T>WebView.scrap(
     var isResumed = false
 
     return suspendCoroutine {
-        val scriptBase = """
-            javascript:
-            function next(obj){
-                window.JSI.result(JSON.stringify(obj));
-            }
-            function byId(id){
-                return document.getElementById(id);
-            }
-            function byClass(className){
-                return document.getElementsByClassName(className);
-            }
-            function byTag(tag){
-                return document.getElementsByTagName(tag);
-            }
-            $script
-        """.trimIndent()
+        val scriptBase = "$scriptTemplate\n$script"
 
         addJavascriptInterface(object {
             @JavascriptInterface
@@ -142,36 +156,9 @@ suspend fun <T>WebView.runThenScrap(
     var isResumed = false
 
     return suspendCoroutine {
-        val preRequestScript = """
-            javascript:
-            function byId(id){
-                return document.getElementById(id);
-            }
-            function byClass(className){
-                return document.getElementsByClassName(className);
-            }
-            function byTag(tag){
-                return document.getElementsByTagName(tag);
-            }
-            $preRequest
-        """.trimIndent()
+        val preRequestScript = "$scriptTemplate\n$preRequest"
 
-        val postRequestScript = """
-            javascript:
-            function next(obj){
-                window.JSI.result(JSON.stringify(obj));
-            }
-            function byId(id){
-                return document.getElementById(id);
-            }
-            function byClass(className){
-                return document.getElementsByClassName(className);
-            }
-            function byTag(tag){
-                return document.getElementsByTagName(tag);
-            }
-            $postRequest
-        """.trimIndent()
+        val postRequestScript = "$scriptTemplate\n$postRequest"
 
         addJavascriptInterface(object {
             @JavascriptInterface
