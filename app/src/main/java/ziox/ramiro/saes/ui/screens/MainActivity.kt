@@ -25,15 +25,16 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val userPreferences = UserPreferences.invoke(this)
 
-        setPreference(SharedPreferenceKeys.OFFLINE_MODE, false)
+        userPreferences.setPreference(PreferenceKeys.OfflineMode, false)
 
         authViewModel = ViewModelProvider(
             this,
             viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
         ).get(AuthViewModel::class.java)
 
-        if(getPreference(SharedPreferenceKeys.SCHOOL_URL, "").isBlank()){
+        if(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) == null){
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }else{

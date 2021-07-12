@@ -7,9 +7,8 @@ import ziox.ramiro.saes.data.data_provider.runThenScrap
 import ziox.ramiro.saes.data.data_provider.scrap
 import ziox.ramiro.saes.data.models.Auth
 import ziox.ramiro.saes.data.models.Captcha
-import ziox.ramiro.saes.utils.SharedPreferenceKeys
-import ziox.ramiro.saes.utils.getPreference
-import ziox.ramiro.saes.utils.isAuthDataSaved
+import ziox.ramiro.saes.utils.PreferenceKeys
+import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.isNetworkAvailable
 
 interface AuthRepository {
@@ -73,17 +72,21 @@ class AuthWebViewRepository(
         }
     }
 
-    override suspend fun isLoggedIn() = when {
-        context.getPreference(SharedPreferenceKeys.OFFLINE_MODE, false) -> true
-        context.isNetworkAvailable() -> createWebView(context).scrap(
-            """
+    override suspend fun isLoggedIn() = UserPreferences.invoke(context).run {
+        if (getPreference(PreferenceKeys.SchoolUrl, null) == null) return@run false
+
+        when {
+            getPreference(PreferenceKeys.OfflineMode, false) -> true
+            context.isNetworkAvailable() -> createWebView(context).scrap(
+                """
             next({
                 isLoggedIn: !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null)
             });
             """.trimIndent()
-        ){
-            it.result.getJSONObject("data").getBoolean("isLoggedIn")
+            ){
+                it.result.getJSONObject("data").getBoolean("isLoggedIn")
+            }
+            else -> isAuthDataSaved()
         }
-        else -> context.isAuthDataSaved()
     }
 }

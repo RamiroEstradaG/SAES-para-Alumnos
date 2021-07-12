@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import org.json.JSONObject
 import ziox.ramiro.saes.data.data_provider.createWebView
 import ziox.ramiro.saes.data.data_provider.scrap
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
-import ziox.ramiro.saes.features.saes.features.kardex.data.models.*
-import ziox.ramiro.saes.utils.*
+import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
+import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexDataRoom
+import ziox.ramiro.saes.utils.PreferenceKeys
+import ziox.ramiro.saes.utils.UserPreferences
+import ziox.ramiro.saes.utils.isNetworkAvailable
+import ziox.ramiro.saes.utils.runOnDefaultThread
 
 interface KardexRepository {
     suspend fun getMyKardexData() : KardexData
@@ -23,7 +26,7 @@ class KardexWebViewRepository(
     private val persistenceRepository = LocalAppDatabase.invoke(context).kardexRepository()
 
     override suspend fun getMyKardexData(): KardexData {
-        val userId = context.getPreference(SharedPreferenceKeys.BOLETA, "")
+        val userId = UserPreferences.invoke(context).getPreference(PreferenceKeys.Boleta, "")
         return if(context.isNetworkAvailable()){
             webView.scrap(
                 script = """

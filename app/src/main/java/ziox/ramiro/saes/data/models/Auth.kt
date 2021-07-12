@@ -1,6 +1,6 @@
 package ziox.ramiro.saes.data.models
 
 data class Auth(
-    val isNotLoggedIn: Boolean,
+    val isLoggedIn: Boolean,
     val message: String
 )

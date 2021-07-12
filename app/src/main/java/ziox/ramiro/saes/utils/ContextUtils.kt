@@ -13,7 +13,7 @@ fun Context.launchUrl(url: String){
 }
 
 fun Context.isNetworkAvailable() : Boolean{
-    if(getPreference(SharedPreferenceKeys.OFFLINE_MODE, false)){
+    if(UserPreferences.invoke(this).getPreference(PreferenceKeys.OfflineMode, false)){
         return false
     }
 

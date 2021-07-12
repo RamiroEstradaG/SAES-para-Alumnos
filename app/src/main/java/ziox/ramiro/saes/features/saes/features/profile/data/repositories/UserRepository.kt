@@ -2,13 +2,8 @@ package ziox.ramiro.saes.features.saes.features.profile.data.repositories
 
 import android.content.Context
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import ziox.ramiro.saes.data.data_provider.createWebView
 import ziox.ramiro.saes.data.data_provider.scrap
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
@@ -85,7 +80,7 @@ class UserWebViewRepository(
                     data.getString("rfc"),
                     data.getString("gender").lowercase() == "hombre",
                     ProfilePicture(
-                        webView.context.getPreference(SharedPreferenceKeys.SCHOOL_URL, "")+"/Alumnos/info_alumnos/Fotografia.aspx",
+                        UserPreferences.invoke(webView.context).getPreference(PreferenceKeys.SchoolUrl, "")+"/Alumnos/info_alumnos/Fotografia.aspx",
                         it.headers
                     ),
                     data.getString("birthday").ddMMMyyyy_toDate(),
@@ -128,7 +123,7 @@ class UserWebViewRepository(
             }
         }else{
             runOnDefaultThread {
-                persistenceRepository.getMyUserData(context.getPreference(SharedPreferenceKeys.BOLETA, ""))
+                persistenceRepository.getMyUserData(UserPreferences.invoke(context).getPreference(PreferenceKeys.Boleta, ""))
             }!!
         }
     }

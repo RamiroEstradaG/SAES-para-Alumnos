@@ -20,7 +20,6 @@ class AuthViewModel(
             kotlin.runCatching {
                 authRepository.getCaptcha()
             }.onSuccess {
-                println(it)
                 if(it.url.isBlank() && !it.isLoggedIn){
                     fetchCaptcha()
                 }else{
@@ -41,7 +40,7 @@ class AuthViewModel(
             authRepository.login(username, password, captcha)
         }.onSuccess {
             emitEvent(AuthEvent.LoginComplete(it))
-            if (it.isNotLoggedIn){
+            if (!it.isLoggedIn){
                 fetchCaptcha()
             }
         }.onFailure {
@@ -59,7 +58,6 @@ class AuthViewModel(
             }.onSuccess {
                 emitState(AuthState.SessionCheckComplete(it))
             }.onFailure {
-                it.printStackTrace()
                 emitEvent(AuthEvent.Error("Error al revisar la sesion"))
             }
         }

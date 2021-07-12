@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.ui.screens.ETS
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
@@ -55,7 +56,9 @@ class SAESActivity : AppCompatActivity() {
         viewModelFactory { ETSViewModel(ETSWebViewRepository(this)) }
     }
 
-    private val saesViewModel : SAESViewModel by viewModels()
+    private val saesViewModel : SAESViewModel by viewModels{
+        viewModelFactory { SAESViewModel(LocalAppDatabase.invoke(this).historyRepository()) }
+    }
 
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
@@ -102,6 +105,14 @@ class SAESActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        if(saesViewModel.canGoBack()){
+            saesViewModel.goBack()
+        }else{
+            super.onBackPressed()
         }
     }
 

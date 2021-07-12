@@ -13,10 +13,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.Fingerprint
+import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,14 +32,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
-import kotlinx.coroutines.flow.filter
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.profile.data.models.QRCodeScannerContract
 import ziox.ramiro.saes.features.saes.features.profile.data.models.User
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileState
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
-import ziox.ramiro.saes.utils.*
+import ziox.ramiro.saes.utils.BarcodeTypes
+import ziox.ramiro.saes.utils.PreferenceKeys
+import ziox.ramiro.saes.utils.UserPreferences
+import ziox.ramiro.saes.utils.createBarcodeImage
 
 
 @Composable
@@ -47,7 +49,7 @@ fun Profile(
     profileViewModel: ProfileViewModel = viewModel(
         factory = viewModelFactory { ProfileViewModel(UserWebViewRepository(LocalContext.current)) }
     )
-) = when(val state = profileViewModel.states.filter { it is ProfileState.UserComplete || it is ProfileState.UserLoading }.collectAsState(initial = null).value){
+) = when(val state = profileViewModel.filterStates(ProfileState.UserComplete::class, ProfileState.UserLoading::class).value){
     is ProfileState.UserComplete -> {
         Scaffold(
             topBar = {
@@ -156,12 +158,12 @@ fun QRCode() {
     val context = LocalContext.current
 
     val qrCodeUrl = remember {
-        mutableStateOf(context.getPreference(SharedPreferenceKeys.QR_URL, ""))
+        mutableStateOf(UserPreferences.invoke(context).getPreference(PreferenceKeys.QrUrl, ""))
     }
 
     val qrCodeScannerLauncher = rememberLauncherForActivityResult(contract = QRCodeScannerContract()) {
         if(it != null){
-            context.setPreference(SharedPreferenceKeys.QR_URL, it)
+            UserPreferences.invoke(context).setPreference(PreferenceKeys.QrUrl, it)
             qrCodeUrl.value = it
         }
     }

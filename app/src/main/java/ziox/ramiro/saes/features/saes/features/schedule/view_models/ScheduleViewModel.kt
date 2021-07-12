@@ -16,7 +16,6 @@ class ScheduleViewModel(
         }.onSuccess {
             emitState(ScheduleState.ScheduleComplete(it))
         }.onFailure {
-            it.printStackTrace()
             emitEvent(ScheduleEvent.Error("Error al cargar el horario"))
         }
     }

@@ -18,8 +18,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.flow.filter
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesState
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
@@ -28,7 +28,7 @@ import ziox.ramiro.saes.features.saes.features.home.ui.components.TwitterItem
 import ziox.ramiro.saes.features.saes.features.home.view_models.HomeState
 import ziox.ramiro.saes.features.saes.features.home.view_models.HomeViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.components.SmallGradeItem
-import ziox.ramiro.saes.features.saes.ui.components.RecentActivityItem
+import ziox.ramiro.saes.features.saes.features.home.ui.components.RecentActivityItem
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.utils.isNetworkAvailable
@@ -37,7 +37,12 @@ import ziox.ramiro.saes.utils.isNetworkAvailable
 @Composable
 fun Home(
     homeViewModel: HomeViewModel = viewModel(
-        factory = viewModelFactory { HomeViewModel(TwitterAPIRepository()) }
+        factory = viewModelFactory {
+            HomeViewModel(
+                TwitterAPIRepository(),
+                LocalAppDatabase.invoke(LocalContext.current).historyRepository()
+            )
+        }
     ),
     gradesViewModel: GradesViewModel = viewModel(
         factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(LocalContext.current)) }
@@ -48,31 +53,50 @@ fun Home(
         .verticalScroll(rememberScrollState())
         .padding(top = 32.dp, bottom = 64.dp)
 ) {
-    HomeItem(
-        modifier = Modifier.padding(start = 32.dp, end = 32.dp),
-        title = "Actividad reciente",
-        icon = Icons.Rounded.History
-    ){
-        Row(
-            modifier = Modifier.padding(horizontal = 32.dp)
-        ) {
-            RecentActivityItem(
+    val historyState = homeViewModel.historyItem.collectAsState(initial = null)
+
+    if(!historyState.value.isNullOrEmpty()){
+        HomeItem(
+            modifier = Modifier.padding(horizontal = 32.dp),
+            title = "Actividad reciente",
+            icon = Icons.Rounded.History
+        ){
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 12.dp)
-            )
-            RecentActivityItem(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 4.dp)
-            )
-            RecentActivityItem(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 12.dp)
-            )
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+            ) {
+                RecentActivityItem(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 12.dp),
+                    historyItem = historyState.value?.getOrNull(0)
+                ){
+                    saesViewModel.changeSection(historyState.value?.getOrNull(0)!!.section)
+                }
+                RecentActivityItem(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 4.dp),
+                    historyItem = historyState.value?.getOrNull(1)
+                ){
+                    saesViewModel.changeSection(historyState.value?.getOrNull(1)!!.section)
+                }
+                RecentActivityItem(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 12.dp),
+                    historyItem = historyState.value?.getOrNull(2)
+                ){
+                    saesViewModel.changeSection(historyState.value?.getOrNull(2)!!.section)
+                }
+            }
         }
+    }else{
+        homeViewModel.fetchUserHistory()
     }
+
+
     when(val state = gradesViewModel.statesAsState().value){
         is GradesState.GradesComplete -> if(state.grades.isNotEmpty()){
             HomeItem(
@@ -102,9 +126,7 @@ fun Home(
             title = "Noticias",
             icon = Icons.Rounded.Feed
         ){
-            when(val state = homeViewModel.states.filter { it is HomeState.TweetsLoading || it is HomeState.TweetsComplete }.collectAsState(
-                initial = null
-            ).value){
+            when(val state = homeViewModel.filterStates(HomeState.TweetsLoading::class, HomeState.TweetsComplete::class).value){
                 is HomeState.TweetsLoading -> Box(
                     modifier = Modifier
                         .fillMaxWidth()

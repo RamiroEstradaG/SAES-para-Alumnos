@@ -36,27 +36,33 @@ class ETSViewModel(
         fetchETSScores()
     }
 
-    fun fetchAvailableETS() = viewModelScope.launch {
-        emitState(ETSState.ETSLoading())
+    fun fetchAvailableETS() {
+        viewModelScope.launch {
+            emitState(ETSState.ETSLoading())
 
-        kotlin.runCatching {
-            etsRepository.getAvailableETS()
-        }.onSuccess {
-            emitState(ETSState.ETSComplete(it))
-        }.onFailure {
-            emitEvent(ETSEvent.Error("Error al obtener ETS"))
+            kotlin.runCatching {
+                etsRepository.getAvailableETS()
+            }.onSuccess {
+                emitState(ETSState.ETSComplete(it))
+            }.onFailure {
+                fetchAvailableETS()
+                emitEvent(ETSEvent.Error("Error al obtener ETS"))
+            }
         }
     }
 
-    fun fetchETSScores() = viewModelScope.launch {
-        emitState(ETSState.ScoresLoading())
+    fun fetchETSScores() {
+        viewModelScope.launch {
+            emitState(ETSState.ScoresLoading())
 
-        kotlin.runCatching {
-            etsRepository.getETSScores()
-        }.onSuccess {
-            emitState(ETSState.ScoresComplete(it))
-        }.onFailure {
-            emitEvent(ETSEvent.Error("Error al obtener calificaciones de ETS"))
+            kotlin.runCatching {
+                etsRepository.getETSScores()
+            }.onSuccess {
+                emitState(ETSState.ScoresComplete(it))
+            }.onFailure {
+                fetchETSScores()
+                emitEvent(ETSEvent.Error("Error al obtener calificaciones de ETS"))
+            }
         }
     }
 

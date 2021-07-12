@@ -1,49 +1,77 @@
 package ziox.ramiro.saes.utils
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
 
-enum class SharedPreferenceKeys(val key: String){
-    SCHOOL_URL("new_url_escuela"),
-    BOLETA("boleta"),
-    PASSWORD("pass"),
-    QR_URL("qr_url"),
-    OFFLINE_MODE("offline_mode")
-}
+class UserPreferences private constructor(context: Context){
+    companion object {
+        @Volatile private var instance: UserPreferences? = null
+        private val LOCK = Any()
 
-fun <T>Context.setPreference(preferenceKeys : SharedPreferenceKeys, value : T){
-    val pref = getSharedPreferences("preferences", Context.MODE_PRIVATE).edit()
-    when(value){
-        is Int -> pref.putInt(preferenceKeys.key, value)
-        is Long -> pref.putLong(preferenceKeys.key, value)
-        is Float -> pref.putFloat(preferenceKeys.key, value)
-        is String -> pref.putString(preferenceKeys.key, value)
-        is Boolean -> pref.putBoolean(preferenceKeys.key, value)
+        operator fun invoke(context: Context) = instance ?: synchronized(LOCK){
+            instance ?: UserPreferences(context).also { instance = it }
+        }
     }
-    pref.apply()
+
+    val sharedPreferences : SharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE)
+
+    inline fun <reified T>setPreference(preferenceKeys : PreferenceKeys<T>, value : T){
+        sharedPreferences.edit().let {
+            when(T::class){
+                Int::class -> it.putInt(preferenceKeys.key, value as Int)
+                Long::class -> it.putLong(preferenceKeys.key, value as Long)
+                Float::class -> it.putFloat(preferenceKeys.key, value as Float)
+                String::class -> it.putString(preferenceKeys.key, value as String)
+                Boolean::class -> it.putBoolean(preferenceKeys.key, value as Boolean)
+                else -> it
+            }
+        }.commit().also {
+            Log.d("SharedPreferenceSET ${preferenceKeys::class.simpleName}", if(it) "$value" else "Not set")
+        }
+    }
+
+    inline fun <reified T>getPreference(preferenceKeys : PreferenceKeys<T>, default: T) : T{
+        return sharedPreferences.let {
+            when(T::class) {
+                Int::class -> sharedPreferences.getInt(preferenceKeys.key, Int.MIN_VALUE) as T
+                Long::class -> sharedPreferences.getLong(preferenceKeys.key, Long.MIN_VALUE) as T
+                Float::class -> sharedPreferences.getFloat(preferenceKeys.key, Float.NaN) as T
+                String::class -> sharedPreferences.getString(preferenceKeys.key, "null") as T
+                Boolean::class -> sharedPreferences.getBoolean(preferenceKeys.key, default as Boolean) as T
+                else -> null
+            }.let {
+                Log.d("SharedPreferenceGET ${preferenceKeys::class.simpleName}", it?.toString() ?: "Not set")
+                when (it) {
+                    Int.MIN_VALUE -> null
+                    Long.MIN_VALUE -> null
+                    Float.NaN -> null
+                    "null" -> null
+                    else -> it
+                }
+            }
+        } ?: default
+    }
+
+    fun isAuthDataSaved() : Boolean
+            = getPreference(PreferenceKeys.Boleta, "").isNotBlank()
+            && getPreference(PreferenceKeys.Password, "").isNotBlank()
+
+    fun removeAuthData(){
+        removePreference(PreferenceKeys.Boleta)
+        removePreference(PreferenceKeys.Password)
+    }
+
+    inline fun <reified T>removePreference(preferenceKeys: PreferenceKeys<T>){
+        sharedPreferences.edit().remove(preferenceKeys.key).apply()
+    }
 }
 
-@Suppress("UNCHECKED_CAST")
-fun <T>Context.getPreference(preferenceKeys : SharedPreferenceKeys, default: T) : T{
-    val pref = getSharedPreferences("preferences", Context.MODE_PRIVATE)
-    return when (default) {
-        is Int -> pref.getInt(preferenceKeys.key, default) as? T
-        is Long -> pref.getLong(preferenceKeys.key, default) as? T
-        is Float -> pref.getFloat(preferenceKeys.key, default) as? T
-        is String -> pref.getString(preferenceKeys.key, default) as? T
-        is Boolean -> pref.getBoolean(preferenceKeys.key, default) as? T
-        else -> null
-    } ?:default
-}
 
-fun Context.isAuthDataSaved() : Boolean
-    = getPreference(SharedPreferenceKeys.BOLETA, "").isNotBlank()
-        && getPreference(SharedPreferenceKeys.PASSWORD, "").isNotBlank()
-
-fun Context.removeAuthData(){
-    removePreference(SharedPreferenceKeys.BOLETA)
-    removePreference(SharedPreferenceKeys.PASSWORD)
-}
-
-fun Context.removePreference(preferenceKeys: SharedPreferenceKeys){
-    getSharedPreferences("preferences", Context.MODE_PRIVATE).edit().remove(preferenceKeys.key).apply()
+sealed class PreferenceKeys<T>(val key: String) {
+    object SchoolUrl: PreferenceKeys<String?>("new_url_escuela")
+    object Boleta: PreferenceKeys<String>("boleta")
+    object Password: PreferenceKeys<String>("pass")
+    object QrUrl: PreferenceKeys<String>("qr_url")
+    object OfflineMode: PreferenceKeys<Boolean>("offline_mode")
 }

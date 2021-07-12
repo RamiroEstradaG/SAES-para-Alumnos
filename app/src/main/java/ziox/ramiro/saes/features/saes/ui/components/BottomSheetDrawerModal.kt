@@ -1,7 +1,6 @@
 package ziox.ramiro.saes.features.saes.ui.components
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +13,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.ListAlt
 import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -67,7 +65,7 @@ class BottomSheetDrawerModal(
                                 .verticalScroll(rememberScrollState())
                         ) {
                             MenuHeader(name = "Alumno")
-                            SectionMenuItem(section = MenuSection.KARDEX, icon = Icons.Rounded.ListAlt, name = "Kárdex")
+                            SectionMenuItem(section = MenuSection.KARDEX)
                             MenuHeader(name = "Calendario académico")
                             ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad Escolarizada"){
                                 context?.launchUrl("https://www.ipn.mx/assets/files/main/docs/inicio/cal-Escolarizada-21-22.pdf")
@@ -91,9 +89,7 @@ class BottomSheetDrawerModal(
 
     @Composable
     fun SectionMenuItem(
-        section: MenuSection,
-        icon: ImageVector,
-        name: String
+        section: MenuSection
     ) {
         val currentSection = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
 
@@ -119,13 +115,13 @@ class BottomSheetDrawerModal(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = icon,
+                    imageVector = section.icon,
                     contentDescription = section.name,
                     tint = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText
                 )
                 Text(
                     modifier = Modifier.padding(start = 16.dp),
-                    text = name,
+                    text = section.sectionName,
                     color = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText,
                     fontWeight = if (currentSection.value == section) FontWeight.Bold else FontWeight.Normal,
                 )

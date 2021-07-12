@@ -52,11 +52,12 @@ class LoginActivity : ComponentActivity() {
     private val schoolUrl = MutableStateFlow("")
     private val username = mutableStateOf("")
     private val password = mutableStateOf("")
+    private lateinit var userPreferences : UserPreferences
 
     private val selectSchoolLauncher = registerForActivityResult(SelectSchoolContract()){
         if (it == null) return@registerForActivityResult
 
-        setPreference(SharedPreferenceKeys.SCHOOL_URL, it.url)
+        UserPreferences.invoke(this).setPreference(PreferenceKeys.SchoolUrl, it.url)
         authViewModel.fetchCaptcha()
         schoolUrl.value = it.url
     }
@@ -64,9 +65,11 @@ class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        schoolUrl.value = getPreference(SharedPreferenceKeys.SCHOOL_URL, "")
-        username.value = getPreference(SharedPreferenceKeys.BOLETA, "")
-        password.value = getPreference(SharedPreferenceKeys.PASSWORD, "")
+        userPreferences = UserPreferences.invoke(this)
+
+        schoolUrl.value = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
+        username.value = userPreferences.getPreference(PreferenceKeys.Boleta, "")
+        password.value = userPreferences.getPreference(PreferenceKeys.Password, "")
 
         listenToAuthStates()
         listenToAuthEvents()
@@ -74,7 +77,7 @@ class LoginActivity : ComponentActivity() {
         setContent {
             SAESParaAlumnosTheme {
                 Scaffold {
-                    if(username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved()){
+                    if(username.value.isNotBlank() && password.value.isNotBlank() && userPreferences.isAuthDataSaved()){
                         LoginOnlyCaptcha(
                             authViewModel,
                             username,
@@ -97,10 +100,6 @@ class LoginActivity : ComponentActivity() {
     private fun listenToAuthStates() = lifecycleScope.launch {
         authViewModel.states.collect {
             when(it){
-                is AuthState.CaptchaComplete -> if(it.captcha.isLoggedIn){
-                    startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
-                    finish()
-                }
                 is AuthState.SessionCheckComplete -> if(it.isLoggedIn){
                     startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
                     finish()
@@ -115,9 +114,9 @@ class LoginActivity : ComponentActivity() {
                 is AuthEvent.Error -> {
                     println(it.message)
                 }
-                is AuthEvent.LoginComplete -> if(!it.auth.isNotLoggedIn){
-                    setPreference(SharedPreferenceKeys.BOLETA, username.value)
-                    setPreference(SharedPreferenceKeys.PASSWORD, password.value)
+                is AuthEvent.LoginComplete -> if(it.auth.isLoggedIn){
+                    userPreferences.setPreference(PreferenceKeys.Boleta, username.value)
+                    userPreferences.setPreference(PreferenceKeys.Password, password.value)
 
                     startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
                     finish()
@@ -129,7 +128,7 @@ class LoginActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (getPreference(SharedPreferenceKeys.SCHOOL_URL, "").isBlank()){
+        if (userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) == null){
             selectSchoolLauncher.launch(Unit)
         }
     }
@@ -295,6 +294,7 @@ fun LoginOnlyCaptcha(
     password: MutableState<String>
 ) {
     val context = LocalContext.current
+    val userPreferences = UserPreferences.invoke(context)
 
     val captcha = remember {
         mutableStateOf("")
@@ -326,7 +326,7 @@ fun LoginOnlyCaptcha(
             style = MaterialTheme.typography.h6
         )
         Text(
-            text = context.getPreference(SharedPreferenceKeys.BOLETA, ""),
+            text = userPreferences.getPreference(PreferenceKeys.Boleta, ""),
             style = MaterialTheme.typography.h4
         )
         Box(
@@ -370,7 +370,7 @@ fun LoginOnlyCaptcha(
             text = "MODO OFFLINE",
             textColor = getCurrentTheme().info
         ) {
-            context.setPreference(SharedPreferenceKeys.OFFLINE_MODE, true)
+            userPreferences.setPreference(PreferenceKeys.OfflineMode, true)
             authViewModel.checkSession()
         }
         TextButton(
@@ -378,7 +378,7 @@ fun LoginOnlyCaptcha(
         ) {
             username.value = ""
             password.value = ""
-            context.removeAuthData()
+            userPreferences.removeAuthData()
         }
     }
 }

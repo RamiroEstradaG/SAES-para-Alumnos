@@ -1,21 +1,17 @@
 package ziox.ramiro.saes.data.data_provider
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.net.http.SslError
-import android.os.Build
 import android.webkit.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import okhttp3.Headers
 import org.json.JSONArray
 import org.json.JSONObject
-import ziox.ramiro.saes.utils.SharedPreferenceKeys
+import ziox.ramiro.saes.utils.PreferenceKeys
+import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.UtilsJavascriptInterface
-import ziox.ramiro.saes.utils.getPreference
 import java.util.concurrent.TimeoutException
 import kotlin.concurrent.thread
 import kotlin.coroutines.suspendCoroutine
@@ -40,7 +36,7 @@ suspend fun <T>WebView.scrap(
     loadNewUrl : Boolean = true,
     resultAdapter: (ScrapResult) -> T
 ): T {
-    val url = context.getPreference(SharedPreferenceKeys.SCHOOL_URL, "")+path
+    val url = UserPreferences.invoke(context).getPreference(PreferenceKeys.SchoolUrl, "")+path
     var isResumed = false
 
     return suspendCoroutine {
@@ -141,7 +137,7 @@ suspend fun <T>WebView.runThenScrap(
     loadNewUrl: Boolean = true,
     resultAdapter: (ScrapResult) -> T
 ): T {
-    val url = context.getPreference(SharedPreferenceKeys.SCHOOL_URL, "")+path
+    val url = UserPreferences.invoke(context).getPreference(PreferenceKeys.SchoolUrl, "")+path
     var isFirstLoad = true
     var isResumed = false
 

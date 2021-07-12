@@ -5,6 +5,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.room.*
 import okhttp3.Headers
 import org.json.JSONObject
+import ziox.ramiro.saes.features.saes.data.models.HistoryItem
+import ziox.ramiro.saes.features.saes.data.repositories.HistoryRoomRepository
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETS
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETSScore
 import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSRoomRepository
@@ -24,8 +26,9 @@ import java.util.*
     User::class,
     ClassGrades::class,
     ClassSchedule::class,
-    KardexDataRoom::class
-], version = 6, exportSchema = false)
+    KardexDataRoom::class,
+    HistoryItem::class
+], version = 7, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class LocalAppDatabase : RoomDatabase() {
     companion object {
@@ -47,6 +50,7 @@ abstract class LocalAppDatabase : RoomDatabase() {
     abstract fun gradesRepository(): GradesRoomRepository
     abstract fun scheduleRepository(): ScheduleRoomRepository
     abstract fun kardexRepository(): KardexRoomRepository
+    abstract fun historyRepository(): HistoryRoomRepository
 }
 
 class Converters {

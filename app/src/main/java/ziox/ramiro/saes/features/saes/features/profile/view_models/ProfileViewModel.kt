@@ -12,16 +12,18 @@ class ProfileViewModel(
         fetchMyData()
     }
 
-    fun fetchMyData() = viewModelScope.launch {
-        emitState(ProfileState.UserLoading())
+    fun fetchMyData() {
+        viewModelScope.launch {
+            emitState(ProfileState.UserLoading())
 
-        kotlin.runCatching { 
-            userRepository.getMyUserData()
-        }.onSuccess {
-            emitState(ProfileState.UserComplete(it))
-        }.onFailure {
-            it.printStackTrace()
-            emitEvent(ProfileEvent.Error("Error al obtener los datos del usuario"))
+            kotlin.runCatching {
+                userRepository.getMyUserData()
+            }.onSuccess {
+                emitState(ProfileState.UserComplete(it))
+            }.onFailure {
+                fetchMyData()
+                emitEvent(ProfileEvent.Error("Error al obtener los datos del usuario"))
+            }
         }
     }
 }
