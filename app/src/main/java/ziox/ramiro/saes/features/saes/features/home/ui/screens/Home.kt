@@ -20,6 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
+import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSState
+import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesState
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
@@ -47,7 +50,10 @@ fun Home(
     gradesViewModel: GradesViewModel = viewModel(
         factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(LocalContext.current)) }
     ),
-    saesViewModel: SAESViewModel = viewModel()
+    saesViewModel: SAESViewModel = viewModel(),
+    etsViewModel: ETSViewModel = viewModel(
+        factory = viewModelFactory { ETSViewModel(ETSWebViewRepository(LocalContext.current)) }
+    ),
 ) = Column(
     modifier = Modifier
         .verticalScroll(rememberScrollState())
@@ -120,6 +126,31 @@ fun Home(
         }
         null -> gradesViewModel.fetchGrades()
     }
+
+    when(val state = etsViewModel.scoresStates.collectAsState(initial = null).value){
+        is ETSState.ScoresComplete -> if(state.scores.isNotEmpty()){
+            HomeItem(
+                modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+                title = "ETS",
+                icon = Icons.Rounded.FactCheck
+            ){
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 28.dp)
+                ) {
+                    items(state.scores.size){ i ->
+                        SmallGradeItem(
+                            modifier = Modifier.padding(horizontal = 4.dp),
+                            etsScore = state.scores[i]
+                        ){
+                            saesViewModel.changeSection(MenuSection.GRADES)
+                        }
+                    }
+                }
+            }
+        }
+        null -> gradesViewModel.fetchGrades()
+    }
+
     if(LocalContext.current.isNetworkAvailable()){
         HomeItem(
             modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
@@ -153,7 +184,7 @@ fun Home(
     }
 }
 
-@Preview
+
 @Composable
 fun HomeItem(
     modifier: Modifier = Modifier,

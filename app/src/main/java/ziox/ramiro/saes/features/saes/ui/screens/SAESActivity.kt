@@ -98,9 +98,7 @@ class SAESActivity : AppCompatActivity() {
                             MenuSection.HOME -> Home()
                             MenuSection.GRADES -> Grades()
                             MenuSection.SCHEDULE -> Schedule()
-                            MenuSection.PROFILE -> Profile(
-                                profileViewModel = profileViewModel
-                            )
+                            MenuSection.PROFILE -> Profile()
                             MenuSection.ETS -> ETS()
                             MenuSection.KARDEX -> Kardex()
                             MenuSection.ETS_CALENDAR -> ETSCalendar()

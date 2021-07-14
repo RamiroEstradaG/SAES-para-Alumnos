@@ -15,11 +15,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ziox.ramiro.saes.features.saes.features.ets.data.models.ETSScore
 import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.getInitials
 
-@Preview
 @Composable
 fun SmallGradeItem(
     modifier: Modifier = Modifier,
@@ -54,6 +54,42 @@ fun SmallGradeItem(
         )
     }
 }
+
+@Composable
+fun SmallGradeItem(
+    modifier: Modifier = Modifier,
+    etsScore: ETSScore,
+    onClick: () -> Unit = {}
+) = Card(
+    modifier = modifier
+        .clip(MaterialTheme.shapes.medium)
+        .size(74.dp, 90.dp)
+        .clickable(
+            interactionSource = MutableInteractionSource(),
+            onClick = onClick,
+            indication = rememberRipple()
+        )
+) {
+    Column(
+        modifier = Modifier.padding(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = etsScore.className.getInitials(),
+            style = MaterialTheme.typography.h5,
+            textAlign = TextAlign.Center,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+        Text(
+            text = etsScore.grade.toString() ?: "-",
+            style = MaterialTheme.typography.h4,
+            textAlign = TextAlign.Center,
+            color = gradeColor(etsScore.grade)
+        )
+    }
+}
+
 
 
 @Composable

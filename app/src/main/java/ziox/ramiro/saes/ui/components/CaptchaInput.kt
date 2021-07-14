@@ -2,6 +2,7 @@ package ziox.ramiro.saes.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -13,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -31,11 +34,14 @@ fun CaptchaInput(
     authViewModel: AuthViewModel,
     captcha: MutableState<String>,
     validationResult: ValidationResult,
-    overrideError: State<String?> = mutableStateOf(null)
+    overrideError: State<String?> = mutableStateOf(null),
+    onDone: () -> Unit = {}
 ) = Column(
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally
 ) {
+    val focusManager = LocalFocusManager.current
+
     when(val state = authViewModel.filterStates(AuthState.LoadingCaptcha::class, AuthState.CaptchaComplete::class).value){
         is AuthState.LoadingCaptcha -> Box(
             modifier = Modifier.size(captchaWidth, captchaWidth.div(2f)),
@@ -68,10 +74,17 @@ fun CaptchaInput(
         },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Send
         ),
         onValueChange = captcha.component2(),
         isError = validationResult.isError,
+        keyboardActions = KeyboardActions(
+            onSend = {
+                onDone()
+                focusManager.clearFocus(true)
+            }
+        )
     )
     Text(
         color = MaterialTheme.colors.error,

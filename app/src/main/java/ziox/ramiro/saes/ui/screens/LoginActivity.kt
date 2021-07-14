@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -19,11 +20,10 @@ import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.*
@@ -143,6 +143,8 @@ fun Login(
     username: MutableState<String>,
     password: MutableState<String>
 ) {
+    val focusManager = LocalFocusManager.current
+
     val captcha = remember {
         mutableStateOf("")
     }
@@ -198,8 +200,14 @@ fun Login(
             isError = usernameValidator.isError,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Characters,
-                keyboardType = KeyboardType.Password
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
             ),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            )
         )
         Text(
             modifier = Modifier.padding(start = 8.dp),
@@ -222,7 +230,8 @@ fun Login(
             } else VisualTransformation.None,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Characters,
-                keyboardType = KeyboardType.Password
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
             ),
             trailingIcon = {
                 IconButton(
@@ -240,7 +249,12 @@ fun Login(
                     )
                 }
             },
-            isError = passwordValidator.isError
+            isError = passwordValidator.isError,
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            )
         )
         Text(
             modifier = Modifier.padding(start = 8.dp),
@@ -255,7 +269,12 @@ fun Login(
             authViewModel = authViewModel,
             captcha = captcha,
             validationResult = captchaValidator
-        )
+        ){
+            if(listOf(usernameValidator, passwordValidator, captchaValidator).areAllValid()){
+                authViewModel.login(username.value, password.value, captcha.value)
+                captcha.value = ""
+            }
+        }
         AsyncButton(
             modifier = Modifier
                 .padding(top = 24.dp)
@@ -342,7 +361,16 @@ fun LoginOnlyCaptcha(
             captcha = captcha,
             validationResult = captchaValidator,
             overrideError = loginErrorState
-        )
+        ){
+            if(!captchaValidator.isError){
+                authViewModel.login(
+                    username.value,
+                    password.value,
+                    captcha.value
+                )
+                captcha.value = ""
+            }
+        }
         AsyncButton(
             modifier = Modifier
                 .padding(top = 24.dp, bottom = 16.dp)
