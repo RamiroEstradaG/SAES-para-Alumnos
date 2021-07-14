@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.features.saes.ui.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -69,34 +70,8 @@ fun FilterBottomSheet(
         }
     }
 
-    when(val state = filterViewModel.fieldFilterStatesAsState().value){
-        is FilterState.FilterComplete -> Column(
-            Modifier
-                .padding(
-                    start = 32.dp,
-                    end = 32.dp,
-                    top = 16.dp,
-                    bottom = 64.dp
-                )
-                .verticalScroll(scrollState)
-        ) {
-            var isBreak = false
-            val filtered = state.filterFields.filter {
-                if (!it.isSelected){
-                    isBreak = true
-                    true
-                }else{
-                    !isBreak
-                }
-            }
-
-            filtered.forEach { field ->
-                when(field){
-                    is SelectFilterField -> SelectFilter(field, filterViewModel)
-                }
-            }
-        }
-        is FilterState.FilterLoading -> when(val completeStates = filterCompleteStates.value){
+    Crossfade(targetState = filterViewModel.fieldFilterStatesAsState().value) {
+        when(val state = it){
             is FilterState.FilterComplete -> Column(
                 Modifier
                     .padding(
@@ -108,7 +83,7 @@ fun FilterBottomSheet(
                     .verticalScroll(scrollState)
             ) {
                 var isBreak = false
-                val filtered = completeStates.filterFields.filter {
+                val filtered = state.filterFields.filter {
                     if (!it.isSelected){
                         isBreak = true
                         true
@@ -116,14 +91,42 @@ fun FilterBottomSheet(
                         !isBreak
                     }
                 }
+
                 filtered.forEach { field ->
                     when(field){
                         is SelectFilterField -> SelectFilter(field, filterViewModel)
                     }
                 }
             }
+            is FilterState.FilterLoading -> when(val completeStates = filterCompleteStates.value){
+                is FilterState.FilterComplete -> Column(
+                    Modifier
+                        .padding(
+                            start = 32.dp,
+                            end = 32.dp,
+                            top = 16.dp,
+                            bottom = 64.dp
+                        )
+                        .verticalScroll(scrollState)
+                ) {
+                    var isBreak = false
+                    val filtered = completeStates.filterFields.filter {
+                        if (!it.isSelected){
+                            isBreak = true
+                            true
+                        }else{
+                            !isBreak
+                        }
+                    }
+                    filtered.forEach { field ->
+                        when(field){
+                            is SelectFilterField -> SelectFilter(field, filterViewModel)
+                        }
+                    }
+                }
+            }
+            null -> filterViewModel.getFilterFields()
         }
-        null -> filterViewModel.getFilterFields()
     }
 }
 

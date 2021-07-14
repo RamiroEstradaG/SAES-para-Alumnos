@@ -35,6 +35,7 @@ import ziox.ramiro.saes.features.saes.features.kardex.ui.screens.Kardex
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.screens.Profile
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
+import ziox.ramiro.saes.features.saes.features.re_registration_appointment.ui.screens.ReRegistrationAppointment
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.Schedule
 import ziox.ramiro.saes.features.saes.ui.components.BottomAppBar
 import ziox.ramiro.saes.features.saes.ui.components.BottomSheetDrawerModal
@@ -103,6 +104,7 @@ class SAESActivity : AppCompatActivity() {
                             MenuSection.ETS -> ETS()
                             MenuSection.KARDEX -> Kardex()
                             MenuSection.ETS_CALENDAR -> ETSCalendar()
+                            MenuSection.RE_REGISTRATION_APPOINTMENT -> ReRegistrationAppointment()
                         }
                     }
                 }

@@ -52,7 +52,11 @@ fun Date.toCalendar(): Calendar = Calendar.getInstance().apply {
     time = this@toCalendar
 }
 
-fun String.toDate(format: String): Date? = SimpleDateFormat(format, Locale.ROOT).parse(this)
+fun String.toDate(format: String): Date? = try{
+    SimpleDateFormat(format, Locale.ROOT).parse(this)
+}catch (e:Exception){
+    null
+}
 
 fun String.ddMMMyyyy_toDate() : Date{
     val values = split(" ")

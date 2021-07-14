@@ -1,5 +1,8 @@
 package ziox.ramiro.saes.utils
 
+import java.math.BigDecimal
+import java.text.NumberFormat
+
 
 fun String.toProperCase(): String {
     val str = this.lowercase().split(" ").filter {
@@ -68,3 +71,9 @@ fun Double.toHour()
     = "${toInt().toString().padStart(2,'0')}:${(this%1).times(60).toInt().toString().padStart(2,'0')}"
 
 fun String.isSchoolGroup() = this.matches(Regex("[0-9]{1,3}[a-zA-Z]+[0-9]{1,3}"))
+
+fun Double.toStringPrecision(digits : Int) : String{
+    val numberFormat = NumberFormat.getNumberInstance()
+    numberFormat.maximumFractionDigits = digits
+    return numberFormat.format(this)
+}

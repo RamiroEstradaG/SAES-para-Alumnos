@@ -16,6 +16,8 @@ object LightTheme : ComposableTheme {
     override val toolbar = primaryColor.s500
     override val onToolbar = Color.White
 
+    override val divider = Color(0xFFC6C6C6)
+
     override val surfaceElevation = object : ColorElevation {
         override val e0 = Color(0xFFFFFFFF)
         override val e1 = Color(0xFFFFFFFF)

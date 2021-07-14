@@ -44,6 +44,8 @@ interface ComposableTheme {
     val toolbar: Color
     val onToolbar: Color
 
+    val divider: Color
+
     val surfaceElevation: ColorElevation
 }
 

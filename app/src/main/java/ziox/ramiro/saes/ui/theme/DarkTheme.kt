@@ -28,6 +28,7 @@ object DarkTheme : ComposableTheme {
 
     override val toolbar = surfaceElevation.e4
     override val onToolbar = Color.White
+    override val divider = Color(0xFF595959)
 
     override val colors = darkColors(
         primary = primaryColor.s200,

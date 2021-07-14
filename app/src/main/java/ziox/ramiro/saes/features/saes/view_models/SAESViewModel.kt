@@ -16,7 +16,7 @@ class SAESViewModel(
     private val historyRoomRepository: HistoryRoomRepository
 ) : BaseViewModel<SAESState, SAESEvent>() {
     companion object {
-        val SECTION_INITIAL = MenuSection.ETS_CALENDAR
+        val SECTION_INITIAL = MenuSection.HOME
     }
 
     private val _currentSection = MutableStateFlow(SECTION_INITIAL)
@@ -55,5 +55,6 @@ enum class MenuSection(
     PROFILE("Perfil", Icons.Rounded.Person),
     ETS("ETS", Icons.Rounded.FactCheck),
     KARDEX("Kárdex", Icons.Rounded.ListAlt),
-    ETS_CALENDAR("Calendario de ETS", Icons.Rounded.DateRange)
+    ETS_CALENDAR("Calendario de ETS", Icons.Rounded.DateRange),
+    RE_REGISTRATION_APPOINTMENT("Cita de reinscripción", Icons.Rounded.EventAvailable)
 }
