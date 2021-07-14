@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.utils
 
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,7 +35,24 @@ val MES_COMPLETO = arrayOf(
     "Diciembre"
 )
 
-fun String.toDate(format: String) = SimpleDateFormat(format, Locale.ROOT).parse(this)
+fun Date.toLongString() = DateFormat
+    .getDateInstance(SimpleDateFormat.LONG, Locale("es","MX"))
+    .format(this)
+
+fun Date.toMediumString() = DateFormat
+    .getDateInstance(SimpleDateFormat.MEDIUM, Locale("es","MX"))
+    .format(this)
+
+fun Date.toShortString() = DateFormat
+    .getDateInstance(SimpleDateFormat.SHORT, Locale("es","MX"))
+    .format(this)
+
+
+fun Date.toCalendar(): Calendar = Calendar.getInstance().apply {
+    time = this@toCalendar
+}
+
+fun String.toDate(format: String): Date? = SimpleDateFormat(format, Locale.ROOT).parse(this)
 
 fun String.ddMMMyyyy_toDate() : Date{
     val values = split(" ")
@@ -69,6 +87,6 @@ fun String.hhmma_toHour() : Hour? {
     val date = this.toDate("hh:mma")
 
     return date?.let {
-        Hour.parse(SimpleDateFormat("HH:mm", Locale.ROOT).format(it))
+        Hour.fromDate(date)
     }
 }

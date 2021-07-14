@@ -16,6 +16,19 @@ open class BaseViewModel<S: ViewModelState, E: ViewModelEvent> : ViewModel() {
     val states = _states.asSharedFlow()
     val events = _events.asSharedFlow()
 
+    init {
+        viewModelScope.launch {
+            _states.collect {
+                Log.d("ViewModelState", it?.javaClass?.simpleName.toString())
+            }
+        }
+        viewModelScope.launch {
+            _events.collect {
+                Log.d("ViewModelEvent", it?.javaClass?.simpleName.toString())
+            }
+        }
+    }
+
     @Composable
     fun statesAsState() = _states.collectAsState()
 
@@ -33,19 +46,14 @@ open class BaseViewModel<S: ViewModelState, E: ViewModelEvent> : ViewModel() {
     }.collectAsState(initial = null)
 
     protected fun emitState(value: S?) = viewModelScope.launch {
-        Log.d("ViewModelState", value?.javaClass?.simpleName.toString())
-        _states.value = value
+        _states.emit(value)
+
     }
 
     protected fun emitEvent(value: E?) = viewModelScope.launch {
-        Log.d("ViewModelEvent", value?.javaClass?.simpleName.toString())
-        _events.value = value
+        _events.emit(value)
     }
 }
 
-interface ViewModelState{
-    companion object{
-
-    }
-}
+interface ViewModelState
 interface ViewModelEvent

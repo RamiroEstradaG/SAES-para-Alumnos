@@ -1,6 +1,8 @@
 package ziox.ramiro.saes.features.saes.features.schedule.data.models
 
 import androidx.room.*
+import ziox.ramiro.saes.utils.MES
+import ziox.ramiro.saes.utils.MES_COMPLETO
 import java.util.*
 
 @Entity(tableName = "class_schedule")
@@ -62,9 +64,66 @@ data class Hour(
         }
 
         fun fromValue(value: Double) = Hour(value.toInt(), value.mod(1.0).times(60).toInt())
+        fun fromDate(value: Date) = value.let {
+            val calendar = Calendar.getInstance()
+            calendar.time = value
+
+            Hour(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE))
+        }
     }
 
     fun toDouble() = hours+(minutes/60.0)
+
+    override fun toString(): String {
+        return "${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return if(other is Hour){
+            other.hours == hours && other.minutes == minutes
+        }else{
+            super.equals(other)
+        }
+    }
+
+    override fun hashCode(): Int {
+        var result = hours
+        result = 31 * result + minutes
+        return result
+    }
+}
+
+
+data class ShortDate(
+    val day: Int,
+    val month: Int,
+    val year: Int
+){
+    companion object{
+        fun MMMddyyyy(value: String) : ShortDate{
+            val values = value.split(" ")
+
+            return ShortDate(
+                values[1].toInt(),
+                MES.indexOf(values[0].uppercase()),
+                values[2].toInt()
+            )
+        }
+
+        fun ddMMMyyyy(value: String) : ShortDate{
+            val values = value.split(" ")
+
+            return ShortDate(
+                values[0].toInt(),
+                MES.indexOf(values[1].uppercase()),
+                values[2].toInt()
+            )
+        }
+    }
+
+    override fun toString(): String {
+        return "$day de ${MES_COMPLETO[month]} del $year"
+    }
 }
 
 enum class WeekDay(val dayName: String){

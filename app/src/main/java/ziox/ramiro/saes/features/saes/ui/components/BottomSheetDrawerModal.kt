@@ -110,7 +110,7 @@ class BottomSheetDrawerModal(
                         dismiss()
                     }
                     .background(
-                        if (currentSection.value == section) MaterialTheme.colors.primary.copy(alpha = 0.2f) else Color.Transparent
+                        if (currentSection.value == section) MaterialTheme.colors.primary.copy(alpha = 0.1f) else Color.Transparent
                     )
                     .height(43.dp)
                     .padding(horizontal = 8.dp),

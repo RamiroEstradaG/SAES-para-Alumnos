@@ -47,7 +47,7 @@ class UtilsJavascriptInterface {
         for ((i, type) in etsTypes.withIndex()){
             val values = type.split("20")
 
-            if (values.size != 2){
+            if (values.size == 2){
                 val currentValue = values[1].toInt() + (MES.indexOf(values[0].uppercase()) / 12.0)
 
                 if(currentValue > greatestValue){

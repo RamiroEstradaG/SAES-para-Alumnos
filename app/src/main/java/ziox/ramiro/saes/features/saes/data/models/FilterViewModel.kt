@@ -1,12 +1,17 @@
 package ziox.ramiro.saes.features.saes.data.models
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.flow.filterIsInstance
 import ziox.ramiro.saes.data.models.BaseViewModel
 import ziox.ramiro.saes.data.models.ViewModelEvent
 import ziox.ramiro.saes.data.models.ViewModelState
 
 abstract class FilterViewModel: BaseViewModel<ViewModelState, ViewModelEvent>() {
-    val filterState = states.filterIsInstance<FilterState>()
+    val fieldFilterStates = states.filterIsInstance<FilterState>()
+
+    @Composable
+    fun fieldFilterStatesAsState() = fieldFilterStates.collectAsState(initial = null)
 
     abstract fun getFilterFields(): Any
     abstract fun selectFilterField(itemId: String, newIndex: Int?): Any

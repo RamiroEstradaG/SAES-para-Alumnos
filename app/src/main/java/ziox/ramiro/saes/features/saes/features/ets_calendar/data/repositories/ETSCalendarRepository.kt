@@ -7,8 +7,10 @@ import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.features.saes.data.models.FilterField
 import ziox.ramiro.saes.features.saes.data.models.SelectFilterField
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.utils.hhmma_toHour
 import ziox.ramiro.saes.utils.MMMddyyyy_toDate
+import ziox.ramiro.saes.utils.toProperCase
 
 interface ETSCalendarRepository {
     suspend fun getETSEvents(): List<ETSCalendarItem>
@@ -20,9 +22,6 @@ class ETSCalendarWebViewRepository(
     context: Context
 ) : ETSCalendarRepository {
     private val webViewProvider = WebViewProvider(context, "/Academica/Calendario_ets.aspx")
-
-    @Composable
-    fun DebugView() = webViewProvider.WebViewProviderDebugView()
 
     override suspend fun getETSEvents(): List<ETSCalendarItem> {
         return webViewProvider.scrap(
@@ -55,8 +54,8 @@ class ETSCalendarWebViewRepository(
 
                 ETSCalendarItem(
                     item.getString("id"),
-                    item.getString("className"),
-                    item.getString("date").MMMddyyyy_toDate(),
+                    item.getString("className").toProperCase(),
+                    ShortDate.MMMddyyyy(item.getString("date")),
                     item.getString("hour").hhmma_toHour()!!,
                     item.getString("building"),
                     item.getString("classroom"),
@@ -69,9 +68,8 @@ class ETSCalendarWebViewRepository(
         return webViewProvider.runThenScrap(
             preRequest = """
                 var select = byId("ctl00_mainCopy_dpdperiodoActual");
-                var options = [...select.getElementsByTagName("option")].map((value) => value.innerText.trim());
                 
-                select.selectedIndex = window.Utils.getRecentETSType(options);
+                select.selectedIndex = window.Utils.getRecentETSType(getSelectOptions(select, 0));
                 select.onchange();
             """.trimIndent(),
             postRequest = """
@@ -82,7 +80,7 @@ class ETSCalendarWebViewRepository(
                     selectToFilterField("ctl00_mainCopy_dpdplan", "Plan de estudios", 0),
                     selectToFilterField("ctl00_mainCopy_dpdespecialidad", "Especialidad", 0),
                     selectToFilterField("ctl00_mainCopy_dpdSemestre", "Semestre", 0),
-                    selectToFilterField("ctl00_mainCopy_DpdTurno", "Turno", 0),
+                    selectToFilterField("ctl00_mainCopy_DpdTurno", "Turno", 0)
                 ]);
             """.trimIndent()
         ){
@@ -121,7 +119,7 @@ class ETSCalendarWebViewRepository(
                     selectToFilterField("ctl00_mainCopy_dpdplan", "Plan de estudios", 0),
                     selectToFilterField("ctl00_mainCopy_dpdespecialidad", "Especialidad", 0),
                     selectToFilterField("ctl00_mainCopy_dpdSemestre", "Semestre", 0),
-                    selectToFilterField("ctl00_mainCopy_DpdTurno", "Turno", 0),
+                    selectToFilterField("ctl00_mainCopy_DpdTurno", "Turno", 0)
                 ]);
             """.trimIndent(),
             reloadPage = false

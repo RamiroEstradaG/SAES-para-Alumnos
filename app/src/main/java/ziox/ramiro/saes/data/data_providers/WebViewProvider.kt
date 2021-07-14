@@ -5,10 +5,14 @@ import android.content.Context
 import android.net.http.SslError
 import android.util.Log
 import android.webkit.*
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import okhttp3.Headers
 import org.json.JSONArray
 import org.json.JSONObject
@@ -35,6 +39,7 @@ class WebViewProvider(
 
     @Composable
     fun WebViewProviderDebugView() = AndroidView(
+        modifier = Modifier.height(400.dp),
         factory = {
             webView
         }
@@ -55,22 +60,26 @@ class WebViewProvider(
             function byTag(tag){
                 return document.getElementsByTagName(tag);
             }
-            function selectToFilterField(elementId, fieldName, offset){
-                var element = byId(elementId);
-                var options = element.options;
-                
+            function getSelectOptions(select, offset){
+                var options = select.options;
                 var textOptions = [];
                 
                 for(let i = offset ; i < options.length ; i++){
                     textOptions.push(options[i].innerText.trim());
                 }
                 
+                return textOptions;
+            }
+            function selectToFilterField(elementId, fieldName, offset){
+                var element = byId(elementId);
+                var options = element.options;
+                
                 return {
                     id: elementId,
                     name: fieldName,
                     selectedIndex: options.selectedIndex >= offset ? options.selectedIndex - offset : null,
                     offset: offset,
-                    options: textOptions
+                    options: getSelectOptions(element, offset)
                 };
             }
         """.trimIndent()
@@ -114,29 +123,23 @@ class WebViewProvider(
         val jobId = generateJobId()
         val scriptBase = "${scriptTemplate(jobId)}\n$script"
 
-        return suspendCoroutine<ScrapResultAdapter<Any?>> {
-            javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
+        return withTimeout(timeout){
+            suspendCoroutine<ScrapResultAdapter<Any?>> {
+                javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
 
-            attachWebViewClient(jobId, it) {
+                attachWebViewClient(jobId, it) {
+                    if (reloadPage) {
+                        webView.loadUrl(scriptBase)
+                    }
+                }
+
                 if (reloadPage) {
+                    webView.loadUrl(url)
+                } else {
                     webView.loadUrl(scriptBase)
                 }
-            }
-
-            if (reloadPage) {
-                webView.loadUrl(url)
-            } else {
-                webView.loadUrl(scriptBase)
-            }
-
-            thread(start = true) {
-                Thread.sleep(timeout)
-
-                handleResume(jobId) {
-                    it.resumeWithException(TimeoutException())
-                }
-            }
-        }.toPrimitiveType()
+            }.toPrimitiveType()
+        }
     }
 
     fun handleResume(jobId: String, block: () -> Unit) {
@@ -158,32 +161,34 @@ class WebViewProvider(
         val preRequestBase = "${scriptTemplate(jobId)}\n$preRequest"
         val postRequestBase = "${scriptTemplate(jobId)}\n$postRequest"
 
-        return suspendCoroutine<ScrapResultAdapter<Any?>> {
-            javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
+        return withTimeout(timeout){
+            suspendCoroutine<ScrapResultAdapter<Any?>> {
+                javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
 
-            attachWebViewClient(jobId, it) {
-                if (reloadPage && isFirstLoad) {
-                    webView.loadUrl(preRequestBase)
-                    isFirstLoad = false
+                attachWebViewClient(jobId, it) {
+                    if (reloadPage && isFirstLoad) {
+                        webView.loadUrl(preRequestBase)
+                        isFirstLoad = false
+                    } else {
+                        webView.loadUrl(postRequestBase)
+                    }
+                }
+
+                if (reloadPage) {
+                    webView.loadUrl(url)
                 } else {
-                    webView.loadUrl(postRequestBase)
+                    webView.loadUrl(preRequestBase)
                 }
-            }
 
-            if (reloadPage) {
-                webView.loadUrl(url)
-            } else {
-                webView.loadUrl(preRequestBase)
-            }
+                thread(start = true) {
+                    Thread.sleep(timeout)
 
-            thread(start = true) {
-                Thread.sleep(timeout)
-
-                handleResume(jobId) {
-                    it.resumeWithException(TimeoutException())
+                    handleResume(jobId) {
+                        it.resumeWithException(TimeoutException())
+                    }
                 }
-            }
-        }.toPrimitiveType()
+            }.toPrimitiveType()
+        }
     }
 
     fun attachWebViewClient(

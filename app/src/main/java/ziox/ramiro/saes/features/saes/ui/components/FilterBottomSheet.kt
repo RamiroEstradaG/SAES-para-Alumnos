@@ -6,8 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,6 +23,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayout
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.last
 import ziox.ramiro.saes.features.saes.data.models.FilterState
 import ziox.ramiro.saes.features.saes.data.models.FilterViewModel
 import ziox.ramiro.saes.features.saes.data.models.SelectFilterField
@@ -37,6 +39,11 @@ fun FilterBottomSheet(
     modifier = Modifier
         .fillMaxSize()
 ) {
+    val filterCompleteStates = filterViewModel.fieldFilterStates.filter { it is FilterState.FilterComplete }.collectAsState(
+        initial = null
+    )
+    val scrollState = rememberScrollState()
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(100))
@@ -45,19 +52,33 @@ fun FilterBottomSheet(
             .size(32.dp, 4.dp)
             .background(Color.LightGray)
     ) {}
-    Text(
-        modifier = Modifier.padding(start = 32.dp,bottom = 16.dp, top = 8.dp),
-        text = "Filtros",
-        style = MaterialTheme.typography.h4
-    )
-    when(val state = filterViewModel.filterState.collectAsState(initial = null).value){
-        is FilterState.FilterComplete -> LazyColumn(
-            contentPadding = PaddingValues(
-                start = 32.dp,
-                end = 32.dp,
-                top = 16.dp,
-                bottom = 64.dp
+    Row(
+        modifier = Modifier.padding(start = 32.dp, end = 32.dp,bottom = 16.dp, top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = "Filtros",
+            style = MaterialTheme.typography.h4
+        )
+        when(filterViewModel.fieldFilterStatesAsState().value){
+            is FilterState.FilterLoading -> CircularProgressIndicator(
+                modifier = Modifier.size(24.dp)
             )
+            else -> Box{}
+        }
+    }
+
+    when(val state = filterViewModel.fieldFilterStatesAsState().value){
+        is FilterState.FilterComplete -> Column(
+            Modifier
+                .padding(
+                    start = 32.dp,
+                    end = 32.dp,
+                    top = 16.dp,
+                    bottom = 64.dp
+                )
+                .verticalScroll(scrollState)
         ) {
             var isBreak = false
             val filtered = state.filterFields.filter {
@@ -68,11 +89,37 @@ fun FilterBottomSheet(
                     !isBreak
                 }
             }
-            items(filtered.size){ i ->
-                val item = filtered[i]
 
-                when(item){
-                    is SelectFilterField -> SelectFilter(item, filterViewModel)
+            filtered.forEach { field ->
+                when(field){
+                    is SelectFilterField -> SelectFilter(field, filterViewModel)
+                }
+            }
+        }
+        is FilterState.FilterLoading -> when(val completeStates = filterCompleteStates.value){
+            is FilterState.FilterComplete -> Column(
+                Modifier
+                    .padding(
+                        start = 32.dp,
+                        end = 32.dp,
+                        top = 16.dp,
+                        bottom = 64.dp
+                    )
+                    .verticalScroll(scrollState)
+            ) {
+                var isBreak = false
+                val filtered = completeStates.filterFields.filter {
+                    if (!it.isSelected){
+                        isBreak = true
+                        true
+                    }else{
+                        !isBreak
+                    }
+                }
+                filtered.forEach { field ->
+                    when(field){
+                        is SelectFilterField -> SelectFilter(field, filterViewModel)
+                    }
                 }
             }
         }
@@ -89,12 +136,9 @@ fun SelectFilter(
     modifier = Modifier.padding(bottom = 16.dp)
 ) {
     val infoColor = getCurrentTheme().info
-    val selectedIndex = remember {
-        mutableStateOf(selectFilterField.selectedIndex)
-    }
+    val filterState = filterViewModel.fieldFilterStatesAsState()
 
     Text(
-        modifier = Modifier.padding(bottom = 8.dp),
         text = selectFilterField.fieldName,
         style = MaterialTheme.typography.subtitle2
     )
@@ -111,11 +155,12 @@ fun SelectFilter(
                             modifier = Modifier.padding(end = 8.dp, top = 8.dp),
                             text = value,
                             borderColor = infoColor,
-                            textColor = if (i != selectedIndex.value) infoColor else MaterialTheme.colors.onPrimary,
-                            backgroundColor = if (i == selectedIndex.value) infoColor else null
+                            textColor = if (i != selectFilterField.selectedIndex) infoColor else MaterialTheme.colors.onPrimary,
+                            backgroundColor = if (i == selectFilterField.selectedIndex) infoColor else null
                         ){
-                            filterViewModel.selectFilterField(selectFilterField.itemId, i + selectFilterField.indexOffset)
-                            selectedIndex.value = i
+                            if(filterState.value !is FilterState.FilterLoading){
+                                filterViewModel.selectFilterField(selectFilterField.itemId, i + selectFilterField.indexOffset)
+                            }
                         }
                     }
                 })
