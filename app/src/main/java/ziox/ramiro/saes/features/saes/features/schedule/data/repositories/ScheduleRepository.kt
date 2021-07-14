@@ -6,11 +6,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import org.json.JSONObject
-import ziox.ramiro.saes.data.data_provider.createWebView
-import ziox.ramiro.saes.data.data_provider.scrap
+import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.HourRange
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.runOnDefaultThread
@@ -24,7 +23,7 @@ interface ScheduleRepository {
 class ScheduleWebViewRepository(
     private val context: Context
 ) : ScheduleRepository {
-    private val webView = createWebView(context)
+    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/Horario_Alumno.aspx")
     private val persistenceRepository = LocalAppDatabase.invoke(context).scheduleRepository()
 
     private val scheduleColors = arrayOf(
@@ -81,22 +80,27 @@ class ScheduleWebViewRepository(
                     next([]);
                 }
             """.trimIndent(),
-                path = "/Alumnos/Informacion_semestral/Horario_Alumno.aspx"
             ){
                 val data = it.result.getJSONArray("data")
 
-                List(data.length()){ i ->
-                    val classSchedule = data[i] as JSONObject
+                ArrayList<ClassSchedule>().apply {
+                    for (i in 0 until data.length()) {
+                        val classSchedule = data[i] as JSONObject
 
-                    ClassSchedule(
-                        classSchedule.getString("id"),
-                        classSchedule.getString("className").toProperCase(),
-                        classSchedule.getString("building"),
-                        classSchedule.getString("classroom"),
-                        classSchedule.getString("teacherName").toProperCase(),
-                        scheduleColors[i%scheduleColors.size].value.toLong(),
-                        Hour(classSchedule.getString("hours"), WeekDay.byDayOfWeek(classSchedule.getInt("dayIndex")))
-                    )
+                        val hours = HourRange.parse(classSchedule.getString("hours"), WeekDay.byDayOfWeek(classSchedule.getInt("dayIndex")))
+
+                        addAll(hours.map { range ->
+                            ClassSchedule(
+                                classSchedule.getString("id"),
+                                classSchedule.getString("className").toProperCase(),
+                                classSchedule.getString("building"),
+                                classSchedule.getString("classroom"),
+                                classSchedule.getString("teacherName").toProperCase(),
+                                scheduleColors[i%scheduleColors.size].value.toLong(),
+                                range
+                            )
+                        })
+                    }
                 }.filter { f ->
                     f.hour.duration > 0
                 }

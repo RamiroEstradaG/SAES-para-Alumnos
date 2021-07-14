@@ -1,8 +1,6 @@
 package ziox.ramiro.saes.utils
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 suspend fun <T>runOnDefaultThread(block: () -> T) : T = withContext(Dispatchers.Default){
@@ -10,3 +8,6 @@ suspend fun <T>runOnDefaultThread(block: () -> T) : T = withContext(Dispatchers.
 }
 
 
+suspend fun <T>runOnMainThread(block: () -> T) : T = withContext(Dispatchers.Main){
+    block()
+}

@@ -17,6 +17,7 @@ import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRo
 import ziox.ramiro.saes.features.saes.features.profile.data.models.User
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserRoomRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleRoomRepository
 import java.util.*
 
@@ -71,4 +72,10 @@ class Converters {
 
     @TypeConverter
     fun stringToJson(value: String): JSONObject = JSONObject(value)
+
+    @TypeConverter
+    fun hourToDouble(hour: Hour) = hour.toDouble()
+
+    @TypeConverter
+    fun doubleToHour(value: Double) = Hour.fromValue(value)
 }

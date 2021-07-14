@@ -16,6 +16,8 @@ class ETSCalendarViewModel(
             etsCalendarRepository.getFilters()
         }.onSuccess {
             emitState(FilterState.FilterComplete(it))
+        }.onFailure {
+            emitEvent(ETSCalendarEvent.Error("Error al obtener los filtros"))
         }
     }
 
@@ -25,10 +27,21 @@ class ETSCalendarViewModel(
         }.onSuccess {
             emitState(FilterState.FilterComplete(it))
             fetchETSCalendarEvents()
+        }.onFailure {
+            emitEvent(ETSCalendarEvent.Error("Error al seleccionar el campo"))
         }
     }
 
     fun fetchETSCalendarEvents() = viewModelScope.launch {
+        emitState(ETSCalendarState.EventsLoading())
 
+        kotlin.runCatching {
+            etsCalendarRepository.getETSEvents()
+        }.onSuccess {
+            emitState(ETSCalendarState.EventsComplete(it))
+        }.onFailure {
+            it.printStackTrace()
+            emitEvent(ETSCalendarEvent.Error("Error al obtener el calendario de ETS"))
+        }
     }
 }

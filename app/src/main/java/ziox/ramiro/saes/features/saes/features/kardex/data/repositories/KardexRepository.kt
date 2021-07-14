@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import ziox.ramiro.saes.data.data_provider.createWebView
-import ziox.ramiro.saes.data.data_provider.scrap
+import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexDataRoom
@@ -22,7 +21,7 @@ interface KardexRepository {
 class KardexWebViewRepository(
     private val context: Context
 ) : KardexRepository {
-    private val webView = createWebView(context)
+    private val webView = WebViewProvider(context, "/Alumnos/boleta/kardex.aspx")
     private val persistenceRepository = LocalAppDatabase.invoke(context).kardexRepository()
 
     override suspend fun getMyKardexData(): KardexData {
@@ -61,7 +60,6 @@ class KardexWebViewRepository(
                     });
                 }
             """.trimIndent(),
-                path = "/Alumnos/boleta/kardex.aspx"
             ){
                 KardexDataRoom(
                     userId,

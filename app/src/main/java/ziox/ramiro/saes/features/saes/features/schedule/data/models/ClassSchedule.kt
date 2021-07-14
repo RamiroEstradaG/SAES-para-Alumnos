@@ -18,39 +18,53 @@ data class ClassSchedule(
     @ColumnInfo(name = "class_color")
     val color: Long,
     @Embedded
-    val hour: Hour
+    val hour: HourRange
 )
 
-data class Hour(
+data class HourRange(
     @ColumnInfo(name = "hour_start")
-    val start: Double,
+    val start: Hour,
     @ColumnInfo(name = "hour_end")
-    val end: Double,
+    val end: Hour,
     @ColumnInfo(name = "weekday")
     val weekDay: WeekDay
 ){
     @Ignore
-    val duration: Double = end - start
-
-    constructor(rangeString: String, weekDay: WeekDay) : this(
-        splitHours(rangeString)?.first ?: 0.0,
-        splitHours(rangeString)?.second ?: 0.0,
-        weekDay
-    )
+    val duration: Double = end.toDouble() - start.toDouble()
 
     companion object {
-        private fun splitHours(hour: String): Pair<Double, Double>?{
-            val horas = Regex("[0-9]+:[0-9]+-[0-9]+:[0-9]+").find(hour.replace(" ", ""))?.value?.split("-")
+        fun parse(hourRange: String, weekDay: WeekDay): List<HourRange>{
+            val hours = Regex("[0-9]+:[0-9]+-[0-9]+:[0-9]+").findAll(hourRange.replace(" ", ""))
 
-            return if(horas?.size == 2){
-                val hora1 = horas[0].split(":")
-                val hora2 = horas[1].split(":")
-                Pair(hora1[0].toDouble()+(hora1[1].toDouble()/60.0), hora2[0].toDouble()+(hora2[1].toDouble()/60.0))
-            }else{
-                null
-            }
+            return hours.map {
+                val values = it.value.split("-")
+                HourRange(
+                    Hour.parse(values[0])!!,
+                    Hour.parse(values[1])!!,
+                    weekDay
+                )
+            }.toList()
         }
     }
+}
+
+data class Hour(
+    val hours: Int,
+    val minutes: Int
+){
+    companion object {
+        fun parse(hour: String): Hour?{
+            val hourFind = Regex("[0-9]+:[0-9]+").find(hour.replace(" ", ""))?.value?.split(":")
+
+            return if (hourFind?.size == 2){
+                Hour(hourFind[0].toInt(), hourFind[1].toInt())
+            }else null
+        }
+
+        fun fromValue(value: Double) = Hour(value.toInt(), value.mod(1.0).times(60).toInt())
+    }
+
+    fun toDouble() = hours+(minutes/60.0)
 }
 
 enum class WeekDay(val dayName: String){

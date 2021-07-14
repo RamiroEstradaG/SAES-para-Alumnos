@@ -5,8 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import org.json.JSONObject
-import ziox.ramiro.saes.data.data_provider.createWebView
-import ziox.ramiro.saes.data.data_provider.scrap
+import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.utils.isNetworkAvailable
@@ -20,7 +19,7 @@ interface GradesRepository {
 class GradesWebViewRepository(
     private val context: Context
 ) : GradesRepository {
-    private val webView = createWebView(context)
+    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/calificaciones_sem.aspx")
     private val persistenceRepository = LocalAppDatabase.invoke(context).gradesRepository()
 
     override suspend fun getMyGrades(): List<ClassGrades> {
@@ -50,8 +49,7 @@ class GradesWebViewRepository(
                         requireTeacherRate: requireTeacherRate
                     });
                 }
-            """.trimIndent(),
-                path = "/Alumnos/Informacion_semestral/calificaciones_sem.aspx"
+            """.trimIndent()
             ){
                 val data = it.result.getJSONObject("data").getJSONArray("grades")
 

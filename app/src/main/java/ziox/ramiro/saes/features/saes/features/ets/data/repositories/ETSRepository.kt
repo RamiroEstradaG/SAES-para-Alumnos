@@ -4,13 +4,8 @@ import android.content.Context
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.json.JSONObject
-import ziox.ramiro.saes.data.data_provider.createWebView
-import ziox.ramiro.saes.data.data_provider.runThenScrap
-import ziox.ramiro.saes.data.data_provider.scrap
+import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETS
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETSScore
@@ -30,13 +25,15 @@ class ETSWebViewRepository(
     private val context: Context
 ) : ETSRepository {
     private val persistenceRepository = LocalAppDatabase.invoke(context).etsRepository()
+    private val etsWebViewProvider = WebViewProvider(context, "/Alumnos/ETS/inscripcion_ets.aspx")
+    private val scoresWebViewProvider = WebViewProvider(context, "/Alumnos/ETS/calificaciones_ets.aspx")
 
     override suspend fun getAvailableETS(): List<ETS> {
         return if(context.isNetworkAvailable()){
-            createWebView(context).runThenScrap(
+            etsWebViewProvider.runThenScrap(
                 preRequest = """
                 byId("ctl00_mainCopy_cmbinformacion").click();
-            """.trimIndent(),
+                """.trimIndent(),
                 postRequest = """
                 var etsTable = byId("ctl00_mainCopy_Grvmateriasofertadas");
                 
@@ -53,8 +50,7 @@ class ETSWebViewRepository(
                 }else{
                     next([]);
                 }
-            """.trimIndent(),
-                path = "/Alumnos/ETS/inscripcion_ets.aspx"
+                """.trimIndent()
             ){
                 val data = it.result.getJSONArray("data")
 
@@ -81,7 +77,7 @@ class ETSWebViewRepository(
 
     override suspend fun getETSScores(): List<ETSScore> {
         return if (context.isNetworkAvailable()){
-            createWebView(context).scrap(
+            scoresWebViewProvider.scrap(
                 script = """
                 var etsTable = byId("ctl00_mainCopy_GridView1");
                 
@@ -99,8 +95,7 @@ class ETSWebViewRepository(
                 }else{
                     next([]);
                 }
-            """.trimIndent(),
-                path = "/Alumnos/ETS/calificaciones_ets.aspx"
+            """.trimIndent()
             ){
                 val data = it.result.getJSONArray("data")
 

@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.utils
 
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -61,5 +62,13 @@ fun String.MMMddyyyy_toDate() : Date{
         }.time
     }else{
         Date()
+    }
+}
+
+fun String.hhmma_toHour() : Hour? {
+    val date = this.toDate("hh:mma")
+
+    return date?.let {
+        Hour.parse(SimpleDateFormat("HH:mm", Locale.ROOT).format(it))
     }
 }

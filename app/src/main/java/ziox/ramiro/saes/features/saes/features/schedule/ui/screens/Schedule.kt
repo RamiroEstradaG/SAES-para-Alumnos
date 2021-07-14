@@ -81,12 +81,12 @@ fun List<ClassSchedule>.getHourRange(): IntRange {
     var end : Double? = null
 
     for (classSchedule in this) {
-        if(start?.compareTo(classSchedule.hour.start) ?: 1 > 0){
-            start = classSchedule.hour.start
+        if(start?.compareTo(classSchedule.hour.start.toDouble()) ?: 1 > 0){
+            start = classSchedule.hour.start.toDouble()
         }
 
-        if(end?.compareTo(classSchedule.hour.end) ?: -1 < 0){
-            end = classSchedule.hour.end
+        if(end?.compareTo(classSchedule.hour.end.toDouble()) ?: -1 < 0){
+            end = classSchedule.hour.end.toDouble()
         }
     }
 

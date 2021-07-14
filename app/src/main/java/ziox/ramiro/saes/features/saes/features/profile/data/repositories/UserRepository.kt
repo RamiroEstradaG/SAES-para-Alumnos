@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import ziox.ramiro.saes.data.data_provider.createWebView
-import ziox.ramiro.saes.data.data_provider.scrap
+import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.profile.data.models.*
 import ziox.ramiro.saes.utils.*
@@ -17,12 +16,12 @@ interface UserRepository {
 class UserWebViewRepository(
     private val context: Context
 ) : UserRepository{
-    private val webView = createWebView(context)
+    private val webViewProvider = WebViewProvider(context, "/Alumnos/info_alumnos/Datos_Alumno.aspx")
     private val persistenceRepository = LocalAppDatabase.invoke(context).userRepository()
 
     override suspend fun getMyUserData(): User {
         return if(context.isNetworkAvailable()){
-            webView.scrap(
+            webViewProvider.scrap(
                 script = """
                 next({
                     id: byId("ctl00_mainCopy_TabContainer1_Tab_Generales_Lbl_Boleta").innerText.trim(),
@@ -63,8 +62,7 @@ class UserWebViewRepository(
                         mother: byId("ctl00_mainCopy_TabContainer1_Tab_Tutor_Lbl_Madre").innerText.trim(),
                     }
                 });
-            """.trimIndent(),
-                path = "/Alumnos/info_alumnos/Datos_Alumno.aspx"
+            """.trimIndent()
             ){
                 val data = it.result.getJSONObject("data")
                 val address = data.getJSONObject("address")
@@ -80,7 +78,7 @@ class UserWebViewRepository(
                     data.getString("rfc"),
                     data.getString("gender").lowercase() == "hombre",
                     ProfilePicture(
-                        UserPreferences.invoke(webView.context).getPreference(PreferenceKeys.SchoolUrl, "")+"/Alumnos/info_alumnos/Fotografia.aspx",
+                        UserPreferences.invoke(context).getPreference(PreferenceKeys.SchoolUrl, "")+"/Alumnos/info_alumnos/Fotografia.aspx",
                         it.headers
                     ),
                     data.getString("birthday").ddMMMyyyy_toDate(),

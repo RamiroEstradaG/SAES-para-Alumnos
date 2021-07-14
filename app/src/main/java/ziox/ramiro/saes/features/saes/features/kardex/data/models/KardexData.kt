@@ -20,7 +20,7 @@ data class KardexDataRoom(
     val userId: String,
     @ColumnInfo(name = "json_data")
     val data: JSONObject
-){
+) {
     fun toKardexData() : KardexData{
         val data = data.getJSONObject("data")
         val periods = data.getJSONArray("periods")
