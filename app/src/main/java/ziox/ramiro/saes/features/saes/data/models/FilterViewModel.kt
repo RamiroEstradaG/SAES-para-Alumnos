@@ -38,3 +38,9 @@ interface FilterField {
     val isSelected: Boolean
     val fieldName: String
 }
+
+
+interface FilterRepository{
+    suspend fun getFilters(): List<FilterField>
+    suspend fun selectFilterField(fieldId: String, newIndex: Int?): List<FilterField>
+}

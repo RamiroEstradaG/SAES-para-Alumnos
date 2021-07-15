@@ -47,14 +47,16 @@ class SAESViewModel(
 
 enum class MenuSection(
     val sectionName: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val supportsOfflineMode: Boolean = false
 ){
-    HOME("Inicio", Icons.Rounded.Home),
-    SCHEDULE("Horario de clase", Icons.Rounded.Schedule),
-    GRADES("Calificaciones", Icons.Rounded.FactCheck),
-    PROFILE("Perfil", Icons.Rounded.Person),
-    ETS("ETS", Icons.Rounded.FactCheck),
-    KARDEX("Kárdex", Icons.Rounded.ListAlt),
+    HOME("Inicio", Icons.Rounded.Home, true),
+    SCHEDULE("Horario de clase", Icons.Rounded.Schedule, true),
+    GRADES("Calificaciones", Icons.Rounded.FactCheck, true),
+    PROFILE("Perfil", Icons.Rounded.Person, true),
+    ETS("ETS", Icons.Rounded.FactCheck, true),
+    KARDEX("Kárdex", Icons.Rounded.ListAlt, true),
     ETS_CALENDAR("Calendario de ETS", Icons.Rounded.DateRange),
-    RE_REGISTRATION_APPOINTMENT("Cita de reinscripción", Icons.Rounded.EventAvailable)
+    RE_REGISTRATION_APPOINTMENT("Cita de reinscripción", Icons.Rounded.EventAvailable),
+    OCCUPANCY("Ocupabilidad de horario", Icons.Rounded.LockClock)
 }

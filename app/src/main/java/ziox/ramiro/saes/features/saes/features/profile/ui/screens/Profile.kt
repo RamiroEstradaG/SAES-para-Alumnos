@@ -153,7 +153,7 @@ fun ProfileAppBar(
     }
 }
 
-@Preview
+
 @Composable
 fun QRCode() {
     val context = LocalContext.current
@@ -217,7 +217,6 @@ fun QRCode() {
 }
 
 
-@Preview
 @Composable
 fun BarcodeCode39(data: String = "1234567890") = Column(
     modifier = Modifier

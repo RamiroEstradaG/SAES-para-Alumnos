@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Expand
 import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material.icons.rounded.Preview
 import androidx.compose.runtime.Composable
@@ -17,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -37,19 +35,14 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
-import ziox.ramiro.saes.utils.toCalendar
-import ziox.ramiro.saes.utils.toLongString
-import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun ETSCalendar(
-
-) {
-    val repository = ETSCalendarWebViewRepository(LocalContext.current)
-    val etsCalendarViewModel: ETSCalendarViewModel = viewModel(
-        factory = viewModelFactory { ETSCalendarViewModel(repository) }
+    etsCalendarViewModel: ETSCalendarViewModel = viewModel(
+        factory = viewModelFactory { ETSCalendarViewModel(ETSCalendarWebViewRepository(LocalContext.current)) }
     )
+) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 

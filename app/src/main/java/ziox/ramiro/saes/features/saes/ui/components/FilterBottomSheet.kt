@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.features.saes.ui.components
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +27,7 @@ import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayout
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.last
+import ziox.ramiro.saes.features.saes.data.models.FilterField
 import ziox.ramiro.saes.features.saes.data.models.FilterState
 import ziox.ramiro.saes.features.saes.data.models.FilterViewModel
 import ziox.ramiro.saes.features.saes.data.models.SelectFilterField
@@ -70,62 +72,55 @@ fun FilterBottomSheet(
         }
     }
 
-    Crossfade(targetState = filterViewModel.fieldFilterStatesAsState().value) {
-        when(val state = it){
-            is FilterState.FilterComplete -> Column(
-                Modifier
-                    .padding(
-                        start = 32.dp,
-                        end = 32.dp,
-                        top = 16.dp,
-                        bottom = 64.dp
-                    )
-                    .verticalScroll(scrollState)
-            ) {
-                var isBreak = false
-                val filtered = state.filterFields.filter {
-                    if (!it.isSelected){
-                        isBreak = true
-                        true
-                    }else{
-                        !isBreak
-                    }
-                }
+    when(val state = filterViewModel.fieldFilterStatesAsState().value){
+        is FilterState.FilterComplete -> FilterGroup(
+            scrollState = scrollState,
+            filterFields = state.filterFields,
+            filterViewModel = filterViewModel
+        )
+        is FilterState.FilterLoading -> when(val completeStates = filterCompleteStates.value) {
+            is FilterState.FilterComplete -> FilterGroup(
+                scrollState = scrollState,
+                filterFields = completeStates.filterFields,
+                filterViewModel = filterViewModel
+            )
+        }
+        null -> filterViewModel.getFilterFields()
+    }
+}
 
-                filtered.forEach { field ->
-                    when(field){
-                        is SelectFilterField -> SelectFilter(field, filterViewModel)
-                    }
-                }
+@Composable
+fun FilterGroup(
+    scrollState: ScrollState,
+    filterFields: List<FilterField>,
+    filterViewModel: FilterViewModel
+) = Box(
+    Modifier.verticalScroll(scrollState)
+) {
+    Column(
+        Modifier
+            .padding(
+                start = 32.dp,
+                end = 32.dp,
+                top = 16.dp,
+                bottom = 64.dp
+            )
+
+    ) {
+        var isBreak = false
+        val filtered = filterFields.filter { field ->
+            if (!field.isSelected){
+                isBreak = true
+                true
+            }else{
+                !isBreak
             }
-            is FilterState.FilterLoading -> when(val completeStates = filterCompleteStates.value){
-                is FilterState.FilterComplete -> Column(
-                    Modifier
-                        .padding(
-                            start = 32.dp,
-                            end = 32.dp,
-                            top = 16.dp,
-                            bottom = 64.dp
-                        )
-                        .verticalScroll(scrollState)
-                ) {
-                    var isBreak = false
-                    val filtered = completeStates.filterFields.filter {
-                        if (!it.isSelected){
-                            isBreak = true
-                            true
-                        }else{
-                            !isBreak
-                        }
-                    }
-                    filtered.forEach { field ->
-                        when(field){
-                            is SelectFilterField -> SelectFilter(field, filterViewModel)
-                        }
-                    }
-                }
+        }
+
+        filtered.forEach { field ->
+            when(field){
+                is SelectFilterField -> SelectFilter(field, filterViewModel)
             }
-            null -> filterViewModel.getFilterFields()
         }
     }
 }
@@ -142,7 +137,7 @@ fun SelectFilter(
     val filterState = filterViewModel.fieldFilterStatesAsState()
 
     Text(
-        text = selectFilterField.fieldName,
+        text = if(selectFilterField.items.isNotEmpty()) selectFilterField.fieldName else "",
         style = MaterialTheme.typography.subtitle2
     )
     AndroidView(

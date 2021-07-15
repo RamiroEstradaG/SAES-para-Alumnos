@@ -144,14 +144,12 @@ fun ETSScoreItem(
     modifier = Modifier.padding(vertical = 8.dp),
     verticalAlignment = Alignment.CenterVertically
 ){
-    val className: String = if(ets.className.isNotBlank()){
-        ets.className
-    }else{
-        val etsName = (etsState.value as? ETSState.ETSComplete)?.etsList?.firstOrNull { it.id == ets.id }?.name ?: ""
+    val className: String = ets.className.ifBlank {
+        val etsName =
+            (etsState.value as? ETSState.ETSComplete)?.etsList?.firstOrNull { it.id == ets.id }?.name
+                ?: ""
 
-        if(etsName.isNotBlank()){
-            etsName
-        }else{
+        etsName.ifBlank {
             ets.id
         }
     }

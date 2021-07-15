@@ -11,10 +11,6 @@ import ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories.ET
 class ETSCalendarViewModel(
     private val etsCalendarRepository: ETSCalendarRepository
 ) : FilterViewModel() {
-    init {
-        getFilterFields()
-    }
-
     override fun getFilterFields() {
         viewModelScope.launch {
             emitState(FilterState.FilterLoading())
@@ -35,7 +31,7 @@ class ETSCalendarViewModel(
             emitState(FilterState.FilterLoading())
 
             kotlin.runCatching {
-                etsCalendarRepository.setSelectFilter(itemId, newIndex)
+                etsCalendarRepository.selectFilterField(itemId, newIndex)
             }.onSuccess {
                 emitState(FilterState.FilterComplete(it))
                 fetchETSCalendarEvents()

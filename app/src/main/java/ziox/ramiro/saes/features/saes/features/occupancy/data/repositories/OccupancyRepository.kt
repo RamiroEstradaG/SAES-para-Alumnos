@@ -1,46 +1,42 @@
-package ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories
+package ziox.ramiro.saes.features.saes.features.occupancy.data.repositories
 
 import android.content.Context
-import androidx.compose.runtime.Composable
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.features.saes.data.models.FilterField
 import ziox.ramiro.saes.features.saes.data.models.FilterRepository
 import ziox.ramiro.saes.features.saes.data.models.SelectFilterField
-import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
-import ziox.ramiro.saes.utils.hhmma_toHour
-import ziox.ramiro.saes.utils.MMMddyyyy_toDate
+import ziox.ramiro.saes.features.saes.features.occupancy.data.models.ClassOccupancy
 import ziox.ramiro.saes.utils.toProperCase
 
-interface ETSCalendarRepository : FilterRepository {
-    suspend fun getETSEvents(): List<ETSCalendarItem>
+interface OccupancyRepository : FilterRepository {
+    suspend fun getOccupancyData(): List<ClassOccupancy>
     override suspend fun getFilters(): List<FilterField>
     override suspend fun selectFilterField(fieldId: String, newIndex: Int?): List<FilterField>
 }
 
-class ETSCalendarWebViewRepository(
+class OccupancyWebViewRepository(
     context: Context
-) : ETSCalendarRepository {
-    private val webViewProvider = WebViewProvider(context, "/Academica/Calendario_ets.aspx")
+) : OccupancyRepository{
+    private val webViewProvider = WebViewProvider(context, "/Academica/Ocupabilidad_grupos.aspx")
 
-    override suspend fun getETSEvents(): List<ETSCalendarItem> {
+    override suspend fun getOccupancyData(): List<ClassOccupancy> {
         return webViewProvider.scrap(
             script = """
-                var calendarTable = byId("ctl00_mainCopy_grvcalendario");
+                var occupancyTable = byId("ctl00_mainCopy_GrvOcupabilidad");
                 
-                if(calendarTable != null){
-                    var trs = [...calendarTable.getElementsByTagName("tr")];
+                if(occupancyTable != null){
+                    var trs = [...occupancyTable.getElementsByTagName("tr")];
                     
                     trs.splice(0,1);
                     
                     next(trs.map((trEl) => ({
-                        id: trEl.children[0].innerText.trim(),
-                        className: trEl.children[1].innerText.trim(),
-                        date: trEl.children[3].innerText.trim(),
-                        hour: trEl.children[4].innerText.trim(),
-                        building: trEl.children[5].innerText.trim(),
-                        classroom: trEl.children[6].innerText.trim(),
+                        id: trEl.children[1].innerText.trim(),
+                        group: trEl.children[0].innerText.trim(),
+                        className: trEl.children[2].innerText.trim(),
+                        semester: trEl.children[3].innerText.trim(),
+                        quota: trEl.children[4].innerText.trim(),
+                        current: trEl.children[5].innerText.trim()
                     })));
                 }else{
                     next([]);
@@ -53,35 +49,45 @@ class ETSCalendarWebViewRepository(
             List(data.length()){ i ->
                 val item = data[i] as JSONObject
 
-                ETSCalendarItem(
+                ClassOccupancy(
                     item.getString("id"),
+                    item.getString("group"),
                     item.getString("className").toProperCase(),
-                    ShortDate.MMMddyyyy(item.getString("date")),
-                    item.getString("hour").hhmma_toHour()!!,
-                    item.getString("building"),
-                    item.getString("classroom"),
+                    item.getString("semester").toInt(),
+                    item.getString("quota").toInt(),
+                    item.getString("current").toInt()
                 )
             }
         }
     }
 
     override suspend fun getFilters(): List<FilterField> {
-        return webViewProvider.runThenScrap(
-            preRequest = """
-                var select = byId("ctl00_mainCopy_dpdperiodoActual");
+        return webViewProvider.runMultipleThenScrap(
+            preRequests = listOf(
+                "byId(\"ctl00_mainCopy_rblEsquema_0\").click();",
+                "byId(\"ctl00_mainCopy_Chkespecialidad\").click();",
+                "byId(\"ctl00_mainCopy_ChkSemestre\").click();",
+                "byId(\"ctl00_mainCopy_Chkgrupo\").click();",
+                """
+                var select = byId("ctl00_mainCopy_dpdgrupo");
                 
-                select.selectedIndex = window.Utils.getRecentETSType(getSelectOptions(select, 0));
+                select.options.selectedIndex = 1;
                 select.onchange();
-            """.trimIndent(),
+                """.trimIndent(),
+                """
+                var select = byId("ctl00_mainCopy_dpdgrupo");
+                
+                select.options.selectedIndex = 0;
+                select.onchange();
+                """.trimIndent(),
+            ),
             postRequest = """
                 next([
-                    selectToFilterField("ctl00_mainCopy_dpdperiodoActual", "Periodo de ETS", 0),
-                    selectToFilterField("ctl00_mainCopy_dpdTipoETSactual", "Tipo de ETS", 0),
                     selectToFilterField("ctl00_mainCopy_dpdcarrera", "Carrera", 0),
                     selectToFilterField("ctl00_mainCopy_dpdplan", "Plan de estudios", 0),
                     selectToFilterField("ctl00_mainCopy_dpdespecialidad", "Especialidad", 0),
-                    selectToFilterField("ctl00_mainCopy_dpdSemestre", "Semestre", 0),
-                    selectToFilterField("ctl00_mainCopy_DpdTurno", "Turno", 0)
+                    selectToFilterField("ctl00_mainCopy_dpdsemestre", "Semestre", 0),
+                    selectToFilterField("ctl00_mainCopy_dpdgrupo", "Grupo", 0)
                 ]);
             """.trimIndent()
         ){
@@ -105,22 +111,44 @@ class ETSCalendarWebViewRepository(
     }
 
     override suspend fun selectFilterField(fieldId: String, newIndex: Int?): List<FilterField> {
-        return webViewProvider.runThenScrap(
-            preRequest = """
-                var select = byId("$fieldId");
+        val scripts = ArrayList<String>()
+
+        scripts.add(
+            """
+            var select = byId("$fieldId");
+            
+            select.options.selectedIndex = ${newIndex ?: 0};
+            select.onchange();
+            """.trimIndent()
+        )
+
+        if(fieldId != "ctl00_mainCopy_dpdgrupo"){
+            scripts.addAll(listOf(
+                """
+                var select = byId("ctl00_mainCopy_dpdgrupo");
                 
-                select.options.selectedIndex = ${newIndex ?: 0};
+                select.options.selectedIndex = 1;
                 select.onchange();
-            """.trimIndent(),
+                """.trimIndent(),
+                """
+                var select = byId("ctl00_mainCopy_dpdgrupo");
+                
+                select.options.selectedIndex = 0;
+                select.onchange();
+                """.trimIndent(),
+            ))
+        }
+
+
+        return webViewProvider.runMultipleThenScrap(
+            preRequests = scripts,
             postRequest = """
                 next([
-                    selectToFilterField("ctl00_mainCopy_dpdperiodoActual", "Periodo de ETS", 0),
-                    selectToFilterField("ctl00_mainCopy_dpdTipoETSactual", "Tipo de ETS", 0),
                     selectToFilterField("ctl00_mainCopy_dpdcarrera", "Carrera", 0),
                     selectToFilterField("ctl00_mainCopy_dpdplan", "Plan de estudios", 0),
                     selectToFilterField("ctl00_mainCopy_dpdespecialidad", "Especialidad", 0),
-                    selectToFilterField("ctl00_mainCopy_dpdSemestre", "Semestre", 0),
-                    selectToFilterField("ctl00_mainCopy_DpdTurno", "Turno", 0)
+                    selectToFilterField("ctl00_mainCopy_dpdsemestre", "Semestre", 0),
+                    selectToFilterField("ctl00_mainCopy_dpdgrupo", "Grupo", 0)
                 ]);
             """.trimIndent(),
             reloadPage = false
@@ -143,5 +171,4 @@ class ETSCalendarWebViewRepository(
             }
         }
     }
-
 }

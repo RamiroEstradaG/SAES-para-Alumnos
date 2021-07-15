@@ -34,6 +34,7 @@ import ziox.ramiro.saes.features.saes.features.ets_calendar.ui.screens.ETSCalend
 import ziox.ramiro.saes.features.saes.features.grades.ui.screens.Grades
 import ziox.ramiro.saes.features.saes.features.home.ui.screens.Home
 import ziox.ramiro.saes.features.saes.features.kardex.ui.screens.Kardex
+import ziox.ramiro.saes.features.saes.features.occupancy.ui.screens.Occupancy
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.screens.Profile
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
@@ -110,6 +111,7 @@ class SAESActivity : AppCompatActivity() {
                             MenuSection.KARDEX -> Kardex()
                             MenuSection.ETS_CALENDAR -> ETSCalendar()
                             MenuSection.RE_REGISTRATION_APPOINTMENT -> ReRegistrationAppointment()
+                            MenuSection.OCCUPANCY -> Occupancy()
                         }
                     }
                 }

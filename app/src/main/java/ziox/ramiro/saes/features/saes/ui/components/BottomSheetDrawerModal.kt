@@ -69,6 +69,7 @@ class BottomSheetDrawerModal(
                             SectionMenuItem(section = MenuSection.RE_REGISTRATION_APPOINTMENT)
                             MenuHeader(name = "Académico")
                             SectionMenuItem(section = MenuSection.ETS_CALENDAR)
+                            SectionMenuItem(section = MenuSection.OCCUPANCY)
                             MenuHeader(name = "Calendario académico")
                             ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad Escolarizada"){
                                 context?.launchUrl("https://www.ipn.mx/assets/files/main/docs/inicio/cal-Escolarizada-21-22.pdf")

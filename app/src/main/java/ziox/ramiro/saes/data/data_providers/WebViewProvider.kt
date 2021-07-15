@@ -16,9 +16,9 @@ import kotlinx.coroutines.withTimeout
 import okhttp3.Headers
 import org.json.JSONArray
 import org.json.JSONObject
-import ziox.ramiro.saes.utils.*
-import java.util.concurrent.TimeoutException
-import kotlin.concurrent.thread
+import ziox.ramiro.saes.utils.PreferenceKeys
+import ziox.ramiro.saes.utils.UserPreferences
+import ziox.ramiro.saes.utils.UtilsJavascriptInterface
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -74,10 +74,12 @@ class WebViewProvider(
                 var element = byId(elementId);
                 var options = element.options;
                 
+                var selectedIndex = options.selectedIndex >= offset ? options.selectedIndex - offset : "";
+                
                 return {
                     id: elementId,
                     name: fieldName,
-                    selectedIndex: options.selectedIndex >= offset ? options.selectedIndex - offset : null,
+                    selectedIndex: selectedIndex.toString(),
                     offset: offset,
                     options: getSelectOptions(element, offset)
                 };
@@ -149,6 +151,40 @@ class WebViewProvider(
         }
     }
 
+    suspend inline fun <reified T>runMultipleThenScrap(
+        preRequests: List<String>,
+        postRequest: String,
+        reloadPage: Boolean = true,
+        timeout: Long = 10000L,
+        noinline resultAdapter: (ScrapResult) -> T
+    ): T {
+        val jobId = generateJobId()
+        var currentScriptIndex = 0
+        val postRequestBase = "${scriptTemplate(jobId)}\n$postRequest"
+
+        return withTimeout(timeout){
+            suspendCoroutine<ScrapResultAdapter<Any?>> {
+                javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
+
+                attachWebViewClient(jobId, it) {
+                    if (currentScriptIndex <= preRequests.lastIndex) {
+                        Log.d("WebViewProvider", "Running script at $currentScriptIndex")
+                        webView.loadUrl("${scriptTemplate(jobId)}\n${preRequests[currentScriptIndex++]}")
+                    } else {
+                        webView.loadUrl(postRequestBase)
+                    }
+                }
+
+                if (reloadPage) {
+                    webView.loadUrl(url)
+                } else {
+                    Log.d("WebViewProvider", "Running script at $currentScriptIndex")
+                    webView.loadUrl("${scriptTemplate(jobId)}\n${preRequests[currentScriptIndex++]}")
+                }
+            }.toPrimitiveType()
+        }
+    }
+
     suspend inline fun <reified T>runThenScrap(
         preRequest: String,
         postRequest: String,
@@ -178,14 +214,6 @@ class WebViewProvider(
                     webView.loadUrl(url)
                 } else {
                     webView.loadUrl(preRequestBase)
-                }
-
-                thread(start = true) {
-                    Thread.sleep(timeout)
-
-                    handleResume(jobId) {
-                        it.resumeWithException(TimeoutException())
-                    }
                 }
             }.toPrimitiveType()
         }
