@@ -20,8 +20,17 @@ data class ClassSchedule(
     @ColumnInfo(name = "class_color")
     val color: Long,
     @Embedded
-    val hour: HourRange
+    val hourRange: HourRange
 )
+
+fun List<ClassSchedule>.getCurrentClass() : ClassSchedule? {
+    val currentDay = WeekDay.todayByCalendar()
+    val currentHour = Hour.fromDate(Date())
+
+    return this.find {
+        currentDay == it.hourRange.weekDay && currentHour.toDouble() in it.hourRange.start.toDouble()..it.hourRange.end.toDouble()
+    }
+}
 
 data class HourRange(
     @ColumnInfo(name = "hour_start")
@@ -126,13 +135,13 @@ data class ShortDate(
     }
 }
 
-enum class WeekDay(val dayName: String){
-    MONDAY("Lunes"),
-    TUESDAY("Martes"),
-    WEDNESDAY("Miércoles"),
-    THURSDAY("Jueves"),
-    FRIDAY("Viernes"),
-    UNKNOWN("Desconocido");
+enum class WeekDay(val dayName: String, val calendarDayIndex: Int){
+    MONDAY("Lunes", 1),
+    TUESDAY("Martes", 2),
+    WEDNESDAY("Miércoles", 3),
+    THURSDAY("Jueves", 4),
+    FRIDAY("Viernes", 5),
+    UNKNOWN("Desconocido", -1);
 
     companion object {
         fun todayByCalendar() = byDayOfWeek(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))

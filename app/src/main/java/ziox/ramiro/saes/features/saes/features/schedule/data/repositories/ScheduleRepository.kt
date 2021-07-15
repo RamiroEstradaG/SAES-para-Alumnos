@@ -102,7 +102,7 @@ class ScheduleWebViewRepository(
                         })
                     }
                 }.filter { f ->
-                    f.hour.duration > 0
+                    f.hourRange.duration > 0
                 }
             }.also {
                 runOnDefaultThread {

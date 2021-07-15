@@ -10,10 +10,12 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -78,8 +80,13 @@ class SAESActivity : AppCompatActivity() {
         listenToAuthEvents()
 
         setContent {
-            SAESParaAlumnosTheme {
+            SAESParaAlumnosTheme { uiController ->
                 val selectedMenuItem = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
+
+                when(selectedMenuItem.value){
+                    MenuSection.PROFILE -> uiController.setStatusBarColor(MaterialTheme.colors.surface)
+                    else -> uiController.setStatusBarColor(Color.Transparent)
+                }
 
                 Scaffold(
                     bottomBar = {

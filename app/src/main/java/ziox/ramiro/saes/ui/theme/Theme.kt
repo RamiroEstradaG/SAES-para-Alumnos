@@ -3,7 +3,6 @@ package ziox.ramiro.saes.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -13,7 +12,10 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun getCurrentTheme(darkTheme: Boolean = isSystemInDarkTheme()) = if (darkTheme) DarkTheme else LightTheme
 
 @Composable
-fun SAESParaAlumnosTheme(content: @Composable () -> Unit) {
+fun SAESParaAlumnosTheme(
+    statusBarColor: Color = Color.Transparent,
+    content: @Composable (SystemUiController) -> Unit
+) {
     val theme = getCurrentTheme()
 
     MaterialTheme(
@@ -24,7 +26,7 @@ fun SAESParaAlumnosTheme(content: @Composable () -> Unit) {
         val uiController = rememberSystemUiController()
 
         uiController.setStatusBarColor(
-            theme.colors.background,
+            statusBarColor,
             !isSystemInDarkTheme()
         )
 
@@ -32,6 +34,6 @@ fun SAESParaAlumnosTheme(content: @Composable () -> Unit) {
             theme.toolbar
         )
 
-        content()
+        content(uiController)
     }
 }

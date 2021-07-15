@@ -81,12 +81,12 @@ fun List<ClassSchedule>.getHourRange(): IntRange {
     var end : Double? = null
 
     for (classSchedule in this) {
-        if(start?.compareTo(classSchedule.hour.start.toDouble()) ?: 1 > 0){
-            start = classSchedule.hour.start.toDouble()
+        if(start?.compareTo(classSchedule.hourRange.start.toDouble()) ?: 1 > 0){
+            start = classSchedule.hourRange.start.toDouble()
         }
 
-        if(end?.compareTo(classSchedule.hour.end.toDouble()) ?: -1 < 0){
-            end = classSchedule.hour.end.toDouble()
+        if(end?.compareTo(classSchedule.hourRange.end.toDouble()) ?: -1 < 0){
+            end = classSchedule.hourRange.end.toDouble()
         }
     }
 
@@ -100,5 +100,5 @@ fun List<ClassSchedule>.getHourRange(): IntRange {
 
 
 fun List<ClassSchedule>.getHourHeight(): Dp = 170.dp.div((minByOrNull {
-    it.hour.duration
-}?.hour?.duration?.toFloat() ?: 1f))
+    it.hourRange.duration
+}?.hourRange?.duration?.toFloat() ?: 1f))

@@ -74,4 +74,5 @@ sealed class PreferenceKeys<T>(val key: String) {
     object Password: PreferenceKeys<String>("pass")
     object QrUrl: PreferenceKeys<String>("qr_url")
     object OfflineMode: PreferenceKeys<Boolean>("offline_mode")
+    object ScheduleWidgetLeveling: PreferenceKeys<Int>("widget_nivel")
 }

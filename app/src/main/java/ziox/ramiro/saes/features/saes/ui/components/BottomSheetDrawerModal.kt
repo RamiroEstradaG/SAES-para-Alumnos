@@ -66,6 +66,7 @@ class BottomSheetDrawerModal(
                         ) {
                             MenuHeader(name = "Alumno")
                             SectionMenuItem(section = MenuSection.KARDEX)
+                            SectionMenuItem(section = MenuSection.RE_REGISTRATION_APPOINTMENT)
                             MenuHeader(name = "Académico")
                             SectionMenuItem(section = MenuSection.ETS_CALENDAR)
                             MenuHeader(name = "Calendario académico")

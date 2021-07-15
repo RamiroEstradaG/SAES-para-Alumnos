@@ -20,28 +20,28 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:label="@string/title_activity_saesactivity"
-            android:theme="@style/Theme.SAESParaAlumnos.NoActionBar" />
+            android:theme="@style/Theme.SAESParaAlumnos" />
         <activity
             android:name="ziox.ramiro.saes.ui.screens.LoginActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.SAESParaAlumnos.NoActionBar" />
+            android:theme="@style/Theme.SAESParaAlumnos" />
         <activity
             android:name="ziox.ramiro.saes.features.about.ui.screens.AboutActivity"
             android:exported="true"
-            android:theme="@style/Theme.SAESParaAlumnos.NoActionBar" />
+            android:theme="@style/Theme.SAESParaAlumnos" />
         <activity
             android:name=".ui.screens.SelectSchoolActivity"
             android:exported="true"
             android:label="@string/title_activity_select_school"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.SAESParaAlumnos.NoActionBar" />
+            android:theme="@style/Theme.SAESParaAlumnos" />
         <activity
             android:name=".ui.screens.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:label="@string/app_name"
-            android:theme="@style/Theme.SAESParaAlumnos.NoActionBar">
+            android:theme="@style/Theme.SAESParaAlumnos">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
