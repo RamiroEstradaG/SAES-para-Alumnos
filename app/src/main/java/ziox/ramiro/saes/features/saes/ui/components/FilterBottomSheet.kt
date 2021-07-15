@@ -51,7 +51,7 @@ fun FilterBottomSheet(
             .padding(vertical = 8.dp)
             .align(Alignment.CenterHorizontally)
             .size(32.dp, 4.dp)
-            .background(Color.LightGray)
+            .background(getCurrentTheme().divider)
     ) {}
     Row(
         modifier = Modifier.padding(start = 32.dp, end = 32.dp,bottom = 16.dp, top = 8.dp),

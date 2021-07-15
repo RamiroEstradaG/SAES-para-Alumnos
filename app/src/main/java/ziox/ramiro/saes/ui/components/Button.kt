@@ -108,7 +108,7 @@ fun OutlineButton(
         backgroundColor = backgroundColor ?: Color.Transparent
     ),
     enabled = enabled,
-    border = BorderStroke(1.dp, borderColor ?: Color.LightGray) // TODO
+    border = BorderStroke(1.dp, borderColor ?: getCurrentTheme().divider)
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically

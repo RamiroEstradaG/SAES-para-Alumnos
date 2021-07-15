@@ -38,6 +38,7 @@ import ziox.ramiro.saes.features.saes.features.profile.data.models.User
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileState
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
+import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.BarcodeTypes
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
@@ -187,7 +188,7 @@ fun QRCode() {
                 Modifier
                     .clip(MaterialTheme.shapes.medium)
                     .fillMaxSize()
-                    .border(1.dp, Color.LightGray, MaterialTheme.shapes.medium)
+                    .border(1.dp, getCurrentTheme().divider, MaterialTheme.shapes.medium)
                     .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
