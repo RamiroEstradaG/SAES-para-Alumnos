@@ -4,6 +4,8 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 val MES = arrayOf(
     "ENE",
@@ -56,6 +58,14 @@ fun String.toDate(format: String): Date? = try{
     SimpleDateFormat(format, Locale.ROOT).parse(this)
 }catch (e:Exception){
     null
+}
+
+
+@ExperimentalTime
+fun Date.offset(offset: Duration): Date{
+    return Calendar.getInstance().apply {
+        timeInMillis = this@offset.time + offset.inWholeMilliseconds
+    }.time
 }
 
 fun String.ddMMMyyyy_toDate() : Date{

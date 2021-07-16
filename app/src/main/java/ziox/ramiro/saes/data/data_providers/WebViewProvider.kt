@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeout
 import okhttp3.Headers
 import org.json.JSONArray
@@ -126,7 +127,7 @@ class WebViewProvider(
         val scriptBase = "${scriptTemplate(jobId)}\n$script"
 
         return withTimeout(timeout){
-            suspendCoroutine<ScrapResultAdapter<Any?>> {
+            suspendCancellableCoroutine<ScrapResultAdapter<Any?>> {
                 javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
 
                 attachWebViewClient(jobId, it) {
@@ -163,7 +164,7 @@ class WebViewProvider(
         val postRequestBase = "${scriptTemplate(jobId)}\n$postRequest"
 
         return withTimeout(timeout){
-            suspendCoroutine<ScrapResultAdapter<Any?>> {
+            suspendCancellableCoroutine<ScrapResultAdapter<Any?>> {
                 javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
 
                 attachWebViewClient(jobId, it) {
@@ -198,7 +199,7 @@ class WebViewProvider(
         val postRequestBase = "${scriptTemplate(jobId)}\n$postRequest"
 
         return withTimeout(timeout){
-            suspendCoroutine<ScrapResultAdapter<Any?>> {
+            suspendCancellableCoroutine<ScrapResultAdapter<Any?>> {
                 javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
 
                 attachWebViewClient(jobId, it) {

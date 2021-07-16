@@ -3,6 +3,7 @@ package ziox.ramiro.saes.features.saes.features.schedule.data.models
 import androidx.room.*
 import ziox.ramiro.saes.utils.MES
 import ziox.ramiro.saes.utils.MES_COMPLETO
+import ziox.ramiro.saes.utils.toCalendar
 import java.util.*
 
 @Entity(tableName = "class_schedule")
@@ -44,7 +45,7 @@ data class HourRange(
     val duration: Double = end.toDouble() - start.toDouble()
 
     companion object {
-        fun parse(hourRange: String, weekDay: WeekDay): List<HourRange>{
+        fun parse(hourRange: String, weekDay: WeekDay = WeekDay.UNKNOWN): List<HourRange>{
             val hours = Regex("[0-9]+:[0-9]+-[0-9]+:[0-9]+").findAll(hourRange.replace(" ", ""))
 
             return hours.map {
@@ -116,6 +117,16 @@ data class ShortDate(
                 values[1].toInt(),
                 MES.indexOf(values[0].uppercase()),
                 values[2].toInt()
+            )
+        }
+
+        fun fromDate(date: Date) : ShortDate {
+            val calendar =  date.toCalendar()
+
+            return ShortDate(
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.YEAR)
             )
         }
 

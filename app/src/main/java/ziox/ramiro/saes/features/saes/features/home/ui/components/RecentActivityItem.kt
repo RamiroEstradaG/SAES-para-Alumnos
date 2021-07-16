@@ -53,7 +53,8 @@ fun RecentActivityItem(
                 text = historyItem.section.sectionName,
                 style = MaterialTheme.typography.h6,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.primary
+                color = MaterialTheme.colors.primary,
+                maxLines = 2
             )
         }
     }

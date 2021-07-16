@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.data.repositories
 
 import android.content.Context
+import kotlinx.coroutines.withTimeout
 import okhttp3.Headers
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.models.Auth
@@ -8,6 +9,7 @@ import ziox.ramiro.saes.data.models.Captcha
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.isNetworkAvailable
+import kotlin.concurrent.thread
 
 interface AuthRepository {
     suspend fun getCaptcha() : Captcha
@@ -73,17 +75,15 @@ class AuthWebViewRepository(
     }
 
     override suspend fun isLoggedIn() = UserPreferences.invoke(context).run {
-        if (getPreference(PreferenceKeys.SchoolUrl, null) == null) return@run false
-
         when {
+            getPreference(PreferenceKeys.SchoolUrl, null) == null -> false
             getPreference(PreferenceKeys.OfflineMode, false) -> true
             context.isNetworkAvailable() -> WebViewProvider(context).scrap(
                 """
                 next({
                     isLoggedIn: !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null)
                 });
-                """.trimIndent(),
-                timeout = 3000
+                """.trimIndent()
             ){
                 it.result.getJSONObject("data").getBoolean("isLoggedIn")
             }

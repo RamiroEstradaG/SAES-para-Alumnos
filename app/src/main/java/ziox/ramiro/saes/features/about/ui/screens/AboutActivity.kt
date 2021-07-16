@@ -33,6 +33,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import com.google.accompanist.imageloading.rememberDrawablePainter
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -162,47 +164,44 @@ class AboutActivity : ComponentActivity() {
                         )
                     }
                     if(showLicences.value){
-                        AlertDialog(
-                            modifier = Modifier.padding(16.dp),
-                            text = {
-                                Column(
-                                    Modifier
-                                        .padding(16.dp)
-                                        .verticalScroll(
-                                            rememberScrollState()
-                                        )
-                                ) {
-                                    LicenceItem("Accompanist Library", "The Android Open Source Project", "2020", "https://github.com/google/accompanist")
-                                    LicenceItem("ZXing Android Embedded", "Journey Mobile", "2012-2018", "https://github.com/journeyapps/zxing-android-embedded")
-                                    LicenceItem("Retrofit", "Square, Inc", "2013", "https://square.github.io/retrofit/")
-                                    LicenceItem("Moshi", "Square, Inc", "2015", "https://github.com/square/moshi")
-                                    LicenceItem("Room", "The Android Open Source Project", "2018", "https://developer.android.com/jetpack/androidx/releases/room")
-                                    LicenceItem("Google Play Core Library", "The Android Open Source Project", "2018", "https://developer.android.com/reference/com/google/android/play/core/release-notes")
-                                    LicenceItem("Material Design Icons", "Google, Inc", "2016", "https://github.com/google/material-design-icons")
-                                    LicenceItem("Android Jetpack Compose", "The Android Open Source Project", "2021", "https://developer.android.com/jetpack/androidx/releases/compose")
-                                    LicenceItem("Kotlin Programming Language", "Jetbrains s.r.o. and contributors", "2000-2019", "https://github.com/JetBrains/kotlin")
-                                    LicenceItem("Sistema de Administración Escolar", "Instituto Politécnico Nacional, Dirección de Administración Escolar", "2008", "https://www.ipn.mx/saes/")
-                                }
-                            },
+                        Dialog(
                             onDismissRequest = {
                                 showLicences.value = false
-                            },
-                            buttons = {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.CenterEnd
-                                ) {
-                                    ziox.ramiro.saes.ui.components.TextButton(
-                                        text = "OK",
-                                        textColor = getCurrentTheme().info
-                                    ){
-                                        showLicences.value = false
+                            }
+                        ){
+                            Card(
+                                modifier = Modifier
+                                    .height(500.dp)
+                                    .fillMaxWidth()
+                                    .padding(32.dp)
+                            ){
+                                Column {
+                                    Text(
+                                        modifier = Modifier.padding(16.dp),
+                                        text = "Licencias",
+                                        style = MaterialTheme.typography.h5,
+                                    )
+                                    Column(
+                                        Modifier
+                                            .padding(horizontal = 16.dp)
+                                            .verticalScroll(
+                                                rememberScrollState()
+                                            )
+                                    ) {
+                                        LicenceItem("Accompanist Library", "The Android Open Source Project", "2020", "https://github.com/google/accompanist")
+                                        LicenceItem("ZXing Android Embedded", "Journey Mobile", "2012-2018", "https://github.com/journeyapps/zxing-android-embedded")
+                                        LicenceItem("CalPose", "Bojan Belic", "2020", "https://github.com/sigmadeltasoftware/CalPose")
+                                        LicenceItem("Room", "The Android Open Source Project", "2018", "https://developer.android.com/jetpack/androidx/releases/room")
+                                        LicenceItem("Google Play Core Library", "The Android Open Source Project", "2018", "https://developer.android.com/reference/com/google/android/play/core/release-notes")
+                                        LicenceItem("Material Design Icons", "Google, Inc", "2016", "https://github.com/google/material-design-icons")
+                                        LicenceItem("Android Jetpack Compose", "The Android Open Source Project", "2021", "https://developer.android.com/jetpack/androidx/releases/compose")
+                                        LicenceItem("Kotlin Programming Language", "Jetbrains s.r.o. and contributors", "2000-2019", "https://github.com/JetBrains/kotlin")
+                                        LicenceItem("Sistema de Administración Escolar", "Instituto Politécnico Nacional, Dirección de Administración Escolar", "2008", "https://www.ipn.mx/saes/")
                                     }
                                 }
+
                             }
-                        )
+                        }
                     }
                 }
             }
@@ -242,6 +241,7 @@ fun LicenceItem(
     ClickableText(
         modifier = Modifier.padding(bottom = 8.dp),
         text = annotatedString,
+        style = MaterialTheme.typography.body2,
         onClick = {
             val linkUrl = annotatedString
                 .getStringAnnotations("URL", it, it)

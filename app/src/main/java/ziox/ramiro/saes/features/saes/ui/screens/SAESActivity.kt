@@ -2,31 +2,25 @@ package ziox.ramiro.saes.features.saes.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.twitter.sdk.android.core.Twitter
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.Agenda
 import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.ui.screens.ETS
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
@@ -79,6 +73,7 @@ class SAESActivity : AppCompatActivity() {
 
         listenToAuthStates()
         listenToAuthEvents()
+        listenToNavigationStates()
 
         setContent {
             SAESParaAlumnosTheme { uiController ->
@@ -112,6 +107,7 @@ class SAESActivity : AppCompatActivity() {
                             MenuSection.ETS_CALENDAR -> ETSCalendar()
                             MenuSection.RE_REGISTRATION_APPOINTMENT -> ReRegistrationAppointment()
                             MenuSection.OCCUPANCY -> Occupancy()
+                            MenuSection.AGENDA -> Agenda()
                         }
                     }
                 }
@@ -149,6 +145,12 @@ class SAESActivity : AppCompatActivity() {
                     finish()
                 }
             }
+        }
+    }
+
+    private fun listenToNavigationStates() = lifecycleScope.launch {
+        saesViewModel.currentSection.collect {
+            authViewModel.checkSession()
         }
     }
 }

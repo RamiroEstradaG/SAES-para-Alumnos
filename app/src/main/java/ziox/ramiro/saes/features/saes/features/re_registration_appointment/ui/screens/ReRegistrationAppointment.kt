@@ -63,7 +63,7 @@ fun ReRegistrationAppointment(
                     max = state.data.creditsTotal,
                     elements = listOf(
                         ChartElement(
-                            "Créditos obtenidos",
+                            "Obtenidos",
                             state.data.creditsObtained,
                             MaterialTheme.colors.primary
                         )
@@ -71,21 +71,23 @@ fun ReRegistrationAppointment(
                 )
                 ProgressChart(
                     modifier = Modifier.padding(top = 48.dp),
-                    title = "Progreso",
+                    title = "Periodos escolares",
                     max = state.data.careerMaximumDuration.toDouble(),
                     elements = listOf(
                         ChartElement(
-                            "Periodos cursados",
+                            "Cursado",
                             state.data.careerCurrentDuration.toDouble(),
                             MaterialTheme.colors.primary
                         ),
                         ChartElement(
-                            "Periodos normales",
+                            "Previsto",
                             state.data.careerMediumDuration.toDouble(),
                             MaterialTheme.colors.secondary
                         )
                     )
-                )
+                ){ value ->
+                    value.toInt().toString()
+                }
             }
         }
         is ReRegistrationAppointmentState.Loading -> Box(
@@ -120,7 +122,8 @@ fun ProgressChart(
     modifier: Modifier = Modifier,
     title: String,
     max: Double,
-    elements: List<ChartElement>
+    elements: List<ChartElement>,
+    valueFormatter: (Double) -> String = { it.toString() }
 ) = Column(
     modifier = modifier.fillMaxWidth()
 ) {
@@ -162,7 +165,7 @@ fun ProgressChart(
                     ) {}
                     Text(
                         modifier = Modifier.padding(start = 6.dp),
-                        text = "${it.name} (${it.value.div(max).times(100).toStringPrecision(1)}%)"
+                        text = "${it.name} (${valueFormatter(it.value)} - ${it.value.div(max).times(100).toStringPrecision(1)}%)"
                     )
                 }
             }
