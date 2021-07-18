@@ -26,7 +26,7 @@ class ScheduleMediumWidget  : AppWidgetProvider() {
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
         val rootView = RemoteViews(context.packageName, R.layout.widget_horario_list)
         val intent = Intent(context, ListWidgetRemoteViewService::class.java)
-        val weekDay = WeekDay.todayByCalendar()
+        val weekDay = WeekDay.today()
         val database = LocalAppDatabase.invoke(context).scheduleRepository()
         val scheduleList = database.getMySchedule()
 

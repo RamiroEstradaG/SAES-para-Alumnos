@@ -9,17 +9,17 @@ import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.profile.data.models.*
 import ziox.ramiro.saes.utils.*
 
-interface UserRepository {
-    suspend fun getMyUserData() : User
+interface ProfileRepository {
+    suspend fun getMyUserData() : ProfileUser
 }
 
-class UserWebViewRepository(
+class ProfileWebViewRepository(
     private val context: Context
-) : UserRepository{
+) : ProfileRepository{
     private val webViewProvider = WebViewProvider(context, "/Alumnos/info_alumnos/Datos_Alumno.aspx")
     private val persistenceRepository = LocalAppDatabase.invoke(context).userRepository()
 
-    override suspend fun getMyUserData(): User {
+    override suspend fun getMyUserData(): ProfileUser {
         return if(context.isNetworkAvailable()){
             webViewProvider.scrap(
                 script = """
@@ -70,7 +70,7 @@ class UserWebViewRepository(
                 val education = data.getJSONObject("education")
                 val parents = data.getJSONObject("parents")
 
-                User(
+                ProfileUser(
                     data.getString("id"),
                     data.getString("name").toProperCase(),
                     data.getString("school"),
@@ -128,12 +128,12 @@ class UserWebViewRepository(
 }
 
 @Dao
-interface UserRoomRepository {
+interface ProfileRoomRepository {
     @Query("SELECT * FROM profiles WHERE id = :id")
-    fun getMyUserData(id: String) : User?
+    fun getMyUserData(id: String) : ProfileUser?
 
     @Insert
-    fun addUserData(user: User)
+    fun addUserData(profileUser: ProfileUser)
 
     @Query("DELETE FROM profiles WHERE id = :id")
     fun removeUserData(id: String)

@@ -29,7 +29,7 @@ import ziox.ramiro.saes.features.saes.features.grades.ui.screens.Grades
 import ziox.ramiro.saes.features.saes.features.home.ui.screens.Home
 import ziox.ramiro.saes.features.saes.features.kardex.ui.screens.Kardex
 import ziox.ramiro.saes.features.saes.features.occupancy.ui.screens.Occupancy
-import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserWebViewRepository
+import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.screens.Profile
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.ui.screens.ReRegistrationAppointment
@@ -66,7 +66,7 @@ class SAESActivity : AppCompatActivity() {
 
         profileViewModel = ViewModelProvider(
             this,
-            viewModelFactory { ProfileViewModel(UserWebViewRepository(this)) }
+            viewModelFactory { ProfileViewModel(ProfileWebViewRepository(this)) }
         ).get(ProfileViewModel::class.java)
 
         Twitter.initialize(this)

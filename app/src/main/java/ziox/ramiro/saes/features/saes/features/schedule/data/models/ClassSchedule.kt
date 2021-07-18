@@ -25,7 +25,7 @@ data class ClassSchedule(
 )
 
 fun List<ClassSchedule>.getCurrentClass() : ClassSchedule? {
-    val currentDay = WeekDay.todayByCalendar()
+    val currentDay = WeekDay.today()
     val currentHour = Hour.fromDate(Date())
 
     return this.find {
@@ -58,6 +58,29 @@ data class HourRange(
             }.toList()
         }
     }
+}
+
+fun <T>List<T>.getRangeBy(block: (T) -> HourRange) : IntRange{
+    var start : Double? = null
+    var end : Double? = null
+
+    for (item in this) {
+        val hourRange = block(item)
+        if(start?.compareTo(hourRange.start.toDouble()) ?: 1 > 0){
+            start = hourRange.start.toDouble()
+        }
+
+        if(end?.compareTo(hourRange.end.toDouble()) ?: -1 < 0){
+            end = hourRange.end.toDouble()
+        }
+    }
+
+    val first = start?.toInt() ?: 0
+    val last = end?.toInt() ?: 0
+
+    val diff = last - first
+
+    return IntRange(first, last + if(diff < 5) 5 - diff else 1)
 }
 
 data class Hour(
@@ -141,8 +164,32 @@ data class ShortDate(
         }
     }
 
+    fun toDate(): Date = Calendar.getInstance().apply {
+        timeInMillis = 0L
+        set(Calendar.YEAR, year)
+        set(Calendar.MONTH, month)
+        set(Calendar.DAY_OF_MONTH, day)
+    }.time
+
     override fun toString(): String {
         return "$day de ${MES_COMPLETO[month]} del $year"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return if(other is ShortDate){
+            other.day == day
+                && other.month == month
+                && other.year == year
+        }else{
+            super.equals(other)
+        }
+    }
+
+    override fun hashCode(): Int {
+        var result = day
+        result = 31 * result + month
+        result = 31 * result + year
+        return result
     }
 }
 
@@ -155,7 +202,9 @@ enum class WeekDay(val dayName: String, val calendarDayIndex: Int){
     UNKNOWN("Desconocido", -1);
 
     companion object {
-        fun todayByCalendar() = byDayOfWeek(Calendar.getInstance().get(Calendar.DAY_OF_WEEK))
+        fun today() = byDate(Date())
+
+        fun byDate(date: Date) = byDayOfWeek(date.toCalendar().get(Calendar.DAY_OF_WEEK))
 
         fun byDayOfWeek(dayOfWeek : Int) = when(dayOfWeek){
             1 -> MONDAY

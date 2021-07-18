@@ -64,7 +64,7 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
     private fun fetchScheduleData(){
         val db = LocalAppDatabase.invoke(context).scheduleRepository()
         val scheduleList = db.getMySchedule()
-        val weekDay = WeekDay.todayByCalendar()
+        val weekDay = WeekDay.today()
 
         this.scheduleList.clear()
         this.scheduleList.addAll(scheduleList.filter {

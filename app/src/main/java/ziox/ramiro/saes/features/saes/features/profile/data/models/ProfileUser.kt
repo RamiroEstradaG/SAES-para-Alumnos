@@ -8,7 +8,7 @@ import okhttp3.Headers
 import java.util.*
 
 @Entity(tableName = "profiles")
-data class User(
+data class ProfileUser(
     @PrimaryKey
     val id: String,
     @ColumnInfo(name = "name")

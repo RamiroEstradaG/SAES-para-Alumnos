@@ -67,7 +67,7 @@ class BottomSheetDrawerModal(
                             MenuHeader(name = "Alumno")
                             SectionMenuItem(section = MenuSection.KARDEX)
                             SectionMenuItem(section = MenuSection.RE_REGISTRATION_APPOINTMENT)
-                            SectionMenuItem(section = MenuSection.AGENDA)
+//                            SectionMenuItem(section = MenuSection.AGENDA)
                             MenuHeader(name = "Académico")
                             SectionMenuItem(section = MenuSection.ETS_CALENDAR)
                             SectionMenuItem(section = MenuSection.OCCUPANCY)
@@ -213,8 +213,8 @@ fun ProfileHeader(
                     painter = rememberCoilPainter(
                         request = ImageRequest
                             .Builder(LocalContext.current)
-                            .data(it.userData.profilePicture.url)
-                            .headers(it.userData.profilePicture.headers).build()),
+                            .data(it.profileUserData.profilePicture.url)
+                            .headers(it.profileUserData.profilePicture.headers).build()),
                     contentDescription = "Profile picture",
                     contentScale = ContentScale.Crop
                 )
@@ -223,12 +223,12 @@ fun ProfileHeader(
                     modifier = Modifier.padding(start = 16.dp)
                 ) {
                     Text(
-                        text = it.userData.name,
+                        text = it.profileUserData.name,
                         style = MaterialTheme.typography.h5
                     )
 
                     Text(
-                        text = it.userData.id,
+                        text = it.profileUserData.id,
                         style = MaterialTheme.typography.subtitle1
                     )
                 }

@@ -3,7 +3,6 @@ package ziox.ramiro.saes.ui.app_widgets
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
@@ -13,11 +12,10 @@ import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
-import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourRange
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.getInitials
-import java.util.*
 
 /**
  * Implementation of App Widget functionality.
@@ -41,8 +39,8 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         val rootView = RemoteViews(context.packageName, R.layout.widget_horario_max)
         val levelingPreference = UserPreferences(context).getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0)
         val scheduleList = db.getMySchedule()
-        val weekDay = WeekDay.todayByCalendar()
-        val range = scheduleList.getHourRange()
+        val weekDay = WeekDay.today()
+        val range = scheduleList.getRangeBy { it.hourRange }
 
         rootView.setInt(R.id.limiteTextView, "setHeight",TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,10f,context.resources.displayMetrics).toInt())
 
@@ -59,7 +57,7 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         scheduleList.forEach {
             val classRemoteView = RemoteViews(context.packageName, R.layout.sample_horario_clase_item)
             classRemoteView.setInt(R.id.clase_view, "setHeight", (it.hourRange.duration.times(getLayoutHeight(height, levelingPreference, context)).div(range.last - range.first)).toInt())
-            classRemoteView.setViewPadding(R.id.clase_view_parent,0,range.first.minus(it.hourRange.start.toDouble().times(getLayoutHeight(height, levelingPreference, context).div(range.last - range.first))).toInt(),0,0)
+            classRemoteView.setViewPadding(R.id.clase_view_parent,0, range.first.minus(it.hourRange.start.toDouble().times(getLayoutHeight(height, levelingPreference, context).div(range.last - range.first))).toInt(),0,0)
 
             classRemoteView.setInt(R.id.clase_view, "setBackgroundColor", it.color.toInt())
 
@@ -72,7 +70,7 @@ class ScheduleLargeWidget : AppWidgetProvider() {
     }
 
     private fun initSchedule(rootView: RemoteViews, context: Context, scheduleList: List<ClassSchedule>){
-        val range = scheduleList.getHourRange()
+        val range = scheduleList.getRangeBy{it.hourRange}
 
         for (id in scheduleDayLayouts){
             rootView.removeAllViews(id)

@@ -24,7 +24,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleView
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
 val hourWidth = 70.dp
-val today = WeekDay.todayByCalendar()
+val today = WeekDay.today()
 
 @ExperimentalAnimationApi
 @Composable
@@ -73,29 +73,6 @@ fun Schedule(
     else -> Box {
         scheduleViewModel.fetchMySchedule()
     }
-}
-
-
-fun List<ClassSchedule>.getHourRange(): IntRange {
-    var start : Double? = null
-    var end : Double? = null
-
-    for (classSchedule in this) {
-        if(start?.compareTo(classSchedule.hourRange.start.toDouble()) ?: 1 > 0){
-            start = classSchedule.hourRange.start.toDouble()
-        }
-
-        if(end?.compareTo(classSchedule.hourRange.end.toDouble()) ?: -1 < 0){
-            end = classSchedule.hourRange.end.toDouble()
-        }
-    }
-
-    val first = start?.toInt() ?: 0
-    val last = end?.toInt() ?: 0
-
-    val diff = last - first
-
-    return IntRange(first, last + if(diff < 6) 6 - diff else 1)
 }
 
 

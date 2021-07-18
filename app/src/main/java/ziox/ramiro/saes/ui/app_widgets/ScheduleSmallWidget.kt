@@ -9,7 +9,7 @@ import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getCurrentClass
-import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourRange
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
 import java.util.*
 
 
@@ -32,7 +32,7 @@ class ScheduleSmallWidget : AppWidgetProvider() {
         val now = Hour.fromDate(Date()).toDouble().toInt()
         val scheduleList = db.getMySchedule()
 
-        val range = scheduleList.getHourRange()
+        val range = scheduleList.getRangeBy { it.hourRange }
 
         if(scheduleList.isEmpty()){
             updateClassAndProgress(rootView, "Abre tu horario en la app para actualizar.", 0)

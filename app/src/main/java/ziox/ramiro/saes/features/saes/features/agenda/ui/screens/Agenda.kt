@@ -1,42 +1,44 @@
 package ziox.ramiro.saes.features.saes.features.agenda.ui.screens
 
+import android.text.util.Linkify
+import android.widget.TextView
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusOrder
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import kotlinx.coroutines.launch
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.HourRange
+import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaWebViewRepository
+import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaListState
+import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaListViewModel
+import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaState
+import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaViewModel
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
+import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.MES
 import ziox.ramiro.saes.utils.offset
 import ziox.ramiro.saes.utils.toHour
-import ziox.ramiro.saes.utils.toLongString
 import java.util.*
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -44,47 +46,105 @@ import kotlin.time.ExperimentalTime
 val hourHeight = 128.dp
 val eventWidth = 250.dp
 
+
+
+
+
+@Composable
+fun Agenda(){
+    val selectedAgenda = remember {
+        mutableStateOf<String?>(null)
+    }
+
+    Crossfade(targetState = selectedAgenda.value) {
+        if(it != null){
+            AgendaView(it)
+        }else{
+            CalendarList(
+                selectedAgenda = selectedAgenda
+            )
+        }
+    }
+}
+
+
+@Composable
+fun CalendarList(
+    agendaListViewModel: AgendaListViewModel = viewModel(
+        factory = viewModelFactory { AgendaListViewModel(AgendaWebViewRepository(LocalContext.current)) }
+    ),
+    selectedAgenda: MutableState<String?>
+){
+    when(val state = agendaListViewModel.statesAsState().value){
+        is AgendaListState.Loading -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        is AgendaListState.Complete -> LazyRow {
+            items(state.events.size){ i ->
+                Card(
+                    modifier = Modifier.clickable {
+                        selectedAgenda.value = state.events[i].calendarId
+                    }
+                ) {
+                    Text(text = state.events[i].name)
+                }
+            }
+        }
+        null -> agendaListViewModel.fetchAgendas()
+    }
+}
+
+
 @OptIn(ExperimentalTime::class)
 @Composable
-fun Agenda(
-
+fun AgendaView(
+    calendarId: String,
+    agendaViewModel: AgendaViewModel = viewModel(
+        factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(LocalContext.current)) }
+    )
 ) = Column {
     val today = Date()
     val todayShortDate = ShortDate.fromDate(today)
     val selectedDateIndex = remember {
         mutableStateOf(0)
     }
-
-    Text(
-        modifier = Modifier.padding(top = 16.dp, start = 32.dp, end = 32.dp, bottom = 16.dp),
-        text = today.toLongString(),
-        style = MaterialTheme.typography.h5
-    )
+    val availableDates = List(182){
+        ShortDate.fromDate(today.offset(Duration.days(it)))
+    }
 
     LazyRow(
         modifier = Modifier.padding(bottom = 32.dp),
         contentPadding = PaddingValues(horizontal = 32.dp)
     ) {
-
-        items(182){ offset ->
+        items(availableDates.size){ i ->
             DateSelectorItem(
-                date = ShortDate.fromDate(today.offset(Duration.days(offset))),
+                date = availableDates[i],
                 today = todayShortDate,
-                isSelected = offset == selectedDateIndex.value
+                isSelected = i == selectedDateIndex.value
             ){
-                selectedDateIndex.value = offset
+                selectedDateIndex.value = i
             }
         }
     }
 
-    Schedule(
-        modifier = Modifier.weight(1f),
-        listOf(
-            AgendaItem("Evento ejemplo", ShortDate.fromDate(today), HourRange.parse("12:00-13:30").first(), "Hola ramiroestradag@gmail.com"),
-            AgendaItem("Evento ejemplo2", ShortDate.fromDate(today), HourRange.parse("12:30-15:30").first()),
-            AgendaItem("Evento ejemplo3 asdasdasd", ShortDate.fromDate(today), HourRange.parse("12:00-17:30").first()),
+    when(val state = agendaViewModel.statesAsState().value){
+        is AgendaState.Loading -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        is AgendaState.Complete -> Schedule(
+            modifier = Modifier.weight(1f),
+            state.events.filter {
+                it.date == availableDates[selectedDateIndex.value]
+            }
         )
-    )
+        null -> agendaViewModel.fetchAgendaEvents(calendarId)
+    }
 }
 
 
@@ -93,6 +153,7 @@ fun Schedule(
     modifier: Modifier = Modifier,
     events: List<AgendaItem>
 ) {
+
     val xScrollState = rememberScrollState()
     val yScrollState = rememberScrollState()
 
@@ -102,17 +163,15 @@ fun Schedule(
                 .verticalScroll(yScrollState)
                 .focusable(false)
         ){
-            val hourRange = remember {
-                mutableStateOf(IntRange(11, 24))
-            }
+            val hourRange = events.getRangeBy { it.hourRange }
 
-            HourColumn(hourRange.value)
+            HourColumn(hourRange)
             Box(
                 modifier = Modifier
                     .horizontalScroll(xScrollState)
                     .focusable(false)
             ){
-                EventsContainer(hourRange.value, rearrangeList(events))
+                EventsContainer(hourRange, rearrangeList(events))
             }
         }
         Box(
@@ -210,22 +269,36 @@ fun EventCard(
         .padding(horizontal = 8.dp)
         .fillMaxSize(),
     shape = MaterialTheme.shapes.small,
-    elevation = 0.dp,
-    backgroundColor = if(agendaItem.classSchedule != null) Color(agendaItem.classSchedule.color) else MaterialTheme.colors.surface
+    elevation = 0.dp
 ) {
+    val secondaryText = getCurrentTheme().secondaryText
+
     Column(
-        Modifier.padding(16.dp)
+        Modifier
+            .padding(16.dp)
+            .background(
+                if (agendaItem.classSchedule != null) {
+                    Color(agendaItem.classSchedule.color).copy(alpha = 0.1f)
+                } else {
+                    Color.Transparent
+                }
+            )
     ) {
         Text(
             text = agendaItem.eventName,
             style = MaterialTheme.typography.h5,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-
-        Text(
-            modifier = Modifier,
-            text = agendaItem.description ?: ""
+        AndroidView(
+            factory = {
+                TextView(it).apply {
+                    text = agendaItem.description
+                    Linkify.addLinks(this, Linkify.ALL)
+                    linksClickable = true
+                    setTextColor(secondaryText.toArgb())
+                }
+            }
         )
     }
 }

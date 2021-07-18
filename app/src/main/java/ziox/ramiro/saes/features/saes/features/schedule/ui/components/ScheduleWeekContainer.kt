@@ -14,8 +14,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourHeight
-import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourRange
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
 import ziox.ramiro.saes.utils.toHour
 
@@ -24,7 +24,7 @@ fun ScheduleWeekContainer(
     classSchedules: List<ClassSchedule>,
     selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null)
 ) {
-    val hourRange = classSchedules.getHourRange()
+    val hourRange = classSchedules.getRangeBy { it.hourRange }
 
     Row(
         modifier = Modifier

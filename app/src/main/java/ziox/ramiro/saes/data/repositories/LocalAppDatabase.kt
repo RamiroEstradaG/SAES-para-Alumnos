@@ -1,7 +1,6 @@
 package ziox.ramiro.saes.data.repositories
 
 import android.content.Context
-import androidx.compose.ui.graphics.Color
 import androidx.room.*
 import okhttp3.Headers
 import org.json.JSONObject
@@ -14,8 +13,8 @@ import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesRoomRepository
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexDataRoom
 import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRoomRepository
-import ziox.ramiro.saes.features.saes.features.profile.data.models.User
-import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserRoomRepository
+import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
+import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileRoomRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleRoomRepository
@@ -24,7 +23,7 @@ import java.util.*
 @Database(entities = [
     ETS::class,
     ETSScore::class,
-    User::class,
+    ProfileUser::class,
     ClassGrades::class,
     ClassSchedule::class,
     KardexDataRoom::class,
@@ -47,7 +46,7 @@ abstract class LocalAppDatabase : RoomDatabase() {
     }
 
     abstract fun etsRepository(): ETSRoomRepository
-    abstract fun userRepository(): UserRoomRepository
+    abstract fun userRepository(): ProfileRoomRepository
     abstract fun gradesRepository(): GradesRoomRepository
     abstract fun scheduleRepository(): ScheduleRoomRepository
     abstract fun kardexRepository(): KardexRoomRepository

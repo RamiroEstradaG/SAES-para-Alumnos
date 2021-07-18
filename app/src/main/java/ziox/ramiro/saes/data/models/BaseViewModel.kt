@@ -19,12 +19,16 @@ open class BaseViewModel<S: ViewModelState, E: ViewModelEvent> : ViewModel() {
     init {
         viewModelScope.launch {
             _states.collect {
-                Log.d("ViewModelState", it?.javaClass?.simpleName.toString())
+                if (it != null) {
+                    Log.d("ViewModelState", it.javaClass.simpleName.toString())
+                }
             }
         }
         viewModelScope.launch {
             _events.collect {
-                Log.d("ViewModelEvent", it?.javaClass?.simpleName.toString())
+                if (it != null) {
+                    Log.d("ViewModelEvent", it.javaClass.simpleName.toString())
+                }
             }
         }
     }

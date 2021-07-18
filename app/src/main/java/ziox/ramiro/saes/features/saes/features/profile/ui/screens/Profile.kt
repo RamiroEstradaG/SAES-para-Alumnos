@@ -27,15 +27,14 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.profile.data.models.QRCodeScannerContract
-import ziox.ramiro.saes.features.saes.features.profile.data.models.User
-import ziox.ramiro.saes.features.saes.features.profile.data.repositories.UserWebViewRepository
+import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
+import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileState
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
@@ -48,13 +47,13 @@ import ziox.ramiro.saes.utils.createBarcodeImage
 @Composable
 fun Profile(
     profileViewModel: ProfileViewModel = viewModel(
-        factory = viewModelFactory { ProfileViewModel(UserWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { ProfileViewModel(ProfileWebViewRepository(LocalContext.current)) }
     )
 ) = when(val state = profileViewModel.filterStates(ProfileState.UserComplete::class, ProfileState.UserLoading::class).value){
     is ProfileState.UserComplete -> {
         Scaffold(
             topBar = {
-                ProfileAppBar(user = state.userData)
+                ProfileAppBar(profileUser = state.profileUserData)
             }
         ) {
 
@@ -75,7 +74,7 @@ fun Profile(
 
 @Composable
 fun ProfileAppBar(
-    user: User
+    profileUser: ProfileUser
 ) = Card(
     modifier = Modifier
         .height(280.dp)
@@ -122,20 +121,20 @@ fun ProfileAppBar(
                         painter = rememberCoilPainter(
                             request = ImageRequest
                                 .Builder(LocalContext.current)
-                                .data(user.profilePicture.url)
-                                .headers(user.profilePicture.headers).build()),
+                                .data(profileUser.profilePicture.url)
+                                .headers(profileUser.profilePicture.headers).build()),
                         contentDescription = "Profile picture",
                         contentScale = ContentScale.Crop
                     )
 
                     Text(
                         modifier = Modifier.padding(top = 24.dp),
-                        text = user.name,
+                        text = profileUser.name,
                         style = MaterialTheme.typography.h5
                     )
 
                     Text(
-                        text = user.id,
+                        text = profileUser.id,
                         style = MaterialTheme.typography.subtitle1
                     )
                 }
@@ -146,7 +145,7 @@ fun ProfileAppBar(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     QRCode()
-                    BarcodeCode39(user.id)
+                    BarcodeCode39(profileUser.id)
                 }
             }
         }
