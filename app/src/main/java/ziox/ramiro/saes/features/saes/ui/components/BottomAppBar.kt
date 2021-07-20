@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSState
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
@@ -30,8 +29,6 @@ fun BottomAppBar(
     onMenuIconClick: () -> Unit = {}
 ){
     val selectedItemMenu = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
-    val etsStates = etsViewModel.availableETSStates.collectAsState(initial = null)
-    val scoreStates = etsViewModel.scoresStates.collectAsState(initial = null)
 
     androidx.compose.material.BottomAppBar(
         backgroundColor = getCurrentTheme().toolbar
@@ -73,7 +70,7 @@ fun BottomAppBar(
                 )
             }
 
-            if(!(etsStates.value as? ETSState.ETSComplete)?.etsList.isNullOrEmpty() || !(scoreStates.value as? ETSState.ScoresComplete)?.scores.isNullOrEmpty()){
+            if(!etsViewModel.availableETS.value.isNullOrEmpty() || !etsViewModel.scores.value.isNullOrEmpty()){
                 IconButton(onClick = {
                     saesViewModel.changeSection(MenuSection.ETS)
                 }) {

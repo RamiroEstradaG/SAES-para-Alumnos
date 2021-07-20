@@ -24,7 +24,7 @@ class ScheduleMediumWidget  : AppWidgetProvider() {
     }
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
-        val rootView = RemoteViews(context.packageName, R.layout.widget_horario_list)
+        val rootView = RemoteViews(context.packageName, R.layout.widget_schedule_medium)
         val intent = Intent(context, ListWidgetRemoteViewService::class.java)
         val weekDay = WeekDay.today()
         val database = LocalAppDatabase.invoke(context).scheduleRepository()
@@ -32,13 +32,13 @@ class ScheduleMediumWidget  : AppWidgetProvider() {
 
         if(scheduleList.isEmpty()) {
             rootView.setTextViewText(R.id.horarioListDia, "Abre tu horario en la app para actualizar")
-            rootView.setInt(R.id.horarioList, "setBackgroundResource", R.drawable.background_widget_list_empty_bg)
+            rootView.setInt(R.id.horarioList, "setBackgroundResource", R.drawable.schedule_medium_widget_empty)
         }else {
             rootView.setTextViewText(R.id.horarioListDia, if (weekDay != WeekDay.UNKNOWN) {
                 rootView.setInt(R.id.horarioList, "setBackgroundResource", android.R.color.transparent)
                 weekDay.dayName
             } else {
-                rootView.setInt(R.id.horarioList, "setBackgroundResource", R.drawable.background_widget_list_empty_bg)
+                rootView.setInt(R.id.horarioList, "setBackgroundResource", R.drawable.schedule_medium_widget_empty)
                 "Fin de semana"
             })
         }

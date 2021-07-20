@@ -71,6 +71,25 @@ class WebViewProvider(
                 
                 return textOptions;
             }
+            function radioGroupToFilterField(elementIds, labels, fieldName){
+                var selectedIndex = 0;
+                
+                elementIds.forEach((id, index) => {
+                    var element = byId(id);
+                    
+                    if(element.checked){
+                        selectedIndex = index;
+                    }
+                });
+                
+                return {
+                    ids: elementIds,
+                    options: labels,
+                    name: fieldName,
+                    selectedIndex: selectedIndex,
+                    type: "${FilterType.RADIO_GROUP.name}"
+                };
+            }
             function selectToFilterField(elementId, fieldName, offset){
                 var element = byId(elementId);
                 var options = element.options;
@@ -82,7 +101,8 @@ class WebViewProvider(
                     name: fieldName,
                     selectedIndex: selectedIndex.toString(),
                     offset: offset,
-                    options: getSelectOptions(element, offset)
+                    options: getSelectOptions(element, offset),
+                    type: "${FilterType.SELECT.name}"
                 };
             }
         """.trimIndent()
@@ -292,6 +312,10 @@ class WebViewProvider(
             }
         }
     }
+}
+
+enum class FilterType{
+    SELECT, RADIO_GROUP
 }
 
 data class JavascriptInterfaceJob(

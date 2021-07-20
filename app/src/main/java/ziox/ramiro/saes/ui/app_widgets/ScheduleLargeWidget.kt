@@ -8,6 +8,9 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
@@ -16,6 +19,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.getInitials
+import ziox.ramiro.saes.utils.runOnDefaultThread
 
 /**
  * Implementation of App Widget functionality.
@@ -34,9 +38,15 @@ class ScheduleLargeWidget : AppWidgetProvider() {
             R.id.widget_viernesly)
 
     private fun updateAppWidget(context : Context, appWidgetManager : AppWidgetManager, appWidgetId : Int) {
+        CoroutineScope(Dispatchers.Default).launch {
+            updateScheduleWidget(context, appWidgetManager, appWidgetId)
+        }
+    }
+
+    suspend fun updateScheduleWidget(context : Context, appWidgetManager : AppWidgetManager, appWidgetId : Int) = runOnDefaultThread {
         val db = LocalAppDatabase.invoke(context).scheduleRepository()
         val height = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
-        val rootView = RemoteViews(context.packageName, R.layout.widget_horario_max)
+        val rootView = RemoteViews(context.packageName, R.layout.widget_schedule_large)
         val levelingPreference = UserPreferences(context).getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0)
         val scheduleList = db.getMySchedule()
         val weekDay = WeekDay.today()
@@ -55,7 +65,7 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         initSchedule(rootView, context, scheduleList)
 
         scheduleList.forEach {
-            val classRemoteView = RemoteViews(context.packageName, R.layout.sample_horario_clase_item)
+            val classRemoteView = RemoteViews(context.packageName, R.layout.widget_schedule_class_item)
             classRemoteView.setInt(R.id.clase_view, "setHeight", (it.hourRange.duration.times(getLayoutHeight(height, levelingPreference, context)).div(range.last - range.first)).toInt())
             classRemoteView.setViewPadding(R.id.clase_view_parent,0, range.first.minus(it.hourRange.start.toDouble().times(getLayoutHeight(height, levelingPreference, context).div(range.last - range.first))).toInt(),0,0)
 
@@ -80,13 +90,13 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         rootView.removeAllViews(R.id.horasHorarioWidgetLayout)
 
         for(i in range){
-            val backgroundRemote = RemoteViews(context.packageName, R.layout.sample_widget_horario_background_item)
+            val backgroundRemote = RemoteViews(context.packageName, R.layout.widget_schedule_background)
             rootView.addView(R.id.backgroundHorarioWidgetLayout, backgroundRemote)
         }
 
         for(i in range){
             if(i < range.last-range.first){
-                val hourRemote = RemoteViews(context.packageName, R.layout.sample_widget_horario_hora_item)
+                val hourRemote = RemoteViews(context.packageName, R.layout.widget_schedule_hour_item)
                 hourRemote.setTextViewText(R.id.widget_horas_item, "${range.first+i}:00")
                 hourRemote.setTextColor(R.id.widget_horas_item, ContextCompat.getColor(context, R.color.colorTextPrimary))
                 rootView.addView(R.id.horasHorarioWidgetLayout, hourRemote)
@@ -113,7 +123,7 @@ class ScheduleLargeWidget : AppWidgetProvider() {
     override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, newOptions: Bundle?) {
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
 
-        val views = RemoteViews(context.packageName, R.layout.widget_horario_max)
+        val views = RemoteViews(context.packageName, R.layout.widget_schedule_large)
         views.setViewVisibility(R.id.progressBarWidgetLarge, View.VISIBLE)
         appWidgetManager.updateAppWidget(appWidgetId, views)
 

@@ -11,6 +11,7 @@ import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.HourRange
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.scheduleColors
 import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
@@ -26,54 +27,41 @@ class ScheduleWebViewRepository(
     private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/Horario_Alumno.aspx")
     private val persistenceRepository = LocalAppDatabase.invoke(context).scheduleRepository()
 
-    private val scheduleColors = arrayOf(
-        Color(0xFFE91E63),
-        Color(0xFFFF9800),
-        Color(0xFF9C27B0),
-        Color(0xFF4CAF50),
-        Color(0xFF2196F3),
-        Color(0xFFF44336),
-        Color(0xFF673AB7),
-        Color(0xFF8BC34A),
-        Color(0xFF03A9F4),
-        Color(0xFFFF5722),
-        Color(0xFFFFC107),
-        Color(0xFF009688),
-        Color(0xFF3F51B5),
-        Color(0xFFCDDC39)
-    )
-
     override suspend fun getMySchedule(): List<ClassSchedule> {
         return if(context.isNetworkAvailable()){
             webView.scrap(
                 script = """
-                var scheduleTable = document.getElementById("ctl00_mainCopy_PnlDatos");
+                var scheduleTable = byId("ctl00_mainCopy_Panel1");
 
                 if(scheduleTable != null){
-                    var schedule = scheduleTable.getElementsByTagName("tbody")[1];
-                    var children = [...schedule.children];
-                
-                    var cols = JSON.parse(window.Utils.analiseColumns(
-                        [...children[0].children].map((el) => el.innerText),
-                        [...children[1].children].map((el) => el.innerText)
-                    ));
-                
-                    children.splice(0,1);
-                
+                    var schedule = scheduleTable.getElementsByTagName("tbody");
                     var scheduledClass = [];
                     
-                    children.filter(tr => !(!tr.innerText || /^\s*${'$'}/.test(tr.innerText))).forEach(tr => {
-                        scheduledClass.push(...tr.children.map((td, e) => ({
-                            id: tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(), 
-                            dayIndex: (e - cols.mondayIndex) % 5,               
-                            className: tr.children[cols.subjectIndex].innerText,               
-                            hours: td.innerText,               
-                            group: tr.children[cols.groupIndex].innerText,               
-                            teacherName: tr.children[cols.teacherIndex].innerText,               
-                            building: tr.children[cols.buildingIndex].innerText,               
-                            classroom: tr.children[cols.classroomIndex].innerText
-                        })));
-                    });
+                    if(schedule.length > 0){
+                        var children = [...schedule[0].children];
+                    
+                        var cols = JSON.parse(window.Utils.analiseColumns(
+                            [...children[0].children].map((el) => el.innerText),
+                            [...children[1].children].map((el) => el.innerText)
+                        ));
+                    
+                        children.splice(0,1);
+                    
+                        
+                        
+                        children.filter(tr => !(!tr.innerText || /^\s*${'$'}/.test(tr.innerText))).forEach(tr => {
+                            scheduledClass.push(...[...tr.children].map((td, e) => ({
+                                id: tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(), 
+                                dayIndex: (e - cols.mondayIndex) % 5 + 1,               
+                                className: tr.children[cols.subjectIndex].innerText,               
+                                hours: td.innerText,               
+                                group: tr.children[cols.groupIndex].innerText,               
+                                teacherName: tr.children[cols.teacherIndex].innerText,               
+                                building: tr.children[cols.buildingIndex].innerText,               
+                                classroom: tr.children[cols.classroomIndex].innerText
+                            })));
+                        });
+                    }
                 
                     next(scheduledClass);
                 }else{
@@ -83,20 +71,34 @@ class ScheduleWebViewRepository(
             ){
                 val data = it.result.getJSONArray("data")
 
+                val registered = mutableMapOf<String, Long>()
+
                 ArrayList<ClassSchedule>().apply {
                     for (i in 0 until data.length()) {
                         val classSchedule = data[i] as JSONObject
 
-                        val hours = HourRange.parse(classSchedule.getString("hours"), WeekDay.byDayOfWeek(classSchedule.getInt("dayIndex")))
+                        val hours = HourRange.parse(
+                            classSchedule.getString("hours"),
+                            WeekDay.byDayOfWeek(classSchedule.getInt("dayIndex"))
+                        )
+
+                        val className = classSchedule.getString("className").toProperCase()
+
+                        val color = if (registered.containsKey(className)){
+                            registered.getValue(className)
+                        }else{
+                            registered[className] = scheduleColors[registered.size % scheduleColors.size].value.toLong()
+                            registered.getValue(className)
+                        }
 
                         addAll(hours.map { range ->
                             ClassSchedule(
                                 classSchedule.getString("id"),
-                                classSchedule.getString("className").toProperCase(),
+                                className,
                                 classSchedule.getString("building"),
                                 classSchedule.getString("classroom"),
                                 classSchedule.getString("teacherName").toProperCase(),
-                                scheduleColors[i%scheduleColors.size].value.toLong(),
+                                color,
                                 range
                             )
                         })

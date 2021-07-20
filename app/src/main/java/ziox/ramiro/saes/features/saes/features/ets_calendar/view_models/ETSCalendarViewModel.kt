@@ -1,56 +1,65 @@
 package ziox.ramiro.saes.features.saes.features.ets_calendar.view_models
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
-import ziox.ramiro.saes.features.saes.data.models.FilterState
 import ziox.ramiro.saes.features.saes.data.models.FilterViewModel
+import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories.ETSCalendarRepository
 
 class ETSCalendarViewModel(
     private val etsCalendarRepository: ETSCalendarRepository
 ) : FilterViewModel() {
+    val etsCalendar = mutableStateOf<List<ETSCalendarItem>?>(null)
+    val error = mutableStateOf<String?>(null)
+
+    init {
+        getFilterFields()
+    }
+
     override fun getFilterFields() {
         viewModelScope.launch {
-            emitState(FilterState.FilterLoading())
+            filterFields.value = null
 
             kotlin.runCatching {
                 etsCalendarRepository.getFilters()
             }.onSuccess {
-                emitState(FilterState.FilterComplete(it))
+                filterFields.value = it
+                filterFieldsComplete.value = it
                 fetchETSCalendarEvents()
             }.onFailure {
-                emitEvent(ETSCalendarEvent.Error("Error al obtener los filtros"))
+                filterError.value = "Error al obtener los filtros"
             }
         }
     }
 
-    override fun selectFilterField(itemId: String, newIndex: Int?) {
+    override fun selectSelect(itemId: String, newIndex: Int?) {
         viewModelScope.launch {
-            emitState(FilterState.FilterLoading())
+            filterFields.value = null
 
             kotlin.runCatching {
-                etsCalendarRepository.selectFilterField(itemId, newIndex)
+                etsCalendarRepository.selectSelect(itemId, newIndex)
             }.onSuccess {
-                emitState(FilterState.FilterComplete(it))
+                filterFields.value = it
+                filterFieldsComplete.value = it
                 fetchETSCalendarEvents()
             }.onFailure {
-                emitEvent(ETSCalendarEvent.Error("Error al seleccionar el campo"))
+                filterError.value = "Error al seleccionar el campo"
             }
         }
     }
 
+    override fun selectRadioGroup(fieldId: String) {}
+
     private suspend fun fetchETSCalendarEvents() {
-        delay(500)
-        emitState(ETSCalendarState.EventsLoading())
+        etsCalendar.value = null
 
         kotlin.runCatching {
             etsCalendarRepository.getETSEvents()
         }.onSuccess {
-            emitState(ETSCalendarState.EventsComplete(it))
+            etsCalendar.value = it
         }.onFailure {
-            emitEvent(ETSCalendarEvent.Error("Error al obtener el calendario de ETS"))
+            error.value = "Error al obtener el calendario de ETS"
         }
     }
 }

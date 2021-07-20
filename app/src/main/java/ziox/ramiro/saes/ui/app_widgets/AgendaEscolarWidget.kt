@@ -29,7 +29,7 @@ class AgendaEscolarWidget : AppWidgetProvider(){
     }
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
-        val views = RemoteViews(context.packageName, R.layout.widget_agenda_escolar)
+        val views = RemoteViews(context.packageName, R.layout.widget_agenda)
         val intent = Intent(context, AgendaEscolarWidgetRemoteViewService::class.java)
         val calendar = Calendar.getInstance()
 

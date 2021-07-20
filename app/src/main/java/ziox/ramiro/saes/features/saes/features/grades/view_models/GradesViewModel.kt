@@ -1,22 +1,31 @@
 package ziox.ramiro.saes.features.saes.features.grades.view_models
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.models.BaseViewModel
+import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesRepository
 
 class GradesViewModel(
     private val gradesRepository: GradesRepository
-) : BaseViewModel<GradesState, GradesEvent>() {
+) : ViewModel() {
+    val grades = mutableStateOf<List<ClassGrades>?>(null)
+    val error = mutableStateOf<String?>(null)
+
+    init {
+        fetchGrades()
+    }
+
     fun fetchGrades() = viewModelScope.launch {
-        emitState(GradesState.GradesLoading())
+        grades.value = null
 
         kotlin.runCatching {
             gradesRepository.getMyGrades()
         }.onSuccess {
-            emitState(GradesState.GradesComplete(it))
+            grades.value = it
         }.onFailure {
-            emitEvent(GradesEvent.Error("Error al obtener las calificaciones"))
+            error.value = "Error al obtener las calificaciones"
         }
     }
 }

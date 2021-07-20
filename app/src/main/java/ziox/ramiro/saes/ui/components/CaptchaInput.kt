@@ -22,9 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
-import kotlinx.coroutines.flow.filter
 import ziox.ramiro.saes.utils.ValidationResult
-import ziox.ramiro.saes.view_models.AuthState
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 @Composable
@@ -34,7 +32,7 @@ fun CaptchaInput(
     authViewModel: AuthViewModel,
     captcha: MutableState<String>,
     validationResult: ValidationResult,
-    overrideError: State<String?> = mutableStateOf(null),
+    overrideError: String? = null,
     onDone: () -> Unit = {}
 ) = Column(
     modifier = modifier,
@@ -42,28 +40,33 @@ fun CaptchaInput(
 ) {
     val focusManager = LocalFocusManager.current
 
-    when(val state = authViewModel.filterStates(AuthState.LoadingCaptcha::class, AuthState.CaptchaComplete::class).value){
-        is AuthState.LoadingCaptcha -> Box(
-            modifier = Modifier.size(captchaWidth, captchaWidth.div(2f)),
+    if (authViewModel.captcha.value != null){
+        authViewModel.captcha.value?.let {
+            Image(
+                modifier = Modifier
+                    .size(captchaWidth, captchaWidth.div(2f))
+                    .clip(MaterialTheme.shapes.medium),
+                contentScale = ContentScale.Crop,
+                painter = rememberCoilPainter(
+                    fadeIn = true,
+                    request = ImageRequest
+                        .Builder(LocalContext.current)
+                        .data(it.url)
+                        .headers(it.headers).build(),
+                ),
+                contentDescription = "Captcha"
+            )
+        }
+    }else{
+        Box(
+            modifier = Modifier
+                .size(captchaWidth, captchaWidth.div(2f))
+                .clip(MaterialTheme.shapes.medium),
         ) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
-        is AuthState.CaptchaComplete -> Image(
-            modifier = Modifier
-                .size(captchaWidth, captchaWidth.div(2f))
-                .clip(MaterialTheme.shapes.small),
-            contentScale = ContentScale.Crop,
-            painter = rememberCoilPainter(
-                fadeIn = true,
-                request = ImageRequest
-                    .Builder(LocalContext.current)
-                    .data(state.captcha.url)
-                    .headers(state.captcha.headers).build(),
-            ),
-            contentDescription = "Captcha"
-        )
-        else -> authViewModel.fetchCaptcha()
     }
+
     OutlinedTextField(
         modifier = Modifier
             .padding(top = 8.dp)
@@ -88,7 +91,7 @@ fun CaptchaInput(
     )
     Text(
         color = MaterialTheme.colors.error,
-        text = overrideError.value ?: validationResult.errorMessage,
+        text = overrideError ?: validationResult.errorMessage,
         style = MaterialTheme.typography.body2,
         textAlign = TextAlign.Center
     )

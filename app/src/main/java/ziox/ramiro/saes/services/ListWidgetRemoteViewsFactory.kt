@@ -40,7 +40,7 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
     override fun getViewAt(position: Int): RemoteViews? {
         if (position == AdapterView.INVALID_POSITION || scheduleList.isEmpty() || !scheduleList.indices.contains(position)) return null
 
-        val remoteViews = RemoteViews(context.packageName, R.layout.widget_view_list_item)
+        val remoteViews = RemoteViews(context.packageName, R.layout.widget_schedule_medium_item)
 
         val classSchedule = scheduleList[position]
 

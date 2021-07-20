@@ -35,7 +35,6 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.profile.data.models.QRCodeScannerContract
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
-import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileState
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.BarcodeTypes
@@ -49,26 +48,28 @@ fun Profile(
     profileViewModel: ProfileViewModel = viewModel(
         factory = viewModelFactory { ProfileViewModel(ProfileWebViewRepository(LocalContext.current)) }
     )
-) = when(val state = profileViewModel.filterStates(ProfileState.UserComplete::class, ProfileState.UserLoading::class).value){
-    is ProfileState.UserComplete -> {
-        Scaffold(
-            topBar = {
-                ProfileAppBar(profileUser = state.profileUserData)
-            }
-        ) {
+) {
+    if(profileViewModel.profile.value != null){
+        profileViewModel.profile.value?.let {
+            Scaffold(
+                topBar = {
+                    ProfileAppBar(profileUser = it)
+                }
+            ) {
 
+            }
+        }
+    }else{
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
     }
-    is ProfileState.UserLoading -> Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ) {
-        CircularProgressIndicator(
-            modifier = Modifier.align(Alignment.Center)
-        )
-    }
-    else -> Box {}
 }
 
 

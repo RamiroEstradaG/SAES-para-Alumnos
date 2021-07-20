@@ -1,25 +1,27 @@
 package ziox.ramiro.saes.features.saes.features.agenda.view_models
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.models.BaseViewModel
+import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaCalendar
 import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaRepository
 
 class AgendaListViewModel(
     private val agendaRepository: AgendaRepository
-) : BaseViewModel<AgendaListState, AgendaListEvent>() {
+) : ViewModel() {
+    val agendaList = mutableStateOf<List<AgendaCalendar>?>(null)
+    val error = mutableStateOf<String?>(null)
 
     fun fetchAgendas() = viewModelScope.launch {
-        emitState(AgendaListState.Loading())
-
         kotlin.runCatching {
             agendaRepository.getCalendars().collect {
-                emitState(AgendaListState.Complete(it))
+                agendaList.value = it
             }
         }.onFailure {
             it.printStackTrace()
-            emitEvent(AgendaListEvent.Error("Error al obtener la lista de agendas"))
+            error.value = "Error al obtener la lista de agendas"
         }
     }
 

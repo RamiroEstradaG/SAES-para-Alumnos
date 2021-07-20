@@ -9,7 +9,7 @@
         android:id="@+id/materia_widget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/background_widget_small"
+        android:background="@drawable/schedule_small_widget_background"
         android:elevation="3dp"
         android:gravity="center"
         android:padding="12dp"

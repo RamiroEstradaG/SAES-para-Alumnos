@@ -18,7 +18,6 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.data.repositories.ReRegistrationWebViewRepository
-import ziox.ramiro.saes.features.saes.features.re_registration_appointment.view_models.ReRegistrationAppointmentState
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.view_models.ReRegistrationAppointmentViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FlexView
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
@@ -31,9 +30,9 @@ fun ReRegistrationAppointment(
         factory = viewModelFactory { ReRegistrationAppointmentViewModel(ReRegistrationWebViewRepository(
             LocalContext.current)) }
     )
-) = Crossfade(targetState = reRegistrationViewModel.statesAsState().value) {
-    when(val state = it){
-        is ReRegistrationAppointmentState.Complete -> Box(
+) = Crossfade(targetState = reRegistrationViewModel.reRegistrationData.value) {
+    if(it != null){
+        Box(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             Column(
@@ -44,7 +43,7 @@ fun ReRegistrationAppointment(
                     style = MaterialTheme.typography.h4
                 )
                 Text(
-                    text = state.data.appointmentDate?.toLongString() ?: "Reinscripción no disponible",
+                    text = it.appointmentDate?.toLongString() ?: "Reinscripción no disponible",
                     style = MaterialTheme.typography.h6
                 )
                 Row(
@@ -53,18 +52,18 @@ fun ReRegistrationAppointment(
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    CreditsElement(title = "Carga mínima", value = state.data.creditsMinimum.toString())
-                    CreditsElement(title = "Carga media", value = state.data.creditsMedium.toString())
-                    CreditsElement(title = "Carga máxima", value = state.data.creditsMaximum.toString())
+                    CreditsElement(title = "Carga mínima", value = it.creditsMinimum.toString())
+                    CreditsElement(title = "Carga media", value = it.creditsMedium.toString())
+                    CreditsElement(title = "Carga máxima", value = it.creditsMaximum.toString())
                 }
                 ProgressChart(
                     modifier = Modifier.padding(top = 48.dp),
                     title = "Créditos",
-                    max = state.data.creditsTotal,
+                    max = it.creditsTotal,
                     elements = listOf(
                         ChartElement(
                             "Obtenidos",
-                            state.data.creditsObtained,
+                            it.creditsObtained,
                             MaterialTheme.colors.primary
                         )
                     )
@@ -72,16 +71,16 @@ fun ReRegistrationAppointment(
                 ProgressChart(
                     modifier = Modifier.padding(top = 48.dp),
                     title = "Periodos escolares",
-                    max = state.data.careerMaximumDuration.toDouble(),
+                    max = it.careerMaximumDuration.toDouble(),
                     elements = listOf(
                         ChartElement(
                             "Cursado",
-                            state.data.careerCurrentDuration.toDouble(),
+                            it.careerCurrentDuration.toDouble(),
                             MaterialTheme.colors.primary
                         ),
                         ChartElement(
                             "Previsto",
-                            state.data.careerMediumDuration.toDouble(),
+                            it.careerMediumDuration.toDouble(),
                             MaterialTheme.colors.secondary
                         )
                     )
@@ -90,7 +89,8 @@ fun ReRegistrationAppointment(
                 }
             }
         }
-        is ReRegistrationAppointmentState.Loading -> Box(
+    }else{
+        Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {

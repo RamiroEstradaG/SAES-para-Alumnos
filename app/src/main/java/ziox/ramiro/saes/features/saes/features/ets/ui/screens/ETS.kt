@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,13 +20,11 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETS
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETSScore
 import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
-import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSState
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.components.OutlineButton
-import ziox.ramiro.saes.ui.components.TextButton
 
 @Composable
 fun ETS(
@@ -38,9 +35,6 @@ fun ETS(
 ) = Box(
     modifier = Modifier.verticalScroll(rememberScrollState())
 ) {
-    val etsState = etsViewModel.availableETSStates.collectAsState(initial = ETSState.ETSLoading())
-    val scoresState = etsViewModel.scoresStates.collectAsState(initial = ETSState.ScoresLoading())
-
     Column(
         modifier = Modifier.padding(
             start = 32.dp,
@@ -60,8 +54,14 @@ fun ETS(
             style = MaterialTheme.typography.h5
         )
 
-        when(etsState.value){
-            is ETSState.ETSLoading -> Box(
+        if(etsViewModel.availableETS.value != null){
+            Column(modifier = Modifier.padding(top = 16.dp)) {
+                etsViewModel.availableETS.value?.forEach {
+                    ETSItem(it, etsViewModel)
+                }
+            }
+        }else{
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 32.dp)
@@ -69,11 +69,6 @@ fun ETS(
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )
-            }
-            is ETSState.ETSComplete -> Column(modifier = Modifier.padding(top = 16.dp)) {
-                (etsState.value as ETSState.ETSComplete).etsList.forEach {
-                    ETSItem(it, etsViewModel)
-                }
             }
         }
 
@@ -83,8 +78,14 @@ fun ETS(
             style = MaterialTheme.typography.h5
         )
 
-        when(scoresState.value){
-            is ETSState.ScoresLoading -> Box(
+        if(etsViewModel.scores.value != null){
+            Column(modifier = Modifier.padding(top = 16.dp)) {
+                etsViewModel.scores.value?.forEach {
+                    ETSScoreItem(it, etsViewModel.availableETS)
+                }
+            }
+        }else{
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 32.dp)
@@ -92,11 +93,6 @@ fun ETS(
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
                 )
-            }
-            is ETSState.ScoresComplete -> Column(modifier = Modifier.padding(top = 16.dp)) {
-                (scoresState.value as ETSState.ScoresComplete).scores.forEach {
-                    ETSScoreItem(it, etsState)
-                }
             }
         }
 
@@ -139,15 +135,13 @@ fun ETSItem(
 @Composable
 fun ETSScoreItem(
     ets: ETSScore,
-    etsState: State<ETSState?>
+    etsState: State<List<ETS>?>
 ) = Row(
     modifier = Modifier.padding(vertical = 8.dp),
     verticalAlignment = Alignment.CenterVertically
 ){
     val className: String = ets.className.ifBlank {
-        val etsName =
-            (etsState.value as? ETSState.ETSComplete)?.etsList?.firstOrNull { it.id == ets.id }?.name
-                ?: ""
+        val etsName = etsState.value?.firstOrNull { it.id == ets.id }?.name ?: ""
 
         etsName.ifBlank {
             ets.id

@@ -8,10 +8,10 @@ class UtilsJavascriptInterface {
     @JavascriptInterface
     fun analiseColumns(cols: Array<String>, firstRow: Array<String>) : String{
         val mondayIndex = cols.indexOfFirst {
-            it.trim().matches(Regex("lunes", RegexOption.IGNORE_CASE))
+            it.trim().matches(Regex("lunes|lun", RegexOption.IGNORE_CASE))
         }
         val fridayIndex = cols.indexOfFirst {
-            it.trim().matches(Regex("viernes", RegexOption.IGNORE_CASE))
+            it.trim().matches(Regex("viernes|vie", RegexOption.IGNORE_CASE))
         }
         val buildingIndex = cols.indexOfFirst {
             it.trim().matches(Regex("edificio", RegexOption.IGNORE_CASE))

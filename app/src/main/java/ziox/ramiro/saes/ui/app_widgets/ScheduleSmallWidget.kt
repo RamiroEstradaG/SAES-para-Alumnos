@@ -26,7 +26,7 @@ class ScheduleSmallWidget : AppWidgetProvider() {
     }
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
-        val rootView = RemoteViews(context.packageName, R.layout.widget_horario_min)
+        val rootView = RemoteViews(context.packageName, R.layout.widget_schedule_small)
 
         val db = LocalAppDatabase.invoke(context).scheduleRepository()
         val now = Hour.fromDate(Date()).toDouble().toInt()

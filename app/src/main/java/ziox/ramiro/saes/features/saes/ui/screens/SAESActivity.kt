@@ -14,6 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.twitter.sdk.android.core.Twitter
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -34,14 +37,13 @@ import ziox.ramiro.saes.features.saes.features.profile.ui.screens.Profile
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.ui.screens.ReRegistrationAppointment
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.Schedule
+import ziox.ramiro.saes.features.saes.features.school_schedule.ui.screens.SchoolSchedule
 import ziox.ramiro.saes.features.saes.ui.components.BottomAppBar
 import ziox.ramiro.saes.features.saes.ui.components.BottomSheetDrawerModal
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.screens.MainActivity
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
-import ziox.ramiro.saes.view_models.AuthEvent
-import ziox.ramiro.saes.view_models.AuthState
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 class SAESActivity : AppCompatActivity() {
@@ -59,6 +61,10 @@ class SAESActivity : AppCompatActivity() {
         viewModelFactory { SAESViewModel(LocalAppDatabase.invoke(this).historyRepository()) }
     }
 
+    companion object {
+        const val INTENT_EXTRA_REDIRECT = "redirect"
+    }
+
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,19 +75,36 @@ class SAESActivity : AppCompatActivity() {
             viewModelFactory { ProfileViewModel(ProfileWebViewRepository(this)) }
         ).get(ProfileViewModel::class.java)
 
+        val remoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 0
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+
+        remoteConfig.fetchAndActivate()
+
         Twitter.initialize(this)
 
-        listenToAuthStates()
-        listenToAuthEvents()
+        val initialSection = try{
+            MenuSection.valueOf(intent.getStringExtra(INTENT_EXTRA_REDIRECT)!!)
+        }catch (e: Exception){
+            SAESViewModel.SECTION_INITIAL.name
+        }
+
         listenToNavigationStates()
 
         setContent {
             SAESParaAlumnosTheme { uiController ->
-                val selectedMenuItem = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
+                val selectedMenuItem = saesViewModel.currentSection.collectAsState(initial = initialSection)
 
                 when(selectedMenuItem.value){
                     MenuSection.PROFILE -> uiController.setStatusBarColor(MaterialTheme.colors.surface)
                     else -> uiController.setStatusBarColor(Color.Transparent)
+                }
+
+                if(authViewModel.isLoggedIn.value == false){
+                    startActivity(Intent(this@SAESActivity, MainActivity::class.java))
+                    finish()
                 }
 
                 Scaffold(
@@ -108,6 +131,7 @@ class SAESActivity : AppCompatActivity() {
                             MenuSection.RE_REGISTRATION_APPOINTMENT -> ReRegistrationAppointment()
                             MenuSection.OCCUPANCY -> Occupancy()
                             MenuSection.AGENDA -> Agenda()
+                            MenuSection.SCHOOL_SCHEDULE -> SchoolSchedule()
                         }
                     }
                 }
@@ -126,26 +150,6 @@ class SAESActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         authViewModel.checkSession()
-    }
-
-    private fun listenToAuthEvents() = lifecycleScope.launch {
-        authViewModel.events.collect {
-            if(it is AuthEvent.LogoutSuccess){
-                startActivity(Intent(this@SAESActivity, MainActivity::class.java))
-                finish()
-            }
-        }
-    }
-
-    private fun listenToAuthStates() = lifecycleScope.launch {
-        authViewModel.states.collect {
-            if(it is AuthState.SessionCheckComplete){
-                if (!it.isLoggedIn){
-                    startActivity(Intent(this@SAESActivity, MainActivity::class.java))
-                    finish()
-                }
-            }
-        }
     }
 
     private fun listenToNavigationStates() = lifecycleScope.launch {

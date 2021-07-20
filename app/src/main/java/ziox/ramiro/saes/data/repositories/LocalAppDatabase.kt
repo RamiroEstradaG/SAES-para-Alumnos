@@ -16,8 +16,10 @@ import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRo
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileRoomRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.GeneratorClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleRoomRepository
+import ziox.ramiro.saes.features.saes.features.schedule_generator.models.reposotories.ScheduleGeneratorRepository
 import java.util.*
 
 @Database(entities = [
@@ -27,8 +29,9 @@ import java.util.*
     ClassGrades::class,
     ClassSchedule::class,
     KardexDataRoom::class,
-    HistoryItem::class
-], version = 7, exportSchema = false)
+    HistoryItem::class,
+    GeneratorClassSchedule::class
+], version = 8, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class LocalAppDatabase : RoomDatabase() {
     companion object {
@@ -51,6 +54,7 @@ abstract class LocalAppDatabase : RoomDatabase() {
     abstract fun scheduleRepository(): ScheduleRoomRepository
     abstract fun kardexRepository(): KardexRoomRepository
     abstract fun historyRepository(): HistoryRoomRepository
+    abstract fun scheduleGeneratorRepository(): ScheduleGeneratorRepository
 }
 
 class Converters {

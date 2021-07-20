@@ -2,6 +2,7 @@ package ziox.ramiro.saes.features.saes.features.occupancy.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FilterAlt
@@ -21,7 +22,6 @@ import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.occupancy.data.models.ClassOccupancy
 import ziox.ramiro.saes.features.saes.features.occupancy.data.repositories.OccupancyWebViewRepository
-import ziox.ramiro.saes.features.saes.features.occupancy.view_models.OccupancyState
 import ziox.ramiro.saes.features.saes.features.occupancy.view_models.OccupancyViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
@@ -56,31 +56,34 @@ fun Occupancy(
         },
         scaffoldState = scaffoldState
     ) {
-        when(val state = occupancyViewModel.filterStates(OccupancyState.Complete::class, OccupancyState.Loading::class).value){
-            is OccupancyState.Complete -> if(state.occupancyList.isNotEmpty()){
-                LazyColumn(
-                    contentPadding = PaddingValues(
-                        top = 16.dp,
-                        start = 32.dp,
-                        end = 32.dp,
-                        bottom = 90.dp
-                    )
-                ) {
-                    items(state.occupancyList.size){ i ->
-                        OccupancyItem(state.occupancyList[i])
+        if(occupancyViewModel.occupancyList.value != null){
+            occupancyViewModel.occupancyList.value?.let {
+                if(it.isNotEmpty()){
+                    LazyColumn(
+                        contentPadding = PaddingValues(
+                            top = 16.dp,
+                            start = 32.dp,
+                            end = 32.dp,
+                            bottom = 90.dp
+                        )
+                    ) {
+                        items(it){ occupancy ->
+                            OccupancyItem(occupancy)
+                        }
+                    }
+                }else{
+                    Box(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        ResponsePlaceholder(
+                            painter = painterResource(id = R.drawable.logging_off),
+                            text = "No hay datos de ocupabilidad con los campos seleccionados"
+                        )
                     }
                 }
-            }else{
-                Box(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    ResponsePlaceholder(
-                        painter = painterResource(id = R.drawable.logging_off),
-                        text = "No hay datos de ocupabilidad con los campos seleccionados"
-                    )
-                }
             }
-            else  -> Box(
+        }else{
+            Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {

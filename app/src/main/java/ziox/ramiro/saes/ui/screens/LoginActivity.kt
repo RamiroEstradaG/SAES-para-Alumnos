@@ -25,9 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
@@ -39,9 +36,10 @@ import ziox.ramiro.saes.ui.components.SchoolButton
 import ziox.ramiro.saes.ui.components.TextButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
-import ziox.ramiro.saes.utils.*
-import ziox.ramiro.saes.view_models.AuthEvent
-import ziox.ramiro.saes.view_models.AuthState
+import ziox.ramiro.saes.utils.PreferenceKeys
+import ziox.ramiro.saes.utils.UserPreferences
+import ziox.ramiro.saes.utils.areAllValid
+import ziox.ramiro.saes.utils.validateField
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 class LoginActivity : ComponentActivity() {
@@ -49,7 +47,7 @@ class LoginActivity : ComponentActivity() {
         viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
     }
 
-    private val schoolUrl = MutableStateFlow("")
+    private val schoolUrl = mutableStateOf("")
     private val username = mutableStateOf("")
     private val password = mutableStateOf("")
     private lateinit var userPreferences : UserPreferences
@@ -71,10 +69,18 @@ class LoginActivity : ComponentActivity() {
         username.value = userPreferences.getPreference(PreferenceKeys.Boleta, "")
         password.value = userPreferences.getPreference(PreferenceKeys.Password, "")
 
-        listenToAuthStates()
-        listenToAuthEvents()
-
         setContent {
+            if(authViewModel.auth.value?.isLoggedIn == true){
+                userPreferences.setPreference(PreferenceKeys.Boleta, username.value)
+                userPreferences.setPreference(PreferenceKeys.Password, password.value)
+
+                startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
+                finish()
+            }else if(authViewModel.isLoggedIn.value == true){
+                startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
+                finish()
+            }
+
             SAESParaAlumnosTheme {
                 Scaffold {
                     if(username.value.isNotBlank() && password.value.isNotBlank() && userPreferences.isAuthDataSaved()){
@@ -87,41 +93,12 @@ class LoginActivity : ComponentActivity() {
                         Login(
                             authViewModel,
                             selectSchoolLauncher,
-                            schoolUrl.collectAsState(),
+                            schoolUrl,
                             username,
                             password
                         )
                     }
                 }
-            }
-        }
-    }
-
-    private fun listenToAuthStates() = lifecycleScope.launch {
-        authViewModel.states.collect {
-            when(it){
-                is AuthState.SessionCheckComplete -> if(it.isLoggedIn){
-                    startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
-                    finish()
-                }
-            }
-        }
-    }
-
-    private fun listenToAuthEvents() = lifecycleScope.launch {
-        authViewModel.events.collect {
-            when(it){
-                is AuthEvent.Error -> {
-                    println(it.message)
-                }
-                is AuthEvent.LoginComplete -> if(it.auth.isLoggedIn){
-                    userPreferences.setPreference(PreferenceKeys.Boleta, username.value)
-                    userPreferences.setPreference(PreferenceKeys.Password, password.value)
-
-                    startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
-                    finish()
-                }
-                else -> {}
             }
         }
     }
@@ -167,13 +144,6 @@ fun Login(
         if(it.isEmpty()) "El campo está vacío."
         else null
     }
-
-    val loginErrorState = authViewModel.events
-        .filterIsInstance<AuthEvent.LoginComplete>().map {
-            val message = it.auth.message
-            if (message.isNotBlank()) message
-            else null
-        }.collectAsState(initial = null)
 
     Column(
         modifier = Modifier.padding(
@@ -259,7 +229,7 @@ fun Login(
         Text(
             modifier = Modifier.padding(start = 8.dp),
             color = MaterialTheme.colors.error,
-            text = loginErrorState.value ?: passwordValidator.errorMessage,
+            text = authViewModel.auth.value?.errorMessage ?: passwordValidator.errorMessage,
             style = MaterialTheme.typography.body2
         )
         CaptchaInput(
@@ -281,15 +251,7 @@ fun Login(
                 .fillMaxWidth(),
             isHighEmphasis = true,
             text = "Iniciar sesión",
-            isLoadingState = authViewModel.events.filter {
-                it is AuthEvent.LoadingLogin || it is AuthEvent.LoginComplete
-            }.map {
-                when (it) {
-                    is AuthEvent.LoadingLogin -> true
-                    is AuthEvent.LoginComplete -> false
-                    else -> null
-                }
-            }.collectAsState(initial = false)
+            isLoading = authViewModel.auth.value == null
         ){
             if(listOf(usernameValidator, passwordValidator, captchaValidator).areAllValid()){
                 authViewModel.login(username.value, password.value, captcha.value)
@@ -325,13 +287,6 @@ fun LoginOnlyCaptcha(
         else null
     }
 
-    val loginErrorState = authViewModel.events
-        .filterIsInstance<AuthEvent.LoginComplete>().map {
-            val message = it.auth.message
-            if (message.isNotBlank()) message
-            else null
-        }.collectAsState(initial = null)
-
     Column(
         modifier = Modifier.padding(
             top = 64.dp,
@@ -360,7 +315,7 @@ fun LoginOnlyCaptcha(
             authViewModel = authViewModel,
             captcha = captcha,
             validationResult = captchaValidator,
-            overrideError = loginErrorState
+            overrideError = authViewModel.auth.value?.errorMessage
         ){
             if(!captchaValidator.isError){
                 authViewModel.login(
@@ -377,15 +332,7 @@ fun LoginOnlyCaptcha(
                 .fillMaxWidth(),
             isHighEmphasis = true,
             text = "Iniciar sesión",
-            isLoadingState = authViewModel.events.filter {
-                it is AuthEvent.LoadingLogin || it is AuthEvent.LoginComplete
-            }.map {
-                when (it) {
-                    is AuthEvent.LoadingLogin -> true
-                    is AuthEvent.LoginComplete -> false
-                    else -> null
-                }
-            }.collectAsState(initial = false)
+            isLoading = authViewModel.auth.value == null
         ){
             if(!captchaValidator.isError){
                 authViewModel.login(

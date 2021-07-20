@@ -9,7 +9,7 @@
         android:id="@+id/horarioListDia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_widget_list"
+        android:background="@drawable/schedule_medium_widget_background"
         android:padding="4dp"
         android:text="Sin clases"
         android:textAlignment="center"
@@ -20,5 +20,5 @@
         android:id="@+id/horarioList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/widget_view_list_item" />
+        tools:listitem="@layout/widget_schedule_medium_item" />
 </LinearLayout>

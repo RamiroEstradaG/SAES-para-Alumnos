@@ -5,10 +5,13 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.UnfoldLess
+import androidx.compose.material.icons.rounded.UnfoldMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,7 +25,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
-import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexState
 import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewModel
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
@@ -32,99 +34,125 @@ fun Kardex(
     kardexViewModel: KardexViewModel = viewModel(
         factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(LocalContext.current)) }
     )
-) = Crossfade(targetState = kardexViewModel.statesAsState().value) {
-    when(it){
-        is KardexState.Complete -> Column(
-            modifier = Modifier
-                .fillMaxSize()
+) {
+    val isExpanded = remember {
+        mutableStateOf(false)
+    }
 
-        ) {
-            Column(
-                modifier = Modifier.padding(
-                    top = 16.dp,
-                    start = 32.dp,
-                    end = 32.dp
-                )
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier.padding(bottom = 64.dp),
+                onClick = {
+                    isExpanded.value = !isExpanded.value
+                }
             ) {
-                Text(
-                    text = "Promedio general",
-                    style = MaterialTheme.typography.subtitle2
-                )
-                Text(
-                    text = it.data.generalScore?.toString() ?: "-",
-                    style = MaterialTheme.typography.h3,
-                    color = gradeColor(it.data.generalScore?.toInt())
+                Icon(
+                    imageVector = if(isExpanded.value) Icons.Rounded.UnfoldLess else Icons.Rounded.UnfoldMore,
+                    contentDescription = "Unfold icon"
                 )
             }
+        }
+    ) {
+        Crossfade(targetState = kardexViewModel.kardexData.value) {
+            if (it != null){
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
 
-            LazyColumn(
-                modifier = Modifier
-                    .padding(top = 32.dp),
-                contentPadding = PaddingValues(bottom = 64.dp)
-            ) {
-                items(it.data.kardexPeriods.size){ i ->
-                    val isExpanded = remember {
-                        mutableStateOf(false)
-                    }
-                    Column {
-                        ListItem(
-                            modifier = Modifier.clickable {
-                                isExpanded.value = !isExpanded.value
-                            },
-                            text = {
-                                Text(
-                                    modifier = Modifier.padding(start = 16.dp),
-                                    text = it.data.kardexPeriods[i].periodName,
-                                    style = MaterialTheme.typography.h5,
-                                    color = if(isExpanded.value) MaterialTheme.colors.primary else getCurrentTheme().primaryText
-                                )
-                            },
-                            trailing = {
-                                Icon(
-                                    modifier = Modifier
-                                        .padding(end = 8.dp)
-                                        .size(32.dp),
-                                    imageVector = if (isExpanded.value) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
-                                    contentDescription = "Expand",
-                                    tint = if(isExpanded.value) MaterialTheme.colors.primary else getCurrentTheme().primaryText
-                                )
-                            }
+                ) {
+                    Column(
+                        modifier = Modifier.padding(
+                            top = 16.dp,
+                            start = 32.dp,
+                            end = 32.dp
                         )
-                        Column(
-                            modifier = Modifier
-                                .animateContentSize()
-                                .height(if (isExpanded.value) Dp.Unspecified else 0.dp)
-                        ) {
-                            it.data.kardexPeriods[i].kardexClasses.forEach {
+                    ) {
+                        Text(
+                            text = "Promedio general",
+                            style = MaterialTheme.typography.subtitle2
+                        )
+                        Text(
+                            text = it.generalScore?.toString() ?: "-",
+                            style = MaterialTheme.typography.h3,
+                            color = gradeColor(it.generalScore?.toInt())
+                        )
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(top = 32.dp),
+                        contentPadding = PaddingValues(bottom = 132.dp)
+                    ) {
+                        items(it.kardexPeriods){ period ->
+                            val isExpandedSingle = remember {
+                                mutableStateOf(false)
+                            }
+
+                            val expandableState = isExpanded.value xor isExpandedSingle.value
+
+                            Column {
                                 ListItem(
+                                    modifier = Modifier.clickable {
+                                        isExpandedSingle.value = !isExpandedSingle.value
+                                    },
                                     text = {
                                         Text(
                                             modifier = Modifier.padding(start = 16.dp),
-                                            text = it.name,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                            text = period.periodName,
+                                            style = MaterialTheme.typography.h5,
+                                            color = if(expandableState) MaterialTheme.colors.primary else getCurrentTheme().primaryText
                                         )
                                     },
                                     trailing = {
-                                        Text(
-                                            modifier = Modifier.padding(end = 16.dp),
-                                            text = it.score?.toString() ?: "-",
-                                            color = gradeColor(it.score),
-                                            style = MaterialTheme.typography.h5
+                                        Icon(
+                                            modifier = Modifier
+                                                .padding(end = 8.dp)
+                                                .size(32.dp),
+                                            imageVector = if (expandableState) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                                            contentDescription = "Expand",
+                                            tint = if(expandableState) MaterialTheme.colors.primary else getCurrentTheme().primaryText
                                         )
                                     }
                                 )
+                                Column(
+                                    modifier = Modifier
+                                        .animateContentSize()
+                                        .height(if (expandableState) Dp.Unspecified else 0.dp)
+                                ) {
+                                    period.kardexClasses.forEach {
+                                        ListItem(
+                                            text = {
+                                                Text(
+                                                    modifier = Modifier.padding(start = 16.dp),
+                                                    text = it.name,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            },
+                                            trailing = {
+                                                Text(
+                                                    modifier = Modifier.padding(end = 16.dp),
+                                                    text = it.score?.toString() ?: "-",
+                                                    color = gradeColor(it.score),
+                                                    style = MaterialTheme.typography.h5
+                                                )
+                                            }
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            }else{
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
-        }
-        is KardexState.Loading -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
         }
     }
 }

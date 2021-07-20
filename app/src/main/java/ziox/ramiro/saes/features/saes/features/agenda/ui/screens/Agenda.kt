@@ -7,6 +7,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -28,9 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
 import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaWebViewRepository
-import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaListState
 import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaListViewModel
-import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaState
 import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaViewModel
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
@@ -75,25 +74,28 @@ fun CalendarList(
     ),
     selectedAgenda: MutableState<String?>
 ){
-    when(val state = agendaListViewModel.statesAsState().value){
-        is AgendaListState.Loading -> Box(
+    if(agendaListViewModel.agendaList.value != null){
+        LazyRow {
+            agendaListViewModel.agendaList.value?.let {
+                items(it){ calendar ->
+                    Card(
+                        modifier = Modifier.clickable {
+                            selectedAgenda.value = calendar.calendarId
+                        }
+                    ) {
+                        Text(text = calendar.name)
+                    }
+                }
+            }
+        }
+    }else{
+        Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
+            agendaListViewModel.fetchAgendas()
         }
-        is AgendaListState.Complete -> LazyRow {
-            items(state.events.size){ i ->
-                Card(
-                    modifier = Modifier.clickable {
-                        selectedAgenda.value = state.events[i].calendarId
-                    }
-                ) {
-                    Text(text = state.events[i].name)
-                }
-            }
-        }
-        null -> agendaListViewModel.fetchAgendas()
     }
 }
 
@@ -130,26 +132,29 @@ fun AgendaView(
         }
     }
 
-    when(val state = agendaViewModel.statesAsState().value){
-        is AgendaState.Loading -> Box(
+    if(agendaViewModel.eventList.value != null){
+        agendaViewModel.eventList.value?.let {
+            AgendaSchedule(
+                modifier = Modifier.weight(1f),
+                it.filter { event ->
+                    event.date == availableDates[selectedDateIndex.value]
+                }
+            )
+        }
+    }else{
+        Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
+            agendaViewModel.fetchAgendaEvents(calendarId)
         }
-        is AgendaState.Complete -> Schedule(
-            modifier = Modifier.weight(1f),
-            state.events.filter {
-                it.date == availableDates[selectedDateIndex.value]
-            }
-        )
-        null -> agendaViewModel.fetchAgendaEvents(calendarId)
     }
 }
 
 
 @Composable
-fun Schedule(
+fun AgendaSchedule(
     modifier: Modifier = Modifier,
     events: List<AgendaItem>
 ) {

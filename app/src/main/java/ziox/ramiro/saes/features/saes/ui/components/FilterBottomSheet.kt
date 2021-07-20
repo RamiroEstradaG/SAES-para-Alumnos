@@ -1,10 +1,8 @@
 package ziox.ramiro.saes.features.saes.ui.components
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -12,24 +10,13 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexWrap
-import com.google.android.flexbox.FlexboxLayout
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.last
 import ziox.ramiro.saes.features.saes.data.models.FilterField
-import ziox.ramiro.saes.features.saes.data.models.FilterState
 import ziox.ramiro.saes.features.saes.data.models.FilterViewModel
+import ziox.ramiro.saes.features.saes.data.models.RadioGroupFilterField
 import ziox.ramiro.saes.features.saes.data.models.SelectFilterField
 import ziox.ramiro.saes.ui.components.OutlineButton
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
@@ -42,9 +29,6 @@ fun FilterBottomSheet(
     modifier = Modifier
         .fillMaxSize()
 ) {
-    val filterCompleteStates = filterViewModel.fieldFilterStates.filter { it is FilterState.FilterComplete }.collectAsState(
-        initial = null
-    )
     val scrollState = rememberScrollState()
 
     Box(
@@ -64,28 +48,26 @@ fun FilterBottomSheet(
             text = "Filtros",
             style = MaterialTheme.typography.h4
         )
-        when(filterViewModel.fieldFilterStatesAsState().value){
-            is FilterState.FilterLoading -> CircularProgressIndicator(
+        if (filterViewModel.filterFields.value == null){
+            CircularProgressIndicator(
                 modifier = Modifier.size(24.dp)
             )
-            else -> Box{}
         }
     }
-
-    when(val state = filterViewModel.fieldFilterStatesAsState().value){
-        is FilterState.FilterComplete -> FilterGroup(
-            scrollState = scrollState,
-            filterFields = state.filterFields,
-            filterViewModel = filterViewModel
-        )
-        is FilterState.FilterLoading -> when(val completeStates = filterCompleteStates.value) {
-            is FilterState.FilterComplete -> FilterGroup(
+    if (filterViewModel.filterFields.value != null){
+        filterViewModel.filterFields.value?.let {
+            FilterGroup(
                 scrollState = scrollState,
-                filterFields = completeStates.filterFields,
+                filterFields = it,
                 filterViewModel = filterViewModel
             )
         }
-        null -> filterViewModel.getFilterFields()
+    }else{
+        FilterGroup(
+            scrollState = scrollState,
+            filterFields = filterViewModel.filterFieldsComplete.value,
+            filterViewModel = filterViewModel
+        )
     }
 }
 
@@ -109,7 +91,7 @@ fun FilterGroup(
     ) {
         var isBreak = false
         val filtered = filterFields.filter { field ->
-            if (!field.isSelected){
+            if (!field.isActive){
                 isBreak = true
                 true
             }else{
@@ -120,6 +102,7 @@ fun FilterGroup(
         filtered.forEach { field ->
             when(field){
                 is SelectFilterField -> SelectFilter(field, filterViewModel)
+                is RadioGroupFilterField -> RadioGroupFilter(field, filterViewModel)
             }
         }
     }
@@ -134,37 +117,58 @@ fun SelectFilter(
     modifier = Modifier.padding(bottom = 16.dp)
 ) {
     val infoColor = getCurrentTheme().info
-    val filterState = filterViewModel.fieldFilterStatesAsState()
 
     Text(
         text = if(selectFilterField.items.isNotEmpty()) selectFilterField.fieldName else "",
         style = MaterialTheme.typography.subtitle2
     )
-    AndroidView(
-        factory = {
-            val flexbox = FlexboxLayout(it)
-            flexbox.flexDirection = FlexDirection.ROW
-            flexbox.flexWrap = FlexWrap.WRAP
-
-            selectFilterField.items.forEachIndexed { i, value ->
-                flexbox.addView(ComposeView(it).apply {
-                    setContent {
-                        OutlineButton(
-                            modifier = Modifier.padding(end = 8.dp, top = 8.dp),
-                            text = value,
-                            borderColor = infoColor,
-                            textColor = if (i != selectFilterField.selectedIndex) infoColor else MaterialTheme.colors.onPrimary,
-                            backgroundColor = if (i == selectFilterField.selectedIndex) infoColor else null
-                        ){
-                            if(filterState.value !is FilterState.FilterLoading){
-                                filterViewModel.selectFilterField(selectFilterField.itemId, i + selectFilterField.indexOffset)
-                            }
-                        }
+    FlexView(
+        content = selectFilterField.items.mapIndexed { i, value ->
+            {
+                OutlineButton(
+                    modifier = Modifier.padding(end = 8.dp, top = 8.dp),
+                    text = value,
+                    borderColor = infoColor,
+                    textColor = if (i != selectFilterField.selectedIndex) infoColor else MaterialTheme.colors.onPrimary,
+                    backgroundColor = if (i == selectFilterField.selectedIndex) infoColor else null
+                ){
+                    if (filterViewModel.filterFields.value != null){
+                        filterViewModel.selectSelect(selectFilterField.itemId, i + selectFilterField.indexOffset)
                     }
-                })
+                }
             }
+        }
+    )
+}
 
-            flexbox
+@Composable
+fun RadioGroupFilter(
+    selectFilterField: RadioGroupFilterField,
+    filterViewModel: FilterViewModel
+) = Column(
+    modifier = Modifier.padding(bottom = 16.dp)
+) {
+    val infoColor = getCurrentTheme().info
+
+    Text(
+        text = if(selectFilterField.items.isNotEmpty()) selectFilterField.fieldName else "",
+        style = MaterialTheme.typography.subtitle2
+    )
+    FlexView(
+        content = selectFilterField.items.mapIndexed { i, value ->
+            {
+                OutlineButton(
+                    modifier = Modifier.padding(end = 8.dp, top = 8.dp),
+                    text = value.second,
+                    borderColor = infoColor,
+                    textColor = if (i != selectFilterField.selectedIndex) infoColor else MaterialTheme.colors.onPrimary,
+                    backgroundColor = if (i == selectFilterField.selectedIndex) infoColor else null
+                ){
+                    if (filterViewModel.filterFields.value != null){
+                        filterViewModel.selectRadioGroup(value.first)
+                    }
+                }
+            }
         }
     )
 }

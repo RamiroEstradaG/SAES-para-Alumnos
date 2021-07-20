@@ -1,21 +1,30 @@
 package ziox.ramiro.saes.view_models
 
 import android.webkit.CookieManager
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ziox.ramiro.saes.data.models.Auth
+import ziox.ramiro.saes.data.models.Captcha
 import ziox.ramiro.saes.data.repositories.AuthRepository
-import ziox.ramiro.saes.data.models.BaseViewModel
 
 class AuthViewModel(
     private val authRepository: AuthRepository
-) : BaseViewModel<AuthState, AuthEvent>(){
+) : ViewModel(){
+    val captcha = mutableStateOf<Captcha?>(null)
+    val auth = mutableStateOf<Auth?>(Auth.Empty)
+    val error = mutableStateOf<String?>(null)
+    val isLoggedIn = mutableStateOf<Boolean?>(null)
+
     init {
         checkSession()
+        fetchCaptcha()
     }
 
     fun fetchCaptcha() {
         viewModelScope.launch {
-            emitState(AuthState.LoadingCaptcha())
+            captcha.value = null
 
             kotlin.runCatching {
                 authRepository.getCaptcha()
@@ -23,48 +32,48 @@ class AuthViewModel(
                 if(it.url.isBlank() && !it.isLoggedIn){
                     fetchCaptcha()
                 }else{
-                    emitState(AuthState.CaptchaComplete(it))
+                    captcha.value = it
                 }
             }.onFailure {
                 fetchCaptcha()
-                emitEvent(AuthEvent.Error("Error al obtener el captcha"))
+                error.value = "Error al obtener el captcha"
             }
         }
     }
 
 
     fun login(username: String, password: String, captcha: String) = viewModelScope.launch {
-        emitEvent(AuthEvent.LoadingLogin())
+        auth.value = null
 
         kotlin.runCatching {
             authRepository.login(username, password, captcha)
         }.onSuccess {
-            emitEvent(AuthEvent.LoginComplete(it))
+            auth.value = it
             if (!it.isLoggedIn){
                 fetchCaptcha()
             }
         }.onFailure {
-            emitEvent(AuthEvent.Error("Error al obtener el captcha"))
+            error.value = "Error al obtener el captcha"
             fetchCaptcha()
         }
     }
 
     fun checkSession() {
         viewModelScope.launch {
-            emitState(AuthState.SessionCheckLoading())
+            isLoggedIn.value = null
 
             kotlin.runCatching {
                 authRepository.isLoggedIn()
             }.onSuccess {
-                emitState(AuthState.SessionCheckComplete(it))
+                isLoggedIn.value = it
             }.onFailure {
                 checkSession()
-                emitEvent(AuthEvent.Error("Error al revisar la sesion"))
+                error.value = "Error al revisar la sesion"
             }
         }
     }
 
     fun logout() = CookieManager.getInstance().removeAllCookies {
-        emitEvent(AuthEvent.LogoutSuccess())
+        isLoggedIn.value = false
     }
 }

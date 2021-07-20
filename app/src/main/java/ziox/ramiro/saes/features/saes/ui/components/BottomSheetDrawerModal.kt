@@ -30,13 +30,16 @@ import androidx.compose.ui.unit.dp
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
 import ziox.ramiro.saes.features.about.ui.screens.AboutActivity
-import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileState
+import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
+import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.launchUrl
 import ziox.ramiro.saes.view_models.AuthViewModel
 
@@ -46,6 +49,7 @@ class BottomSheetDrawerModal(
     private var saesViewModel: SAESViewModel,
     private var authViewModel: AuthViewModel
 ): BottomSheetDialogFragment() {
+    private val remoteConfig = Firebase.remoteConfig
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +62,7 @@ class BottomSheetDrawerModal(
                     Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        ProfileHeader(profileState = profileViewModel.statesAsState())
+                        ProfileHeader(profileState = profileViewModel.profile)
                         Divider()
                         Column(
                             modifier = Modifier
@@ -70,13 +74,14 @@ class BottomSheetDrawerModal(
 //                            SectionMenuItem(section = MenuSection.AGENDA)
                             MenuHeader(name = "Académico")
                             SectionMenuItem(section = MenuSection.ETS_CALENDAR)
+                            SectionMenuItem(section = MenuSection.SCHOOL_SCHEDULE)
                             SectionMenuItem(section = MenuSection.OCCUPANCY)
                             MenuHeader(name = "Calendario académico")
                             ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad Escolarizada"){
-                                context?.launchUrl("https://www.ipn.mx/assets/files/main/docs/inicio/cal-Escolarizada-21-22.pdf")
+                                context?.launchUrl(remoteConfig.getString("calendario_escolarizado"))
                             }
                             ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad No-Escolarizada"){
-                                context?.launchUrl("https://www.ipn.mx/assets/files/main/docs/inicio/cal-NoEscolarizada-21-22.pdf")
+                                context?.launchUrl(remoteConfig.getString("calendario_no_escolarizado"))
                             }
                             MenuHeader(name = "Aplicación")
                             ActionMenuItem(icon = Icons.Rounded.Info, name = "Acerca de la aplicación"){
@@ -98,38 +103,40 @@ class BottomSheetDrawerModal(
     ) {
         val currentSection = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
 
-        Box(
-            Modifier.padding(
-                horizontal = 8.dp,
-                vertical = 4.dp
-            )
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(MaterialTheme.shapes.medium)
-                    .clickable {
-                        saesViewModel.changeSection(section)
-                        dismiss()
-                    }
-                    .background(
-                        if (currentSection.value == section) MaterialTheme.colors.primary.copy(alpha = 0.1f) else Color.Transparent
-                    )
-                    .height(43.dp)
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+        if(LocalContext.current.isNetworkAvailable() || section.supportsOfflineMode){
+            Box(
+                Modifier.padding(
+                    horizontal = 8.dp,
+                    vertical = 4.dp
+                )
             ) {
-                Icon(
-                    imageVector = section.icon,
-                    contentDescription = section.name,
-                    tint = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText
-                )
-                Text(
-                    modifier = Modifier.padding(start = 16.dp),
-                    text = section.sectionName,
-                    color = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText,
-                    fontWeight = if (currentSection.value == section) FontWeight.Bold else FontWeight.Normal,
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(MaterialTheme.shapes.medium)
+                        .clickable {
+                            saesViewModel.changeSection(section)
+                            dismiss()
+                        }
+                        .background(
+                            if (currentSection.value == section) MaterialTheme.colors.primary.copy(alpha = 0.1f) else Color.Transparent
+                        )
+                        .height(43.dp)
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = section.icon,
+                        contentDescription = section.name,
+                        tint = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 16.dp),
+                        text = section.sectionName,
+                        color = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText,
+                        fontWeight = if (currentSection.value == section) FontWeight.Bold else FontWeight.Normal,
+                    )
+                }
             }
         }
     }
@@ -188,52 +195,55 @@ fun MenuHeader(
 
 @Composable
 fun ProfileHeader(
-    profileState : State<ProfileState?>
+    profileState : State<ProfileUser?>
 ) = Crossfade(targetState = profileState.value) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
     ) {
-        when(it){
-            is ProfileState.UserComplete -> Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
+        if (it != null){
+            profileState.value?.let {
+                Row(
                     modifier = Modifier
-                        .clip(CircleShape)
-                        .size(48.dp),
-                    painter = rememberCoilPainter(
-                        request = ImageRequest
-                            .Builder(LocalContext.current)
-                            .data(it.profileUserData.profilePicture.url)
-                            .headers(it.profileUserData.profilePicture.headers).build()),
-                    contentDescription = "Profile picture",
-                    contentScale = ContentScale.Crop
-                )
-
-                Column(
-                    modifier = Modifier.padding(start = 16.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(
+                            horizontal = 16.dp,
+                            vertical = 12.dp
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = it.profileUserData.name,
-                        style = MaterialTheme.typography.h5
+                    Image(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(48.dp),
+                        painter = rememberCoilPainter(
+                            request = ImageRequest
+                                .Builder(LocalContext.current)
+                                .data(it.profilePicture.url)
+                                .headers(it.profilePicture.headers).build()),
+                        contentDescription = "Profile picture",
+                        contentScale = ContentScale.Crop
                     )
 
-                    Text(
-                        text = it.profileUserData.id,
-                        style = MaterialTheme.typography.subtitle1
-                    )
+                    Column(
+                        modifier = Modifier.padding(start = 16.dp)
+                    ) {
+                        Text(
+                            text = it.name,
+                            style = MaterialTheme.typography.h5
+                        )
+
+                        Text(
+                            text = it.id,
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                    }
                 }
             }
-            is ProfileState.UserLoading -> Box(
+        }else{
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
@@ -242,7 +252,6 @@ fun ProfileHeader(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-            else -> Box {}
         }
     }
 }

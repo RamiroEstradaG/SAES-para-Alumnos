@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.features.saes.features.schedule.data.models
 
+import androidx.compose.ui.graphics.Color
 import androidx.room.*
 import ziox.ramiro.saes.utils.MES
 import ziox.ramiro.saes.utils.MES_COMPLETO
@@ -22,6 +23,41 @@ data class ClassSchedule(
     val color: Long,
     @Embedded
     val hourRange: HourRange
+)
+
+@Entity(tableName = "schedule_generator")
+data class GeneratorClassSchedule(
+    @PrimaryKey
+    val id: String,
+    @ColumnInfo(name = "class_name")
+    val className: String,
+    @ColumnInfo(name = "building")
+    val building: String,
+    @ColumnInfo(name = "classroom")
+    val classroom: String,
+    @ColumnInfo(name = "teacher_name")
+    val teacherName: String,
+    @ColumnInfo(name = "class_color")
+    val color: Long,
+    @Embedded
+    val hourRange: HourRange
+)
+
+val scheduleColors = arrayOf(
+    Color(0xFFE91E63),
+    Color(0xFFFF9800),
+    Color(0xFF9C27B0),
+    Color(0xFF4CAF50),
+    Color(0xFF2196F3),
+    Color(0xFFF44336),
+    Color(0xFF673AB7),
+    Color(0xFF8BC34A),
+    Color(0xFF03A9F4),
+    Color(0xFFFF5722),
+    Color(0xFFFFC107),
+    Color(0xFF009688),
+    Color(0xFF3F51B5),
+    Color(0xFFCDDC39)
 )
 
 fun List<ClassSchedule>.getCurrentClass() : ClassSchedule? {

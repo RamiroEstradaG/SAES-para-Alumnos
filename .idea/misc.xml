@@ -12,9 +12,14 @@
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/drawable/ic_play_arrow_black_24dp.xml" value="0.1485" />
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/drawable/widget_horario_semanal_gradient.xml" value="0.1485" />
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/sample_horario_clase_item.xml" value="0.2318840579710145" />
+        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_horario_list.xml" value="0.2318840579710145" />
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_horario_max.xml" value="0.18645833333333334" />
-        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_view_agenda_event_item.xml" value="0.1" />
-        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_view_clase.xml" value="0.1" />
+        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_schedule_background_item.xml" value="0.2318840579710145" />
+        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_schedule_large.xml" value="0.2318840579710145" />
+        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_schedule_medium_item.xml" value="0.2318840579710145" />
+        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_view_agenda_event_item.xml" value="0.33" />
+        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_view_clase.xml" value="0.25" />
+        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_view_list_item.xml" value="0.2318840579710145" />
         <entry key="..\:/Github/SAESCompose/app/src/main/res/drawable/ic_logopoli.xml" value="0.1885" />
       </map>
     </option>

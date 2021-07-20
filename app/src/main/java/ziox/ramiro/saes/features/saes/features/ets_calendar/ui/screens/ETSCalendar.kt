@@ -29,7 +29,6 @@ import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories.ETSCalendarWebViewRepository
-import ziox.ramiro.saes.features.saes.features.ets_calendar.view_models.ETSCalendarState
 import ziox.ramiro.saes.features.saes.features.ets_calendar.view_models.ETSCalendarViewModel
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
@@ -64,10 +63,10 @@ fun ETSCalendar(
         },
         scaffoldState = scaffoldState
     ) {
-        when(val state = etsCalendarViewModel.filterStates(ETSCalendarState.EventsComplete::class, ETSCalendarState.EventsLoading::class).value){
-            is ETSCalendarState.EventsComplete -> {
-                val groupedEvents = state.events.groupBy {
-                    it.date
+        if(etsCalendarViewModel.etsCalendar.value != null){
+            etsCalendarViewModel.etsCalendar.value?.let {
+                val groupedEvents = it.groupBy { item ->
+                    item.date
                 }
 
                 if(groupedEvents.isNotEmpty()){
@@ -79,8 +78,8 @@ fun ETSCalendar(
                                 .padding(16.dp)
                                 .padding(bottom = 64.dp)
                         ) {
-                            groupedEvents.forEach {
-                                ETSCalendarDayGroup(date = it.key, groupList = it.value)
+                            groupedEvents.forEach { group ->
+                                ETSCalendarDayGroup(date = group.key, groupList = group.value)
                             }
                         }
                     }
@@ -95,7 +94,8 @@ fun ETSCalendar(
                     }
                 }
             }
-            else  -> Box(
+        }else{
+            Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {

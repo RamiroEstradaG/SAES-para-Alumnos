@@ -1,10 +1,10 @@
 package ziox.ramiro.saes.features.saes.features.home.view_models
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import com.twitter.sdk.android.core.models.Tweet
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.models.BaseViewModel
 import ziox.ramiro.saes.features.saes.data.models.HistoryItem
 import ziox.ramiro.saes.features.saes.data.repositories.HistoryRoomRepository
 import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterRepository
@@ -13,29 +13,37 @@ import ziox.ramiro.saes.utils.runOnDefaultThread
 class HomeViewModel(
     private val twitterRepository: TwitterRepository,
     private val historyRoomRepository: HistoryRoomRepository
-) : BaseViewModel<HomeState, HomeEvent>() {
-    private val _historyItems = MutableStateFlow<List<HistoryItem>?>(null)
-    val historyItem = _historyItems.asSharedFlow()
+) : ViewModel() {
+    val historyItems = mutableStateOf<List<HistoryItem>?>(null)
+    val schoolTweets = mutableStateOf<List<Tweet>?>(null)
+    val error = mutableStateOf<String?>(null)
+
+    init {
+        fetchUserHistory()
+        fetchTweets()
+    }
 
     fun fetchUserHistory() = viewModelScope.launch {
+        historyItems.value = null
+
         kotlin.runCatching {
             runOnDefaultThread { historyRoomRepository.getLastThree() }
         }.onSuccess {
-            _historyItems.emit(it)
+            historyItems.value = it
         }.onFailure {
-            emitEvent(HomeEvent.Error("Error al obtener el historial"))
+            error.value = "Error al obtener el historial"
         }
     }
 
     fun fetchTweets() = viewModelScope.launch {
-        emitState(HomeState.TweetsLoading())
+        schoolTweets.value = null
 
         kotlin.runCatching {
             twitterRepository.getTimelineTweets()
         }.onSuccess {
-            emitState(HomeState.TweetsComplete(it))
+            schoolTweets.value = it
         }.onFailure {
-            emitEvent(HomeEvent.Error("Error al obtener los Tweets"))
+            error.value = "Error al obtener los Tweets"
         }
     }
 }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_widget_large">
+    android:background="@drawable/schedule_large_widget_background">
 
     <FrameLayout
         android:id="@+id/widget_parent"
@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/widget_horario_semanal_gradient"
+                android:background="@drawable/schedule_large_hour_gradient"
                 android:orientation="vertical">
 
                 <TextView
@@ -232,7 +232,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.7"
-        android:background="@drawable/background_widget_large"
+        android:background="@drawable/schedule_large_widget_background"
         android:visibility="gone">
 
         <TextView

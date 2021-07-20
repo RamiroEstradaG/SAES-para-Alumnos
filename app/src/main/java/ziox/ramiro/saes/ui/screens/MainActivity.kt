@@ -4,17 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
-import ziox.ramiro.saes.utils.*
-import ziox.ramiro.saes.view_models.AuthState
+import ziox.ramiro.saes.utils.PreferenceKeys
+import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 class MainActivity : ComponentActivity() {
@@ -34,28 +31,22 @@ class MainActivity : ComponentActivity() {
         if(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) == null){
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
-        }else{
-            listenToAuthStates()
         }
 
         setContent {
             SAESParaAlumnosTheme {
+                authViewModel.isLoggedIn.value?.let {
+                    if(it){
+                        startActivity(Intent(this@MainActivity, SAESActivity::class.java))
+                    }else{
+                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                    }
+                    finish()
+                }
+
                 Scaffold {
                     SplashScreen()
                 }
-            }
-        }
-    }
-
-    private fun listenToAuthStates() = lifecycleScope.launch {
-        authViewModel.states.collect {
-            if(it is AuthState.SessionCheckComplete){
-                if (it.isLoggedIn) {
-                    startActivity(Intent(this@MainActivity, SAESActivity::class.java))
-                } else {
-                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                }
-                finish()
             }
         }
     }

@@ -3,20 +3,20 @@ package ziox.ramiro.saes.features.saes.view_models
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.models.BaseViewModel
 import ziox.ramiro.saes.features.saes.data.models.HistoryItem
 import ziox.ramiro.saes.features.saes.data.repositories.HistoryRoomRepository
 import ziox.ramiro.saes.utils.runOnDefaultThread
 
 class SAESViewModel(
     private val historyRoomRepository: HistoryRoomRepository
-) : BaseViewModel<SAESState, SAESEvent>() {
+) : ViewModel() {
     companion object {
-        val SECTION_INITIAL = MenuSection.AGENDA
+        val SECTION_INITIAL = MenuSection.SCHOOL_SCHEDULE
     }
 
     private val _currentSection = MutableStateFlow(SECTION_INITIAL)
@@ -59,5 +59,6 @@ enum class MenuSection(
     ETS_CALENDAR("Calendario de ETS", Icons.Rounded.DateRange),
     RE_REGISTRATION_APPOINTMENT("Cita de reinscripción", Icons.Rounded.EventAvailable),
     OCCUPANCY("Ocupabilidad de horario", Icons.Rounded.LockClock),
-    AGENDA("Agenda", Icons.Rounded.PendingActions)
+    AGENDA("Agenda", Icons.Rounded.PendingActions),
+    SCHOOL_SCHEDULE("Horario general", Icons.Rounded.HistoryToggleOff)
 }

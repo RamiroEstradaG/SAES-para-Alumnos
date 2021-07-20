@@ -26,7 +26,7 @@ fun ScheduleClassView(
         .padding(top = hourHeight.times((classSchedule.hourRange.start.toDouble() - startHour).toFloat()))
         .height(hourHeight.times(classSchedule.hourRange.duration.toFloat()))
         .fillMaxWidth(),
-    backgroundColor = Color(classSchedule.color),
+    backgroundColor = Color(classSchedule.color.toULong()),
     shape = MaterialTheme.shapes.small,
     elevation = 0.dp
 ) {

@@ -24,19 +24,19 @@ fun AsyncButton(
     modifier: Modifier = Modifier,
     text: String = "button",
     isHighEmphasis: Boolean = false,
-    isLoadingState: State<Boolean?> = remember { mutableStateOf(false) },
+    isLoading: Boolean = false,
     onClick: () -> Unit
 ) {
     Button(
         modifier = modifier,
         onClick = {
-            if(isLoadingState.value != true){
+            if(!isLoading){
                 onClick()
             }
         },
         shape = RoundedCornerShape(100)
     ) {
-        if (isLoadingState.value != true){
+        if (!isLoading){
             Text(
                 text = text.uppercase(),
                 modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)

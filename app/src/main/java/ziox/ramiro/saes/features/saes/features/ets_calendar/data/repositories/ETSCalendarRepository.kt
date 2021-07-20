@@ -1,7 +1,6 @@
 package ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories
 
 import android.content.Context
-import androidx.compose.runtime.Composable
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.features.saes.data.models.FilterField
@@ -10,13 +9,10 @@ import ziox.ramiro.saes.features.saes.data.models.SelectFilterField
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.utils.hhmma_toHour
-import ziox.ramiro.saes.utils.MMMddyyyy_toDate
 import ziox.ramiro.saes.utils.toProperCase
 
 interface ETSCalendarRepository : FilterRepository {
     suspend fun getETSEvents(): List<ETSCalendarItem>
-    override suspend fun getFilters(): List<FilterField>
-    override suspend fun selectFilterField(fieldId: String, newIndex: Int?): List<FilterField>
 }
 
 class ETSCalendarWebViewRepository(
@@ -89,22 +85,13 @@ class ETSCalendarWebViewRepository(
 
             List(data.length()){ i ->
                 val item = data[i] as JSONObject
-                val options = item.getJSONArray("options")
 
-                SelectFilterField(
-                    item.getString("id"),
-                    item.getString("name"),
-                    item.getString("selectedIndex").toIntOrNull(),
-                    item.getInt("offset"),
-                    List(options.length()){ e ->
-                        options[e].toString()
-                    }
-                )
+                SelectFilterField.fromJson(item)
             }
         }
     }
 
-    override suspend fun selectFilterField(fieldId: String, newIndex: Int?): List<FilterField> {
+    override suspend fun selectSelect(fieldId: String, newIndex: Int?): List<FilterField> {
         return webViewProvider.runThenScrap(
             preRequest = """
                 var select = byId("$fieldId");
@@ -129,19 +116,11 @@ class ETSCalendarWebViewRepository(
 
             List(data.length()){ i ->
                 val item = data[i] as JSONObject
-                val options = item.getJSONArray("options")
 
-                SelectFilterField(
-                    item.getString("id"),
-                    item.getString("name"),
-                    item.getString("selectedIndex").toIntOrNull(),
-                    item.getInt("offset"),
-                    List(options.length()){ e ->
-                        options[e].toString()
-                    }
-                )
+                SelectFilterField.fromJson(item)
             }
         }
     }
 
+    override suspend fun selectRadioGroup(fieldId: String): List<FilterField> = emptyList()
 }

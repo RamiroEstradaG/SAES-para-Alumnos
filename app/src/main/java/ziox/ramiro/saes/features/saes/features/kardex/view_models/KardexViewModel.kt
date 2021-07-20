@@ -1,26 +1,31 @@
 package ziox.ramiro.saes.features.saes.features.kardex.view_models
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.models.BaseViewModel
+import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
 import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRepository
 
 class KardexViewModel(
     private val kardexRepository: KardexRepository
-) : BaseViewModel<KardexState, KardexEvent>() {
+) : ViewModel() {
+    val kardexData = mutableStateOf<KardexData?>(null)
+    val error = mutableStateOf<String?>(null)
+
     init {
         fetchKardexData()
     }
 
     private fun fetchKardexData() = viewModelScope.launch {
-        emitState(KardexState.Loading())
+        kardexData.value = null
 
         kotlin.runCatching {
             kardexRepository.getMyKardexData()
         }.onSuccess {
-            emitState(KardexState.Complete(it))
+            kardexData.value = it
         }.onFailure {
-            emitEvent(KardexEvent.Error("Error al obtener el kardex"))
+            error.value = "Error al obtener el kardex"
         }
     }
 }
