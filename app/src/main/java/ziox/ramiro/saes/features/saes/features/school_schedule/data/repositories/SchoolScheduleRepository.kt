@@ -1,7 +1,6 @@
 package ziox.ramiro.saes.features.saes.features.school_schedule.data.repositories
 
 import android.content.Context
-import android.graphics.Color
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_providers.FilterType
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
@@ -92,6 +91,7 @@ class SchoolScheduleWebViewRepository(
                         ClassSchedule(
                             classSchedule.getString("id"),
                             className,
+                            classSchedule.getString("group"),
                             classSchedule.getString("building"),
                             classSchedule.getString("classroom"),
                             classSchedule.getString("teacherName").toProperCase(),

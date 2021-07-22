@@ -95,6 +95,7 @@ class ScheduleWebViewRepository(
                             ClassSchedule(
                                 classSchedule.getString("id"),
                                 className,
+                                classSchedule.getString("group"),
                                 classSchedule.getString("building"),
                                 classSchedule.getString("classroom"),
                                 classSchedule.getString("teacherName").toProperCase(),

@@ -14,6 +14,10 @@ class AgendaListViewModel(
     val agendaList = mutableStateOf<List<AgendaCalendar>?>(null)
     val error = mutableStateOf<String?>(null)
 
+    init {
+        fetchAgendas()
+    }
+
     fun fetchAgendas() = viewModelScope.launch {
         kotlin.runCatching {
             agendaRepository.getCalendars().collect {

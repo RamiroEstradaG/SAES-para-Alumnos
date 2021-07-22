@@ -1,11 +1,14 @@
 package ziox.ramiro.saes.features.saes.features.schedule.data.models
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.compose.ui.graphics.Color
 import androidx.room.*
 import ziox.ramiro.saes.utils.MES
 import ziox.ramiro.saes.utils.MES_COMPLETO
 import ziox.ramiro.saes.utils.toCalendar
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Entity(tableName = "class_schedule")
 data class ClassSchedule(
@@ -13,6 +16,8 @@ data class ClassSchedule(
     val id: String,
     @ColumnInfo(name = "class_name")
     val className: String,
+    @ColumnInfo(name = "group")
+    val group: String,
     @ColumnInfo(name = "building")
     val building: String,
     @ColumnInfo(name = "classroom")
@@ -23,7 +28,121 @@ data class ClassSchedule(
     val color: Long,
     @Embedded
     val hourRange: HourRange
-)
+): Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readLong(),
+        parcel.readParcelable(HourRange::class.java.classLoader)!!
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(id)
+        parcel.writeString(className)
+        parcel.writeString(group)
+        parcel.writeString(building)
+        parcel.writeString(classroom)
+        parcel.writeString(teacherName)
+        parcel.writeLong(color)
+        parcel.writeParcelable(hourRange, flags)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<ClassSchedule> {
+        override fun createFromParcel(parcel: Parcel): ClassSchedule {
+            return ClassSchedule(parcel)
+        }
+
+        override fun newArray(size: Int): Array<ClassSchedule?> {
+            return arrayOfNulls(size)
+        }
+
+        fun fromGeneratorClassSchedule(classSchedule: GeneratorClassSchedule) = ClassSchedule(
+            classSchedule.id,
+            classSchedule.className,
+            classSchedule.group,
+            classSchedule.building,
+            classSchedule.classroom,
+            classSchedule.teacherName,
+            classSchedule.color,
+            classSchedule.hourRange
+        )
+    }
+}
+
+data class ClassScheduleCollection(
+    val className: String,
+    val group: String,
+    val teacherName: String,
+    val schedules: List<ClassSchedule>
+): Parcelable{
+    constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.createTypedArrayList(ClassSchedule)!!
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(className)
+        parcel.writeString(group)
+        parcel.writeString(teacherName)
+        parcel.writeTypedList(schedules)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<ClassScheduleCollection> {
+        override fun createFromParcel(parcel: Parcel): ClassScheduleCollection {
+            return ClassScheduleCollection(parcel)
+        }
+
+        override fun newArray(size: Int): Array<ClassScheduleCollection?> {
+            return arrayOfNulls(size)
+        }
+
+        fun fromClassScheduleList(classSchedules: List<ClassSchedule>): List<ClassScheduleCollection>{
+            val groups = classSchedules.groupBy {
+                it.group+it.className
+            }
+
+            return groups.map {
+                val classSchedule = it.value.first()
+                ClassScheduleCollection(
+                    classSchedule.className,
+                    classSchedule.group,
+                    classSchedule.teacherName,
+                    it.value
+                )
+            }
+        }
+
+        fun toClassScheduleList(classCollection: List<ClassScheduleCollection>): List<ClassSchedule>{
+            return ArrayList<ClassSchedule>().apply {
+                classCollection.forEach {
+                    addAll(it.schedules)
+                }
+            }
+        }
+
+        fun toGeneratorClassScheduleList(classCollection: ClassScheduleCollection): List<GeneratorClassSchedule>{
+            return classCollection.schedules.map {
+                GeneratorClassSchedule.fromClassSchedule(it)
+            }
+        }
+    }
+
+
+}
 
 @Entity(tableName = "schedule_generator")
 data class GeneratorClassSchedule(
@@ -31,6 +150,8 @@ data class GeneratorClassSchedule(
     val id: String,
     @ColumnInfo(name = "class_name")
     val className: String,
+    @ColumnInfo(name = "group")
+    val group: String,
     @ColumnInfo(name = "building")
     val building: String,
     @ColumnInfo(name = "classroom")
@@ -41,7 +162,55 @@ data class GeneratorClassSchedule(
     val color: Long,
     @Embedded
     val hourRange: HourRange
-)
+) : Parcelable{
+    constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readLong(),
+        parcel.readParcelable(HourRange::class.java.classLoader)!!
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(id)
+        parcel.writeString(className)
+        parcel.writeString(group)
+        parcel.writeString(building)
+        parcel.writeString(classroom)
+        parcel.writeString(teacherName)
+        parcel.writeLong(color)
+        parcel.writeParcelable(hourRange, flags)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<GeneratorClassSchedule> {
+        override fun createFromParcel(parcel: Parcel): GeneratorClassSchedule {
+            return GeneratorClassSchedule(parcel)
+        }
+
+        override fun newArray(size: Int): Array<GeneratorClassSchedule?> {
+            return arrayOfNulls(size)
+        }
+
+        fun fromClassSchedule(classSchedule: ClassSchedule) = GeneratorClassSchedule(
+            classSchedule.id,
+            classSchedule.className,
+            classSchedule.group,
+            classSchedule.building,
+            classSchedule.classroom,
+            classSchedule.teacherName,
+            classSchedule.color,
+            classSchedule.hourRange
+        )
+    }
+
+}
 
 val scheduleColors = arrayOf(
     Color(0xFFE91E63),
@@ -76,11 +245,27 @@ data class HourRange(
     val end: Hour,
     @ColumnInfo(name = "weekday")
     val weekDay: WeekDay
-){
+): Parcelable{
     @Ignore
     val duration: Double = end.toDouble() - start.toDouble()
 
-    companion object {
+    constructor(parcel: Parcel) : this(
+        parcel.readParcelable(Hour::class.java.classLoader)!!,
+        parcel.readParcelable(Hour::class.java.classLoader)!!,
+        WeekDay.valueOf(parcel.readString()!!)
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeParcelable(start, flags)
+        parcel.writeParcelable(end, flags)
+        parcel.writeString(weekDay.name)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<HourRange> {
         fun parse(hourRange: String, weekDay: WeekDay = WeekDay.UNKNOWN): List<HourRange>{
             val hours = Regex("[0-9]+:[0-9]+-[0-9]+:[0-9]+").findAll(hourRange.replace(" ", ""))
 
@@ -92,6 +277,14 @@ data class HourRange(
                     weekDay
                 )
             }.toList()
+        }
+
+        override fun createFromParcel(parcel: Parcel): HourRange {
+            return HourRange(parcel)
+        }
+
+        override fun newArray(size: Int): Array<HourRange?> {
+            return arrayOfNulls(size)
         }
     }
 }
@@ -122,24 +315,11 @@ fun <T>List<T>.getRangeBy(block: (T) -> HourRange) : IntRange{
 data class Hour(
     val hours: Int,
     val minutes: Int
-){
-    companion object {
-        fun parse(hour: String): Hour?{
-            val hourFind = Regex("[0-9]+:[0-9]+").find(hour.replace(" ", ""))?.value?.split(":")
-
-            return if (hourFind?.size == 2){
-                Hour(hourFind[0].toInt(), hourFind[1].toInt())
-            }else null
-        }
-
-        fun fromValue(value: Double) = Hour(value.toInt(), value.mod(1.0).times(60).toInt())
-        fun fromDate(value: Date) = value.let {
-            val calendar = Calendar.getInstance()
-            calendar.time = value
-
-            Hour(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE))
-        }
-    }
+): Parcelable{
+    constructor(parcel: Parcel) : this(
+        parcel.readInt(),
+        parcel.readInt()
+    )
 
     fun toDouble() = hours+(minutes/60.0)
 
@@ -159,6 +339,41 @@ data class Hour(
         var result = hours
         result = 31 * result + minutes
         return result
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(hours)
+        parcel.writeInt(minutes)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Hour> {
+        fun parse(hour: String): Hour?{
+            val hourFind = Regex("[0-9]+:[0-9]+").find(hour.replace(" ", ""))?.value?.split(":")
+
+            return if (hourFind?.size == 2){
+                Hour(hourFind[0].toInt(), hourFind[1].toInt())
+            }else null
+        }
+
+        fun fromValue(value: Double) = Hour(value.toInt(), value.mod(1.0).times(60).toInt())
+        fun fromDate(value: Date) = value.let {
+            val calendar = Calendar.getInstance()
+            calendar.time = value
+
+            Hour(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE))
+        }
+
+        override fun createFromParcel(parcel: Parcel): Hour {
+            return Hour(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Hour?> {
+            return arrayOfNulls(size)
+        }
     }
 }
 

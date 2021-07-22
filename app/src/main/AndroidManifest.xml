@@ -33,6 +33,10 @@
             android:exported="true"
             android:theme="@style/Theme.SAESParaAlumnos" />
         <activity
+            android:name="ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.AddClassToScheduleGeneratorActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
             android:name="ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.ScheduleGeneratorActivity"
             android:exported="true"
             android:theme="@style/Theme.SAESParaAlumnos" />

@@ -31,7 +31,7 @@ import java.util.*
     KardexDataRoom::class,
     HistoryItem::class,
     GeneratorClassSchedule::class
-], version = 8, exportSchema = false)
+], version = 9, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class LocalAppDatabase : RoomDatabase() {
     companion object {

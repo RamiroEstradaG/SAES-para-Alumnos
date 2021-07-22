@@ -13,7 +13,7 @@ interface ScheduleGeneratorRepository {
     @Insert
     fun addClass(classSchedule: GeneratorClassSchedule)
 
-    @Query("DELETE FROM schedule_generator WHERE class_name = :className")
-    fun removeClass(className: String)
+    @Query("DELETE FROM schedule_generator WHERE class_name = :className AND `group` = :group")
+    fun removeClass(className: String, group: String)
 }
 

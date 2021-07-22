@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.utils
 
-import java.math.BigDecimal
 import java.text.NumberFormat
 
 
@@ -31,39 +30,37 @@ fun String.toProperCase(): String {
 }
 
 fun String.getInitials(): String {
-    var siglas = ""
-    val rem = this.uppercase().replace(
-        Regex("( )(((DE|DEL|Y|O|E|A|U|POR|PARA|LAS|LOS|LA|EL|EN) (DE|DEL|Y|O|E|A|U|POR|PARA|LAS|LOS|LA|EL|EN))|DE|DEL|Y|O|E|A|U|POR|PARA|LAS|LOS|LA|EL|EN)( )"),
-        " "
-    ).replace(Regex(" \\([^)]*\\)"), "")
+    val filteredValue = this.uppercase()
+        .replace(
+            Regex("( )(((DE|DEL|Y|O|E|A|U|POR|PARA|LAS|LOS|LA|EL|EN) (DE|DEL|Y|O|E|A|U|POR|PARA|LAS|LOS|LA|EL|EN))|DE|DEL|Y|O|E|A|U|POR|PARA|LAS|LOS|LA|EL|EN)( )"),
+            " "
+        ).replace(Regex(" \\([^)]*\\)"), "")
 
-    val str = rem.split(" ").filter {
+    val words = filteredValue.split(" ").filter {
         it.isNotEmpty()
     }
 
-    if(str.isEmpty()) return ""
+    if(words.isEmpty()) return ""
 
-    if (str.size == 1) {
-        siglas = rem.substring(0, kotlin.math.min(this.length, 4))
+    return if (words.size == 1) {
+        filteredValue.substring(0, kotlin.math.min(this.length, 4))
     } else {
-        if (str.last().matches(Regex("[IVX]+")) && str.size == 2) {
-            siglas = str.first().substring(0, kotlin.math.min(this.length, 3)) + " " + str.last().uppercase()
+        if (words.last().matches(Regex("[IVX]+")) && words.size == 2) {
+            words.first().substring(0, kotlin.math.min(this.length, 3)) + " " + words.last().uppercase()
         } else {
-            for ((i, arr) in str.withIndex()) {
-                siglas += if (i == str.lastIndex) {
-                    if (arr.matches(Regex("[IVX]+"))) {
-                        " ${arr.uppercase()}"
+            words.mapIndexed { index, word ->
+                if (index == words.lastIndex){
+                    if (word.matches(Regex("[IVX]+"))) {
+                        " ${word.uppercase()}"
                     } else {
-                        arr.first()
+                        word.first()
                     }
-                } else {
-                    arr.first()
+                }else {
+                    word.first()
                 }
-            }
+            }.joinToString("")
         }
     }
-
-    return siglas
 }
 
 

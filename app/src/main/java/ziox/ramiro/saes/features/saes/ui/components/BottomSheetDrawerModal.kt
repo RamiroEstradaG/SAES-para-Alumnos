@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Logout
+import androidx.compose.material.icons.rounded.MoreTime
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -35,6 +36,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import ziox.ramiro.saes.features.about.ui.screens.AboutActivity
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
+import ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.ScheduleGeneratorActivity
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
@@ -76,6 +78,11 @@ class BottomSheetDrawerModal(
                             SectionMenuItem(section = MenuSection.ETS_CALENDAR)
                             SectionMenuItem(section = MenuSection.SCHOOL_SCHEDULE)
                             SectionMenuItem(section = MenuSection.OCCUPANCY)
+                            if(!LocalContext.current.isNetworkAvailable()){
+                                ActionMenuItem(icon = Icons.Rounded.MoreTime, name = "Generador de horario"){
+                                    startActivity(Intent(requireContext(), ScheduleGeneratorActivity::class.java))
+                                }
+                            }
                             MenuHeader(name = "Calendario académico")
                             ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad Escolarizada"){
                                 context?.launchUrl(remoteConfig.getString("calendario_escolarizado"))

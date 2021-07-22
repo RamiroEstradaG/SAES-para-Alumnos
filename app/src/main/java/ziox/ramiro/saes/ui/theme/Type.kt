@@ -161,8 +161,8 @@ fun Typography(theme: ComposableTheme) = Typography(
         overline = TextStyle(
                 fontFamily = Nunito,
                 color = theme.primaryText,
-                fontSize = 96.sp,
-                fontWeight = FontWeight.Light
+                fontSize = 10.sp,
+                fontWeight = FontWeight.SemiBold
         ),
         defaultFontFamily = Nunito
 );
