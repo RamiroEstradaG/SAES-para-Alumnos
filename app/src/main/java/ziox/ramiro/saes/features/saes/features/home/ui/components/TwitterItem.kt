@@ -6,6 +6,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.tweetui.R
@@ -21,6 +22,7 @@ fun TwitterItem(
 
     Card(
         modifier = modifier,
+        elevation = 0.dp
     ) {
         AndroidView(
             factory = {

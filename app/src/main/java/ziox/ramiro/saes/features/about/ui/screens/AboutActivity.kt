@@ -190,7 +190,7 @@ class AboutActivity : ComponentActivity() {
                                     ) {
                                         LicenceItem("Accompanist Library", "The Android Open Source Project", "2020", "https://github.com/google/accompanist")
                                         LicenceItem("ZXing Android Embedded", "Journey Mobile", "2012-2018", "https://github.com/journeyapps/zxing-android-embedded")
-                                        LicenceItem("CalPose", "Bojan Belic", "2020", "https://github.com/sigmadeltasoftware/CalPose")
+                                        LicenceItem("MPAndroidChart", "Philipp Jahoda", "2020", "https://github.com/PhilJay/MPAndroidChart")
                                         LicenceItem("Room", "The Android Open Source Project", "2018", "https://developer.android.com/jetpack/androidx/releases/room")
                                         LicenceItem("Google Play Core Library", "The Android Open Source Project", "2018", "https://developer.android.com/reference/com/google/android/play/core/release-notes")
                                         LicenceItem("Material Design Icons", "Google, Inc", "2016", "https://github.com/google/material-design-icons")

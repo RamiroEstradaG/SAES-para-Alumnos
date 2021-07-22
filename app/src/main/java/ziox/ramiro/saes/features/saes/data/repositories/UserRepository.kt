@@ -16,7 +16,7 @@ class UserFirebaseRepository(
     private val db = Firebase.firestore
 
     companion object{
-        const val COLLECTION_ID_USERS = "users"
+        const val COLLECTION_ID_USERS = "users_v2"
     }
 
     override suspend fun getUserData(): UserData {

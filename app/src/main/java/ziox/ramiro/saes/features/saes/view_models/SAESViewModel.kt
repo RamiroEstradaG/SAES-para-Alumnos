@@ -16,7 +16,7 @@ class SAESViewModel(
     private val historyRoomRepository: HistoryRoomRepository
 ) : ViewModel() {
     companion object {
-        val SECTION_INITIAL = MenuSection.SCHOOL_SCHEDULE
+        val SECTION_INITIAL = MenuSection.PERFORMANCE
     }
 
     private val _currentSection = MutableStateFlow(SECTION_INITIAL)
@@ -60,5 +60,6 @@ enum class MenuSection(
     RE_REGISTRATION_APPOINTMENT("Cita de reinscripción", Icons.Rounded.EventAvailable),
     OCCUPANCY("Ocupabilidad de horario", Icons.Rounded.LockClock),
     AGENDA("Agenda", Icons.Rounded.PendingActions),
-    SCHOOL_SCHEDULE("Horario general", Icons.Rounded.HistoryToggleOff)
+    SCHOOL_SCHEDULE("Horario general", Icons.Rounded.HistoryToggleOff),
+    PERFORMANCE("Rendimiento escolar", Icons.Rounded.Insights, true)
 }

@@ -11,7 +11,17 @@ import ziox.ramiro.saes.utils.toProperCase
 data class KardexData(
     val generalScore: Double?,
     val kardexPeriods: List<KardexPeriod>
-)
+){
+    fun generalScoreAt(periodIndex: Int): Double{
+        val untilPeriod = ArrayList<KardexClass>().apply {
+            for (i in 0..periodIndex){
+                addAll(kardexPeriods[i].kardexClasses)
+            }
+        }.mapNotNull { it.score }
+
+        return untilPeriod.sum().div(untilPeriod.size.toDouble())
+    }
+}
 
 
 @Entity(tableName = "kardex")

@@ -32,6 +32,7 @@ import ziox.ramiro.saes.features.saes.features.grades.ui.screens.Grades
 import ziox.ramiro.saes.features.saes.features.home.ui.screens.Home
 import ziox.ramiro.saes.features.saes.features.kardex.ui.screens.Kardex
 import ziox.ramiro.saes.features.saes.features.occupancy.ui.screens.Occupancy
+import ziox.ramiro.saes.features.saes.features.performance.ui.screens.Performance
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.screens.Profile
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
@@ -132,6 +133,7 @@ class SAESActivity : AppCompatActivity() {
                             MenuSection.OCCUPANCY -> Occupancy()
                             MenuSection.AGENDA -> Agenda()
                             MenuSection.SCHOOL_SCHEDULE -> SchoolSchedule()
+                            MenuSection.PERFORMANCE -> Performance()
                         }
                     }
                 }

@@ -123,8 +123,8 @@ class AgendaFirebaseRepository(
     private val userRepository = UserFirebaseRepository(userId)
 
     companion object {
-        const val COLLECTION_ID_CALENDARS = "calendars"
-        const val COLLECTION_ID_EVENTS = "events"
+        const val COLLECTION_ID_CALENDARS = "calendars_v2"
+        const val COLLECTION_ID_EVENTS = "events_v2"
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
