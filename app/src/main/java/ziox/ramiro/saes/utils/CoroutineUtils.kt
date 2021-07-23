@@ -13,7 +13,7 @@ suspend fun <T>runOnMainThread(block: () -> T) : T = withContext(Dispatchers.Mai
     block()
 }
 
-fun <T>MutableStateFlow<T?>.dismissAfterTimeout(timeout: Long) = CoroutineScope(Dispatchers.Default).launch {
+fun <T>MutableStateFlow<T?>.dismissAfterTimeout(timeout: Long = 4000) = CoroutineScope(Dispatchers.Default).launch {
     collect {
         delay(timeout)
         value = null

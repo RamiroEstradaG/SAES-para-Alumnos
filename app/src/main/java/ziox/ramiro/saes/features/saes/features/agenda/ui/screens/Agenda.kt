@@ -8,7 +8,11 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -21,12 +25,17 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaCalendar
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
 import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaWebViewRepository
 import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaListViewModel
@@ -34,6 +43,9 @@ import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaViewMode
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
+import ziox.ramiro.saes.ui.components.AsyncButton
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
+import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.MES
 import ziox.ramiro.saes.utils.offset
@@ -57,11 +69,9 @@ fun Agenda(){
 
     Crossfade(targetState = selectedAgenda.value) {
         if(it != null){
-            AgendaView(it)
+            AgendaView(selectedAgenda)
         }else{
-            CalendarList(
-                selectedAgenda = selectedAgenda
-            )
+            CalendarList(selectedAgenda = selectedAgenda)
         }
     }
 }
@@ -74,82 +84,203 @@ fun CalendarList(
     ),
     selectedAgenda: MutableState<String?>
 ){
-    if(agendaListViewModel.agendaList.value != null){
-        LazyRow {
+    val showAddAgendaDialog = remember {
+        mutableStateOf(false)
+    }
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier.padding(bottom = 64.dp),
+                onClick = {
+                    showAddAgendaDialog.value = true
+                }
+            ) {
+                Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add")
+            }
+        }
+    ) {
+        if(agendaListViewModel.agendaList.value != null){
             agendaListViewModel.agendaList.value?.let {
-                items(it){ calendar ->
-                    Card(
-                        modifier = Modifier.clickable {
-                            selectedAgenda.value = calendar.calendarId
-                        }
+                if(it.isNotEmpty()){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        Text(text = calendar.name)
+                        Column(
+                            modifier = Modifier.padding(
+                                top = 16.dp,
+                                start = 32.dp,
+                                end = 32.dp,
+                                bottom = 64.dp
+                            )
+                        ) {
+                            it.forEach { calendar ->
+                                AgendaListItem(selectedAgenda, calendar)
+                            }
+                        }
+                    }
+                }else{
+                    ResponsePlaceholder(
+                        painter = painterResource(id = R.drawable.logging_off),
+                        text = "No has agregado agendas"
+                    )
+                }
+            }
+        }else{
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+    }
+    if (showAddAgendaDialog.value){
+        Dialog(
+            onDismissRequest = {
+                showAddAgendaDialog.value = false
+            }
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                val name = remember {
+                    mutableStateOf("")
+                }
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Nueva agenda",
+                        style = MaterialTheme.typography.h5
+                    )
+                    OutlinedTextField(
+                        value = name.component1(),
+                        onValueChange = name.component2(),
+                        label = {
+                            Text(text = "Nombre de la agenda")
+                        }
+                    )
+                    AsyncButton(
+                        modifier = Modifier
+                            .padding(top = 16.dp)
+                            .align(Alignment.End),
+                        text = "Agregar",
+                        isLoading = agendaListViewModel.isAddingAgenda.value
+                    ){
+                        agendaListViewModel.addAgenda(name.value).invokeOnCompletion {
+                            showAddAgendaDialog.value = false
+                        }
                     }
                 }
             }
         }
-    }else{
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-            agendaListViewModel.fetchAgendas()
-        }
     }
+    ErrorSnackbar(agendaListViewModel.error)
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun AgendaListItem(
+    selectedAgenda: MutableState<String?>,
+    calendar: AgendaCalendar
+) = Card(
+    modifier = Modifier
+        .fillMaxWidth()
+        .clip(MaterialTheme.shapes.medium)
+        .padding(bottom = 16.dp)
+        .clickable {
+            selectedAgenda.value = calendar.calendarId
+        },
+    elevation = 0.dp
+) {
+    Text(
+        modifier = Modifier
+            .padding(24.dp)
+            .fillMaxWidth(),
+        text = calendar.name,
+        style = MaterialTheme.typography.h5,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
 }
 
 
 @OptIn(ExperimentalTime::class)
 @Composable
 fun AgendaView(
-    calendarId: String,
+    selectedAgenda: MutableState<String?>,
     agendaViewModel: AgendaViewModel = viewModel(
-        factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(LocalContext.current), selectedAgenda.value) }
     )
-) = Column {
-    val today = Date()
-    val todayShortDate = ShortDate.fromDate(today)
-    val selectedDateIndex = remember {
-        mutableStateOf(0)
-    }
-    val availableDates = List(182){
-        ShortDate.fromDate(today.offset(Duration.days(it)))
-    }
+) {
+    Column {
+        val today = Date()
+        val todayShortDate = ShortDate.fromDate(today)
+        val selectedDateIndex = remember {
+            mutableStateOf(0)
+        }
+        val availableDates = List(182){
+            ShortDate.fromDate(today.offset(Duration.days(it)))
+        }
 
-    LazyRow(
-        modifier = Modifier.padding(bottom = 32.dp),
-        contentPadding = PaddingValues(horizontal = 32.dp)
-    ) {
-        items(availableDates.size){ i ->
-            DateSelectorItem(
-                date = availableDates[i],
-                today = todayShortDate,
-                isSelected = i == selectedDateIndex.value
-            ){
-                selectedDateIndex.value = i
+        Row(
+            modifier = Modifier.padding(start = 22.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = {
+                    selectedAgenda.value = null
+                }
+            ) {
+                Icon(imageVector = Icons.Rounded.ArrowBackIos, contentDescription = "Back")
+            }
+            Text(
+                text = "SALIR",
+                style = MaterialTheme.typography.h5
+            )
+        }
+
+        if(agendaViewModel.eventList.value != null){
+            agendaViewModel.eventList.value?.let {
+                LazyRow(
+                    modifier = Modifier.padding(bottom = 32.dp),
+                    contentPadding = PaddingValues(horizontal = 32.dp)
+                ) {
+                    items(availableDates.size){ i ->
+                        DateSelectorItem(
+                            date = availableDates[i],
+                            today = todayShortDate,
+                            isSelected = i == selectedDateIndex.value,
+                            events = it.filter { event ->
+                                event.date == availableDates[selectedDateIndex.value]
+                            }
+                        ){
+                            selectedDateIndex.value = i
+                        }
+                    }
+                }
+                AgendaSchedule(
+                    modifier = Modifier.weight(1f),
+                    it.filter { event ->
+                        event.date == availableDates[selectedDateIndex.value]
+                    }
+                )
+            }
+        }else{
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
-
-    if(agendaViewModel.eventList.value != null){
-        agendaViewModel.eventList.value?.let {
-            AgendaSchedule(
-                modifier = Modifier.weight(1f),
-                it.filter { event ->
-                    event.date == availableDates[selectedDateIndex.value]
-                }
-            )
-        }
-    }else{
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-            agendaViewModel.fetchAgendaEvents(calendarId)
-        }
-    }
+    ErrorSnackbar(agendaViewModel.error)
 }
 
 
@@ -349,29 +480,46 @@ fun DateSelectorItem(
     date: ShortDate,
     today: ShortDate = ShortDate.fromDate(Date()),
     isSelected: Boolean,
+    events: List<AgendaItem>,
     onSelect: () -> Unit
-) = Card(
-    modifier = Modifier
-        .clip(MaterialTheme.shapes.medium)
-        .padding(end = 8.dp)
-        .size(64.dp, 80.dp)
-        .clickable { onSelect() },
-    elevation = 0.dp,
-    backgroundColor = if (isSelected) MaterialTheme.colors.primary else if(date == today) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
+) = Column(
+    horizontalAlignment = Alignment.CenterHorizontally
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Card(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .padding(end = 8.dp)
+            .size(64.dp, 80.dp)
+            .clickable { onSelect() },
+        elevation = 0.dp,
+        backgroundColor = if (isSelected) MaterialTheme.colors.primary else if(date == today) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
     ) {
-        Text(
-            text = MES[date.month].uppercase(),
-            style = MaterialTheme.typography.h5,
-            color = if (isSelected) MaterialTheme.colors.onPrimary else if(date == today) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface
-        )
-        Text(
-            text = date.day.toString(),
-            style = MaterialTheme.typography.h4,
-            color = if (isSelected) MaterialTheme.colors.onPrimary else if(date == today) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = MES[date.month].uppercase(),
+                style = MaterialTheme.typography.h5,
+                color = if (isSelected) MaterialTheme.colors.onPrimary else if(date == today) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface
+            )
+            Text(
+                text = date.day.toString(),
+                style = MaterialTheme.typography.h4,
+                color = if (isSelected) MaterialTheme.colors.onPrimary else if(date == today) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface
+            )
+        }
+    }
+    Row(
+        modifier = Modifier.padding(top = 8.dp)
+    ) {
+        events.take(4).forEach {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(Color(it.classSchedule?.color?.toULong() ?: getCurrentTheme().divider.value))
+            )
+        }
     }
 }

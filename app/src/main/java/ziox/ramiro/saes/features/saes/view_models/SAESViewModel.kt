@@ -16,7 +16,7 @@ class SAESViewModel(
     private val historyRoomRepository: HistoryRoomRepository
 ) : ViewModel() {
     companion object {
-        val SECTION_INITIAL = MenuSection.PERFORMANCE
+        val SECTION_INITIAL = MenuSection.AGENDA
     }
 
     private val _currentSection = MutableStateFlow(SECTION_INITIAL)

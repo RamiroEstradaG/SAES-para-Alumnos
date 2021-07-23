@@ -18,8 +18,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
+@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
-@ExperimentalAnimationApi
 @Composable
 fun ResponsePlaceholder(
     painter: Painter,

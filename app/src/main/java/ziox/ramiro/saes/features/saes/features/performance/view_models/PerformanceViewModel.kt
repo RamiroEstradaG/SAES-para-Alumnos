@@ -73,7 +73,6 @@ class PerformanceViewModel(
                 careerPerformance.value = it
             }
         }.onFailure {
-            it.printStackTrace()
             _error.value = "Error al obtener los datos de la carrera"
         }
     }

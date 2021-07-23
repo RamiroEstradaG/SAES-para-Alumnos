@@ -4,12 +4,11 @@ import android.content.Context
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
@@ -173,34 +172,23 @@ class AgendaFirebaseRepository(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getCalendars() = callbackFlow {
-        val subs = db
-            .collection(UserFirebaseRepository.COLLECTION_ID_USERS)
-            .document(userId)
-            .addSnapshotListener { value, error ->
-                error?.printStackTrace()
-                val calendars = value?.get(COLLECTION_ID_CALENDARS) as? List<*>
-                if(calendars != null){
-                    runBlocking {
-                        send(db.collection(COLLECTION_ID_CALENDARS)
-                            .whereIn("calendarId", calendars)
-                            .get()
-                            .await()
-                            .toObjects(AgendaCalendar::class.java))
-                    }
-                }
-            }
-
-        awaitClose { subs.remove() }
+    override suspend fun getCalendars() = userRepository.getUserDataFlow().map {
+        if(it.calendarIds.isNotEmpty()){
+            db.collection(COLLECTION_ID_CALENDARS)
+                .whereIn("calendarId", it.calendarIds)
+                .get()
+                .await()
+                .toObjects(AgendaCalendar::class.java)
+        }else{
+            listOf()
+        }
     }
 
     override suspend fun addCalendar(name: String) {
         db.collection(COLLECTION_ID_CALENDARS)
             .add(AgendaCalendar(
-                "",
-                name,
-                "",
-                listOf(userId)
+                name = name,
+                admins = listOf(userId)
             )).await()
     }
 

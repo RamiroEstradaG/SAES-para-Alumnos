@@ -3,11 +3,16 @@ package ziox.ramiro.saes.features.saes.data.repositories
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import ziox.ramiro.saes.features.saes.data.models.UserData
 
 interface UserRepository {
     suspend fun getUserData(): UserData
+    suspend fun getUserDataFlow(): Flow<UserData>
     suspend fun updateUserField(field: String, value: Any?): UserData
     suspend fun update(data: Map<String, Any?>): UserData
 }
@@ -26,6 +31,18 @@ class UserFirebaseRepository(
             .get()
             .await()
             .toObject(UserData::class.java)!!
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun getUserDataFlow() = callbackFlow {
+        val subs = safeUserDocument()
+            .addSnapshotListener { value, _ ->
+                if(value != null){
+                    trySend(value.toObject(UserData::class.java)!!)
+                }
+            }
+
+        awaitClose{ subs.remove() }
     }
 
     private suspend fun safeUserDocument(): DocumentReference{
