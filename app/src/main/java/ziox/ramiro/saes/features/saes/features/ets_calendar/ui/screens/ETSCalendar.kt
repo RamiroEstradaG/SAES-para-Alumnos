@@ -181,7 +181,6 @@ fun ETSCalendarHourGroup(
             if(isDialogVisible.value){
                 AlertDialog(
                     modifier = Modifier
-                        .padding(16.dp)
                         .fillMaxWidth(),
                     onDismissRequest = {
                         isDialogVisible.value = false

@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.features.saes.features.re_registration_appointment.ui.screens
 
+import android.content.Intent
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,6 +8,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.MoreTime
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +22,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.data.repositories.ReRegistrationWebViewRepository
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.view_models.ReRegistrationAppointmentViewModel
+import ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.ScheduleGeneratorActivity
 import ziox.ramiro.saes.features.saes.ui.components.FlexView
+import ziox.ramiro.saes.features.saes.view_models.MenuSection
+import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
+import ziox.ramiro.saes.ui.components.OutlineButton
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.toLongString
 import ziox.ramiro.saes.utils.toStringPrecision
@@ -31,6 +38,8 @@ fun ReRegistrationAppointment(
             LocalContext.current)) }
     )
 ) = Crossfade(targetState = reRegistrationViewModel.reRegistrationData.value) {
+    val context = LocalContext.current
+
     if(it != null){
         Box(
             modifier = Modifier.verticalScroll(rememberScrollState())
@@ -46,6 +55,21 @@ fun ReRegistrationAppointment(
                     text = it.appointmentDate?.toLongString() ?: "Reinscripción no disponible",
                     style = MaterialTheme.typography.h6
                 )
+                it.appointmentDate.let {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        OutlineButton(
+                            text = "Generador de horario",
+                            icon = Icons.Rounded.MoreTime
+                        ){
+                            context.startActivity(Intent(context, ScheduleGeneratorActivity::class.java))
+                        }
+                    }
+                }
                 Row(
                     Modifier
                         .padding(top = 48.dp)
@@ -161,7 +185,10 @@ fun ProgressChart(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
-                        modifier = Modifier.size(14.dp).clip(CircleShape).background(it.color)
+                        modifier = Modifier
+                            .size(14.dp)
+                            .clip(CircleShape)
+                            .background(it.color)
                     ) {}
                     Text(
                         modifier = Modifier.padding(start = 6.dp),

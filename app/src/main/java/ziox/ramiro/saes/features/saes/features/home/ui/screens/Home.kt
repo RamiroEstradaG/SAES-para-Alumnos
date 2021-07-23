@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FactCheck
 import androidx.compose.material.icons.rounded.Feed
 import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,9 @@ import ziox.ramiro.saes.features.saes.features.home.ui.components.RecentActivity
 import ziox.ramiro.saes.features.saes.features.home.ui.components.SmallGradeItem
 import ziox.ramiro.saes.features.saes.features.home.ui.components.TwitterItem
 import ziox.ramiro.saes.features.saes.features.home.view_models.HomeViewModel
+import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
+import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewModel
+import ziox.ramiro.saes.features.saes.features.performance.ui.screens.KardexChart
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.utils.isNetworkAvailable
@@ -45,6 +49,9 @@ fun Home(
     ),
     gradesViewModel: GradesViewModel = viewModel(
         factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(LocalContext.current)) }
+    ),
+    kardexViewModel: KardexViewModel = viewModel(
+        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(LocalContext.current)) }
     ),
     saesViewModel: SAESViewModel = viewModel(),
     etsViewModel: ETSViewModel = viewModel(
@@ -136,6 +143,20 @@ fun Home(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    kardexViewModel.kardexData.value?.let {
+        HomeItem(
+            modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+            title = "Rendimiento",
+            icon = Icons.Rounded.Insights
+        ){
+            Box(
+                modifier = Modifier.padding(horizontal = 32.dp)
+            ) {
+                KardexChart(it)
             }
         }
     }

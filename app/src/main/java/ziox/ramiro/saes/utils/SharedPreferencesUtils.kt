@@ -33,22 +33,17 @@ class UserPreferences private constructor(context: Context){
 
     inline fun <reified T>getPreference(preferenceKeys : PreferenceKeys<T>, default: T) : T{
         return sharedPreferences.let {
-            when(T::class) {
-                Int::class -> sharedPreferences.getInt(preferenceKeys.key, Int.MIN_VALUE) as T
-                Long::class -> sharedPreferences.getLong(preferenceKeys.key, Long.MIN_VALUE) as T
-                Float::class -> sharedPreferences.getFloat(preferenceKeys.key, Float.NaN) as T
-                String::class -> sharedPreferences.getString(preferenceKeys.key, "null") as T
-                Boolean::class -> sharedPreferences.getBoolean(preferenceKeys.key, default as Boolean) as T
-                else -> null
-            }.let {
-                Log.d("SharedPreferenceGET ${preferenceKeys::class.simpleName}", it?.toString() ?: "Not set")
-                when (it) {
-                    Int.MIN_VALUE -> null
-                    Long.MIN_VALUE -> null
-                    Float.NaN -> null
-                    "null" -> null
-                    else -> it
+            if(sharedPreferences.contains(preferenceKeys.key)){
+                when(T::class) {
+                    Int::class -> sharedPreferences.getInt(preferenceKeys.key, 0) as T
+                    Long::class -> sharedPreferences.getLong(preferenceKeys.key, 0L) as T
+                    Float::class -> sharedPreferences.getFloat(preferenceKeys.key, 0f) as T
+                    String::class -> sharedPreferences.getString(preferenceKeys.key, "") as T
+                    Boolean::class -> sharedPreferences.getBoolean(preferenceKeys.key, false) as T
+                    else -> null
                 }
+            }else{
+                null
             }
         } ?: default
     }
@@ -75,4 +70,5 @@ sealed class PreferenceKeys<T>(val key: String) {
     object QrUrl: PreferenceKeys<String>("qr_url")
     object OfflineMode: PreferenceKeys<Boolean>("offline_mode")
     object ScheduleWidgetLeveling: PreferenceKeys<Int>("widget_nivel")
+    object PerformanceSaveDataPermission: PreferenceKeys<Boolean?>("save_performance_data")
 }

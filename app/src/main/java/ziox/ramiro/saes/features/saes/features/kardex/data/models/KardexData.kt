@@ -10,6 +10,8 @@ import ziox.ramiro.saes.utils.toProperCase
 
 data class KardexData(
     val generalScore: Double?,
+    val careerName: String,
+    val userId: String,
     val kardexPeriods: List<KardexPeriod>
 ){
     fun generalScoreAt(periodIndex: Int): Double{
@@ -37,6 +39,8 @@ data class KardexDataRoom(
 
         return KardexData(
             data.getString("generalScore").toDoubleOrNull(),
+            data.getString("careerName").toProperCase(),
+            data.getString("userId"),
             List(periods.length()){ i ->
                 val period = periods[i] as JSONObject
                 val periodClasses = period.getJSONArray("classes")

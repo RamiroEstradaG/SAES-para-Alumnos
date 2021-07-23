@@ -128,9 +128,7 @@ class ScheduleGeneratorActivity: ComponentActivity() {
                                             val selectedWeekDay = remember {
                                                 mutableStateOf<WeekDay?>(null)
                                             }
-                                            Card(
-                                                modifier = Modifier.padding(16.dp)
-                                            ) {
+                                            Card {
                                                 Column {
                                                     ScheduleHeader(selectedWeekDay)
                                                     ScheduleWeekContainer(

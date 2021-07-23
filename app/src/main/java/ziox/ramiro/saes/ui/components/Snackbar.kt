@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.transition.Slide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

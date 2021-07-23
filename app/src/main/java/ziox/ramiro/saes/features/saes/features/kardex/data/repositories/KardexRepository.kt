@@ -36,6 +36,10 @@ class KardexWebViewRepository(
                     
                     next({
                         generalScore: byId("ctl00_mainCopy_Lbl_Promedio").innerText.trim(),
+                        careerName: byId("ctl00_mainCopy_Lbl_Carrera").innerText.trim(),
+                        userId: byId("ctl00_mainCopy_Lbl_Nombre")
+                            .getElementsByTagName("tr")[0]
+                            .getElementsByTagName("td")[1].innerText.trim(),
                         periods: periods.map((periodTable) => {
                             var trs = [...periodTable.getElementsByTagName("tr")];
                             var firstRow = trs.splice(0,2)[0];
@@ -56,6 +60,10 @@ class KardexWebViewRepository(
                 }else{
                     next({
                         generalScore: "-",
+                        careerName: byId("ctl00_mainCopy_Lbl_Carrera").innerText.trim(),
+                        userId: byId("ctl00_mainCopy_Lbl_Nombre")
+                            .getElementsByTagName("tr")[0]
+                            .getElementsByTagName("td")[1].innerText.trim(),
                         periods: []
                     });
                 }
@@ -75,6 +83,8 @@ class KardexWebViewRepository(
             runOnDefaultThread {
                 persistenceRepository.getMyKardexData(userId)?.toKardexData() ?: KardexData(
                     null,
+                    "",
+                    userId,
                     emptyList()
                 )
             }

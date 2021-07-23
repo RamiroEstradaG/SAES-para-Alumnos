@@ -2,45 +2,66 @@ package ziox.ramiro.saes.features.saes.features.performance.data.repositories
 
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
 import ziox.ramiro.saes.features.saes.features.performance.data.models.PerformanceData
 
 interface PerformanceRepository {
-    suspend fun getCareerPerformance(careerName: String): PerformanceData?
-    suspend fun getSchoolPerformance(schoolName: String): PerformanceData?
-    suspend fun getGeneralPerformance(): PerformanceData?
-    suspend fun updateMyPerformance(kardexData: KardexData)
+    suspend fun getCareerPerformance(careerName: String): Flow<PerformanceData?>
+    suspend fun getSchoolPerformance(schoolName: String): Flow<PerformanceData?>
+    suspend fun getGeneralPerformance(): Flow<PerformanceData?>
 }
 
 class PerformanceFirebaseRepository: PerformanceRepository{
     val db = Firebase.firestore
+
     companion object{
         const val COLLECTION_ID_CAREER_STATISTICS = "career_statistics_v2"
         const val COLLECTION_ID_SCHOOL_STATISTICS = "school_statistics_v2"
     }
 
-    override suspend fun getCareerPerformance(careerName: String): PerformanceData? {
-        return db.collection(COLLECTION_ID_CAREER_STATISTICS)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun getCareerPerformance(careerName: String): Flow<PerformanceData?> = callbackFlow {
+        val subs = db.collection(COLLECTION_ID_CAREER_STATISTICS)
             .document(careerName)
-            .get().await().toObject(PerformanceData::class.java)
+            .addSnapshotListener { value, _ ->
+                if(value != null){
+                    trySend(value.toObject(PerformanceData::class.java))
+                }
+            }
+
+        awaitClose { subs.remove() }
     }
 
-    override suspend fun getSchoolPerformance(schoolName: String): PerformanceData? {
-        return db.collection(COLLECTION_ID_SCHOOL_STATISTICS)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun getSchoolPerformance(schoolName: String): Flow<PerformanceData?> = callbackFlow {
+        val subs = db.collection(COLLECTION_ID_SCHOOL_STATISTICS)
             .document(schoolName)
-            .get().await().toObject(PerformanceData::class.java)
+            .addSnapshotListener { value, _ ->
+                if(value != null){
+                    trySend(value.toObject(PerformanceData::class.java))
+                }
+            }
+
+        awaitClose { subs.remove() }
     }
 
-    override suspend fun getGeneralPerformance(): PerformanceData? {
-        return db.collection(COLLECTION_ID_SCHOOL_STATISTICS)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun getGeneralPerformance(): Flow<PerformanceData?> = callbackFlow {
+        val subs = db.collection(COLLECTION_ID_SCHOOL_STATISTICS)
             .document("IPN")
-            .get().await().toObject(PerformanceData::class.java)
-    }
+            .addSnapshotListener { value, _ ->
+                if(value != null){
+                    trySend(value.toObject(PerformanceData::class.java))
+                }
+            }
 
-    override suspend fun updateMyPerformance(kardexData: KardexData) {
-        db.collection(UserFirebaseRepository.COLLECTION_ID_USERS)
-            .document()
+        awaitClose { subs.remove() }
     }
 }

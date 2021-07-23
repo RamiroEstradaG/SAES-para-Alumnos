@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.GeneratorClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule_generator.models.reposotories.ScheduleGeneratorRepository
+import ziox.ramiro.saes.utils.dismissAfterTimeout
 import ziox.ramiro.saes.utils.runOnDefaultThread
 
 class ScheduleGeneratorViewModel(
@@ -22,12 +23,7 @@ class ScheduleGeneratorViewModel(
     init {
         fetchSchedule()
 
-        viewModelScope.launch {
-            _error.collect {
-                delay(3000)
-                _error.value = null
-            }
-        }
+        _error.dismissAfterTimeout(3000)
     }
 
     fun fetchSchedule() = viewModelScope.launch {
