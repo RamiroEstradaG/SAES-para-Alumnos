@@ -15,6 +15,7 @@ class AgendaListViewModel(
 ) : ViewModel() {
     val agendaList = mutableStateOf<List<AgendaCalendar>?>(null)
     val isAddingAgenda = mutableStateOf(false)
+    val isRemovingAgenda = mutableStateOf<String?>(null)
     val error = MutableStateFlow<String?>(null)
 
     init {
@@ -28,7 +29,6 @@ class AgendaListViewModel(
                 agendaList.value = it
             }
         }.onFailure {
-            it.printStackTrace()
             error.value = "Error al obtener la lista de agendas"
         }
     }
@@ -42,5 +42,15 @@ class AgendaListViewModel(
         }
 
         isAddingAgenda.value = false
+    }
+
+    fun removeAgenda(calendarId: String) = viewModelScope.launch {
+        isRemovingAgenda.value = calendarId
+        kotlin.runCatching {
+            agendaRepository.removeCalendar(calendarId)
+        }.onFailure {
+            error.value = "Error al eliminar la agenda"
+            isRemovingAgenda.value = null
+        }
     }
 }

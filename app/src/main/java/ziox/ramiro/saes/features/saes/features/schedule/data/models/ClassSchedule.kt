@@ -13,21 +13,21 @@ import kotlin.collections.ArrayList
 @Entity(tableName = "class_schedule")
 data class ClassSchedule(
     @PrimaryKey
-    val id: String,
+    val id: String = "",
     @ColumnInfo(name = "class_name")
-    val className: String,
+    val className: String = "",
     @ColumnInfo(name = "group")
-    val group: String,
+    val group: String = "",
     @ColumnInfo(name = "building")
-    val building: String,
+    val building: String = "",
     @ColumnInfo(name = "classroom")
-    val classroom: String,
+    val classroom: String = "",
     @ColumnInfo(name = "teacher_name")
-    val teacherName: String,
+    val teacherName: String = "",
     @ColumnInfo(name = "class_color")
-    val color: Long,
+    val color: Long = 0L,
     @Embedded
-    val hourRange: HourRange
+    val hourRange: HourRange = HourRange()
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -240,11 +240,11 @@ fun List<ClassSchedule>.getCurrentClass() : ClassSchedule? {
 
 data class HourRange(
     @ColumnInfo(name = "hour_start")
-    val start: Hour,
+    val start: Hour = Hour(),
     @ColumnInfo(name = "hour_end")
-    val end: Hour,
+    val end: Hour = Hour(),
     @ColumnInfo(name = "weekday")
-    val weekDay: WeekDay
+    val weekDay: WeekDay = WeekDay.UNKNOWN
 ): Parcelable{
     @Ignore
     val duration: Double = end.toDouble() - start.toDouble()
@@ -287,6 +287,10 @@ data class HourRange(
             return arrayOfNulls(size)
         }
     }
+
+    override fun toString(): String {
+        return "$start - $end"
+    }
 }
 
 fun <T>List<T>.getRangeBy(block: (T) -> HourRange) : IntRange{
@@ -313,8 +317,8 @@ fun <T>List<T>.getRangeBy(block: (T) -> HourRange) : IntRange{
 }
 
 data class Hour(
-    val hours: Int,
-    val minutes: Int
+    val hours: Int = 0,
+    val minutes: Int = 0
 ): Parcelable{
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
@@ -379,9 +383,9 @@ data class Hour(
 
 
 data class ShortDate(
-    val day: Int,
-    val month: Int,
-    val year: Int
+    val day: Int = 0,
+    val month: Int = 0,
+    val year: Int = 0
 ){
     companion object{
         fun MMMddyyyy(value: String) : ShortDate{

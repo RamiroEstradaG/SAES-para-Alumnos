@@ -1,5 +1,8 @@
 package ziox.ramiro.saes.features.saes.features.agenda.ui.screens
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.content.Context
 import android.text.util.Linkify
 import android.widget.TextView
 import androidx.compose.animation.Crossfade
@@ -7,16 +10,13 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBackIos
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +26,6 @@ import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -36,20 +35,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaCalendar
+import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaEventType
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
 import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaWebViewRepository
 import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaListViewModel
 import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaViewModel
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.*
+import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
+import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
+import ziox.ramiro.saes.features.saes.ui.components.FlexView
 import ziox.ramiro.saes.ui.components.AsyncButton
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
+import ziox.ramiro.saes.ui.components.OutlineButton
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
-import ziox.ramiro.saes.utils.MES
-import ziox.ramiro.saes.utils.offset
-import ziox.ramiro.saes.utils.toHour
+import ziox.ramiro.saes.utils.*
 import java.util.*
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -117,7 +118,7 @@ fun CalendarList(
                             )
                         ) {
                             it.forEach { calendar ->
-                                AgendaListItem(selectedAgenda, calendar)
+                                AgendaListItem(agendaListViewModel,selectedAgenda, calendar)
                             }
                         }
                     }
@@ -186,11 +187,13 @@ fun CalendarList(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AgendaListItem(
+    agendaListViewModel: AgendaListViewModel,
     selectedAgenda: MutableState<String?>,
     calendar: AgendaCalendar
 ) = Card(
     modifier = Modifier
         .fillMaxWidth()
+        .height(80.dp)
         .clip(MaterialTheme.shapes.medium)
         .padding(bottom = 16.dp)
         .clickable {
@@ -198,15 +201,36 @@ fun AgendaListItem(
         },
     elevation = 0.dp
 ) {
-    Text(
-        modifier = Modifier
-            .padding(24.dp)
-            .fillMaxWidth(),
-        text = calendar.name,
-        style = MaterialTheme.typography.h5,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis
-    )
+    Row(
+        modifier = Modifier.padding(horizontal = 24.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier
+                .weight(1f),
+            text = calendar.name,
+            style = MaterialTheme.typography.h5,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        if(agendaListViewModel.isRemovingAgenda.value == calendar.calendarId){
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp)
+            )
+        }else{
+            IconButton(
+                onClick = {
+                    agendaListViewModel.removeAgenda(calendar.calendarId)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = "Delete agenda",
+                    tint = getCurrentTheme().danger
+                )
+            }
+        }
+    }
 }
 
 
@@ -216,71 +240,321 @@ fun AgendaView(
     selectedAgenda: MutableState<String?>,
     agendaViewModel: AgendaViewModel = viewModel(
         factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(LocalContext.current), selectedAgenda.value) }
+    ),
+    scheduleViewModel: ScheduleViewModel = viewModel(
+        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current)) }
     )
 ) {
-    Column {
-        val today = Date()
-        val todayShortDate = ShortDate.fromDate(today)
-        val selectedDateIndex = remember {
-            mutableStateOf(0)
-        }
-        val availableDates = List(182){
-            ShortDate.fromDate(today.offset(Duration.days(it)))
-        }
+    val context = LocalContext.current
+    val today = Date()
+    val todayShortDate = ShortDate.fromDate(today)
+    val showAddEventDialog = remember {
+        mutableStateOf(false)
+    }
+    val selectedDateIndex = remember {
+        mutableStateOf(0)
+    }
+    val availableDates = List(182){
+        ShortDate.fromDate(today.offset(Duration.days(it)))
+    }
 
-        Row(
-            modifier = Modifier.padding(start = 22.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier.padding(bottom = 64.dp),
                 onClick = {
-                    selectedAgenda.value = null
+                    showAddEventDialog.value = true
                 }
             ) {
-                Icon(imageVector = Icons.Rounded.ArrowBackIos, contentDescription = "Back")
+                Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add event")
             }
-            Text(
-                text = "SALIR",
-                style = MaterialTheme.typography.h5
-            )
         }
-
-        if(agendaViewModel.eventList.value != null){
-            agendaViewModel.eventList.value?.let {
-                LazyRow(
-                    modifier = Modifier.padding(bottom = 32.dp),
-                    contentPadding = PaddingValues(horizontal = 32.dp)
+    ) {
+        Column {
+            Row(
+                modifier = Modifier.padding(start = 22.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        selectedAgenda.value = null
+                    }
                 ) {
-                    items(availableDates.size){ i ->
-                        DateSelectorItem(
-                            date = availableDates[i],
-                            today = todayShortDate,
-                            isSelected = i == selectedDateIndex.value,
-                            events = it.filter { event ->
-                                event.date == availableDates[selectedDateIndex.value]
+                    Icon(imageVector = Icons.Rounded.ArrowBackIos, contentDescription = "Back")
+                }
+                Text(
+                    text = "SALIR",
+                    style = MaterialTheme.typography.h5
+                )
+            }
+
+            if(agendaViewModel.eventList.value != null){
+                agendaViewModel.eventList.value?.let {
+                    LazyRow(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        contentPadding = PaddingValues(horizontal = 32.dp)
+                    ) {
+                        items(availableDates.size){ i ->
+                            DateSelectorItem(
+                                date = availableDates[i],
+                                today = todayShortDate,
+                                isSelected = i == selectedDateIndex.value,
+                                events = it.filter { event ->
+                                    event.date == availableDates[i]
+                                }
+                            ){
+                                selectedDateIndex.value = i
                             }
-                        ){
-                            selectedDateIndex.value = i
+                        }
+                    }
+                    AgendaSchedule(
+                        modifier = Modifier.weight(1f),
+                        it.filter { event ->
+                            event.date == availableDates[selectedDateIndex.value]
+                        }
+                    )
+                }
+            }else{
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+    }
+    if(showAddEventDialog.value){
+        Dialog(
+            onDismissRequest = {
+                showAddEventDialog.value = false
+            }
+        ) {
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    val name = MutableStateWithValidation(remember {
+                        mutableStateOf("")
+                    }, remember {
+                        mutableStateOf(null)
+                    }){
+                        if(it.isBlank()){
+                            "El campo está vacío"
+                        }else null
+                    }
+
+                    val date = MutableStateWithValidation(remember {
+                        mutableStateOf(ShortDate.fromDate(Date()))
+                    }, remember {
+                        mutableStateOf(null)
+                    }){
+                        if(it.toDate().before(ShortDate.fromDate(Date()).toDate())){
+                            "La fecha no es válida"
+                        }else null
+                    }
+
+                    val hourRange = MutableStateWithValidation(remember {
+                        mutableStateOf<HourRange?>(null)
+                    }, remember {
+                        mutableStateOf(null)
+                    }){
+                        if(it == null){
+                            "El rango de horas no es válido"
+                        }else null
+                    }
+                    val description = remember {
+                        mutableStateOf("")
+                    }
+                    val selectedClassSchedule = remember {
+                        mutableStateOf<ClassSchedule?>(null)
+                    }
+
+                    Text(
+                        text = "Agregar evento",
+                        style = MaterialTheme.typography.h5
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.padding(top = 8.dp),
+                        value = name.mutableState.component1(),
+                        onValueChange = name.mutableState.component2(),
+                        label = {
+                            Text(text = "Título")
+                        },
+                        isError = !name.errorState.value.isNullOrBlank()
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = MaterialTheme.colors.error,
+                        text = name.errorState.value ?: "",
+                        style = MaterialTheme.typography.body2
+                    )
+                    OutlinedTextField(
+                        modifier = Modifier.padding(top = 8.dp),
+                        value = description.component1(),
+                        onValueChange = description.component2(),
+                        label = {
+                            Text(text = "Descripción")
+                        },
+                    )
+                    Box(
+                        modifier = Modifier.padding(top = 16.dp),
+                    ) {
+                        OutlinedTextField(
+                            value = date.mutableState.component1().toString(),
+                            onValueChange = {},
+                            label = {
+                                Text(text = "Fecha")
+                            },
+                            readOnly = true,
+                            isError = !date.errorState.value.isNullOrBlank()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(64.dp)
+                                .clickable {
+                                    showDatePickerDialog(context) {
+                                        date.mutableState.value = it
+                                    }
+                                }
+                        )
+                    }
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = MaterialTheme.colors.error,
+                        text = date.errorState.value ?: "",
+                        style = MaterialTheme.typography.body2
+                    )
+                    Box(
+                        modifier = Modifier.padding(top = 8.dp),
+                    ) {
+                        OutlinedTextField(
+                            value = hourRange.mutableState.component1()?.toString() ?: "",
+                            onValueChange = {},
+                            label = {
+                                Text(text = "Rango de horas")
+                            },
+                            readOnly = true,
+                            isError = !hourRange.errorState.value.isNullOrBlank()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(64.dp)
+                                .clickable {
+                                    showHourRangePickerDialog(context) {
+                                        hourRange.mutableState.value = it
+                                    }
+                                }
+                        )
+                    }
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = MaterialTheme.colors.error,
+                        text = hourRange.errorState.value ?: "",
+                        style = MaterialTheme.typography.body2
+                    )
+                    scheduleViewModel.scheduleList.value?.let {
+                        if(it.isNotEmpty()){
+                            SelectAddAgendaEventList(
+                                title = "Vincular a una clase",
+                                options = it.map { clazz -> clazz.className }
+                            ) { newIndex ->
+                                selectedClassSchedule.value = if(newIndex != null){
+                                    it[newIndex]
+                                }else null
+                            }
+                        }
+                    }
+                    AsyncButton(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(top = 16.dp),
+                        text = "Agregar",
+                        isLoading = agendaViewModel.isAddAgendaLoading.value
+                    ) {
+                        if(listOf(name, date, hourRange).validate()){
+                            agendaViewModel.addAgendaEvent(AgendaItem(
+                                eventName = name.mutableState.value,
+                                eventType = AgendaEventType.PERSONAL,
+                                date = date.mutableState.value,
+                                hourRange = hourRange.mutableState.value!!,
+                                calendarId = selectedAgenda.value!!,
+                                description = description.value,
+                                classSchedule = selectedClassSchedule.value,
+                            )).invokeOnCompletion {
+                                showAddEventDialog.value = false
+                            }
                         }
                     }
                 }
-                AgendaSchedule(
-                    modifier = Modifier.weight(1f),
-                    it.filter { event ->
-                        event.date == availableDates[selectedDateIndex.value]
-                    }
-                )
-            }
-        }else{
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
             }
         }
     }
     ErrorSnackbar(agendaViewModel.error)
+}
+
+fun showHourRangePickerDialog(context: Context, onChange: (HourRange) -> Unit){
+    TimePickerDialog(context, { _, hour, minute ->
+        TimePickerDialog(context, { _, hour2, minute2 ->
+            onChange(HourRange(
+                Hour(hour, minute),
+                Hour(hour2, minute2),
+                WeekDay.UNKNOWN
+            ))
+        }, 13, 0, false).show()
+    }, 12, 0, false).show()
+}
+
+fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit){
+    val today = ShortDate.fromDate(Date())
+    DatePickerDialog(context, { _, year, month, day ->
+        onChange(ShortDate(day, month, year))
+    }, today.year, today.month, today.day).show()
+}
+
+@Composable
+fun SelectAddAgendaEventList(
+    title: String,
+    options: List<String>?,
+    initialSelection: Int? = null,
+    onSelectionChange: (Int?) -> Unit
+) = Column(
+    modifier = Modifier.padding(bottom = 16.dp)
+) {
+    val infoColor = getCurrentTheme().info
+    val selectedIndex = remember {
+        mutableStateOf(initialSelection)
+    }
+
+    Text(
+        text = if(options?.isNotEmpty() == true) title else "",
+        style = MaterialTheme.typography.subtitle2
+    )
+    FlexView(
+        content = options?.mapIndexed { i, value ->
+            {
+                OutlineButton(
+                    modifier = Modifier.padding(end = 8.dp, top = 8.dp),
+                    text = value,
+                    borderColor = infoColor,
+                    textColor = if (i != selectedIndex.value) infoColor else MaterialTheme.colors.onPrimary,
+                    backgroundColor = if (i == selectedIndex.value) infoColor else null
+                ){
+                    val newIndex = if(selectedIndex.value != i){
+                        i
+                    }else null
+
+                    selectedIndex.value = newIndex
+
+                    onSelectionChange(newIndex)
+                }
+            }
+        } ?: listOf()
+    )
 }
 
 
@@ -405,20 +679,18 @@ fun EventCard(
         .padding(horizontal = 8.dp)
         .fillMaxSize(),
     shape = MaterialTheme.shapes.small,
-    elevation = 0.dp
+    elevation = 0.dp,
+    backgroundColor = if (agendaItem.classSchedule != null) {
+        Color(agendaItem.classSchedule.color.toULong()).copy(alpha = 0.1f)
+    } else {
+        MaterialTheme.colors.surface
+    }
 ) {
     val secondaryText = getCurrentTheme().secondaryText
 
     Column(
         Modifier
             .padding(16.dp)
-            .background(
-                if (agendaItem.classSchedule != null) {
-                    Color(agendaItem.classSchedule.color).copy(alpha = 0.1f)
-                } else {
-                    Color.Transparent
-                }
-            )
     ) {
         Text(
             text = agendaItem.eventName,
@@ -427,6 +699,7 @@ fun EventCard(
             overflow = TextOverflow.Ellipsis
         )
         AndroidView(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
             factory = {
                 TextView(it).apply {
                     text = agendaItem.description
@@ -511,14 +784,18 @@ fun DateSelectorItem(
         }
     }
     Row(
-        modifier = Modifier.padding(top = 8.dp)
+        modifier = Modifier.padding(top = 4.dp)
     ) {
         events.take(4).forEach {
             Box(
                 modifier = Modifier
                     .size(8.dp)
                     .clip(CircleShape)
-                    .background(Color(it.classSchedule?.color?.toULong() ?: getCurrentTheme().divider.value))
+                    .background(
+                        Color(
+                            it.classSchedule?.color?.toULong() ?: getCurrentTheme().divider.value
+                        )
+                    )
             )
         }
     }

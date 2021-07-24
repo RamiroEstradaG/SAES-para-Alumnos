@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
-import ziox.ramiro.saes.utils.ValidationResult
+import ziox.ramiro.saes.utils.MutableStateWithValidation
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 @Composable
@@ -30,8 +30,7 @@ fun CaptchaInput(
     modifier: Modifier = Modifier,
     captchaWidth: Dp = 120.dp,
     authViewModel: AuthViewModel,
-    captcha: MutableState<String>,
-    validationResult: ValidationResult,
+    captcha: MutableStateWithValidation<String>,
     overrideError: String? = null,
     onDone: () -> Unit = {}
 ) = Column(
@@ -71,7 +70,7 @@ fun CaptchaInput(
         modifier = Modifier
             .padding(top = 8.dp)
             .width(150.dp),
-        value = captcha.component1(),
+        value = captcha.mutableState.component1(),
         label = {
             Text(text = "Captcha")
         },
@@ -80,8 +79,8 @@ fun CaptchaInput(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Send
         ),
-        onValueChange = captcha.component2(),
-        isError = validationResult.isError,
+        onValueChange = captcha.mutableState.component2(),
+        isError = !captcha.errorState.value.isNullOrBlank(),
         keyboardActions = KeyboardActions(
             onSend = {
                 onDone()
@@ -91,7 +90,7 @@ fun CaptchaInput(
     )
     Text(
         color = MaterialTheme.colors.error,
-        text = overrideError ?: validationResult.errorMessage,
+        text = overrideError ?: captcha.errorState.value ?: "",
         style = MaterialTheme.typography.body2,
         textAlign = TextAlign.Center
     )

@@ -36,10 +36,10 @@ import ziox.ramiro.saes.ui.components.SchoolButton
 import ziox.ramiro.saes.ui.components.TextButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
+import ziox.ramiro.saes.utils.MutableStateWithValidation
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
-import ziox.ramiro.saes.utils.areAllValid
-import ziox.ramiro.saes.utils.validateField
+import ziox.ramiro.saes.utils.validate
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 class LoginActivity : ComponentActivity() {
@@ -122,25 +122,29 @@ fun Login(
 ) {
     val focusManager = LocalFocusManager.current
 
-    val captcha = remember {
-        mutableStateOf("")
-    }
-
     val passwordVisible = remember {
         mutableStateOf(false)
     }
 
-    val usernameValidator = validateField(username){
+    val usernameValidator = MutableStateWithValidation(username, remember {
+        mutableStateOf(null)
+    }){
         if(it.isEmpty()) "El campo está vacío."
         else null
     }
 
-    val passwordValidator = validateField(password){
+    val passwordValidator = MutableStateWithValidation(password, remember {
+        mutableStateOf(null)
+    }){
         if(it.isEmpty()) "El campo está vacío."
         else null
     }
 
-    val captchaValidator = validateField(captcha){
+    val captcha = MutableStateWithValidation(remember {
+        mutableStateOf("")
+    }, remember {
+        mutableStateOf(null)
+    }){
         if(it.isEmpty()) "El campo está vacío."
         else null
     }
@@ -167,7 +171,7 @@ fun Login(
             },
             singleLine = true,
             onValueChange = username.component2(),
-            isError = usernameValidator.isError,
+            isError = !usernameValidator.errorState.value.isNullOrBlank(),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Characters,
                 keyboardType = KeyboardType.Password,
@@ -182,7 +186,7 @@ fun Login(
         Text(
             modifier = Modifier.padding(start = 8.dp),
             color = MaterialTheme.colors.error,
-            text = usernameValidator.errorMessage,
+            text = usernameValidator.errorState.value ?: "",
             style = MaterialTheme.typography.body2
         )
         OutlinedTextField(
@@ -219,7 +223,7 @@ fun Login(
                     )
                 }
             },
-            isError = passwordValidator.isError,
+            isError = !passwordValidator.errorState.value.isNullOrBlank(),
             keyboardActions = KeyboardActions(
                 onNext = {
                     focusManager.moveFocus(FocusDirection.Down)
@@ -229,7 +233,7 @@ fun Login(
         Text(
             modifier = Modifier.padding(start = 8.dp),
             color = MaterialTheme.colors.error,
-            text = authViewModel.auth.value?.errorMessage ?: passwordValidator.errorMessage,
+            text = authViewModel.auth.value?.errorMessage ?: passwordValidator.errorState.value ?: "",
             style = MaterialTheme.typography.body2
         )
         CaptchaInput(
@@ -238,11 +242,15 @@ fun Login(
                 .fillMaxWidth(),
             authViewModel = authViewModel,
             captcha = captcha,
-            validationResult = captchaValidator
         ){
-            if(listOf(usernameValidator, passwordValidator, captchaValidator).areAllValid()){
-                authViewModel.login(username.value, password.value, captcha.value)
-                captcha.value = ""
+            if(listOf(usernameValidator, passwordValidator, captcha).validate()){
+                authViewModel.login(
+                    username.value,
+                    password.value,
+                    captcha.mutableState.value
+                ).invokeOnCompletion {
+                    captcha.mutableState.value = ""
+                }
             }
         }
         AsyncButton(
@@ -253,9 +261,14 @@ fun Login(
             text = "Iniciar sesión",
             isLoading = authViewModel.auth.value == null
         ){
-            if(listOf(usernameValidator, passwordValidator, captchaValidator).areAllValid()){
-                authViewModel.login(username.value, password.value, captcha.value)
-                captcha.value = ""
+            if(listOf(usernameValidator, passwordValidator, captcha).validate()){
+                authViewModel.login(
+                    username.value,
+                    password.value,
+                    captcha.mutableState.value
+                ).invokeOnCompletion {
+                    captcha.mutableState.value = ""
+                }
             }
         }
         Box(modifier = Modifier.weight(1f))
@@ -278,11 +291,11 @@ fun LoginOnlyCaptcha(
     val context = LocalContext.current
     val userPreferences = UserPreferences.invoke(context)
 
-    val captcha = remember {
+    val captcha = MutableStateWithValidation(remember {
         mutableStateOf("")
-    }
-
-    val captchaValidator = validateField(captcha){
+    }, remember {
+        mutableStateOf(null)
+    }){
         if(it.isEmpty()) "El campo está vacío."
         else null
     }
@@ -314,16 +327,16 @@ fun LoginOnlyCaptcha(
             captchaWidth = 170.dp,
             authViewModel = authViewModel,
             captcha = captcha,
-            validationResult = captchaValidator,
             overrideError = authViewModel.auth.value?.errorMessage
         ){
-            if(!captchaValidator.isError){
+            if(captcha.validate()){
                 authViewModel.login(
                     username.value,
                     password.value,
-                    captcha.value
-                )
-                captcha.value = ""
+                    captcha.mutableState.value
+                ).invokeOnCompletion {
+                    captcha.mutableState.value = ""
+                }
             }
         }
         AsyncButton(
@@ -334,13 +347,14 @@ fun LoginOnlyCaptcha(
             text = "Iniciar sesión",
             isLoading = authViewModel.auth.value == null
         ){
-            if(!captchaValidator.isError){
+            if(captcha.validate()){
                 authViewModel.login(
                     username.value,
                     password.value,
-                    captcha.value
-                )
-                captcha.value = ""
+                    captcha.mutableState.value
+                ).invokeOnCompletion {
+                    captcha.mutableState.value = ""
+                }
             }
         }
         TextButton(

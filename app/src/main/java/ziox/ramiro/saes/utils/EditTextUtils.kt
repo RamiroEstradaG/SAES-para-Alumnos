@@ -1,31 +1,31 @@
 package ziox.ramiro.saes.utils
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.*
 
-data class ValidationResult(
-    val isError: Boolean,
-    val errorMessage: String
-)
+class MutableStateWithValidation<T>(
+    val mutableState: MutableState<T>,
+    val errorState: MutableState<String?>,
+    private val validator: (T) -> String?
+){
 
-@Composable
-fun validateField(
-    inState: State<String>,
-    validator: (String) -> String?
-) : ValidationResult{
-    val errorMessage = validator(inState.value)
 
-    return if(errorMessage != null){
-        ValidationResult(true, errorMessage)
-    }else{
-        ValidationResult(false, "")
+    fun validate(): Boolean{
+        val validationResult = validator(mutableState.value)
+        errorState.value = validationResult
+
+        return validationResult == null
     }
 }
 
-fun List<ValidationResult>.areAllValid() : Boolean {
-    for (result in this){
-        if(result.isError) return false
+fun List<MutableStateWithValidation<*>>.validate() : Boolean {
+    var result = true
+
+    for (state in this){
+        val isNotValid = !state.validate()
+        if(result && isNotValid) {
+            result = false
+        }
     }
 
-    return true
+    return result
 }

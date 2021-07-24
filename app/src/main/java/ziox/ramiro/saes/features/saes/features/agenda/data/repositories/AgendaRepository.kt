@@ -34,6 +34,7 @@ interface AgendaRepository {
     suspend fun editEvent(agendaItem: AgendaItem): AgendaItem
     suspend fun getCalendars(): Flow<List<AgendaCalendar>>
     suspend fun addCalendar(name: String)
+    suspend fun removeCalendar(calendarId: String)
     suspend fun joinCalendar(userId: String, code: String): AgendaCalendar?
 }
 
@@ -83,12 +84,10 @@ class AgendaWebViewRepository(
                         val currentDate = ShortDate.fromDate(dateWithOffset)
 
                         events.add(AgendaItem(
-                            "",
-                            item.getString("eventName"),
-                            currentDate,
-                            "SAES",
-                            listOf(),
-                            HourRange(Hour(12,0), Hour(13,0), WeekDay.byDate(dateWithOffset)),
+                            eventName = item.getString("eventName"),
+                            date = currentDate,
+                            calendarId = "SAES",
+                            hourRange = HourRange(Hour(12,0), Hour(13,0), WeekDay.byDate(dateWithOffset)),
                             eventType = AgendaEventType.ACADEMIC
                         ))
                     } while (currentDate != end)
@@ -111,6 +110,7 @@ class AgendaWebViewRepository(
     override suspend fun editEvent(agendaItem: AgendaItem) = firebaseRepository.editEvent(agendaItem)
     override suspend fun getCalendars() = firebaseRepository.getCalendars()
     override suspend fun addCalendar(name: String) = firebaseRepository.addCalendar(name)
+    override suspend fun removeCalendar(calendarId: String) = firebaseRepository.removeCalendar(calendarId)
     override suspend fun joinCalendar(userId: String, code: String) = firebaseRepository.joinCalendar(userId, code)
 }
 
@@ -190,6 +190,12 @@ class AgendaFirebaseRepository(
                 name = name,
                 admins = listOf(userId)
             )).await()
+    }
+
+    override suspend fun removeCalendar(calendarId: String) {
+        db.collection(COLLECTION_ID_CALENDARS)
+            .document(calendarId)
+            .delete().await()
     }
 
     override suspend fun joinCalendar(userId: String, code: String): AgendaCalendar? {

@@ -1,16 +1,14 @@
 package ziox.ramiro.saes.features.saes.features.agenda.data.models
 
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.HourRange
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.*
+import java.util.*
 
 data class AgendaItem(
-    val eventId: String,
-    val eventName: String,
-    val date: ShortDate,
-    val calendarId: String,
-    val admins: List<String>,
-    val hourRange: HourRange,
+    val eventId: String = "",
+    val eventName: String = "",
+    val date: ShortDate = ShortDate(),
+    val calendarId: String = "",
+    val hourRange: HourRange = HourRange(),
     val description: String? = null,
     val classSchedule: ClassSchedule? = null,
     val eventType: AgendaEventType = AgendaEventType.PERSONAL
@@ -20,7 +18,6 @@ data class AgendaItem(
         "eventName" to eventName,
         "date" to date.toDate(),
         "calendarId" to calendarId,
-        "admins" to admins,
         "hourRange" to hourRange,
         "description" to description,
         "classSchedule" to classSchedule?.id,

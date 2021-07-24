@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
@@ -14,6 +15,7 @@ class AgendaViewModel(
     calendarId: String?
 ) : ViewModel() {
     val eventList = mutableStateOf<List<AgendaItem>?>(null)
+    val isAddAgendaLoading = mutableStateOf(false)
     val error = MutableStateFlow<String?>(null)
 
     init {
@@ -23,13 +25,22 @@ class AgendaViewModel(
     }
 
     fun fetchAgendaEvents(calendarId: String) = viewModelScope.launch {
-        try {
-            agendaRepository.getEvents(calendarId).collect {
-                eventList.value = it
-            }
-        }catch (e: Exception){
-            e.printStackTrace()
+        agendaRepository.getEvents(calendarId).catch {
             error.value = "Error al obtener los eventos"
+        }.collect {
+            eventList.value = it
         }
+    }
+
+    fun addAgendaEvent(agendaItem: AgendaItem) = viewModelScope.launch {
+        isAddAgendaLoading.value = true
+
+        kotlin.runCatching {
+            agendaRepository.addEvent(agendaItem)
+        }.onFailure {
+            error.value = "Error al agregar el evento"
+        }
+
+        isAddAgendaLoading.value = false
     }
 }
