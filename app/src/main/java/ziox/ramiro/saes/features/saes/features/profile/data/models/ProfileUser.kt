@@ -65,7 +65,17 @@ data class Address(
     val state: String,
     @ColumnInfo(name = "address_municipality")
     val municipality: String
-)
+){
+    fun joinToString() = buildString {
+        append("$street #$extNumber ")
+
+        if(intNumber.isNotBlank()){
+            append("(Int. #$intNumber) ")
+        }
+
+        append("$suburb CP $zip. $municipality, $state.")
+    }
+}
 
 
 data class ContactInformation(

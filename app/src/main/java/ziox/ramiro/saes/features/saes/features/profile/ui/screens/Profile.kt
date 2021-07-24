@@ -3,18 +3,14 @@ package ziox.ramiro.saes.features.saes.features.profile.ui.screens
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Fingerprint
-import androidx.compose.material.icons.rounded.QrCodeScanner
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -35,12 +32,11 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.profile.data.models.QRCodeScannerContract
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
+import ziox.ramiro.saes.features.saes.features.profile.ui.components.BarcodeCode39
+import ziox.ramiro.saes.features.saes.features.profile.ui.components.QRCode
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
-import ziox.ramiro.saes.utils.BarcodeTypes
-import ziox.ramiro.saes.utils.PreferenceKeys
-import ziox.ramiro.saes.utils.UserPreferences
-import ziox.ramiro.saes.utils.createBarcodeImage
+import ziox.ramiro.saes.utils.*
 
 
 @Composable
@@ -55,8 +51,62 @@ fun Profile(
                 topBar = {
                     ProfileAppBar(profileUser = it)
                 }
-            ) {
-
+            ) { _ ->
+                Box(
+                    modifier = Modifier.verticalScroll(rememberScrollState())
+                ) {
+                    Column(
+                        Modifier.padding(
+                            start = 32.dp,
+                            end = 32.dp,
+                            top = 16.dp,
+                            bottom = 64.dp
+                        )
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
+                            text = "Datos generales",
+                            style = MaterialTheme.typography.subtitle2
+                        )
+                        ProfileDataItem(Icons.Rounded.Cake, it.birthday.toLongString())
+                        ProfileDataItem(Icons.Rounded.LocationCity,  "${it.state}, ${it.nationality}")
+                        ProfileDataItem(Icons.Rounded.CorporateFare, it.school)
+                        ProfileDataItem(Icons.Rounded.Fingerprint, it.curp)
+                        ProfileDataItem(Icons.Rounded.MarkunreadMailbox, it.address.joinToString())
+                        Text(
+                            modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
+                            text = "Datos de contacto",
+                            style = MaterialTheme.typography.subtitle2
+                        )
+                        ProfileDataItem(Icons.Rounded.AlternateEmail, it.contactInformation.email)
+                        ProfileDataItem(Icons.Rounded.Smartphone, it.contactInformation.mobilePhoneNumber)
+                        ProfileDataItem(Icons.Rounded.Phone, it.contactInformation.phoneNumber)
+                        ProfileDataItem(Icons.Rounded.Apartment, it.contactInformation.officePhone)
+                        Text(
+                            modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
+                            text = "Datos escolares",
+                            style = MaterialTheme.typography.subtitle2
+                        )
+                        ProfileDataItem(Icons.Rounded.CorporateFare, it.education.highSchoolName)
+                        ProfileDataItem(Icons.Rounded.LocationCity, it.education.highSchoolState)
+                        ProfileDataItem(Icons.Rounded.Grading, it.education.highSchoolFinalGrade.toString())
+                        Text(
+                            modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
+                            text = "Progenitores o tutor",
+                            style = MaterialTheme.typography.subtitle2
+                        )
+                        if(it.parent.guardianName.isNotBlank()){
+                            ProfileDataItem(Icons.Rounded.EscalatorWarning, it.parent.guardianName)
+                            ProfileDataItem(Icons.Rounded.Fingerprint, it.parent.guardianRfc)
+                        }
+                        if(it.parent.motherName.isNotBlank()){
+                            ProfileDataItem(Icons.Rounded.EscalatorWarning, it.parent.motherName)
+                        }
+                        if(it.parent.fatherName.isNotBlank()){
+                            ProfileDataItem(Icons.Rounded.EscalatorWarning, it.parent.fatherName)
+                        }
+                    }
+                }
             }
         }
     }else{
@@ -153,88 +203,21 @@ fun ProfileAppBar(
     }
 }
 
-
 @Composable
-fun QRCode() {
-    val context = LocalContext.current
-
-    val qrCodeUrl = remember {
-        mutableStateOf(UserPreferences.invoke(context).getPreference(PreferenceKeys.QrUrl, ""))
-    }
-
-    val qrCodeScannerLauncher = rememberLauncherForActivityResult(contract = QRCodeScannerContract()) {
-        if(it != null){
-            UserPreferences.invoke(context).setPreference(PreferenceKeys.QrUrl, it)
-            qrCodeUrl.value = it
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .padding(bottom = 16.dp)
-            .clip(MaterialTheme.shapes.medium)
-            .background(Color.White)
-            .size(150.dp)
-            .clickable(
-                indication = rememberRipple(),
-                interactionSource = MutableInteractionSource(),
-                onClick = {
-                    qrCodeScannerLauncher.launch(Unit)
-                }
-            ),
-    ) {
-        if(qrCodeUrl.value.isBlank()){
-            Column(
-                Modifier
-                    .clip(MaterialTheme.shapes.medium)
-                    .fillMaxSize()
-                    .border(1.dp, getCurrentTheme().divider, MaterialTheme.shapes.medium)
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.QrCodeScanner,
-                    contentDescription = "QR Scanner",
-                    tint = Color.Black
-                )
-                Text(
-                    modifier = Modifier.padding(top = 16.dp),
-                    text = "Agregar Código QR de la credencial",
-                    textAlign = TextAlign.Center,
-                    color = Color.Black
-                )
-            }
-        }else{
-            Image(
-                modifier = Modifier.fillMaxSize(),
-                bitmap = createBarcodeImage(qrCodeUrl.value, BarcodeTypes.QRCode, 100.dp, 100.dp).asImageBitmap(),
-                contentDescription = "Code",
-                contentScale = ContentScale.FillBounds
-            )
-        }
-    }
-}
-
-
-@Composable
-fun BarcodeCode39(data: String = "1234567890") = Column(
-    modifier = Modifier
-        .clip(MaterialTheme.shapes.medium)
-        .background(Color.White)
-        .fillMaxWidth()
-        .padding(8.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
+fun ProfileDataItem(
+    icon: ImageVector,
+    value: String
+) = Row(
+    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+    verticalAlignment = Alignment.CenterVertically
 ) {
-    Image(
-        modifier = Modifier.fillMaxWidth(),
-        bitmap = createBarcodeImage(data, BarcodeTypes.Barcode39, 270.dp, 30.dp).asImageBitmap(),
-        contentDescription = "Code",
-        contentScale = ContentScale.FillWidth
+    Icon(
+        imageVector = icon,
+        contentDescription = "Profile item",
+        tint = MaterialTheme.colors.primary
     )
     Text(
-        text = data,
-        style = MaterialTheme.typography.subtitle2,
-        color = Color.Black
+        modifier = Modifier.padding(start = 16.dp),
+        text = value
     )
 }

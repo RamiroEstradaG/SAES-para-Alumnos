@@ -311,7 +311,8 @@ fun AgendaView(
                         modifier = Modifier.weight(1f),
                         it.filter { event ->
                             event.date == availableDates[selectedDateIndex.value]
-                        }
+                        },
+                        agendaViewModel
                     )
                 }
             }else{
@@ -561,7 +562,8 @@ fun SelectAddAgendaEventList(
 @Composable
 fun AgendaSchedule(
     modifier: Modifier = Modifier,
-    events: List<AgendaItem>
+    events: List<AgendaItem>,
+    agendaViewModel: AgendaViewModel
 ) {
 
     val xScrollState = rememberScrollState()
@@ -581,7 +583,7 @@ fun AgendaSchedule(
                     .horizontalScroll(xScrollState)
                     .focusable(false)
             ){
-                EventsContainer(hourRange, rearrangeList(events))
+                EventsContainer(hourRange, rearrangeList(events), agendaViewModel)
             }
         }
         Box(
@@ -645,7 +647,8 @@ private fun checkIfOccupied(list: List<AgendaItem>, item: AgendaItem): Boolean{
 @Composable
 fun EventsContainer(
     hourRange: IntRange,
-    events: List<List<AgendaItem>>
+    events: List<List<AgendaItem>>,
+    agendaViewModel: AgendaViewModel
 ) = Box {
     HourDividers(
         modifier = Modifier.fillMaxWidth(),
@@ -665,7 +668,7 @@ fun EventsContainer(
                     )
 
             ) {
-                EventCard(item)
+                EventCard(item, agendaViewModel)
             }
         }
     }
@@ -673,7 +676,8 @@ fun EventsContainer(
 
 @Composable
 fun EventCard(
-    agendaItem: AgendaItem
+    agendaItem: AgendaItem,
+    agendaViewModel: AgendaViewModel
 ) = Card(
     modifier = Modifier
         .padding(horizontal = 8.dp)
@@ -692,12 +696,35 @@ fun EventCard(
         Modifier
             .padding(16.dp)
     ) {
-        Text(
-            text = agendaItem.eventName,
-            style = MaterialTheme.typography.h5,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = agendaItem.eventName,
+                style = MaterialTheme.typography.h5,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            /*if(agendaViewModel.isRemovingEvent.value == agendaItem.eventId){
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp)
+                )
+            }else{
+                IconButton(
+                    modifier = Modifier.size(22.dp),
+                    onClick = {
+                        agendaViewModel.removeEvent(agendaItem.eventId)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Delete,
+                        contentDescription = "Delete agenda",
+                        tint = getCurrentTheme().danger
+                    )
+                }
+            }*/
+        }
         AndroidView(
             modifier = Modifier.verticalScroll(rememberScrollState()),
             factory = {

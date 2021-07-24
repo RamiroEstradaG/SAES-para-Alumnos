@@ -86,13 +86,13 @@ class ProfileWebViewRepository(
                     data.getString("state").toProperCase(),
                     data.getString("isWorking").uppercase() == "SI",
                     Address(
-                        address.getString("street"),
+                        address.getString("street").toProperCase(),
                         address.getString("extNumber"),
                         address.getString("intNumber"),
-                        address.getString("suburb"),
+                        address.getString("suburb").toProperCase(),
                         address.getString("zip"),
-                        address.getString("state"),
-                        address.getString("municipality"),
+                        address.getString("state").toProperCase(),
+                        address.getString("municipality").toProperCase(),
                     ),
                     ContactInformation(
                         contact.getString("phone"),
@@ -101,16 +101,16 @@ class ProfileWebViewRepository(
                         contact.getString("officePhone")
                     ),
                     Education(
-                        education.getString("highSchoolName"),
-                        education.getString("highSchoolState"),
+                        education.getString("highSchoolName").toProperCase(),
+                        education.getString("highSchoolState").toProperCase(),
                         education.getString("highSchoolFinalGrade").toDouble(),
                         education.getString("middleSchoolFinalGrade").toDouble()
                     ),
                     Parent(
-                        parents.getString("guardianName"),
+                        parents.getString("guardianName").toProperCase(),
                         parents.getString("guardianRfc"),
-                        parents.getString("father"),
-                        parents.getString("mother")
+                        parents.getString("father").toProperCase(),
+                        parents.getString("mother").toProperCase()
                     )
                 )
             }.also {

@@ -12,10 +12,11 @@ import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaRe
 
 class AgendaViewModel(
     private val agendaRepository: AgendaRepository,
-    calendarId: String?
+    private val calendarId: String?
 ) : ViewModel() {
     val eventList = mutableStateOf<List<AgendaItem>?>(null)
     val isAddAgendaLoading = mutableStateOf(false)
+    val isRemovingEvent = mutableStateOf<String?>(null)
     val error = MutableStateFlow<String?>(null)
 
     init {
@@ -42,5 +43,18 @@ class AgendaViewModel(
         }
 
         isAddAgendaLoading.value = false
+    }
+
+    fun removeEvent(eventId: String) = viewModelScope.launch {
+        if(calendarId != null){
+            isRemovingEvent.value = eventId
+            kotlin.runCatching {
+                agendaRepository.removeEvent(calendarId, eventId)
+            }.onFailure {
+                error.value = "Error al eliminar la agenda"
+
+            }
+            isRemovingEvent.value = null
+        }
     }
 }
