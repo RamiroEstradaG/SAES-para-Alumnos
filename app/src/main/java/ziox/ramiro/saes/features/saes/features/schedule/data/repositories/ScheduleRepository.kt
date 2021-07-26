@@ -63,27 +63,7 @@ class ScheduleWebViewRepository(
                 
                     next(scheduledClass);
                 }else{
-                    next([{
-                                id: "trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString()",
-                                classId: "1",
-                                dayIndex: 2,               
-                                className: "Ingeniería de software",               
-                                hours: "12:00-13:30",               
-                                group: "tr.children[cols.groupIndex].innerText",               
-                                teacherName: "tr.children[cols.teacherIndex].innerText",               
-                                building: "tr.children[cols.buildingIndex].innerText",               
-                                classroom: "tr.children[cols.classroomIndex].innerText"
-                            },{
-                                id: "trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString() 2",
-                                classId: "2",
-                                dayIndex: 2,               
-                                className: "Compiladores",               
-                                hours: "09:00-10:30",               
-                                group: "tr.children[cols.groupIndex].innerText",               
-                                teacherName: "tr.children[cols.teacherIndex].innerText",               
-                                building: "tr.children[cols.buildingIndex].innerText",               
-                                classroom: "tr.children[cols.classroomIndex].innerText"
-                            }]);
+                    next([]);
                 }
             """.trimIndent(),
             ){
