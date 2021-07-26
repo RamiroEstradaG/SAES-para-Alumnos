@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.RemoteViews
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
@@ -24,10 +27,16 @@ class ScheduleMediumWidget  : AppWidgetProvider() {
     }
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
+        CoroutineScope(Dispatchers.Default).launch {
+            updateWidget(context, appWidgetManager, appWidgetId)
+        }
+    }
+
+    private fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int){
         val rootView = RemoteViews(context.packageName, R.layout.widget_schedule_medium)
         val intent = Intent(context, ListWidgetRemoteViewService::class.java)
         val weekDay = WeekDay.today()
-        val database = LocalAppDatabase.invoke(context).scheduleRepository()
+        val database = LocalAppDatabase(context).scheduleRepository()
         val scheduleList = database.getMySchedule()
 
         if(scheduleList.isEmpty()) {

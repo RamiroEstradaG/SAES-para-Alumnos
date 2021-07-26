@@ -6,6 +6,7 @@
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    
     <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
 
     <application
@@ -30,6 +31,10 @@
             android:theme="@style/Theme.SAESParaAlumnos" />
         <activity
             android:name="ziox.ramiro.saes.features.about.ui.screens.AboutActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
+            android:name="ziox.ramiro.saes.features.settings.ui.screens.SettingsActivity"
             android:exported="true"
             android:theme="@style/Theme.SAESParaAlumnos" />
         <activity
@@ -462,20 +467,14 @@
                 android:resource="@xml/schedule_medium_widget" />
         </receiver>
 
-<!--        <receiver-->
-<!--            android:name="ziox.ramiro.saes.ui.app_widgets.AgendaEscolarWidget"-->
-<!--            android:label="Agenda escolar">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />-->
-<!--            </intent-filter>-->
-
-<!--            <meta-data-->
-<!--                android:name="android.appwidget.provider"-->
-<!--                android:resource="@xml/agenda_escolar_widget_info" />-->
-<!--        </receiver>-->
+        <service
+            android:name="ziox.ramiro.saes.services.ListWidgetRemoteViewService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <service android:name=".services.MessagingService"
-            android:permission="android.permission.INTERNET">
+            android:permission="android.permission.INTERNET"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -491,6 +490,10 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="notificaciones_general" />
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/admob_key"/>
     </application>
 
 </manifest>

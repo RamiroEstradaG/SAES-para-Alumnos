@@ -22,7 +22,9 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.Schedu
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleHeader
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleWeekContainer
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
+import ziox.ramiro.saes.utils.updateWidgets
 
 val hourWidth = 70.dp
 val today = WeekDay.today()
@@ -36,6 +38,7 @@ fun Schedule(
 ) {
     if(scheduleViewModel.scheduleList.value != null){
         scheduleViewModel.scheduleList.value?.let {
+            LocalContext.current.updateWidgets()
             if(it.isNotEmpty()){
                 Column(
                     modifier = Modifier.fillMaxSize()
@@ -74,6 +77,8 @@ fun Schedule(
             )
         }
     }
+
+    ErrorSnackbar(scheduleViewModel.error)
 }
 
 

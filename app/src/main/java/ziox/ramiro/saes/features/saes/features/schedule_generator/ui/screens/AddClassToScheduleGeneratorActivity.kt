@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,7 +33,7 @@ import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 
-class AddClassToScheduleGeneratorActivity : ComponentActivity() {
+class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
     private val schoolScheduleViewModel: SchoolScheduleViewModel by viewModels {
         viewModelFactory { SchoolScheduleViewModel(SchoolScheduleWebViewRepository(this)) }
     }

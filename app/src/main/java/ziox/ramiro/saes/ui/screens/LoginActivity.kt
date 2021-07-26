@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,7 +43,7 @@ import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.validate
 import ziox.ramiro.saes.view_models.AuthViewModel
 
-class LoginActivity : ComponentActivity() {
+class LoginActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModels {
         viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
     }

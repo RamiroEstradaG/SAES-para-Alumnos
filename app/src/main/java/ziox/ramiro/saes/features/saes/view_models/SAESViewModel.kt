@@ -16,7 +16,7 @@ class SAESViewModel(
     private val historyRoomRepository: HistoryRoomRepository
 ) : ViewModel() {
     companion object {
-        val SECTION_INITIAL = MenuSection.PROFILE
+        val SECTION_INITIAL = MenuSection.HOME
     }
 
     private val _currentSection = MutableStateFlow(SECTION_INITIAL)

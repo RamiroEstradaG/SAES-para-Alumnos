@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Event
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Logout
-import androidx.compose.material.icons.rounded.MoreTime
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -39,6 +36,7 @@ import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewMo
 import ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.ScheduleGeneratorActivity
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
+import ziox.ramiro.saes.features.settings.ui.screens.SettingsActivity
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.isNetworkAvailable
@@ -92,6 +90,9 @@ class BottomSheetDrawerModal(
                                 context?.launchUrl(remoteConfig.getString("calendario_no_escolarizado"))
                             }
                             MenuHeader(name = "Aplicación")
+                            ActionMenuItem(icon = Icons.Rounded.Settings, name = "Configuración"){
+                                startActivity(Intent(requireContext(), SettingsActivity::class.java))
+                            }
                             ActionMenuItem(icon = Icons.Rounded.Info, name = "Acerca de la aplicación"){
                                 startActivity(Intent(requireContext(), AboutActivity::class.java))
                             }

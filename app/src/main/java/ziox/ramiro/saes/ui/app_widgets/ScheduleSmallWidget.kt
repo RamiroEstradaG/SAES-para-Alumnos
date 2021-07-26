@@ -5,6 +5,9 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.os.Bundle
 import android.widget.RemoteViews
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
@@ -26,10 +29,16 @@ class ScheduleSmallWidget : AppWidgetProvider() {
     }
 
     private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
+        CoroutineScope(Dispatchers.Default).launch {
+            updateWidget(context, appWidgetManager, appWidgetId)
+        }
+    }
+
+    private fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int){
         val rootView = RemoteViews(context.packageName, R.layout.widget_schedule_small)
 
         val db = LocalAppDatabase.invoke(context).scheduleRepository()
-        val now = Hour.fromDate(Date()).toDouble().toInt()
+        val now = Hour.fromDate(Date()).toDouble()
         val scheduleList = db.getMySchedule()
 
         val range = scheduleList.getRangeBy { it.hourRange }
@@ -37,12 +46,12 @@ class ScheduleSmallWidget : AppWidgetProvider() {
         if(scheduleList.isEmpty()){
             updateClassAndProgress(rootView, "Abre tu horario en la app para actualizar.", 0)
         }else{
-            if(now !in range){
+            if(now.toInt() !in range){
                 updateClassAndProgress(rootView,"Fuera del horario", 0)
             }else{
                 val currentClass = scheduleList.getCurrentClass()
                 if(currentClass != null){
-                    updateClassAndProgress(rootView, currentClass.className, now.minus(currentClass.hourRange.start.toDouble()).div(currentClass.hourRange.duration).toInt())
+                    updateClassAndProgress(rootView, currentClass.className, now.minus(currentClass.hourRange.start.toDouble()).div(currentClass.hourRange.duration).times(100).toInt())
                 }else{
                     updateClassAndProgress(rootView, "Tiempo libre", 0)
                 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,7 +40,7 @@ import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.isNetworkAvailable
 
-class ScheduleGeneratorActivity: ComponentActivity() {
+class ScheduleGeneratorActivity: AppCompatActivity() {
     private val scheduleGeneratorViewModel: ScheduleGeneratorViewModel by viewModels {
         viewModelFactory { ScheduleGeneratorViewModel(LocalAppDatabase.invoke(this).scheduleGeneratorRepository()) }
     }

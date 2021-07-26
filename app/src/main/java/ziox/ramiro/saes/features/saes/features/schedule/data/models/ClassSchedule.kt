@@ -233,9 +233,33 @@ fun List<ClassSchedule>.getCurrentClass() : ClassSchedule? {
     val currentDay = WeekDay.today()
     val currentHour = Hour.fromDate(Date())
 
-    return this.find {
-        currentDay == it.hourRange.weekDay && currentHour.toDouble() in it.hourRange.start.toDouble()..it.hourRange.end.toDouble()
+    return this.filter {
+        currentDay == it.hourRange.weekDay
+    }.find {
+         currentHour.toDouble() in it.hourRange.start.toDouble()..it.hourRange.end.toDouble()
     }
+}
+
+fun List<ClassSchedule>.getNextClass() : ClassSchedule? {
+    val currentDay = WeekDay.today()
+    val currentHour = Hour.fromDate(Date())
+    var currentMinHour = 24.0
+    var currentResult: ClassSchedule? = null
+
+    val list = this.filter {
+        currentDay == it.hourRange.weekDay
+    }.sortedByDescending {
+        it.hourRange.start.toDouble()
+    }
+
+    list.forEach {
+        if(it.hourRange.start.toDouble() < currentMinHour && it.hourRange.start.toDouble() >= currentHour.toDouble()){
+            currentMinHour = it.hourRange.start.toDouble()
+            currentResult = it
+        }
+    }
+
+    return currentResult
 }
 
 data class HourRange(

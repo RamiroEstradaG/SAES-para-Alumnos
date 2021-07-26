@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,7 +28,7 @@ import ziox.ramiro.saes.ui.components.SchoolButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
-class SelectSchoolActivity : ComponentActivity() {
+class SelectSchoolActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

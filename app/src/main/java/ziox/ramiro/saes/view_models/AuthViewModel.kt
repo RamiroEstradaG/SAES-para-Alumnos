@@ -4,20 +4,23 @@ import android.webkit.CookieManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.Auth
 import ziox.ramiro.saes.data.models.Captcha
 import ziox.ramiro.saes.data.repositories.AuthRepository
+import ziox.ramiro.saes.utils.dismissAfterTimeout
 
 class AuthViewModel(
     private val authRepository: AuthRepository
 ) : ViewModel(){
     val captcha = mutableStateOf<Captcha?>(null)
     val auth = mutableStateOf<Auth?>(Auth.Empty)
-    val error = mutableStateOf<String?>(null)
+    val error = MutableStateFlow<String?>(null)
     val isLoggedIn = mutableStateOf<Boolean?>(null)
 
     init {
+        error.dismissAfterTimeout()
         checkSession()
         fetchCaptcha()
     }

@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,14 +45,13 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         }
     }
 
-    suspend fun updateScheduleWidget(context : Context, appWidgetManager : AppWidgetManager, appWidgetId : Int) = runOnDefaultThread {
+    private suspend fun updateScheduleWidget(context : Context, appWidgetManager : AppWidgetManager, appWidgetId : Int) = runOnDefaultThread {
         val db = LocalAppDatabase.invoke(context).scheduleRepository()
-        val height = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
         val rootView = RemoteViews(context.packageName, R.layout.widget_schedule_large)
-        val levelingPreference = UserPreferences(context).getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0)
         val scheduleList = db.getMySchedule()
         val weekDay = WeekDay.today()
         val range = scheduleList.getRangeBy { it.hourRange }
+        val hourHeight = context.getHourHeight(range, appWidgetId, appWidgetManager)
 
         rootView.setInt(R.id.limiteTextView, "setHeight",TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,10f,context.resources.displayMetrics).toInt())
 
@@ -65,11 +66,14 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         initSchedule(rootView, context, scheduleList)
 
         scheduleList.forEach {
-            val classRemoteView = RemoteViews(context.packageName, R.layout.widget_schedule_class_item)
-            classRemoteView.setInt(R.id.clase_view, "setHeight", (it.hourRange.duration.times(getLayoutHeight(height, levelingPreference, context)).div(range.last - range.first)).toInt())
-            classRemoteView.setViewPadding(R.id.clase_view_parent,0, range.first.minus(it.hourRange.start.toDouble().times(getLayoutHeight(height, levelingPreference, context).div(range.last - range.first))).toInt(),0,0)
+            val height = it.hourRange.duration.times(hourHeight).toInt()
+            val paddingTop = (it.hourRange.start.toDouble().minus(range.first)).times(hourHeight).toInt()
 
-            classRemoteView.setInt(R.id.clase_view, "setBackgroundColor", it.color.toInt())
+            val classRemoteView = RemoteViews(context.packageName, R.layout.widget_schedule_class_item)
+            classRemoteView.setInt(R.id.clase_view, "setHeight", height)
+            classRemoteView.setViewPadding(R.id.clase_view_parent,0, paddingTop,0,0)
+
+            classRemoteView.setInt(R.id.clase_view, "setBackgroundColor", Color(it.color.toULong()).toArgb())
 
             classRemoteView.setTextViewText(R.id.clase_view, it.className.getInitials())
 
@@ -95,15 +99,10 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         }
 
         for(i in range){
-            if(i < range.last-range.first){
-                val hourRemote = RemoteViews(context.packageName, R.layout.widget_schedule_hour_item)
-                hourRemote.setTextViewText(R.id.widget_horas_item, "${range.first+i}:00")
-                hourRemote.setTextColor(R.id.widget_horas_item, ContextCompat.getColor(context, R.color.colorTextPrimary))
-                rootView.addView(R.id.horasHorarioWidgetLayout, hourRemote)
-            }else{
-                rootView.setTextViewText(R.id.limiteTextView, "${range.first+i}:00")
-                rootView.setTextColor(R.id.limiteTextView, ContextCompat.getColor(context, R.color.colorTextPrimary))
-            }
+            val hourRemote = RemoteViews(context.packageName, R.layout.widget_schedule_hour_item)
+            hourRemote.setTextViewText(R.id.widget_horas_item, "$i:00")
+            hourRemote.setTextColor(R.id.widget_horas_item, ContextCompat.getColor(context, R.color.colorTextPrimary))
+            rootView.addView(R.id.horasHorarioWidgetLayout, hourRemote)
         }
 
         rootView.setViewVisibility(R.id.progressBarWidgetLarge, View.GONE)
@@ -114,9 +113,19 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         }
     }
 
-    private fun getLayoutHeight(height : Int, leveling : Int, context: Context) : Float{
-        val spPixel = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16f, context.resources.displayMetrics)
-        val dpPixel = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,height-8f+leveling-1,context.resources.displayMetrics)
+    private fun Context.getHourHeight(range: IntRange, appWidgetId: Int, appWidgetManager: AppWidgetManager): Double {
+        val difference = range.last - range.first
+        val height = getLayoutHeight(appWidgetId, appWidgetManager)
+
+        return height.div(difference.toDouble())
+    }
+
+    private fun Context.getLayoutHeight(appWidgetId: Int, appWidgetManager: AppWidgetManager) : Float{
+        val leveling = UserPreferences.invoke(this).getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0)
+        val height = appWidgetManager.getAppWidgetOptions(appWidgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
+
+        val spPixel = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 16f, resources.displayMetrics)
+        val dpPixel = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,height - 8f + leveling, resources.displayMetrics)
         return dpPixel-spPixel
     }
 

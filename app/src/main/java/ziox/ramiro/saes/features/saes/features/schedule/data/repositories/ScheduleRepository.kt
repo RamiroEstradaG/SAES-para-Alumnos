@@ -46,8 +46,6 @@ class ScheduleWebViewRepository(
                         ));
                     
                         children.splice(0,1);
-                    
-                        
                         
                         children.filter(tr => !(!tr.innerText || /^\s*${'$'}/.test(tr.innerText))).forEach(tr => {
                             scheduledClass.push(...[...tr.children].map((td, e) => ({

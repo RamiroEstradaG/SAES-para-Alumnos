@@ -71,4 +71,5 @@ sealed class PreferenceKeys<T>(val key: String) {
     object OfflineMode: PreferenceKeys<Boolean>("offline_mode")
     object ScheduleWidgetLeveling: PreferenceKeys<Int>("widget_nivel")
     object PerformanceSaveDataPermission: PreferenceKeys<Boolean?>("save_performance_data")
+    object DefaultNightMode: PreferenceKeys<Int?>("dark_mode")
 }

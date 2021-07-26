@@ -2,6 +2,4 @@
     <string name="app_name">SAES para Alumnos</string>
     <string name="title_activity_select_school">SelectSchoolActivity</string>
     <string name="title_activity_saesactivity">SAESActivity</string>
-    <string name="com.twitter.sdk.android.CONSUMER_KEY">9yutsE7rNzOviGMcRHUlPpIJl</string>
-    <string name="com.twitter.sdk.android.CONSUMER_SECRET">adlz2uXWa4mGoDvEiihq1WceUyGbnfFfE7rXQKYHxKTSPWI4Ll</string>
 </resources>

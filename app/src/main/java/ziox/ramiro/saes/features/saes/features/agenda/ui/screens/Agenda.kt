@@ -518,23 +518,16 @@ fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit){
 }
 
 @Composable
-fun SelectAddAgendaEventList(
-    title: String,
+fun SelectableOptions(
     options: List<String>?,
     initialSelection: Int? = null,
     onSelectionChange: (Int?) -> Unit
-) = Column(
-    modifier = Modifier.padding(bottom = 16.dp)
 ) {
     val infoColor = getCurrentTheme().info
     val selectedIndex = remember {
         mutableStateOf(initialSelection)
     }
 
-    Text(
-        text = if(options?.isNotEmpty() == true) title else "",
-        style = MaterialTheme.typography.subtitle2
-    )
     FlexView(
         content = options?.mapIndexed { i, value ->
             {
@@ -555,6 +548,26 @@ fun SelectAddAgendaEventList(
                 }
             }
         } ?: listOf()
+    )
+}
+
+@Composable
+fun SelectAddAgendaEventList(
+    title: String,
+    options: List<String>?,
+    initialSelection: Int? = null,
+    onSelectionChange: (Int?) -> Unit
+) = Column(
+    modifier = Modifier.padding(bottom = 16.dp)
+) {
+
+
+    Text(
+        text = if(options?.isNotEmpty() == true) title else "",
+        style = MaterialTheme.typography.subtitle2
+    )
+    SelectableOptions(
+        options, initialSelection, onSelectionChange
     )
 }
 

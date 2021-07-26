@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -39,12 +41,22 @@ import androidx.core.content.ContextCompat
 import com.google.accompanist.imageloading.rememberDrawablePainter
 import com.google.android.play.core.review.ReviewManagerFactory
 import ziox.ramiro.saes.R
+import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.data.repositories.BillingGooglePayRepository
+import ziox.ramiro.saes.ui.components.BaseButton
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.launchUrl
+import ziox.ramiro.saes.view_models.BillingViewModel
 
 
-class AboutActivity : ComponentActivity() {
+class AboutActivity : AppCompatActivity() {
+    private val billingViewModel: BillingViewModel by viewModels {
+        viewModelFactory { BillingViewModel(BillingGooglePayRepository(this)) }
+    }
+
+
     @ExperimentalTextApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +67,10 @@ class AboutActivity : ComponentActivity() {
             }
 
             val showLicences = remember {
+                mutableStateOf(false)
+            }
+
+            val showDonation = remember {
                 mutableStateOf(false)
             }
 
@@ -76,6 +92,17 @@ class AboutActivity : ComponentActivity() {
                                 backgroundColor = getCurrentTheme().danger,
                                 contentColor = MaterialTheme.colors.onPrimary
                             )
+                            if(billingViewModel.hasDonated.value == false){
+                                AboutItem(
+                                    leading = rememberVectorPainter(image = Icons.Rounded.Campaign),
+                                    text = "Quitar publicidad",
+                                    isHighEmphasis = true,
+                                    backgroundColor = Color.Red,
+                                    contentColor = Color.White
+                                ) {
+                                    showDonation.value = true
+                                }
+                            }
                             AboutItem(
                                 leading = painterResource(id = R.drawable.ic_octicons_mark_github),
                                 text = "Código fuente",
@@ -135,6 +162,45 @@ class AboutActivity : ComponentActivity() {
                                 showLicences.value = true
                             }
                         }
+                    }
+
+                    if(showDonation.value){
+                        AlertDialog(
+                            onDismissRequest = {
+                                showDonation.value = false
+                            },
+                            title = {
+                                Text(text = "Quitar publicidad")
+                            },
+                            text = {
+                                Column {
+                                    Text(text = """
+                                        No hay diferencia entre las dos compras.
+                                        La compra se realiza una sola vez e incluye:
+                                        • Aplicación sin publicidad vinculado a Google Play.
+                                        • Apoyo a los desarrolladores.
+                                    """.trimIndent())
+
+                                }
+                            },
+                            buttons = {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    BaseButton(
+                                        text = "\$20"
+                                    ){
+                                        billingViewModel.purchaceProduct("01_saes_donation_20")
+                                    }
+                                    BaseButton(
+                                        text = "\$50"
+                                    ){
+                                        billingViewModel.purchaceProduct("02_saes_donation_50")
+                                    }
+                                }
+                            }
+                        )
                     }
 
                     if(showSAESPrivacyPolicy.value){
@@ -202,6 +268,7 @@ class AboutActivity : ComponentActivity() {
                         }
                     }
                 }
+                ErrorSnackbar(billingViewModel.error)
             }
         }
     }
