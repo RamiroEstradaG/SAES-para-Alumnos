@@ -77,10 +77,8 @@ class BottomSheetDrawerModal(
                             SectionMenuItem(section = MenuSection.ETS_CALENDAR)
                             SectionMenuItem(section = MenuSection.SCHOOL_SCHEDULE)
                             SectionMenuItem(section = MenuSection.OCCUPANCY)
-                            if(!LocalContext.current.isNetworkAvailable()){
-                                ActionMenuItem(icon = Icons.Rounded.MoreTime, name = "Generador de horario"){
-                                    startActivity(Intent(requireContext(), ScheduleGeneratorActivity::class.java))
-                                }
+                            ActionMenuItem(icon = Icons.Rounded.MoreTime, name = "Generador de horario"){
+                                startActivity(Intent(requireContext(), ScheduleGeneratorActivity::class.java))
                             }
                             MenuHeader(name = "Calendario académico")
                             ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad Escolarizada"){

@@ -29,6 +29,7 @@ class ProfileViewModel(
             }.onSuccess {
                 profile.value = it
             }.onFailure {
+                it.printStackTrace()
                 fetchMyData()
                 error.value = "Error al obtener los datos del usuario"
             }

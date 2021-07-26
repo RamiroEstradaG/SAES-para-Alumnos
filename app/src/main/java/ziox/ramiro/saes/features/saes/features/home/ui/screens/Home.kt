@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.Schedu
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.updateWidgets
 
@@ -122,7 +124,7 @@ fun Home(
                 HomeItem(
                     modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
                     title = "Clase en curso",
-                    icon = Icons.Rounded.Schedule
+                    icon = Icons.Outlined.Schedule
                 ){
                     Card(
                         modifier = Modifier
@@ -158,12 +160,22 @@ fun Home(
                             .fillMaxWidth(),
                         backgroundColor = Color(nextClass.color.toULong())
                     ) {
-                        Text(
-                            modifier = Modifier.padding(16.dp),
-                            text = nextClass.className,
-                            style = MaterialTheme.typography.h5,
-                            color = Color.White
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                modifier = Modifier.weight(1f).padding(16.dp),
+                                text = nextClass.className,
+                                style = MaterialTheme.typography.h5,
+                                color = Color.White
+                            )
+                            Text(
+                                modifier = Modifier.padding(16.dp),
+                                text = nextClass.hourRange.start.toString(),
+                                style = MaterialTheme.typography.subtitle2,
+                                color = Color.White
+                            )
+                        }
                     }
                 }
             }
@@ -269,6 +281,8 @@ fun Home(
             }
         }
     }
+
+    ErrorSnackbar(homeViewModel.error)
 }
 
 

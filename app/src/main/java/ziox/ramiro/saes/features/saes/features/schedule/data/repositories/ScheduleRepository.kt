@@ -1,7 +1,6 @@
 package ziox.ramiro.saes.features.saes.features.schedule.data.repositories
 
 import android.content.Context
-import androidx.compose.ui.graphics.Color
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -47,9 +46,10 @@ class ScheduleWebViewRepository(
                     
                         children.splice(0,1);
                         
-                        children.filter(tr => !(!tr.innerText || /^\s*${'$'}/.test(tr.innerText))).forEach(tr => {
+                        children.filter(tr => !(!tr.innerText || /^\s*${'$'}/.test(tr.innerText))).forEach((tr, trIndex) => {
                             scheduledClass.push(...[...tr.children].map((td, e) => ({
-                                id: tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(), 
+                                id: trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(),
+                                classId: trIndex.toString(),
                                 dayIndex: (e - cols.mondayIndex) % 5 + 1,               
                                 className: tr.children[cols.subjectIndex].innerText,               
                                 hours: td.innerText,               
@@ -63,7 +63,27 @@ class ScheduleWebViewRepository(
                 
                     next(scheduledClass);
                 }else{
-                    next([]);
+                    next([{
+                                id: "trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString()",
+                                classId: "1",
+                                dayIndex: 2,               
+                                className: "Ingeniería de software",               
+                                hours: "12:00-13:30",               
+                                group: "tr.children[cols.groupIndex].innerText",               
+                                teacherName: "tr.children[cols.teacherIndex].innerText",               
+                                building: "tr.children[cols.buildingIndex].innerText",               
+                                classroom: "tr.children[cols.classroomIndex].innerText"
+                            },{
+                                id: "trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString() 2",
+                                classId: "2",
+                                dayIndex: 2,               
+                                className: "Compiladores",               
+                                hours: "09:00-10:30",               
+                                group: "tr.children[cols.groupIndex].innerText",               
+                                teacherName: "tr.children[cols.teacherIndex].innerText",               
+                                building: "tr.children[cols.buildingIndex].innerText",               
+                                classroom: "tr.children[cols.classroomIndex].innerText"
+                            }]);
                 }
             """.trimIndent(),
             ){
@@ -80,19 +100,20 @@ class ScheduleWebViewRepository(
                             WeekDay.byDayOfWeek(classSchedule.getInt("dayIndex"))
                         )
 
-                        val className = classSchedule.getString("className").toProperCase()
+                        val classId = classSchedule.getString("classId")
 
-                        val color = if (registered.containsKey(className)){
-                            registered.getValue(className)
+                        val color = if (registered.containsKey(classId)){
+                            registered.getValue(classId)
                         }else{
-                            registered[className] = scheduleColors[registered.size % scheduleColors.size].value.toLong()
-                            registered.getValue(className)
+                            registered[classId] = scheduleColors[registered.size % scheduleColors.size].value.toLong()
+                            registered.getValue(classId)
                         }
 
                         addAll(hours.map { range ->
                             ClassSchedule(
                                 classSchedule.getString("id"),
-                                className,
+                                classId,
+                                classSchedule.getString("className").toProperCase(),
                                 classSchedule.getString("group"),
                                 classSchedule.getString("building"),
                                 classSchedule.getString("classroom"),

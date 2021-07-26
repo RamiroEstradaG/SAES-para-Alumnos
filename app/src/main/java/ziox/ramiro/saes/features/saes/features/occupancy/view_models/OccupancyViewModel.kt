@@ -2,19 +2,22 @@ package ziox.ramiro.saes.features.saes.features.occupancy.view_models
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.data.models.FilterViewModel
 import ziox.ramiro.saes.features.saes.features.occupancy.data.models.ClassOccupancy
 import ziox.ramiro.saes.features.saes.features.occupancy.data.repositories.OccupancyRepository
+import ziox.ramiro.saes.utils.dismissAfterTimeout
 
 class OccupancyViewModel(
     private val occupancyRepository: OccupancyRepository
 ) : FilterViewModel() {
     val occupancyList = mutableStateOf<List<ClassOccupancy>?>(null)
-    val error = mutableStateOf<String?>(null)
+    val error = MutableStateFlow<String?>(null)
 
     init {
         getFilterFields()
+        error.dismissAfterTimeout()
     }
 
     override fun getFilterFields() = viewModelScope.launch {

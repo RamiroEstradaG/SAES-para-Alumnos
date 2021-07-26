@@ -4,20 +4,26 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowRightAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourHeight
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
 import ziox.ramiro.saes.utils.toHour
+import java.util.*
 
 @Composable
 fun ScheduleWeekContainer(
@@ -128,17 +134,34 @@ fun ScheduleWeekContainer(
 fun HourColumn(
     hourRange: IntRange,
     classSchedules: List<ClassSchedule>
-) = Column(
-    modifier = Modifier.size(hourWidth, classSchedules.getHourHeight() * (hourRange.last - hourRange.first))
 ) {
-    hourRange.forEach {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(classSchedules.getHourHeight()),
-            text = it.toDouble().toHour(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.subtitle1
-        )
+    val hourHeight = classSchedules.getHourHeight()
+    Box(
+        modifier = Modifier.size(hourWidth, hourHeight * (hourRange.last - hourRange.first))
+    ){
+        val currentHour = Hour.fromDate(Date())
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            hourRange.forEach {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(hourHeight),
+                    text = it.toDouble().toHour(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.subtitle1
+                )
+            }
+        }
+        val iconPadding = hourHeight.times(currentHour.toDouble().minus(hourRange.first).toFloat()).minus(12.dp)
+        if(iconPadding >= 0.dp){
+            Icon(
+                modifier = Modifier.padding(top = iconPadding).align(Alignment.TopEnd),
+                imageVector = Icons.Rounded.ArrowRightAlt,
+                contentDescription = "Current hour",
+                tint = MaterialTheme.colors.primary
+            )
+        }
     }
 }

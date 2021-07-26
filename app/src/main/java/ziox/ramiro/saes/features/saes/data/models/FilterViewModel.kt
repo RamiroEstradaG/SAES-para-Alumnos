@@ -2,13 +2,14 @@ package ziox.ramiro.saes.features.saes.data.models
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.json.JSONArray
 import org.json.JSONObject
 
 abstract class FilterViewModel: ViewModel() {
     val filterFields = mutableStateOf<List<FilterField>?>(null)
     val filterFieldsComplete = mutableStateOf<List<FilterField>>(listOf())
-    val filterError = mutableStateOf<String?>(null)
+    val filterError = MutableStateFlow<String?>(null)
 
     abstract fun getFilterFields(): Any
     abstract fun selectSelect(itemId: String, newIndex: Int?): Any

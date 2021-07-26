@@ -9,7 +9,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.WatchLater
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.TrendingDown
+import androidx.compose.material.icons.rounded.TrendingFlat
+import androidx.compose.material.icons.rounded.TrendingUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +30,6 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
@@ -62,10 +63,8 @@ fun Performance(
         factory = viewModelFactory {
             PerformanceViewModel(
                 PerformanceFirebaseRepository(),
-                UserFirebaseRepository(
-                    UserPreferences.invoke(LocalContext.current).getPreference(PreferenceKeys.Boleta, "")
-                ),
-                LocalAppDatabase.invoke(LocalContext.current).kardexRepository()
+                KardexWebViewRepository(LocalContext.current),
+                UserFirebaseRepository(LocalContext.current)
             )
         }
     )

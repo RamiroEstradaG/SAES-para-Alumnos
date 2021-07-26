@@ -4,8 +4,10 @@ import android.webkit.CookieManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import ziox.ramiro.saes.data.data_providers.WebViewProvider.Companion.DEFAULT_TIMEOUT
 import ziox.ramiro.saes.data.models.Auth
 import ziox.ramiro.saes.data.models.Captcha
 import ziox.ramiro.saes.data.repositories.AuthRepository
@@ -39,7 +41,11 @@ class AuthViewModel(
                 }
             }.onFailure {
                 fetchCaptcha()
-                error.value = "Error al obtener el captcha"
+                error.value = if(it is TimeoutCancellationException){
+                    "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)} s)"
+                }else{
+                    "Error al obtener el captcha"
+                }
             }
         }
     }
@@ -56,7 +62,12 @@ class AuthViewModel(
                 fetchCaptcha()
             }
         }.onFailure {
-            error.value = "Error al obtener el captcha"
+            auth.value = Auth.Empty
+            error.value = if(it is TimeoutCancellationException){
+                "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)} s)"
+            }else{
+                "Error al iniciar sesión"
+            }
             fetchCaptcha()
         }
     }
@@ -71,7 +82,11 @@ class AuthViewModel(
                 isLoggedIn.value = it
             }.onFailure {
                 checkSession()
-                error.value = "Error al revisar la sesion"
+                error.value = if(it is TimeoutCancellationException){
+                    "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)} s)"
+                }else{
+                    "Error al revisar la sesión"
+                }
             }
         }
     }

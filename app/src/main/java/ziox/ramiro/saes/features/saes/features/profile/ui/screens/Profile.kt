@@ -35,6 +35,7 @@ import ziox.ramiro.saes.features.saes.features.profile.data.repositories.Profile
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.BarcodeCode39
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.QRCode
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.*
 
@@ -120,6 +121,8 @@ fun Profile(
             )
         }
     }
+
+    ErrorSnackbar(profileViewModel.error)
 }
 
 
@@ -136,7 +139,8 @@ fun ProfileAppBar(
         topEnd = 0.dp,
         bottomStart = 32.dp,
         bottomEnd = 32.dp
-    )
+    ),
+    backgroundColor = MaterialTheme.colors.surface
 ) {
     Box(
         modifier = Modifier.padding(16.dp)
@@ -208,7 +212,9 @@ fun ProfileDataItem(
     icon: ImageVector,
     value: String
 ) = Row(
-    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 8.dp),
     verticalAlignment = Alignment.CenterVertically
 ) {
     Icon(

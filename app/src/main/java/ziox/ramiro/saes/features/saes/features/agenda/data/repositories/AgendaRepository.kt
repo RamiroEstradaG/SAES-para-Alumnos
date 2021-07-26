@@ -43,7 +43,7 @@ class AgendaWebViewRepository(
     context: Context
 ) : AgendaRepository{
     private val webViewProvider = WebViewProvider(context, "/Academica/agenda_escolar.aspx")
-    private val firebaseRepository = AgendaFirebaseRepository(UserPreferences.invoke(context).getPreference(PreferenceKeys.Boleta, ""))
+    private val firebaseRepository = AgendaFirebaseRepository(context)
 
     @OptIn(ExperimentalTime::class)
     override suspend fun getEvents(calendarId: String): Flow<List<AgendaItem>> {
@@ -116,10 +116,10 @@ class AgendaWebViewRepository(
 
 
 class AgendaFirebaseRepository(
-    private val userId: String
+    context: Context
 ) : AgendaRepository{
     private val db = Firebase.firestore
-    private val userRepository = UserFirebaseRepository(userId)
+    private val userRepository = UserFirebaseRepository(context)
 
     companion object {
         const val COLLECTION_ID_CALENDARS = "calendars_v2"
@@ -185,6 +185,8 @@ class AgendaFirebaseRepository(
     }
 
     override suspend fun addCalendar(name: String) {
+        val userId = userRepository.getUserData().id
+
         db.collection(COLLECTION_ID_CALENDARS)
             .add(AgendaCalendar(
                 name = name,

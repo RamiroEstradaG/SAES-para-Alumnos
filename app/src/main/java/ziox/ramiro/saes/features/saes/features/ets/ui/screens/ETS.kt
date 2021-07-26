@@ -24,6 +24,7 @@ import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.OutlineButton
 
 @Composable
@@ -97,13 +98,17 @@ fun ETS(
         }
 
         OutlineButton(
-            modifier = Modifier.padding(top = 32.dp).align(Alignment.CenterHorizontally),
+            modifier = Modifier
+                .padding(top = 32.dp)
+                .align(Alignment.CenterHorizontally),
             text = "Calendario de ETS",
             icon = Icons.Rounded.Event
         ){
             saesViewModel.changeSection(MenuSection.ETS_CALENDAR)
         }
     }
+
+    ErrorSnackbar(etsViewModel.error)
 }
 
 

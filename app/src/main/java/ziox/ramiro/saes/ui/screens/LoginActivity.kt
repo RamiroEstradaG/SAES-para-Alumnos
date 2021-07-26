@@ -2,7 +2,6 @@ package ziox.ramiro.saes.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
@@ -26,15 +25,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.MutableStateFlow
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
-import ziox.ramiro.saes.ui.components.AsyncButton
-import ziox.ramiro.saes.ui.components.CaptchaInput
-import ziox.ramiro.saes.ui.components.SchoolButton
-import ziox.ramiro.saes.ui.components.TextButton
+import ziox.ramiro.saes.ui.components.*
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.MutableStateWithValidation
@@ -48,17 +45,15 @@ class LoginActivity : AppCompatActivity() {
         viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
     }
 
-    private val schoolUrl = mutableStateOf("")
-    private val username = mutableStateOf("")
-    private val password = mutableStateOf("")
+    private val schoolUrl = MutableStateFlow("")
     private lateinit var userPreferences : UserPreferences
 
     private val selectSchoolLauncher = registerForActivityResult(SelectSchoolContract()){
         if (it == null) return@registerForActivityResult
 
         UserPreferences.invoke(this).setPreference(PreferenceKeys.SchoolUrl, it.url)
-        authViewModel.fetchCaptcha()
         schoolUrl.value = it.url
+        authViewModel.fetchCaptcha()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,11 +61,18 @@ class LoginActivity : AppCompatActivity() {
 
         userPreferences = UserPreferences.invoke(this)
 
-        schoolUrl.value = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
-        username.value = userPreferences.getPreference(PreferenceKeys.Boleta, "")
-        password.value = userPreferences.getPreference(PreferenceKeys.Password, "")
-
         setContent {
+            val username = remember {
+                mutableStateOf("")
+            }
+            val password = remember {
+                mutableStateOf("")
+            }
+
+            schoolUrl.value = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
+            username.value = userPreferences.getPreference(PreferenceKeys.Boleta, "")
+            password.value = userPreferences.getPreference(PreferenceKeys.Password, "")
+
             if(authViewModel.auth.value?.isLoggedIn == true){
                 userPreferences.setPreference(PreferenceKeys.Boleta, username.value)
                 userPreferences.setPreference(PreferenceKeys.Password, password.value)
@@ -94,7 +96,7 @@ class LoginActivity : AppCompatActivity() {
                         Login(
                             authViewModel,
                             selectSchoolLauncher,
-                            schoolUrl,
+                            schoolUrl.collectAsState(),
                             username,
                             password
                         )
@@ -280,6 +282,8 @@ fun Login(
             selectSchoolLauncher.launch()
         }
     }
+
+    ErrorSnackbar(authViewModel.error)
 }
 
 

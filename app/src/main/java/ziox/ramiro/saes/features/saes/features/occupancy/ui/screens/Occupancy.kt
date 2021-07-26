@@ -24,6 +24,7 @@ import ziox.ramiro.saes.features.saes.features.occupancy.data.models.ClassOccupa
 import ziox.ramiro.saes.features.saes.features.occupancy.data.repositories.OccupancyWebViewRepository
 import ziox.ramiro.saes.features.saes.features.occupancy.view_models.OccupancyViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
@@ -91,6 +92,7 @@ fun Occupancy(
             }
         }
     }
+    ErrorSnackbar(occupancyViewModel.error)
 }
 
 @OptIn(ExperimentalGraphicsApi::class)
@@ -127,7 +129,9 @@ fun OccupancyItem(
         backgroundColor = Color.Transparent
     )
     Row(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(

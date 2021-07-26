@@ -9,10 +9,10 @@ import ziox.ramiro.saes.utils.toProperCase
 
 
 data class KardexData(
-    val generalScore: Double?,
-    val careerName: String,
-    val userId: String,
-    val kardexPeriods: List<KardexPeriod>
+    val generalScore: Double? = null,
+    val careerName: String = "",
+    val userId: String = "",
+    val kardexPeriods: List<KardexPeriod> = listOf()
 ){
     fun generalScoreAt(periodIndex: Int): Double{
         val untilPeriod = ArrayList<KardexClass>().apply {

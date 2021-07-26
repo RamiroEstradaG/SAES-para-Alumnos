@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
@@ -30,6 +31,7 @@ import ziox.ramiro.saes.features.saes.features.schedule_generator.models.reposot
 import ziox.ramiro.saes.features.saes.features.school_schedule.data.repositories.SchoolScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.school_schedule.view_models.SchoolScheduleViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 
@@ -39,7 +41,8 @@ class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
     }
 
     @OptIn(ExperimentalMaterialApi::class,
-        androidx.compose.animation.ExperimentalAnimationApi::class
+        androidx.compose.animation.ExperimentalAnimationApi::class,
+        kotlinx.coroutines.ExperimentalCoroutinesApi::class
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +105,7 @@ class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
                         }
                     }
                 }
+                ErrorSnackbar(listOf(schoolScheduleViewModel.error, schoolScheduleViewModel.filterError).merge())
             }
         }
     }

@@ -14,6 +14,8 @@ import kotlin.collections.ArrayList
 data class ClassSchedule(
     @PrimaryKey
     val id: String = "",
+    @ColumnInfo(name = "class_id")
+    val classId: String = "",
     @ColumnInfo(name = "class_name")
     val className: String = "",
     @ColumnInfo(name = "group")
@@ -36,12 +38,14 @@ data class ClassSchedule(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
+        parcel.readString()!!,
         parcel.readLong(),
         parcel.readParcelable(HourRange::class.java.classLoader)!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)
+        parcel.writeString(classId)
         parcel.writeString(className)
         parcel.writeString(group)
         parcel.writeString(building)
@@ -66,6 +70,7 @@ data class ClassSchedule(
 
         fun fromGeneratorClassSchedule(classSchedule: GeneratorClassSchedule) = ClassSchedule(
             classSchedule.id,
+            classSchedule.classId,
             classSchedule.className,
             classSchedule.group,
             classSchedule.building,
@@ -75,6 +80,19 @@ data class ClassSchedule(
             classSchedule.hourRange
         )
     }
+}
+
+fun checkIfOccupied(list: List<HourRange>, item: HourRange): Int?{
+    for ((i, classSchedule) in list.withIndex()) {
+        if(item.start.toDouble() in classSchedule.start.toDouble()..(classSchedule.end.toDouble() - 0.01)
+            || item.end.toDouble() in (classSchedule.start.toDouble() + 0.01)..classSchedule.end.toDouble()
+            || classSchedule.start.toDouble() in item.start.toDouble()..(item.end.toDouble() - 0.01)
+            || classSchedule.end.toDouble() in (item.start.toDouble() + 0.01)..item.end.toDouble()){
+            return i
+        }
+    }
+
+    return null
 }
 
 data class ClassScheduleCollection(
@@ -112,7 +130,7 @@ data class ClassScheduleCollection(
 
         fun fromClassScheduleList(classSchedules: List<ClassSchedule>): List<ClassScheduleCollection>{
             val groups = classSchedules.groupBy {
-                it.group+it.className
+                it.classId
             }
 
             return groups.map {
@@ -148,6 +166,8 @@ data class ClassScheduleCollection(
 data class GeneratorClassSchedule(
     @PrimaryKey
     val id: String,
+    @ColumnInfo(name = "class_id")
+    val classId: String,
     @ColumnInfo(name = "class_name")
     val className: String,
     @ColumnInfo(name = "group")
@@ -170,12 +190,14 @@ data class GeneratorClassSchedule(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
+        parcel.readString()!!,
         parcel.readLong(),
         parcel.readParcelable(HourRange::class.java.classLoader)!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(id)
+        parcel.writeString(classId)
         parcel.writeString(className)
         parcel.writeString(group)
         parcel.writeString(building)
@@ -200,6 +222,7 @@ data class GeneratorClassSchedule(
 
         fun fromClassSchedule(classSchedule: ClassSchedule) = GeneratorClassSchedule(
             classSchedule.id,
+            classSchedule.classId,
             classSchedule.className,
             classSchedule.group,
             classSchedule.building,

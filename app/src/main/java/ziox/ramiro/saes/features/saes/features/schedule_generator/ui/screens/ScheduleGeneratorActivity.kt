@@ -52,7 +52,7 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
     }
 
     @OptIn(ExperimentalAnimationApi::class,
-        androidx.compose.material.ExperimentalMaterialApi::class
+        ExperimentalMaterialApi::class
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

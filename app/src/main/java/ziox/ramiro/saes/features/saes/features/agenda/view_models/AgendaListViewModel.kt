@@ -29,6 +29,7 @@ class AgendaListViewModel(
                 agendaList.value = it
             }
         }.onFailure {
+            it.printStackTrace()
             error.value = "Error al obtener la lista de agendas"
         }
     }

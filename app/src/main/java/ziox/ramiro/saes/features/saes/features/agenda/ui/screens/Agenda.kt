@@ -16,7 +16,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,10 +60,6 @@ import kotlin.time.ExperimentalTime
 
 val hourHeight = 128.dp
 val eventWidth = 250.dp
-
-
-
-
 
 @Composable
 fun Agenda(){
@@ -628,7 +627,7 @@ private fun rearrangeList(events: List<AgendaItem>) : List<List<AgendaItem>>{
         while (i < currentColumnsLength){
             val column = columns[i++]
 
-            if(checkIfOccupied(column, agendaItem)){
+            if(checkIfOccupied(column.map { it.hourRange }, agendaItem.hourRange) != null){
                 if(i >= currentColumnsLength){
                     columns.add(arrayListOf(agendaItem))
                     currentColumnsLength = columns.size
@@ -643,19 +642,6 @@ private fun rearrangeList(events: List<AgendaItem>) : List<List<AgendaItem>>{
 
     return columns
 }
-
-
-private fun checkIfOccupied(list: List<AgendaItem>, item: AgendaItem): Boolean{
-    for (agendaItem in list) {
-        if(item.hourRange.start.toDouble() in agendaItem.hourRange.start.toDouble()..(agendaItem.hourRange.end.toDouble() - 0.001)
-            || item.hourRange.end.toDouble() in (agendaItem.hourRange.start.toDouble() + 0.001)..agendaItem.hourRange.end.toDouble()){
-            return true
-        }
-    }
-
-    return false
-}
-
 
 @Composable
 fun EventsContainer(

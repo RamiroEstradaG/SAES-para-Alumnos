@@ -4,10 +4,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.twitter.sdk.android.core.models.Tweet
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.data.models.HistoryItem
 import ziox.ramiro.saes.features.saes.data.repositories.HistoryRoomRepository
 import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterRepository
+import ziox.ramiro.saes.utils.dismissAfterTimeout
 import ziox.ramiro.saes.utils.runOnDefaultThread
 
 class HomeViewModel(
@@ -16,11 +18,12 @@ class HomeViewModel(
 ) : ViewModel() {
     val historyItems = mutableStateOf<List<HistoryItem>?>(null)
     val schoolTweets = mutableStateOf<List<Tweet>?>(null)
-    val error = mutableStateOf<String?>(null)
+    val error = MutableStateFlow<String?>(null)
 
     init {
         fetchUserHistory()
         fetchTweets()
+        error.dismissAfterTimeout()
     }
 
     fun fetchUserHistory() = viewModelScope.launch {

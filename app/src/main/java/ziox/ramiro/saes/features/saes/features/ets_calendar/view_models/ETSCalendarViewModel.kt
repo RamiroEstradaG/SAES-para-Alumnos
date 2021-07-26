@@ -2,19 +2,22 @@ package ziox.ramiro.saes.features.saes.features.ets_calendar.view_models
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.data.models.FilterViewModel
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories.ETSCalendarRepository
+import ziox.ramiro.saes.utils.dismissAfterTimeout
 
 class ETSCalendarViewModel(
     private val etsCalendarRepository: ETSCalendarRepository
 ) : FilterViewModel() {
     val etsCalendar = mutableStateOf<List<ETSCalendarItem>?>(null)
-    val error = mutableStateOf<String?>(null)
+    val error = MutableStateFlow<String?>(null)
 
     init {
         getFilterFields()
+        error.dismissAfterTimeout()
     }
 
     override fun getFilterFields() {

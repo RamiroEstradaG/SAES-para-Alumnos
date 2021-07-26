@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
@@ -33,9 +34,12 @@ import ziox.ramiro.saes.features.saes.features.ets_calendar.view_models.ETSCalen
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
-@OptIn(ExperimentalMaterialApi::class, androidx.compose.animation.ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterialApi::class, androidx.compose.animation.ExperimentalAnimationApi::class,
+    kotlinx.coroutines.ExperimentalCoroutinesApi::class
+)
 @Composable
 fun ETSCalendar(
     etsCalendarViewModel: ETSCalendarViewModel = viewModel(
@@ -103,6 +107,8 @@ fun ETSCalendar(
             }
         }
     }
+
+    ErrorSnackbar(listOf(etsCalendarViewModel.error, etsCalendarViewModel.filterError).merge())
 }
 
 @Composable

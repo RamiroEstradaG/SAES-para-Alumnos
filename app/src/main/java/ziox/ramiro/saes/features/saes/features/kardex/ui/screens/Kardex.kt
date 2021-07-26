@@ -26,6 +26,7 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
 import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewModel
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
 @ExperimentalMaterialApi
@@ -155,4 +156,5 @@ fun Kardex(
             }
         }
     }
+    ErrorSnackbar(kardexViewModel.error)
 }

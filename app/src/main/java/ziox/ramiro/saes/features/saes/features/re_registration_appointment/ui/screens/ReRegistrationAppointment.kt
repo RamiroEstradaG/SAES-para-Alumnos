@@ -26,6 +26,7 @@ import ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.Sch
 import ziox.ramiro.saes.features.saes.ui.components.FlexView
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.OutlineButton
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.toLongString
@@ -55,19 +56,17 @@ fun ReRegistrationAppointment(
                     text = it.appointmentDate?.toLongString() ?: "Reinscripción no disponible",
                     style = MaterialTheme.typography.h6
                 )
-                it.appointmentDate.let {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        OutlineButton(
-                            text = "Generador de horario",
-                            icon = Icons.Rounded.MoreTime
-                        ){
-                            context.startActivity(Intent(context, ScheduleGeneratorActivity::class.java))
-                        }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    OutlineButton(
+                        text = "Generador de horario",
+                        icon = Icons.Rounded.MoreTime
+                    ){
+                        context.startActivity(Intent(context, ScheduleGeneratorActivity::class.java))
                     }
                 }
                 Row(
@@ -121,6 +120,8 @@ fun ReRegistrationAppointment(
             CircularProgressIndicator()
         }
     }
+
+    ErrorSnackbar(reRegistrationViewModel.error)
 }
 
 

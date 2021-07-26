@@ -29,14 +29,14 @@ import kotlin.random.Random
 
 class WebViewProvider(
     context: Context,
-    path: String = "/"
+    val path: String = "/"
 ) {
     val webView = createWebView(context).also {
         it.addJavascriptInterface(ResultJavascriptInterface(), "JSI")
         Log.d("WebViewProvider", "JavascriptInterface Attached")
     }
     val javascriptInterfaceJobs = mutableMapOf<String, JavascriptInterfaceJob>()
-    val url = UserPreferences.invoke(context).getPreference(PreferenceKeys.SchoolUrl, "") + path
+    val userPreferences = UserPreferences.invoke(context)
 
     @Composable
     fun WebViewProviderDebugView() = AndroidView(
@@ -47,6 +47,8 @@ class WebViewProvider(
     )
 
     companion object {
+        const val DEFAULT_TIMEOUT = 20000L
+
         fun scriptTemplate(jobId: String) = """
             javascript:
             function next(obj){
@@ -140,9 +142,10 @@ class WebViewProvider(
     suspend inline fun <reified T>scrap(
         script: String,
         reloadPage: Boolean = true,
-        timeout: Long = 10000L,
+        timeout: Long = DEFAULT_TIMEOUT,
         noinline resultAdapter: (ScrapResult) -> T
     ): T {
+        val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
         val jobId = generateJobId()
         val scriptBase = "${scriptTemplate(jobId)}\n$script"
 
@@ -176,9 +179,10 @@ class WebViewProvider(
         preRequests: List<String>,
         postRequest: String,
         reloadPage: Boolean = true,
-        timeout: Long = 10000L,
+        timeout: Long = DEFAULT_TIMEOUT,
         noinline resultAdapter: (ScrapResult) -> T
     ): T {
+        val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
         val jobId = generateJobId()
         var currentScriptIndex = 0
         val postRequestBase = "${scriptTemplate(jobId)}\n$postRequest"
@@ -210,9 +214,10 @@ class WebViewProvider(
         preRequest: String,
         postRequest: String,
         reloadPage: Boolean = true,
-        timeout: Long = 10000L,
+        timeout: Long = DEFAULT_TIMEOUT,
         noinline resultAdapter: (ScrapResult) -> T
     ): T {
+        val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
         var isFirstLoad = true
         val jobId = generateJobId()
         val preRequestBase = "${scriptTemplate(jobId)}\n$preRequest"
@@ -277,6 +282,7 @@ class WebViewProvider(
     }
 
     private fun getCookies() : Headers = runBlocking(Dispatchers.Main){
+        val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
         Headers.Builder()
             .add("Cookie", CookieManager.getInstance()?.getCookie(url) ?: "")
             .build()

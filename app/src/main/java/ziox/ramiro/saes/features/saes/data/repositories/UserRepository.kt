@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.features.saes.data.repositories
 
+import android.content.Context
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -9,6 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import ziox.ramiro.saes.features.saes.data.models.UserData
+import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRepository
+import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
 
 interface UserRepository {
     suspend fun getUserData(): UserData
@@ -18,8 +21,9 @@ interface UserRepository {
 }
 
 class UserFirebaseRepository(
-    val userId: String
-) : UserRepository{
+    context: Context,
+    private val kardexRepository: KardexRepository = KardexWebViewRepository(context)
+): UserRepository{
     private val db = Firebase.firestore
 
     companion object{
@@ -46,6 +50,8 @@ class UserFirebaseRepository(
     }
 
     private suspend fun safeUserDocument(): DocumentReference{
+        val userId = kardexRepository.getMyKardexData().userId
+
         val ref = db.collection(COLLECTION_ID_USERS)
             .document(userId)
 
@@ -70,9 +76,7 @@ class UserFirebaseRepository(
 
     override suspend fun update(data: Map<String, Any?>): UserData {
         val ref = safeUserDocument()
-
         ref.update(data).await()
-
         return ref.get().await().toObject(UserData::class.java)!!
     }
 

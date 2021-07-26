@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
@@ -27,9 +28,12 @@ import ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.Sch
 import ziox.ramiro.saes.features.saes.features.school_schedule.data.repositories.SchoolScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.school_schedule.view_models.SchoolScheduleViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class,
+    kotlinx.coroutines.ExperimentalCoroutinesApi::class
+)
 @Composable
 fun SchoolSchedule(
     schoolScheduleViewModel: SchoolScheduleViewModel = viewModel(
@@ -40,7 +44,6 @@ fun SchoolSchedule(
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutine = rememberCoroutineScope()
-    val context = LocalContext.current
 
     BottomSheetScaffold(
         sheetContent = {
@@ -48,26 +51,15 @@ fun SchoolSchedule(
         },
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            Column(
-                modifier = Modifier.padding(bottom = 148.dp)
+            FloatingActionButton(
+                modifier = Modifier.padding(bottom = 80.dp),
+                onClick = {
+                    coroutine.launch {
+                        scaffoldState.bottomSheetState.expand()
+                    }
+                }
             ) {
-                FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    onClick = {
-                        context.startActivity(Intent(context, ScheduleGeneratorActivity::class.java))
-                    }
-                ) {
-                    Icon(imageVector = Icons.Rounded.MoreTime, contentDescription = "Schedule generator icon")
-                }
-                FloatingActionButton(
-                    onClick = {
-                        coroutine.launch {
-                            scaffoldState.bottomSheetState.expand()
-                        }
-                    }
-                ) {
-                    Icon(imageVector = Icons.Rounded.FilterAlt, contentDescription = "Filter icon")
-                }
+                Icon(imageVector = Icons.Rounded.FilterAlt, contentDescription = "Filter icon")
             }
         }
     ) {
@@ -105,4 +97,5 @@ fun SchoolSchedule(
             }
         }
     }
+    ErrorSnackbar(listOf(schoolScheduleViewModel.error, schoolScheduleViewModel.filterError).merge())
 }

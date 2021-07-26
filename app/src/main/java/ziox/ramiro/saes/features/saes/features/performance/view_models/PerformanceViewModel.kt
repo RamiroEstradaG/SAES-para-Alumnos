@@ -5,35 +5,32 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.School
-import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
-import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexDataRoom
-import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRoomRepository
+import ziox.ramiro.saes.features.saes.data.repositories.UserRepository
+import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
+import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRepository
 import ziox.ramiro.saes.features.saes.features.performance.data.models.PerformanceData
 import ziox.ramiro.saes.features.saes.features.performance.data.models.TriStateBoolean
 import ziox.ramiro.saes.features.saes.features.performance.data.repositories.PerformanceRepository
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.dismissAfterTimeout
-import ziox.ramiro.saes.utils.runOnDefaultThread
 
 class PerformanceViewModel(
     private val performanceRepository: PerformanceRepository,
-    private val userFirebaseRepository: UserFirebaseRepository,
-    private val kardexRoomRepository: KardexRoomRepository
+    private val kardexRepository: KardexRepository,
+    private val userRepository: UserRepository
 ): ViewModel() {
     val schoolPerformance = mutableStateOf<PerformanceData?>(null)
     val generalPerformance = mutableStateOf<PerformanceData?>(null)
     val careerPerformance = mutableStateOf<PerformanceData?>(null)
     val permissionToSaveData = mutableStateOf<TriStateBoolean?>(null)
-    private val _error = MutableStateFlow<String?>(null)
-    val error = _error.asSharedFlow()
+    val error = MutableStateFlow<String?>(null)
 
     init {
-        _error.dismissAfterTimeout(3000)
+        error.dismissAfterTimeout()
     }
 
     fun checkPerformancePermissions(
@@ -49,20 +46,18 @@ class PerformanceViewModel(
                 .findSchoolByUrl(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: "")
                 ?.schoolName ?: "Unknown"
 
-            val kardexData = runOnDefaultThread {
-                kardexRoomRepository.getMyKardexData(userFirebaseRepository.userId)
-            }
+            kotlin.runCatching {
+                kardexRepository.getMyKardexData()
+            }.onSuccess {
+                if(schoolPerformance.value == null
+                    && careerPerformance.value == null
+                    && generalPerformance.value == null){
 
-            if(kardexData != null
-                && schoolPerformance.value == null
-                && careerPerformance.value == null
-                && generalPerformance.value == null){
-                val kardex = kardexData.toKardexData()
-
-                updateMyPerformance(kardexData, schoolName)
-                fetchCareerPerformance(kardex.careerName)
-                fetchGeneralPerformance()
-                fetchSchoolPerformance(schoolName)
+                    updateMyPerformance(it, schoolName)
+                    fetchCareerPerformance(it.careerName)
+                    fetchGeneralPerformance()
+                    fetchSchoolPerformance(schoolName)
+                }
             }
         }
     }
@@ -73,7 +68,7 @@ class PerformanceViewModel(
                 careerPerformance.value = it
             }
         }.onFailure {
-            _error.value = "Error al obtener los datos de la carrera"
+            error.value = "Error al obtener los datos de la carrera"
         }
     }
 
@@ -83,7 +78,7 @@ class PerformanceViewModel(
                 schoolPerformance.value = it
             }
         }.onFailure {
-            _error.value = "Error al obtener los datos de la escuela"
+            error.value = "Error al obtener los datos de la escuela"
         }
     }
 
@@ -93,24 +88,21 @@ class PerformanceViewModel(
                 generalPerformance.value = it
             }
         }.onFailure {
-            _error.value = "Error al obtener los datos del IPN"
+            error.value = "Error al obtener los datos del IPN"
         }
     }
 
-    fun updateMyPerformance(kardexDataRoom: KardexDataRoom, schoolName: String) = viewModelScope.launch {
-        val kardexJson = kardexDataRoom.data.toString()
-
-        val kardex = kardexDataRoom.toKardexData()
-
+    fun updateMyPerformance(kardexData: KardexData, schoolName: String) = viewModelScope.launch {
         kotlin.runCatching {
-            userFirebaseRepository.update(mapOf(
+            userRepository.update(mapOf(
                 "school" to schoolName,
-                "career" to kardex.careerName,
-                "kardex" to kardexJson,
-                "generalScore" to kardex.generalScore
+                "career" to kardexData.careerName,
+                "kardexData" to kardexData,
+                "generalScore" to kardexData.generalScore
             ))
         }.onFailure {
-            _error.value = "Error al enviar tu rendimiento"
+            it.printStackTrace()
+            error.value = "Error al enviar tu rendimiento"
         }
     }
 }

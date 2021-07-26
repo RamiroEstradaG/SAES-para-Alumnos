@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ModeNight
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,7 +69,7 @@ class SettingsActivity : AppCompatActivity(){
                             val sliderValue = remember {
                                 mutableStateOf(userPreferences.getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0).toFloat())
                             }
-                            SettingsItem(icon = Icons.Rounded.ModeNight, title = "Calibración del Widget \"Horario semanal\" (${sliderValue.value.toInt()})") {
+                            SettingsItem(icon = Icons.Rounded.Tune, title = "Calibración del Widget \"Horario semanal\" (${sliderValue.value.toInt()})") {
                                 Slider(
                                     value = sliderValue.component1(),
                                     valueRange = -100f..100f,
