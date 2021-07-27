@@ -5,9 +5,13 @@ import com.twitter.sdk.android.core.TwitterException
 import com.twitter.sdk.android.core.models.Tweet
 import com.twitter.sdk.android.tweetui.TimelineResult
 import com.twitter.sdk.android.tweetui.UserTimeline
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 import java.util.*
 import java.util.concurrent.TimeoutException
 import kotlin.collections.ArrayList
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 interface TwitterRepository {
@@ -32,26 +36,34 @@ class TwitterAPIRepository : TwitterRepository {
             .maxItemsPerRequest(5).build()
 
 
-        tweetList.addAll(suspendCoroutine<List<Tweet>> {
-            ipnMx.next(null, object : Callback<TimelineResult<Tweet>>(){
-                override fun success(result: com.twitter.sdk.android.core.Result<TimelineResult<Tweet>>) {
-                    it.resumeWith(Result.success(result.data.items))
-                }
-                override fun failure(exception: TwitterException?) {
-                    it.resumeWith(Result.failure(exception ?: TimeoutException()))
-                }
-            })
+        tweetList.addAll(withTimeout(5000){
+            suspendCancellableCoroutine<List<Tweet>> {
+                ipnMx.next(null, object : Callback<TimelineResult<Tweet>>(){
+                    override fun success(result: com.twitter.sdk.android.core.Result<TimelineResult<Tweet>>) {
+                        it.resume(result.data.items)
+                    }
+                    override fun failure(exception: TwitterException?) {
+                        it.resumeWithException(exception ?: TimeoutException())
+
+                    }
+                })
+
+            }
         })
 
-        tweetList.addAll(suspendCoroutine<List<Tweet>> {
-            secretariaIpn.next(null, object : Callback<TimelineResult<Tweet>>(){
-                override fun success(result: com.twitter.sdk.android.core.Result<TimelineResult<Tweet>>) {
-                    it.resumeWith(Result.success(result.data.items))
-                }
-                override fun failure(exception: TwitterException?) {
-                    it.resumeWith(Result.failure(exception ?: TimeoutException()))
-                }
-            })
+        tweetList.addAll(withTimeout(5000){
+            suspendCancellableCoroutine<List<Tweet>> {
+                secretariaIpn.next(null, object : Callback<TimelineResult<Tweet>>(){
+                    override fun success(result: com.twitter.sdk.android.core.Result<TimelineResult<Tweet>>) {
+                        it.resume(result.data.items)
+                    }
+                    override fun failure(exception: TwitterException?) {
+                        it.resumeWithException(exception ?: TimeoutException())
+
+                    }
+                })
+
+            }
         })
 
         return tweetList.sortedByDescending {

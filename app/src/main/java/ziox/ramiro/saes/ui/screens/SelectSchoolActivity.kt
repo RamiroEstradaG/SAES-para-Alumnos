@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
@@ -89,19 +91,23 @@ fun SchoolSelector(
             )
         }
     }
-    LazyColumn(
-        contentPadding = PaddingValues(bottom = 32.dp)
-    ) {
-        items(currentSelection.value.list){ school ->
-            SchoolButton(
-                modifier = Modifier.padding(top = 8.dp),
-                school = school
-            ){
-                if(context is Activity){
-                    context.setResult(RESULT_OK, context.intent.apply {
-                        putExtra(SelectSchoolContract.RESULT, school)
-                    })
-                    context.finish()
+    Box(
+        Modifier.verticalScroll(rememberScrollState())
+    ){
+        Column(
+            modifier = Modifier.padding(bottom = 32.dp)
+        ) {
+            currentSelection.value.list.forEach { school ->
+                SchoolButton(
+                    modifier = Modifier.padding(top = 8.dp),
+                    school = school
+                ){
+                    if(context is Activity){
+                        context.setResult(RESULT_OK, context.intent.apply {
+                            putExtra(SelectSchoolContract.RESULT, school)
+                        })
+                        context.finish()
+                    }
                 }
             }
         }

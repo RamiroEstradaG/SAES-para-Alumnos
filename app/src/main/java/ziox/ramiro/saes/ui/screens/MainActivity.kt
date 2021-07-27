@@ -3,12 +3,18 @@ package ziox.ramiro.saes.ui.screens
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material.Scaffold
 import androidx.lifecycle.ViewModelProvider
+import com.twitter.sdk.android.core.DefaultLogger
+import com.twitter.sdk.android.core.Twitter
+import com.twitter.sdk.android.core.TwitterAuthConfig
+import com.twitter.sdk.android.core.TwitterConfig
+import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
@@ -24,6 +30,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val userPreferences = UserPreferences.invoke(this)
+
+        Twitter.initialize(TwitterConfig.Builder(this)
+            .logger(DefaultLogger(Log.INFO))
+            .twitterAuthConfig(TwitterAuthConfig(
+                getString(R.string.com_twitter_sdk_android_CONSUMER_KEY),
+                getString(R.string.com_twitter_sdk_android_CONSUMER_SECRET)
+            ))
+            .debug(true)
+            .build())
 
         handleIntent(userPreferences)
 

@@ -1,15 +1,12 @@
 package ziox.ramiro.saes.data.repositories
 
 import android.content.Context
-import kotlinx.coroutines.withTimeout
-import okhttp3.Headers
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.models.Auth
 import ziox.ramiro.saes.data.models.Captcha
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.isNetworkAvailable
-import kotlin.concurrent.thread
 
 interface AuthRepository {
     suspend fun getCaptcha() : Captcha
@@ -33,7 +30,7 @@ class AuthWebViewRepository(
                     url: byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src
                 });
                 """.trimIndent(),
-                timeout = 5000,
+                timeout = 10000,
                 reloadPage = true
             ){
                 val data = it.result.getJSONObject("data")

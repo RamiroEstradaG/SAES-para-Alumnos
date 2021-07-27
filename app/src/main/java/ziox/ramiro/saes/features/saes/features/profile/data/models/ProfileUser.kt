@@ -46,7 +46,7 @@ data class ProfilePicture(
     @ColumnInfo(name = "profile_picture_url")
     val url: String,
     @ColumnInfo(name = "profile_picture_headers")
-    val headers: Headers = Headers.of(mapOf())
+    val headers: Headers = Headers.Builder().build()
 )
 
 
