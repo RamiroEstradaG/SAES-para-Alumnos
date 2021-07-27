@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Visibility
@@ -42,7 +44,7 @@ import ziox.ramiro.saes.view_models.AuthViewModel
 
 class LoginActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModels {
-        viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
+        viewModelFactory { AuthViewModel(AuthWebViewRepository(this), true) }
     }
 
     private val schoolUrl = MutableStateFlow("")
@@ -63,15 +65,13 @@ class LoginActivity : AppCompatActivity() {
 
         setContent {
             val username = remember {
-                mutableStateOf("")
+                mutableStateOf(userPreferences.getPreference(PreferenceKeys.Boleta, ""))
             }
             val password = remember {
-                mutableStateOf("")
+                mutableStateOf(userPreferences.getPreference(PreferenceKeys.Password, ""))
             }
 
             schoolUrl.value = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
-            username.value = userPreferences.getPreference(PreferenceKeys.Boleta, "")
-            password.value = userPreferences.getPreference(PreferenceKeys.Password, "")
 
             if(authViewModel.auth.value?.isLoggedIn == true){
                 userPreferences.setPreference(PreferenceKeys.Boleta, username.value)
@@ -86,20 +86,24 @@ class LoginActivity : AppCompatActivity() {
 
             SAESParaAlumnosTheme {
                 Scaffold {
-                    if(username.value.isNotBlank() && password.value.isNotBlank() && userPreferences.isAuthDataSaved()){
-                        LoginOnlyCaptcha(
-                            authViewModel,
-                            username,
-                            password
-                        )
-                    }else{
-                        Login(
-                            authViewModel,
-                            selectSchoolLauncher,
-                            schoolUrl.collectAsState(),
-                            username,
-                            password
-                        )
+                    Box(
+                        modifier = Modifier.verticalScroll(rememberScrollState())
+                    ) {
+                        if(username.value.isNotBlank() && password.value.isNotBlank() && userPreferences.isAuthDataSaved()){
+                            LoginOnlyCaptcha(
+                                authViewModel,
+                                username,
+                                password
+                            )
+                        }else{
+                            Login(
+                                authViewModel,
+                                selectSchoolLauncher,
+                                schoolUrl.collectAsState(),
+                                username,
+                                password
+                            )
+                        }
                     }
                 }
             }

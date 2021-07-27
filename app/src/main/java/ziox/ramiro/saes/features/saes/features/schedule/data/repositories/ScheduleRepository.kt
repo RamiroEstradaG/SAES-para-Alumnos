@@ -30,7 +30,7 @@ class ScheduleWebViewRepository(
         return if(context.isNetworkAvailable()){
             webView.scrap(
                 script = """
-                var scheduleTable = byId("ctl00_mainCopy_Panel1");
+                var scheduleTable = byId("ctl00_mainCopy_GV_Horario");
 
                 if(scheduleTable != null){
                     var schedule = scheduleTable.getElementsByTagName("tbody");
@@ -46,7 +46,7 @@ class ScheduleWebViewRepository(
                     
                         children.splice(0,1);
                         
-                        children.filter(tr => !(!tr.innerText || /^\s*${'$'}/.test(tr.innerText))).forEach((tr, trIndex) => {
+                        children.filter(tr => tr.innerText.trim().length > 0).forEach((tr, trIndex) => {
                             scheduledClass.push(...[...tr.children].map((td, e) => ({
                                 id: trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(),
                                 classId: trIndex.toString(),

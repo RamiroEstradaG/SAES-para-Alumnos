@@ -65,7 +65,7 @@ fun Occupancy(
                             top = 16.dp,
                             start = 32.dp,
                             end = 32.dp,
-                            bottom = 90.dp
+                            bottom = 148.dp
                         )
                     ) {
                         items(it){ occupancy ->

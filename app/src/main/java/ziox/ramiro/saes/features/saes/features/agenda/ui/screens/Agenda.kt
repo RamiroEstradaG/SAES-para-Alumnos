@@ -148,8 +148,14 @@ fun CalendarList(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
-                val name = remember {
+                val name = MutableStateWithValidation(remember {
                     mutableStateOf("")
+                },remember {
+                    mutableStateOf("")
+                }){
+                    if (it.isBlank()){
+                        "El campo está vacío"
+                    }else null
                 }
                 Column(
                     modifier = Modifier.padding(16.dp)
@@ -159,11 +165,17 @@ fun CalendarList(
                         style = MaterialTheme.typography.h5
                     )
                     OutlinedTextField(
-                        value = name.component1(),
-                        onValueChange = name.component2(),
+                        value = name.mutableState.component1(),
+                        onValueChange = name.mutableState.component2(),
                         label = {
                             Text(text = "Nombre de la agenda")
                         }
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        color = MaterialTheme.colors.error,
+                        text = name.errorState.value ?: "",
+                        style = MaterialTheme.typography.body2
                     )
                     AsyncButton(
                         modifier = Modifier
@@ -172,8 +184,10 @@ fun CalendarList(
                         text = "Agregar",
                         isLoading = agendaListViewModel.isAddingAgenda.value
                     ){
-                        agendaListViewModel.addAgenda(name.value).invokeOnCompletion {
-                            showAddAgendaDialog.value = false
+                        if(name.validate()){
+                            agendaListViewModel.addAgenda(name.mutableState.value).invokeOnCompletion {
+                                showAddAgendaDialog.value = false
+                            }
                         }
                     }
                 }
@@ -212,7 +226,7 @@ fun AgendaListItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        if(agendaListViewModel.isRemovingAgenda.value == calendar.calendarId){
+        if(agendaListViewModel.isRemovingAgenda.value.contains(calendar.calendarId)){
             CircularProgressIndicator(
                 modifier = Modifier.size(24.dp)
             )
@@ -237,11 +251,12 @@ fun AgendaListItem(
 @Composable
 fun AgendaView(
     selectedAgenda: MutableState<String?>,
-    agendaViewModel: AgendaViewModel = viewModel(
-        factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(LocalContext.current), selectedAgenda.value) }
-    ),
     scheduleViewModel: ScheduleViewModel = viewModel(
         factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current)) }
+    ),
+    agendaViewModel: AgendaViewModel = viewModel(
+        factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(LocalContext.current), selectedAgenda.value) },
+        key = selectedAgenda.value
     )
 ) {
     val context = LocalContext.current
@@ -331,10 +346,12 @@ fun AgendaView(
             }
         ) {
             Card(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier
+                        .padding(16.dp)
                 ) {
                     val name = MutableStateWithValidation(remember {
                         mutableStateOf("")
@@ -376,96 +393,102 @@ fun AgendaView(
                         text = "Agregar evento",
                         style = MaterialTheme.typography.h5
                     )
-                    OutlinedTextField(
-                        modifier = Modifier.padding(top = 8.dp),
-                        value = name.mutableState.component1(),
-                        onValueChange = name.mutableState.component2(),
-                        label = {
-                            Text(text = "Título")
-                        },
-                        isError = !name.errorState.value.isNullOrBlank()
-                    )
-                    Text(
-                        modifier = Modifier.padding(start = 8.dp),
-                        color = MaterialTheme.colors.error,
-                        text = name.errorState.value ?: "",
-                        style = MaterialTheme.typography.body2
-                    )
-                    OutlinedTextField(
-                        modifier = Modifier.padding(top = 8.dp),
-                        value = description.component1(),
-                        onValueChange = description.component2(),
-                        label = {
-                            Text(text = "Descripción")
-                        },
-                    )
-                    Box(
-                        modifier = Modifier.padding(top = 16.dp),
+                    Column(
+                        modifier = Modifier
+                            .heightIn(0.dp, 400.dp)
+                            .verticalScroll(rememberScrollState())
                     ) {
                         OutlinedTextField(
-                            value = date.mutableState.component1().toString(),
-                            onValueChange = {},
+                            modifier = Modifier.padding(top = 8.dp),
+                            value = name.mutableState.component1(),
+                            onValueChange = name.mutableState.component2(),
                             label = {
-                                Text(text = "Fecha")
+                                Text(text = "Título")
                             },
-                            readOnly = true,
-                            isError = !date.errorState.value.isNullOrBlank()
+                            isError = !name.errorState.value.isNullOrBlank()
                         )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(64.dp)
-                                .clickable {
-                                    showDatePickerDialog(context) {
-                                        date.mutableState.value = it
-                                    }
-                                }
+                        Text(
+                            modifier = Modifier.padding(start = 8.dp),
+                            color = MaterialTheme.colors.error,
+                            text = name.errorState.value ?: "",
+                            style = MaterialTheme.typography.body2
                         )
-                    }
-                    Text(
-                        modifier = Modifier.padding(start = 8.dp),
-                        color = MaterialTheme.colors.error,
-                        text = date.errorState.value ?: "",
-                        style = MaterialTheme.typography.body2
-                    )
-                    Box(
-                        modifier = Modifier.padding(top = 8.dp),
-                    ) {
                         OutlinedTextField(
-                            value = hourRange.mutableState.component1()?.toString() ?: "",
-                            onValueChange = {},
+                            modifier = Modifier.padding(top = 8.dp),
+                            value = description.component1(),
+                            onValueChange = description.component2(),
                             label = {
-                                Text(text = "Rango de horas")
+                                Text(text = "Descripción")
                             },
-                            readOnly = true,
-                            isError = !hourRange.errorState.value.isNullOrBlank()
                         )
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(64.dp)
-                                .clickable {
-                                    showHourRangePickerDialog(context) {
-                                        hourRange.mutableState.value = it
+                            modifier = Modifier.padding(top = 16.dp),
+                        ) {
+                            OutlinedTextField(
+                                value = date.mutableState.component1().toString(),
+                                onValueChange = {},
+                                label = {
+                                    Text(text = "Fecha")
+                                },
+                                readOnly = true,
+                                isError = !date.errorState.value.isNullOrBlank()
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(64.dp)
+                                    .clickable {
+                                        showDatePickerDialog(context) {
+                                            date.mutableState.value = it
+                                        }
                                     }
-                                }
+                            )
+                        }
+                        Text(
+                            modifier = Modifier.padding(start = 8.dp),
+                            color = MaterialTheme.colors.error,
+                            text = date.errorState.value ?: "",
+                            style = MaterialTheme.typography.body2
                         )
-                    }
-                    Text(
-                        modifier = Modifier.padding(start = 8.dp),
-                        color = MaterialTheme.colors.error,
-                        text = hourRange.errorState.value ?: "",
-                        style = MaterialTheme.typography.body2
-                    )
-                    scheduleViewModel.scheduleList.value?.let {
-                        if(it.isNotEmpty()){
-                            SelectAddAgendaEventList(
-                                title = "Vincular a una clase",
-                                options = it.map { clazz -> clazz.className }
-                            ) { newIndex ->
-                                selectedClassSchedule.value = if(newIndex != null){
-                                    it[newIndex]
-                                }else null
+                        Box(
+                            modifier = Modifier.padding(top = 8.dp),
+                        ) {
+                            OutlinedTextField(
+                                value = hourRange.mutableState.component1()?.toString() ?: "",
+                                onValueChange = {},
+                                label = {
+                                    Text(text = "Rango de horas")
+                                },
+                                readOnly = true,
+                                isError = !hourRange.errorState.value.isNullOrBlank()
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(64.dp)
+                                    .clickable {
+                                        showHourRangePickerDialog(context) {
+                                            hourRange.mutableState.value = it
+                                        }
+                                    }
+                            )
+                        }
+                        Text(
+                            modifier = Modifier.padding(start = 8.dp),
+                            color = MaterialTheme.colors.error,
+                            text = hourRange.errorState.value ?: "",
+                            style = MaterialTheme.typography.body2
+                        )
+                        scheduleViewModel.scheduleList.value?.let {
+                            if(it.isNotEmpty()){
+                                SelectAddAgendaEventList(
+                                    title = "Vincular a una clase",
+                                    options = it.map { clazz -> clazz.className }
+                                ) { newIndex ->
+                                    selectedClassSchedule.value = if(newIndex != null){
+                                        it[newIndex]
+                                    }else null
+                                }
                             }
                         }
                     }

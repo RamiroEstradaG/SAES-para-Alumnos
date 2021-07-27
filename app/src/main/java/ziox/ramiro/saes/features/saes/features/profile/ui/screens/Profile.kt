@@ -140,7 +140,8 @@ fun ProfileAppBar(
         bottomStart = 32.dp,
         bottomEnd = 32.dp
     ),
-    backgroundColor = MaterialTheme.colors.surface
+    backgroundColor = MaterialTheme.colors.surface,
+    elevation = 0.dp
 ) {
     Box(
         modifier = Modifier.padding(16.dp)

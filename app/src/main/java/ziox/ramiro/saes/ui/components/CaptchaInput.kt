@@ -79,7 +79,9 @@ fun CaptchaInput(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Send
         ),
-        onValueChange = captcha.mutableState.component2(),
+        onValueChange = {
+            captcha.mutableState.value = it.uppercase()
+        },
         isError = !captcha.errorState.value.isNullOrBlank(),
         keyboardActions = KeyboardActions(
             onSend = {

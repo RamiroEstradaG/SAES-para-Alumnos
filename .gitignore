@@ -17,3 +17,4 @@ app/google-services.json
 app/google-services.json
 app/src/release/res/values/strings.xml
 app/src/debug/res/values/strings.xml
+app/release/

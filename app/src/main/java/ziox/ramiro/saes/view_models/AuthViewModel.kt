@@ -14,7 +14,8 @@ import ziox.ramiro.saes.data.repositories.AuthRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 
 class AuthViewModel(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    initCaptcha: Boolean = false
 ) : ViewModel(){
     val captcha = mutableStateOf<Captcha?>(null)
     val auth = mutableStateOf<Auth?>(Auth.Empty)
@@ -24,7 +25,9 @@ class AuthViewModel(
     init {
         error.dismissAfterTimeout()
         checkSession()
-        fetchCaptcha()
+        if (initCaptcha){
+            fetchCaptcha()
+        }
     }
 
     fun fetchCaptcha() {
@@ -40,9 +43,10 @@ class AuthViewModel(
                     captcha.value = it
                 }
             }.onFailure {
+                it.printStackTrace()
                 fetchCaptcha()
                 error.value = if(it is TimeoutCancellationException){
-                    "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)} s)"
+                    "Tiempo de espera excedido (5s)"
                 }else{
                     "Error al obtener el captcha"
                 }
@@ -64,7 +68,7 @@ class AuthViewModel(
         }.onFailure {
             auth.value = Auth.Empty
             error.value = if(it is TimeoutCancellationException){
-                "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)} s)"
+                "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)}s)"
             }else{
                 "Error al iniciar sesión"
             }
@@ -83,7 +87,7 @@ class AuthViewModel(
             }.onFailure {
                 checkSession()
                 error.value = if(it is TimeoutCancellationException){
-                    "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)} s)"
+                    "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)}s)"
                 }else{
                     "Error al revisar la sesión"
                 }

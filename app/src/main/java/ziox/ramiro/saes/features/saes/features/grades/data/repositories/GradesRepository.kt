@@ -30,16 +30,16 @@ class GradesWebViewRepository(
                 var requireTeacherRate = document.getElementById("ctl00_mainCopy_Btn_Evaluar") != null;
                 
                 if(gradesTable != null){
-                    var grades = gradesTable.children[0];
+                    var grades = [...gradesTable.getElementsByTagName("tr")];
                     grades.splice(0,1);
                     next({
-                        grades: grades.map((value) => ({
-                            className: value[1],
-                            p1: parseInt(value[2]),
-                            p2: parseInt(value[3]),
-                            p3: parseInt(value[4]),
-                            extra: parseInt(value[5]),
-                            final: parseInt(value[6]),
+                        grades: grades.map(tr => ({
+                            className: tr.children[1].innerText.trim(),
+                            p1: parseInt(tr.children[2].innerText.trim()),
+                            p2: parseInt(tr.children[3].innerText.trim()),
+                            p3: parseInt(tr.children[4].innerText.trim()),
+                            extra: parseInt(tr.children[5].innerText.trim()),
+                            final: parseInt(tr.children[6].innerText.trim()),
                         })),
                         requireTeacherRate: requireTeacherRate
                     });

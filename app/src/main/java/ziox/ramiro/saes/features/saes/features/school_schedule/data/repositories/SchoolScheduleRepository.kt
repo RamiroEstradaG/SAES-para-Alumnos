@@ -42,7 +42,7 @@ class SchoolScheduleWebViewRepository(
                     
                         children.splice(0,1);
                         
-                        children.filter(tr => !(!tr.innerText || /^\s*${'$'}/.test(tr.innerText))).forEach((tr, trIndex) => {
+                        children.filter(tr => tr.innerText.trim().length > 0).forEach((tr, trIndex) => {
                             scheduledClass.push(...[...tr.children].map((td, e) => ({
                                 id: trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(),
                                 classId: trIndex.toString(),

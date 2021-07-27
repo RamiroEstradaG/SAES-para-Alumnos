@@ -30,9 +30,10 @@ class AuthWebViewRepository(
                 var isLoggedIn = !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null);
                 next({
                     isLoggedIn: isLoggedIn,
-                    url: isLoggedIn ? "" : byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src
+                    url: byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src
                 });
                 """.trimIndent(),
+                timeout = 5000,
                 reloadPage = true
             ){
                 val data = it.result.getJSONObject("data")
@@ -41,11 +42,9 @@ class AuthWebViewRepository(
                     data.getBoolean("isLoggedIn"),
                     it.headers
                 )
-            }.also {
-                println(it)
             }
         }else{
-            Captcha("", true, Headers.of(mapOf()))
+            throw Exception("Sin conexion a internet")
         }
     }
 
