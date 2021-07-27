@@ -25,6 +25,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.widget.NestedScrollView
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -64,39 +66,48 @@ class BottomSheetDrawerModal(
                     ) {
                         ProfileHeader(profileState = profileViewModel.profile)
                         Divider()
-                        Column(
-                            modifier = Modifier
-                                .verticalScroll(rememberScrollState())
+                        AndroidView(
+                            factory = {
+                                NestedScrollView(it)
+                            }
                         ) {
-                            MenuHeader(name = "Alumno")
-                            SectionMenuItem(section = MenuSection.KARDEX)
-                            SectionMenuItem(section = MenuSection.PERFORMANCE)
-                            SectionMenuItem(section = MenuSection.RE_REGISTRATION_APPOINTMENT)
-                            SectionMenuItem(section = MenuSection.AGENDA)
-                            MenuHeader(name = "Académico")
-                            SectionMenuItem(section = MenuSection.ETS_CALENDAR)
-                            SectionMenuItem(section = MenuSection.SCHOOL_SCHEDULE)
-                            SectionMenuItem(section = MenuSection.OCCUPANCY)
-                            ActionMenuItem(icon = Icons.Rounded.MoreTime, name = "Generador de horario"){
-                                startActivity(Intent(requireContext(), ScheduleGeneratorActivity::class.java))
-                            }
-                            MenuHeader(name = "Calendario académico")
-                            ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad Escolarizada"){
-                                context?.launchUrl(remoteConfig.getString("calendario_escolarizado"))
-                            }
-                            ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad No-Escolarizada"){
-                                context?.launchUrl(remoteConfig.getString("calendario_no_escolarizado"))
-                            }
-                            MenuHeader(name = "Aplicación")
-                            ActionMenuItem(icon = Icons.Rounded.Settings, name = "Configuración"){
-                                startActivity(Intent(requireContext(), SettingsActivity::class.java))
-                            }
-                            ActionMenuItem(icon = Icons.Rounded.Info, name = "Acerca de la aplicación"){
-                                startActivity(Intent(requireContext(), AboutActivity::class.java))
-                            }
-                            ActionMenuItem(icon = Icons.Rounded.Logout, name = "Cerrar sesión", contentColor = getCurrentTheme().danger){
-                                authViewModel.logout()
-                            }
+                            it.addView(ComposeView(it.context).apply {
+                                setContent {
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        MenuHeader(name = "Alumno")
+                                        SectionMenuItem(section = MenuSection.KARDEX)
+                                        SectionMenuItem(section = MenuSection.PERFORMANCE)
+                                        SectionMenuItem(section = MenuSection.RE_REGISTRATION_APPOINTMENT)
+                                        SectionMenuItem(section = MenuSection.AGENDA)
+                                        MenuHeader(name = "Académico")
+                                        SectionMenuItem(section = MenuSection.ETS_CALENDAR)
+                                        SectionMenuItem(section = MenuSection.SCHOOL_SCHEDULE)
+                                        SectionMenuItem(section = MenuSection.OCCUPANCY)
+                                        ActionMenuItem(icon = Icons.Rounded.MoreTime, name = "Generador de horario"){
+                                            startActivity(Intent(requireContext(), ScheduleGeneratorActivity::class.java))
+                                        }
+                                        MenuHeader(name = "Calendario académico")
+                                        ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad Escolarizada"){
+                                            context?.launchUrl(remoteConfig.getString("calendario_escolarizado"))
+                                        }
+                                        ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad No-Escolarizada"){
+                                            context?.launchUrl(remoteConfig.getString("calendario_no_escolarizado"))
+                                        }
+                                        MenuHeader(name = "Aplicación")
+                                        ActionMenuItem(icon = Icons.Rounded.Settings, name = "Configuración"){
+                                            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+                                        }
+                                        ActionMenuItem(icon = Icons.Rounded.Info, name = "Acerca de la aplicación"){
+                                            startActivity(Intent(requireContext(), AboutActivity::class.java))
+                                        }
+                                        ActionMenuItem(icon = Icons.Rounded.Logout, name = "Cerrar sesión", contentColor = getCurrentTheme().danger){
+                                            authViewModel.logout()
+                                        }
+                                    }
+                                }
+                            })
                         }
                     }
                 }
@@ -126,7 +137,9 @@ class BottomSheetDrawerModal(
                             dismiss()
                         }
                         .background(
-                            if (currentSection.value == section) MaterialTheme.colors.primary.copy(alpha = 0.1f) else Color.Transparent
+                            if (currentSection.value == section) MaterialTheme.colors.primary.copy(
+                                alpha = 0.1f
+                            ) else Color.Transparent
                         )
                         .height(43.dp)
                         .padding(horizontal = 8.dp),

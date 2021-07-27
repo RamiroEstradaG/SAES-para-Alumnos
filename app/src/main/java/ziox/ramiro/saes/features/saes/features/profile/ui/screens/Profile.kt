@@ -1,43 +1,44 @@
 package ziox.ramiro.saes.features.saes.features.profile.ui.screens
 
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.android.play.core.internal.t
+import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.features.profile.data.models.QRCodeScannerContract
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.BarcodeCode39
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.QRCode
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
-import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.*
+import kotlin.math.absoluteValue
 
 
 @Composable
@@ -46,15 +47,51 @@ fun Profile(
         factory = viewModelFactory { ProfileViewModel(ProfileWebViewRepository(LocalContext.current)) }
     )
 ) {
+    val headerHeight = remember {
+        mutableStateOf(280.dp)
+    }
+    val scrollingState = rememberScrollState()
+    val coroutine = rememberCoroutineScope()
+
+    val mainScrollState = with(LocalDensity.current){
+        rememberScrollableState {
+            if(it < 0 && headerHeight.value > 58.dp && scrollingState.value == 0){
+                if(headerHeight.value + it.toDp() >= 58.dp){
+                    headerHeight.value += it.toDp()
+                }else{
+                    headerHeight.value = 58.dp
+                }
+                coroutine.launch {
+                    scrollingState.scrollTo(0)
+                }
+            }else if (it > 0 && headerHeight.value < 280.dp && scrollingState.value == 0){
+                if(headerHeight.value + it.toDp() <= 280.dp){
+                    headerHeight.value += it.toDp()
+                }else{
+                    headerHeight.value = 280.dp
+                }
+            }else{
+                scrollingState.dispatchRawDelta(-it)
+            }
+
+            it
+        }
+    }
+
+
     if(profileViewModel.profile.value != null){
         profileViewModel.profile.value?.let {
             Scaffold(
+                modifier = Modifier.scrollable(mainScrollState, orientation = Orientation.Vertical),
                 topBar = {
-                    ProfileAppBar(profileUser = it)
+                    ProfileAppBar(
+                        profileUser = it,
+                        headerHeight = headerHeight.value
+                    )
                 }
             ) { _ ->
                 Box(
-                    modifier = Modifier.verticalScroll(rememberScrollState())
+                    modifier = Modifier.verticalScroll(scrollingState)
                 ) {
                     Column(
                         Modifier.padding(
@@ -128,80 +165,120 @@ fun Profile(
 
 @Composable
 fun ProfileAppBar(
-    profileUser: ProfileUser
-) = Card(
-    modifier = Modifier
-        .height(280.dp)
-        .fillMaxWidth()
-        .animateContentSize(),
-    shape = RoundedCornerShape(
-        topStart = 0.dp,
-        topEnd = 0.dp,
-        bottomStart = 32.dp,
-        bottomEnd = 32.dp
-    ),
-    backgroundColor = MaterialTheme.colors.surface,
-    elevation = 0.dp
+    profileUser: ProfileUser,
+    headerHeight: Dp = 280.dp
 ) {
-    Box(
-        modifier = Modifier.padding(16.dp)
+    val t = ((headerHeight.value - 58.dp.value) / 222).absoluteValue
+    val sqt: Float = t * t
+    val percentageCollapsed = sqt / (2.0f * (sqt - t) + 1.0f)
+
+    Card(
+        modifier = Modifier
+            .height(headerHeight)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(
+            topStart = 0.dp,
+            topEnd = 0.dp,
+            bottomStart = 32.dp.times(percentageCollapsed),
+            bottomEnd = 32.dp.times(percentageCollapsed)
+        ),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 0.dp
     ) {
-        val isIdCardVisible = remember {
-            mutableStateOf(false)
-        }
-
-        IconButton(
-            modifier = Modifier.align(Alignment.TopEnd),
-            onClick = {
-                isIdCardVisible.value = !isIdCardVisible.value
-            }
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .alpha(1 - percentageCollapsed),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Fingerprint,
-                contentDescription = "Card icon"
+            Image(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(42.dp),
+                painter = rememberCoilPainter(
+                    request = ImageRequest
+                        .Builder(LocalContext.current)
+                        .data(profileUser.profilePicture.url)
+                        .headers(profileUser.profilePicture.headers).build()),
+                contentDescription = "Profile picture",
+                contentScale = ContentScale.Crop
             )
+            Column(
+                modifier = Modifier.padding(start = 16.dp),
+            ) {
+                Text(
+                    text = profileUser.name,
+                    style = MaterialTheme.typography.subtitle2
+                )
+
+                Text(
+                    text = profileUser.id,
+                    style = MaterialTheme.typography.body2
+                )
+            }
         }
+        Box(
+            modifier = Modifier
+                .padding(16.dp)
+                .alpha(percentageCollapsed)
+        ) {
+            val isIdCardVisible = remember {
+                mutableStateOf(false)
+            }
 
-        Crossfade(targetState = isIdCardVisible.value) {
-            if (!it){
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(150.dp),
-                        painter = rememberCoilPainter(
-                            request = ImageRequest
-                                .Builder(LocalContext.current)
-                                .data(profileUser.profilePicture.url)
-                                .headers(profileUser.profilePicture.headers).build()),
-                        contentDescription = "Profile picture",
-                        contentScale = ContentScale.Crop
-                    )
-
-                    Text(
-                        modifier = Modifier.padding(top = 24.dp),
-                        text = profileUser.name,
-                        style = MaterialTheme.typography.h5
-                    )
-
-                    Text(
-                        text = profileUser.id,
-                        style = MaterialTheme.typography.subtitle1
-                    )
+            IconButton(
+                modifier = Modifier.align(Alignment.TopEnd),
+                onClick = {
+                    isIdCardVisible.value = !isIdCardVisible.value
                 }
-            }else{
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Bottom,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    QRCode()
-                    BarcodeCode39(profileUser.id)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Fingerprint,
+                    contentDescription = "Card icon"
+                )
+            }
+
+            Crossfade(targetState = isIdCardVisible.value) {
+                if (!it){
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(150.dp),
+                            painter = rememberCoilPainter(
+                                request = ImageRequest
+                                    .Builder(LocalContext.current)
+                                    .data(profileUser.profilePicture.url)
+                                    .headers(profileUser.profilePicture.headers).build()),
+                            contentDescription = "Profile picture",
+                            contentScale = ContentScale.Crop
+                        )
+
+                        Text(
+                            modifier = Modifier.padding(top = 24.dp),
+                            text = profileUser.name,
+                            style = MaterialTheme.typography.h5
+                        )
+
+                        Text(
+                            text = profileUser.id,
+                            style = MaterialTheme.typography.subtitle1
+                        )
+                    }
+                }else{
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Bottom,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        QRCode()
+                        BarcodeCode39(profileUser.id)
+                    }
                 }
             }
         }
