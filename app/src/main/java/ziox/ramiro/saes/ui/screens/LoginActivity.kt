@@ -7,10 +7,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -86,24 +83,20 @@ class LoginActivity : AppCompatActivity() {
 
             SAESParaAlumnosTheme {
                 Scaffold {
-                    Box(
-                        modifier = Modifier.verticalScroll(rememberScrollState())
-                    ) {
-                        if(username.value.isNotBlank() && password.value.isNotBlank() && userPreferences.isAuthDataSaved()){
-                            LoginOnlyCaptcha(
-                                authViewModel,
-                                username,
-                                password
-                            )
-                        }else{
-                            Login(
-                                authViewModel,
-                                selectSchoolLauncher,
-                                schoolUrl.collectAsState(),
-                                username,
-                                password
-                            )
-                        }
+                    if(username.value.isNotBlank() && password.value.isNotBlank() && userPreferences.isAuthDataSaved()){
+                        LoginOnlyCaptcha(
+                            authViewModel,
+                            username,
+                            password
+                        )
+                    }else{
+                        Login(
+                            authViewModel,
+                            selectSchoolLauncher,
+                            schoolUrl.collectAsState(),
+                            username,
+                            password
+                        )
                     }
                 }
             }
@@ -157,129 +150,143 @@ fun Login(
     }
 
     Column(
-        modifier = Modifier.padding(
-            top = 64.dp,
-            start = 32.dp,
-            end = 32.dp,
-            bottom = 24.dp
-        )
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = "Iniciar sesión",
-            style = MaterialTheme.typography.h4
-        )
-        OutlinedTextField(
+        Box(
             modifier = Modifier
-                .padding(top = 32.dp)
-                .fillMaxWidth(),
-            value = username.component1(),
-            label = {
-                Text(text = "Boleta")
-            },
-            singleLine = true,
-            onValueChange = username.component2(),
-            isError = !usernameValidator.errorState.value.isNullOrBlank(),
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Characters,
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = {
-                    focusManager.moveFocus(FocusDirection.Down)
-                }
-            )
-        )
-        Text(
-            modifier = Modifier.padding(start = 8.dp),
-            color = MaterialTheme.colors.error,
-            text = usernameValidator.errorState.value ?: "",
-            style = MaterialTheme.typography.body2
-        )
-        OutlinedTextField(
-            modifier = Modifier
-                .padding(top = 4.dp)
-                .fillMaxWidth(),
-            value = password.component1(),
-            label = {
-                Text(text = "Contraseña")
-            },
-            singleLine = true,
-            onValueChange = password.component2(),
-            visualTransformation = if (!passwordVisible.value){
-                PasswordVisualTransformation()
-            } else VisualTransformation.None,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Characters,
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Next
-            ),
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        passwordVisible.value = !passwordVisible.value
-                    }
-                ) {
-                    Icon(
-                        imageVector = if (!passwordVisible.value){
-                            Icons.Rounded.Visibility
-                        }else{
-                            Icons.Rounded.VisibilityOff
-                        },
-                        contentDescription = "Visibility"
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Column(
+                modifier = Modifier.padding(
+                    top = 64.dp,
+                    start = 32.dp,
+                    end = 32.dp,
+                    bottom = 16.dp
+                )
+            ) {
+                Text(
+                    text = "Iniciar sesión",
+                    style = MaterialTheme.typography.h4
+                )
+                OutlinedTextField(
+                    modifier = Modifier
+                        .padding(top = 32.dp)
+                        .fillMaxWidth(),
+                    value = username.component1(),
+                    label = {
+                        Text(text = "Boleta")
+                    },
+                    singleLine = true,
+                    onValueChange = username.component2(),
+                    isError = !usernameValidator.errorState.value.isNullOrBlank(),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Characters,
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
                     )
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    color = MaterialTheme.colors.error,
+                    text = usernameValidator.errorState.value ?: "",
+                    style = MaterialTheme.typography.body2
+                )
+                OutlinedTextField(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .fillMaxWidth(),
+                    value = password.component1(),
+                    label = {
+                        Text(text = "Contraseña")
+                    },
+                    singleLine = true,
+                    onValueChange = password.component2(),
+                    visualTransformation = if (!passwordVisible.value){
+                        PasswordVisualTransformation()
+                    } else VisualTransformation.None,
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Characters,
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Next
+                    ),
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {
+                                passwordVisible.value = !passwordVisible.value
+                            }
+                        ) {
+                            Icon(
+                                imageVector = if (!passwordVisible.value){
+                                    Icons.Rounded.Visibility
+                                }else{
+                                    Icons.Rounded.VisibilityOff
+                                },
+                                contentDescription = "Visibility"
+                            )
+                        }
+                    },
+                    isError = !passwordValidator.errorState.value.isNullOrBlank(),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    )
+                )
+                Text(
+                    modifier = Modifier.padding(start = 8.dp),
+                    color = MaterialTheme.colors.error,
+                    text = authViewModel.auth.value?.errorMessage ?: passwordValidator.errorState.value ?: "",
+                    style = MaterialTheme.typography.body2
+                )
+                CaptchaInput(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth(),
+                    authViewModel = authViewModel,
+                    captcha = captcha,
+                ){
+                    if(listOf(usernameValidator, passwordValidator, captcha).validate()){
+                        authViewModel.login(
+                            username.value,
+                            password.value,
+                            captcha.mutableState.value
+                        ).invokeOnCompletion {
+                            captcha.mutableState.value = ""
+                        }
+                    }
                 }
-            },
-            isError = !passwordValidator.errorState.value.isNullOrBlank(),
-            keyboardActions = KeyboardActions(
-                onNext = {
-                    focusManager.moveFocus(FocusDirection.Down)
-                }
-            )
-        )
-        Text(
-            modifier = Modifier.padding(start = 8.dp),
-            color = MaterialTheme.colors.error,
-            text = authViewModel.auth.value?.errorMessage ?: passwordValidator.errorState.value ?: "",
-            style = MaterialTheme.typography.body2
-        )
-        CaptchaInput(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth(),
-            authViewModel = authViewModel,
-            captcha = captcha,
-        ){
-            if(listOf(usernameValidator, passwordValidator, captcha).validate()){
-                authViewModel.login(
-                    username.value,
-                    password.value,
-                    captcha.mutableState.value
-                ).invokeOnCompletion {
-                    captcha.mutableState.value = ""
+                AsyncButton(
+                    modifier = Modifier
+                        .padding(top = 24.dp)
+                        .fillMaxWidth(),
+                    isHighEmphasis = true,
+                    text = "Iniciar sesión",
+                    isLoading = authViewModel.auth.value == null
+                ){
+                    if(listOf(usernameValidator, passwordValidator, captcha).validate()){
+                        authViewModel.login(
+                            username.value,
+                            password.value,
+                            captcha.mutableState.value
+                        ).invokeOnCompletion {
+                            captcha.mutableState.value = ""
+                        }
+                    }
                 }
             }
         }
-        AsyncButton(
-            modifier = Modifier
-                .padding(top = 24.dp)
-                .fillMaxWidth(),
-            isHighEmphasis = true,
-            text = "Iniciar sesión",
-            isLoading = authViewModel.auth.value == null
-        ){
-            if(listOf(usernameValidator, passwordValidator, captcha).validate()){
-                authViewModel.login(
-                    username.value,
-                    password.value,
-                    captcha.mutableState.value
-                ).invokeOnCompletion {
-                    captcha.mutableState.value = ""
-                }
-            }
-        }
-        Box(modifier = Modifier.weight(1f))
         SchoolButton(
+            modifier = Modifier.padding(
+                start = 32.dp,
+                end = 32.dp,
+                bottom = 24.dp
+            ),
             isSmall = true,
             school = School.findSchoolByUrl(schoolUrl.value)
         ){

@@ -161,6 +161,7 @@ class SAESActivity : AppCompatActivity() {
                             AndroidView(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .height(50.dp)
                                     .background(statusBarColor),
                                 factory = {
                                     AdView(it).apply {
