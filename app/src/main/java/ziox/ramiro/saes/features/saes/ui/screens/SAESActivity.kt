@@ -90,8 +90,6 @@ class SAESActivity : AppCompatActivity() {
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
         profileViewModel = ViewModelProvider(
             this,
             viewModelFactory { ProfileViewModel(ProfileWebViewRepository(this)) }
@@ -101,6 +99,10 @@ class SAESActivity : AppCompatActivity() {
             this,
             viewModelFactory { GradesViewModel(GradesWebViewRepository(this)) }
         ).get(GradesViewModel::class.java)
+
+        super.onCreate(savedInstanceState)
+
+
 
         val initialSection = try{
             MenuSection.valueOf(intent.getStringExtra(INTENT_EXTRA_REDIRECT)!!)
@@ -132,9 +134,7 @@ class SAESActivity : AppCompatActivity() {
                             saesViewModel,
                             etsViewModel
                         ){
-                            BottomSheetDrawerModal(
-                                profileViewModel, saesViewModel, authViewModel
-                            ).show(supportFragmentManager, "menu")
+                            BottomSheetDrawerModal().show(supportFragmentManager, "menu")
                         }
                     }
                 ) {

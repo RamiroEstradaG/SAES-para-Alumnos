@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.activityViewModels
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -46,12 +49,11 @@ import ziox.ramiro.saes.utils.launchUrl
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 
-class BottomSheetDrawerModal(
-    private var profileViewModel: ProfileViewModel,
-    private var saesViewModel: SAESViewModel,
-    private var authViewModel: AuthViewModel
-): BottomSheetDialogFragment() {
+class BottomSheetDrawerModal: BottomSheetDialogFragment() {
     private val remoteConfig = Firebase.remoteConfig
+    private val profileViewModel: ProfileViewModel by activityViewModels()
+    private val saesViewModel: SAESViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

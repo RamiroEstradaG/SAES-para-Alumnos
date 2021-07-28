@@ -84,6 +84,8 @@ dependencies {
 
     implementation "androidx.activity:activity-compose:$activity_version"
     implementation "androidx.activity:activity-ktx:$activity_version"
+    implementation "androidx.fragment:fragment-ktx:1.3.6"
+
 
     implementation 'com.google.android.play:core:1.10.0'
     implementation 'com.google.android.play:core-ktx:1.8.1'
