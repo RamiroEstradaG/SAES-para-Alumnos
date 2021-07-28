@@ -6,10 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
-import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
-import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
 import ziox.ramiro.saes.features.saes.features.performance.data.models.PerformanceData
 
 interface PerformanceRepository {

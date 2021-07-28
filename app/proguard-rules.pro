@@ -19,3 +19,25 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keepattributes Signature
+
+-keepclassmembers class ziox.ramiro.saes.features.saes.features.agenda.data.models.** {
+    *;
+}
+
+-keepclassmembers class ziox.ramiro.saes.features.saes.features.kardex.data.models.** {
+    *;
+}
+
+-keepclassmembers class ziox.ramiro.saes.features.saes.features.performance.data.models.** {
+    *;
+}
+
+-keepclassmembers class ziox.ramiro.saes.features.saes.features.schedule.data.models.** {
+    *;
+}
+
+-keepclassmembers class ziox.ramiro.saes.features.saes.data.models.** {
+    *;
+}

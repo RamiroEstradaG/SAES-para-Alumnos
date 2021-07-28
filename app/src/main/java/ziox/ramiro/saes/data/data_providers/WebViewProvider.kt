@@ -10,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.perf.ktx.performance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -145,11 +147,14 @@ class WebViewProvider(
         noinline resultAdapter: (ScrapResult) -> T
     ): T {
         val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
+        val performanceTrace = Firebase.performance.newTrace(url).also { it.start() }
         val jobId = generateJobId()
         val scriptBase = "${scriptTemplate(jobId)}\n$script"
 
         return withTimeout(timeout){
             suspendCancellableCoroutine<ScrapResultAdapter<Any?>> {
+                it.invokeOnCancellation { performanceTrace.stop() }
+
                 javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
 
                 attachWebViewClient(jobId, it) {
@@ -163,7 +168,9 @@ class WebViewProvider(
                 } else {
                     webView.loadUrl(scriptBase)
                 }
-            }.toPrimitiveType()
+            }.toPrimitiveType<T>().also {
+                performanceTrace.stop()
+            }
         }
     }
 
@@ -182,12 +189,15 @@ class WebViewProvider(
         noinline resultAdapter: (ScrapResult) -> T
     ): T {
         val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
+        val performanceTrace = Firebase.performance.newTrace(url).also { it.start() }
         val jobId = generateJobId()
         var currentScriptIndex = 0
         val postRequestBase = "${scriptTemplate(jobId)}\n$postRequest"
 
         return withTimeout(timeout){
             suspendCancellableCoroutine<ScrapResultAdapter<Any?>> {
+                it.invokeOnCancellation { performanceTrace.stop() }
+
                 javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
 
                 attachWebViewClient(jobId, it) {
@@ -205,7 +215,9 @@ class WebViewProvider(
                     Log.d("WebViewProvider", "Running script at $currentScriptIndex")
                     webView.loadUrl("${scriptTemplate(jobId)}\n${preRequests[currentScriptIndex++]}")
                 }
-            }.toPrimitiveType()
+            }.toPrimitiveType<T>().also {
+                performanceTrace.stop()
+            }
         }
     }
 
@@ -217,6 +229,7 @@ class WebViewProvider(
         noinline resultAdapter: (ScrapResult) -> T
     ): T {
         val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
+        val performanceTrace = Firebase.performance.newTrace(url).also { it.start() }
         var isFirstLoad = true
         val jobId = generateJobId()
         val preRequestBase = "${scriptTemplate(jobId)}\n$preRequest"
@@ -224,6 +237,8 @@ class WebViewProvider(
 
         return withTimeout(timeout){
             suspendCancellableCoroutine<ScrapResultAdapter<Any?>> {
+                it.invokeOnCancellation { performanceTrace.stop() }
+
                 javascriptInterfaceJobs[jobId] = JavascriptInterfaceJob(jobId, false, resultAdapter, it)
 
                 attachWebViewClient(jobId, it) {
@@ -240,7 +255,9 @@ class WebViewProvider(
                 } else {
                     webView.loadUrl(preRequestBase)
                 }
-            }.toPrimitiveType()
+            }.toPrimitiveType<T>().also {
+                performanceTrace.stop()
+            }
         }
     }
 
