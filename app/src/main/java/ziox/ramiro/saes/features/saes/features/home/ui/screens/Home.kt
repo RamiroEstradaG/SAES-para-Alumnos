@@ -173,7 +173,7 @@ fun Home(
                                 )
                                 Text(
                                     modifier = Modifier.padding(16.dp),
-                                    text = nextClass.hourRange.start.toString(),
+                                    text = nextClass.scheduleDayTime.start.toString(),
                                     style = MaterialTheme.typography.subtitle2,
                                     color = Color.White
                                 )

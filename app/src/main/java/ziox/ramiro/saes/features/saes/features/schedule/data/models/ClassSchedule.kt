@@ -8,7 +8,6 @@ import ziox.ramiro.saes.utils.MES
 import ziox.ramiro.saes.utils.MES_COMPLETO
 import ziox.ramiro.saes.utils.toCalendar
 import java.util.*
-import kotlin.collections.ArrayList
 
 @Entity(tableName = "class_schedule")
 data class ClassSchedule(
@@ -29,7 +28,7 @@ data class ClassSchedule(
     @ColumnInfo(name = "class_color")
     val color: Long = 0L,
     @Embedded
-    val hourRange: HourRange = HourRange()
+    val scheduleDayTime: ScheduleDayTime = ScheduleDayTime()
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -40,7 +39,7 @@ data class ClassSchedule(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readLong(),
-        parcel.readParcelable(HourRange::class.java.classLoader)!!
+        parcel.readParcelable(ScheduleDayTime::class.java.classLoader)!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -52,7 +51,7 @@ data class ClassSchedule(
         parcel.writeString(classroom)
         parcel.writeString(teacherName)
         parcel.writeLong(color)
-        parcel.writeParcelable(hourRange, flags)
+        parcel.writeParcelable(scheduleDayTime, flags)
     }
 
     override fun describeContents(): Int {
@@ -77,17 +76,17 @@ data class ClassSchedule(
             classSchedule.classroom,
             classSchedule.teacherName,
             classSchedule.color,
-            classSchedule.hourRange
+            classSchedule.scheduleDayTime
         )
     }
 }
 
-fun checkIfOccupied(list: List<HourRange>, item: HourRange): Int?{
+fun checkIfOccupied(list: List<ScheduleDayTime>, item: ScheduleDayTime): Int?{
     for ((i, classSchedule) in list.withIndex()) {
-        if(item.start.toDouble() in classSchedule.start.toDouble()..(classSchedule.end.toDouble() - 0.01)
+        if(item.weekDay == classSchedule.weekDay && (item.start.toDouble() in classSchedule.start.toDouble()..(classSchedule.end.toDouble() - 0.01)
             || item.end.toDouble() in (classSchedule.start.toDouble() + 0.01)..classSchedule.end.toDouble()
             || classSchedule.start.toDouble() in item.start.toDouble()..(item.end.toDouble() - 0.01)
-            || classSchedule.end.toDouble() in (item.start.toDouble() + 0.01)..item.end.toDouble()){
+            || classSchedule.end.toDouble() in (item.start.toDouble() + 0.01)..item.end.toDouble())){
             return i
         }
     }
@@ -99,9 +98,11 @@ data class ClassScheduleCollection(
     val className: String,
     val group: String,
     val teacherName: String,
+    val classId: String,
     val schedules: List<ClassSchedule>
 ): Parcelable{
     constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
@@ -112,6 +113,7 @@ data class ClassScheduleCollection(
         parcel.writeString(className)
         parcel.writeString(group)
         parcel.writeString(teacherName)
+        parcel.writeString(classId)
         parcel.writeTypedList(schedules)
     }
 
@@ -139,6 +141,7 @@ data class ClassScheduleCollection(
                     classSchedule.className,
                     classSchedule.group,
                     classSchedule.teacherName,
+                    classSchedule.classId,
                     it.value
                 )
             }
@@ -181,7 +184,7 @@ data class GeneratorClassSchedule(
     @ColumnInfo(name = "class_color")
     val color: Long,
     @Embedded
-    val hourRange: HourRange
+    val scheduleDayTime: ScheduleDayTime
 ) : Parcelable{
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -192,7 +195,7 @@ data class GeneratorClassSchedule(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readLong(),
-        parcel.readParcelable(HourRange::class.java.classLoader)!!
+        parcel.readParcelable(ScheduleDayTime::class.java.classLoader)!!
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -204,7 +207,7 @@ data class GeneratorClassSchedule(
         parcel.writeString(classroom)
         parcel.writeString(teacherName)
         parcel.writeLong(color)
-        parcel.writeParcelable(hourRange, flags)
+        parcel.writeParcelable(scheduleDayTime, flags)
     }
 
     override fun describeContents(): Int {
@@ -229,7 +232,7 @@ data class GeneratorClassSchedule(
             classSchedule.classroom,
             classSchedule.teacherName,
             classSchedule.color,
-            classSchedule.hourRange
+            classSchedule.scheduleDayTime
         )
     }
 
@@ -257,9 +260,9 @@ fun List<ClassSchedule>.getCurrentClass() : ClassSchedule? {
     val currentHour = Hour.fromDate(Date())
 
     return this.filter {
-        currentDay == it.hourRange.weekDay
+        currentDay == it.scheduleDayTime.weekDay
     }.find {
-         currentHour.toDouble() in it.hourRange.start.toDouble()..it.hourRange.end.toDouble()
+         currentHour.toDouble() in it.scheduleDayTime.start.toDouble()..it.scheduleDayTime.end.toDouble()
     }
 }
 
@@ -270,14 +273,14 @@ fun List<ClassSchedule>.getNextClass() : ClassSchedule? {
     var currentResult: ClassSchedule? = null
 
     val list = this.filter {
-        currentDay == it.hourRange.weekDay
+        currentDay == it.scheduleDayTime.weekDay
     }.sortedByDescending {
-        it.hourRange.start.toDouble()
+        it.scheduleDayTime.start.toDouble()
     }
 
     list.forEach {
-        if(it.hourRange.start.toDouble() < currentMinHour && it.hourRange.start.toDouble() >= currentHour.toDouble()){
-            currentMinHour = it.hourRange.start.toDouble()
+        if(it.scheduleDayTime.start.toDouble() < currentMinHour && it.scheduleDayTime.start.toDouble() >= currentHour.toDouble()){
+            currentMinHour = it.scheduleDayTime.start.toDouble()
             currentResult = it
         }
     }
@@ -285,7 +288,7 @@ fun List<ClassSchedule>.getNextClass() : ClassSchedule? {
     return currentResult
 }
 
-data class HourRange(
+data class ScheduleDayTime(
     @ColumnInfo(name = "hour_start")
     val start: Hour = Hour(),
     @ColumnInfo(name = "hour_end")
@@ -312,13 +315,13 @@ data class HourRange(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<HourRange> {
-        fun parse(hourRange: String, weekDay: WeekDay = WeekDay.UNKNOWN): List<HourRange>{
-            val hours = Regex("[0-9]+:[0-9]+-[0-9]+:[0-9]+").findAll(hourRange.replace(" ", ""))
+    companion object CREATOR : Parcelable.Creator<ScheduleDayTime> {
+        fun parse(hourRange: String, weekDay: WeekDay = WeekDay.UNKNOWN): List<ScheduleDayTime>{
+            val hours = Regex("[0-9]+:[0-9]+\\s*-\\s*[0-9]+:[0-9]+").findAll(hourRange)
 
             return hours.map {
-                val values = it.value.split("-")
-                HourRange(
+                val values = it.value.replace(" ", "").split("-")
+                ScheduleDayTime(
                     Hour.parse(values[0])!!,
                     Hour.parse(values[1])!!,
                     weekDay
@@ -326,11 +329,11 @@ data class HourRange(
             }.toList()
         }
 
-        override fun createFromParcel(parcel: Parcel): HourRange {
-            return HourRange(parcel)
+        override fun createFromParcel(parcel: Parcel): ScheduleDayTime {
+            return ScheduleDayTime(parcel)
         }
 
-        override fun newArray(size: Int): Array<HourRange?> {
+        override fun newArray(size: Int): Array<ScheduleDayTime?> {
             return arrayOfNulls(size)
         }
     }
@@ -340,7 +343,7 @@ data class HourRange(
     }
 }
 
-fun <T>List<T>.getRangeBy(block: (T) -> HourRange) : IntRange{
+fun <T>List<T>.getRangeBy(block: (T) -> ScheduleDayTime) : IntRange{
     var start : Double? = null
     var end : Double? = null
 

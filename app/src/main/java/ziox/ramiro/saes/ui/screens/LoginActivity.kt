@@ -99,6 +99,7 @@ class LoginActivity : AppCompatActivity() {
                             password
                         )
                     }
+                    ErrorSnackbar(authViewModel.error)
                 }
             }
         }
@@ -294,8 +295,6 @@ fun Login(
             selectSchoolLauncher.launch()
         }
     }
-
-    ErrorSnackbar(authViewModel.error)
 }
 
 

@@ -8,7 +8,7 @@ import org.json.JSONObject
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.HourRange
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayTime
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.scheduleColors
 import ziox.ramiro.saes.utils.isNetworkAvailable
@@ -75,7 +75,7 @@ class ScheduleWebViewRepository(
                     for (i in 0 until data.length()) {
                         val classSchedule = data[i] as JSONObject
 
-                        val hours = HourRange.parse(
+                        val hours = ScheduleDayTime.parse(
                             classSchedule.getString("hours"),
                             WeekDay.byDayOfWeek(classSchedule.getInt("dayIndex"))
                         )
@@ -91,7 +91,7 @@ class ScheduleWebViewRepository(
 
                         addAll(hours.map { range ->
                             ClassSchedule(
-                                classSchedule.getString("id"),
+                                classSchedule.getString("id")+range.start.toString(),
                                 classId,
                                 classSchedule.getString("className").toProperCase(),
                                 classSchedule.getString("group"),
@@ -104,7 +104,7 @@ class ScheduleWebViewRepository(
                         })
                     }
                 }.filter { f ->
-                    f.hourRange.duration > 0
+                    f.scheduleDayTime.duration > 0
                 }
             }.also {
                 runOnDefaultThread {

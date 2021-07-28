@@ -60,7 +60,8 @@ class AuthWebViewRepository(
                     errorMessage: error != null && error.length >= 3 ? error[2].innerText.trim() : ""
                 });
             """.trimIndent(),
-            reloadPage = false
+            reloadPage = false,
+            timeout = 30000
         ){
             val data = it.result.getJSONObject("data")
             Auth(

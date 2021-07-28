@@ -30,7 +30,7 @@ fun ScheduleWeekContainer(
     classSchedules: List<ClassSchedule>,
     selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null)
 ) {
-    val hourRange = classSchedules.getRangeBy { it.hourRange }
+    val hourRange = classSchedules.getRangeBy { it.scheduleDayTime }
 
     Row(
         modifier = Modifier

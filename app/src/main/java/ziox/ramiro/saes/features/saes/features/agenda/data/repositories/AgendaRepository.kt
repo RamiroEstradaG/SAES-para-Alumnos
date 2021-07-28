@@ -17,12 +17,10 @@ import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaCalendar
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaEventType
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.HourRange
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayTime
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.utils.MMMddyyyy_toDate
-import ziox.ramiro.saes.utils.PreferenceKeys
-import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.offset
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -87,7 +85,7 @@ class AgendaWebViewRepository(
                             eventName = item.getString("eventName"),
                             date = currentDate,
                             calendarId = "SAES",
-                            hourRange = HourRange(Hour(12,0), Hour(13,0), WeekDay.byDate(dateWithOffset)),
+                            scheduleDayTime = ScheduleDayTime(Hour(12,0), Hour(13,0), WeekDay.byDate(dateWithOffset)),
                             eventType = AgendaEventType.ACADEMIC
                         ))
                     } while (currentDate != end)

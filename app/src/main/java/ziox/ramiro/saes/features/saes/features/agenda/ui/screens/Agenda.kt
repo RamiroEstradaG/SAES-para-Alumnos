@@ -374,7 +374,7 @@ fun AgendaView(
                     }
 
                     val hourRange = MutableStateWithValidation(remember {
-                        mutableStateOf<HourRange?>(null)
+                        mutableStateOf<ScheduleDayTime?>(null)
                     }, remember {
                         mutableStateOf(null)
                     }){
@@ -504,7 +504,7 @@ fun AgendaView(
                                 eventName = name.mutableState.value,
                                 eventType = AgendaEventType.PERSONAL,
                                 date = date.mutableState.value,
-                                hourRange = hourRange.mutableState.value!!,
+                                scheduleDayTime = hourRange.mutableState.value!!,
                                 calendarId = selectedAgenda.value!!,
                                 description = description.value,
                                 classSchedule = selectedClassSchedule.value,
@@ -520,10 +520,10 @@ fun AgendaView(
     ErrorSnackbar(agendaViewModel.error)
 }
 
-fun showHourRangePickerDialog(context: Context, onChange: (HourRange) -> Unit){
+fun showHourRangePickerDialog(context: Context, onChange: (ScheduleDayTime) -> Unit){
     TimePickerDialog(context, { _, hour, minute ->
         TimePickerDialog(context, { _, hour2, minute2 ->
-            onChange(HourRange(
+            onChange(ScheduleDayTime(
                 Hour(hour, minute),
                 Hour(hour2, minute2),
                 WeekDay.UNKNOWN
@@ -610,7 +610,7 @@ fun AgendaSchedule(
                 .verticalScroll(yScrollState)
                 .focusable(false)
         ){
-            val hourRange = events.getRangeBy { it.hourRange }
+            val hourRange = events.getRangeBy { it.scheduleDayTime }
 
             HourColumn(hourRange)
             Box(
@@ -642,7 +642,7 @@ private fun rearrangeList(events: List<AgendaItem>) : List<List<AgendaItem>>{
     var currentColumnsLength = columns.size
 
     val sorted = events.sortedByDescending {
-        it.hourRange.duration
+        it.scheduleDayTime.duration
     }
 
     sorted.forEach { agendaItem ->
@@ -650,7 +650,7 @@ private fun rearrangeList(events: List<AgendaItem>) : List<List<AgendaItem>>{
         while (i < currentColumnsLength){
             val column = columns[i++]
 
-            if(checkIfOccupied(column.map { it.hourRange }, agendaItem.hourRange) != null){
+            if(checkIfOccupied(column.map { it.scheduleDayTime }, agendaItem.scheduleDayTime) != null){
                 if(i >= currentColumnsLength){
                     columns.add(arrayListOf(agendaItem))
                     currentColumnsLength = columns.size
@@ -681,12 +681,12 @@ fun EventsContainer(
             Box(
                 modifier = Modifier
                     .padding(
-                        top = hourHeight.times((item.hourRange.start.toDouble() - hourRange.first).toFloat()),
+                        top = hourHeight.times((item.scheduleDayTime.start.toDouble() - hourRange.first).toFloat()),
                         start = eventWidth.times(i)
                     )
                     .size(
                         eventWidth,
-                        hourHeight.times(item.hourRange.duration.toFloat())
+                        hourHeight.times(item.scheduleDayTime.duration.toFloat())
                     )
 
             ) {

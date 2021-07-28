@@ -41,7 +41,7 @@ class ScheduleSmallWidget : AppWidgetProvider() {
         val now = Hour.fromDate(Date()).toDouble()
         val scheduleList = db.getMySchedule()
 
-        val range = scheduleList.getRangeBy { it.hourRange }
+        val range = scheduleList.getRangeBy { it.scheduleDayTime }
 
         if(scheduleList.isEmpty()){
             updateClassAndProgress(rootView, "Abre tu horario en la app para actualizar.", 0)
@@ -51,7 +51,7 @@ class ScheduleSmallWidget : AppWidgetProvider() {
             }else{
                 val currentClass = scheduleList.getCurrentClass()
                 if(currentClass != null){
-                    updateClassAndProgress(rootView, currentClass.className, now.minus(currentClass.hourRange.start.toDouble()).div(currentClass.hourRange.duration).times(100).toInt())
+                    updateClassAndProgress(rootView, currentClass.className, now.minus(currentClass.scheduleDayTime.start.toDouble()).div(currentClass.scheduleDayTime.duration).times(100).toInt())
                 }else{
                     updateClassAndProgress(rootView, "Tiempo libre", 0)
                 }

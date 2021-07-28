@@ -21,7 +21,7 @@ class AuthViewModel(
     val auth = mutableStateOf<Auth?>(Auth.Empty)
     val error = MutableStateFlow<String?>(null)
     val isLoggedIn = mutableStateOf<Boolean?>(null)
-    private val isCaptchaLoading = mutableStateOf(false)
+    private var isCaptchaLoading = false
 
     init {
         error.dismissAfterTimeout()
@@ -32,17 +32,19 @@ class AuthViewModel(
     }
 
     fun fetchCaptcha() {
-        if(isCaptchaLoading.value) return
-        isCaptchaLoading.value = true
+        if(isCaptchaLoading) return
+        isCaptchaLoading = true
         viewModelScope.launch {
             captcha.value = null
 
             kotlin.runCatching {
                 authRepository.getCaptcha()
             }.onSuccess {
+                isCaptchaLoading = false
                 captcha.value = it
             }.onFailure {
                 it.printStackTrace()
+                isCaptchaLoading = false
                 fetchCaptcha()
                 error.value = if(it is TimeoutCancellationException){
                     "Tiempo de espera excedido (10s)"
@@ -50,8 +52,6 @@ class AuthViewModel(
                     "Error al obtener el captcha"
                 }
             }
-
-            isCaptchaLoading.value = false
         }
     }
 
@@ -69,7 +69,7 @@ class AuthViewModel(
         }.onFailure {
             auth.value = Auth.Empty
             error.value = if(it is TimeoutCancellationException){
-                "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)}s)"
+                "Tiempo de espera excedido (30s)"
             }else{
                 "Error al iniciar sesión"
             }

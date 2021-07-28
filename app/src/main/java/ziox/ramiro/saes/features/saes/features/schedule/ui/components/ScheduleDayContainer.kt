@@ -37,7 +37,7 @@ fun ScheduleDayContainer(
         )
 ) {
     classSchedules.filter {
-        it.hourRange.weekDay == weekDay
+        it.scheduleDayTime.weekDay == weekDay
     }.forEach {
         ScheduleClassView(
             isExpanded = selectedDayOfWeek.value == weekDay,

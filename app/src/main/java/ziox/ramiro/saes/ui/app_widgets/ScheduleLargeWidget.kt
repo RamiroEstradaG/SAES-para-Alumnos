@@ -50,7 +50,7 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         val rootView = RemoteViews(context.packageName, R.layout.widget_schedule_large)
         val scheduleList = db.getMySchedule()
         val weekDay = WeekDay.today()
-        val range = scheduleList.getRangeBy { it.hourRange }
+        val range = scheduleList.getRangeBy { it.scheduleDayTime }
         val hourHeight = context.getHourHeight(range, appWidgetId, appWidgetManager)
 
         rootView.setInt(R.id.limiteTextView, "setHeight",TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,10f,context.resources.displayMetrics).toInt())
@@ -66,8 +66,8 @@ class ScheduleLargeWidget : AppWidgetProvider() {
         initSchedule(rootView, context, scheduleList)
 
         scheduleList.forEach {
-            val height = it.hourRange.duration.times(hourHeight).toInt()
-            val paddingTop = (it.hourRange.start.toDouble().minus(range.first)).times(hourHeight).toInt()
+            val height = it.scheduleDayTime.duration.times(hourHeight).toInt()
+            val paddingTop = (it.scheduleDayTime.start.toDouble().minus(range.first)).times(hourHeight).toInt()
 
             val classRemoteView = RemoteViews(context.packageName, R.layout.widget_schedule_class_item)
             classRemoteView.setInt(R.id.clase_view, "setHeight", height)
@@ -77,14 +77,14 @@ class ScheduleLargeWidget : AppWidgetProvider() {
 
             classRemoteView.setTextViewText(R.id.clase_view, it.className.getInitials())
 
-            rootView.addView(scheduleDayLayouts[it.hourRange.weekDay.calendarDayIndex-1], classRemoteView)
+            rootView.addView(scheduleDayLayouts[it.scheduleDayTime.weekDay.calendarDayIndex-1], classRemoteView)
         }
 
         appWidgetManager.updateAppWidget(appWidgetId, rootView)
     }
 
     private fun initSchedule(rootView: RemoteViews, context: Context, scheduleList: List<ClassSchedule>){
-        val range = scheduleList.getRangeBy{it.hourRange}
+        val range = scheduleList.getRangeBy{it.scheduleDayTime}
 
         for (id in scheduleDayLayouts){
             rootView.removeAllViews(id)

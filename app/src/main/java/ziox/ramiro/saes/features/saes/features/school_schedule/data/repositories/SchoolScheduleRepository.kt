@@ -9,7 +9,7 @@ import ziox.ramiro.saes.features.saes.data.models.FilterRepository
 import ziox.ramiro.saes.features.saes.data.models.RadioGroupFilterField
 import ziox.ramiro.saes.features.saes.data.models.SelectFilterField
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.HourRange
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayTime
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.scheduleColors
 import ziox.ramiro.saes.utils.toProperCase
@@ -72,7 +72,7 @@ class SchoolScheduleWebViewRepository(
                 for (i in 0 until data.length()) {
                     val classSchedule = data[i] as JSONObject
 
-                    val hours = HourRange.parse(
+                    val hours = ScheduleDayTime.parse(
                         classSchedule.getString("hours"),
                         WeekDay.byDayOfWeek(classSchedule.getInt("dayIndex"))
                     )
@@ -88,7 +88,7 @@ class SchoolScheduleWebViewRepository(
 
                     addAll(hours.map { range ->
                         ClassSchedule(
-                            classSchedule.getString("id"),
+                            classSchedule.getString("id")+range.start.toString(),
                             classId,
                             classSchedule.getString("className").toProperCase(),
                             classSchedule.getString("group"),
@@ -101,7 +101,7 @@ class SchoolScheduleWebViewRepository(
                     })
                 }
             }.filter { f ->
-                f.hourRange.duration > 0
+                f.scheduleDayTime.duration > 0
             }
         }
     }

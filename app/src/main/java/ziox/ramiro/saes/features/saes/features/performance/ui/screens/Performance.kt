@@ -83,7 +83,7 @@ fun Performance(
                     bottom = 64.dp
                 )
             ) {
-                if (performanceViewModel.permissionToSaveData.value == TriStateBoolean.UNSET){
+                AnimatedVisibility(visible = performanceViewModel.permissionToSaveData.value == TriStateBoolean.UNSET) {
                     PermissionCard(performanceViewModel)
                 }
 
@@ -253,7 +253,7 @@ fun ComparePerformanceCard(
                 Text(
                     text = value2?.toStringPrecision(2) ?: "-",
                     style = MaterialTheme.typography.h4,
-                    color = gradeColor(value1?.toInt())
+                    color = gradeColor(value2?.toInt())
                 )
             }
         }

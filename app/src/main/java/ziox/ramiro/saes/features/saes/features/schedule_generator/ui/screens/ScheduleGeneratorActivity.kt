@@ -194,7 +194,7 @@ fun ScheduleGeneratorItem(
         trailing = {
             IconButton(
                 onClick = {
-                    scheduleGeneratorViewModel.removeClass(generatorClassSchedule.className, generatorClassSchedule.group)
+                    scheduleGeneratorViewModel.removeClass(generatorClassSchedule.classId)
                 }
             ) {
                 Icon(

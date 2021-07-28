@@ -15,6 +15,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
 
                 Scaffold {
                     SplashScreen()
+                    ErrorSnackbar(authViewModel.error)
                 }
             }
         }

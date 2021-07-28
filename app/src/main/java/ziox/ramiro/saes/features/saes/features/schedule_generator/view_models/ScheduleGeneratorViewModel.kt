@@ -3,10 +3,7 @@ package ziox.ramiro.saes.features.saes.features.schedule_generator.view_models
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.GeneratorClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.checkIfOccupied
@@ -39,10 +36,10 @@ class ScheduleGeneratorViewModel(
         }
     }
 
-    fun removeClass(className: String, group: String) = viewModelScope.launch {
+    fun removeClass(classId: String) = viewModelScope.launch {
         kotlin.runCatching {
             runOnDefaultThread {
-                scheduleGeneratorRepository.removeClass(className, group)
+                scheduleGeneratorRepository.removeClass(classId)
             }
         }.onSuccess {
             fetchSchedule()
@@ -57,7 +54,7 @@ class ScheduleGeneratorViewModel(
                 val hourInterference = ArrayList<String>()
 
                 generatorClassSchedule.forEach { newItem ->
-                    val interference = checkIfOccupied(it.map { it.hourRange }, newItem.hourRange)
+                    val interference = checkIfOccupied(it.map { it.scheduleDayTime }, newItem.scheduleDayTime)
                     if(interference != null && !hourInterference.contains(it[interference].className)){
                         hourInterference.add(it[interference].className)
                     }
@@ -78,6 +75,7 @@ class ScheduleGeneratorViewModel(
                     }.onSuccess {
                         fetchSchedule()
                     }.onFailure {
+                        it.printStackTrace()
                         error.value = "Error al agregar la clase al generador"
                     }
                 }

@@ -56,8 +56,8 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
 
         remoteViews.setInt(R.id.widgetHoraParent, "setBackgroundColor", Color(classSchedule.color.toULong()).toArgb())
         remoteViews.setTextViewText(R.id.course_name_text_view, classSchedule.className)
-        remoteViews.setTextViewText(R.id.widgetHoraInicio, classSchedule.hourRange.start.toString())
-        remoteViews.setTextViewText(R.id.widgetHoraFinal, classSchedule.hourRange.end.toString())
+        remoteViews.setTextViewText(R.id.widgetHoraInicio, classSchedule.scheduleDayTime.start.toString())
+        remoteViews.setTextViewText(R.id.widgetHoraFinal, classSchedule.scheduleDayTime.end.toString())
         remoteViews.setTextViewText(R.id.teacher_name_text_view, classSchedule.teacherName)
         remoteViews.setTextViewText(R.id.building_name_text_view, classSchedule.building)
         remoteViews.setTextViewText(R.id.class_room_name_text_view, classSchedule.classroom)
@@ -78,9 +78,9 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
 
         scheduleData.clear()
         scheduleData.addAll(scheduleList.filter {
-            it.hourRange.weekDay == weekDay
+            it.scheduleDayTime.weekDay == weekDay
         }.sortedBy {
-            it.hourRange.start.toDouble()
+            it.scheduleDayTime.start.toDouble()
         })
     }
 }

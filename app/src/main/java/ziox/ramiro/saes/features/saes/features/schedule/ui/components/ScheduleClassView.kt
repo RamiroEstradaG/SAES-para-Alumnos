@@ -23,8 +23,8 @@ fun ScheduleClassView(
     hourHeight: Dp = 170.dp
 ) = Card(
     modifier = Modifier
-        .padding(top = hourHeight.times((classSchedule.hourRange.start.toDouble() - startHour).toFloat()))
-        .height(hourHeight.times(classSchedule.hourRange.duration.toFloat()))
+        .padding(top = hourHeight.times((classSchedule.scheduleDayTime.start.toDouble() - startHour).toFloat()))
+        .height(hourHeight.times(classSchedule.scheduleDayTime.duration.toFloat()))
         .fillMaxWidth(),
     backgroundColor = Color(classSchedule.color.toULong()),
     shape = MaterialTheme.shapes.small,

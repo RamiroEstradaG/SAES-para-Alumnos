@@ -83,5 +83,5 @@ fun Schedule(
 
 
 fun List<ClassSchedule>.getHourHeight(): Dp = 170.dp.div((minByOrNull {
-    it.hourRange.duration
-}?.hourRange?.duration?.toFloat() ?: 1f))
+    it.scheduleDayTime.duration
+}?.scheduleDayTime?.duration?.toFloat() ?: 1f))
