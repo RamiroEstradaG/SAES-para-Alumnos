@@ -3,6 +3,7 @@ package ziox.ramiro.saes.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class UserPreferences private constructor(context: Context){
     companion object {
@@ -48,13 +49,21 @@ class UserPreferences private constructor(context: Context){
         } ?: default
     }
 
-    fun isAuthDataSaved() : Boolean
-            = getPreference(PreferenceKeys.Boleta, "").isNotBlank()
-            && getPreference(PreferenceKeys.Password, "").isNotBlank()
+    fun setAuthData(username: String, password: String){
+        setPreference(PreferenceKeys.Boleta, username)
+        setPreference(PreferenceKeys.Password, password)
+        authData.value = AuthData(username, password)
+    }
+
+    val authData = MutableStateFlow(AuthData(
+        getPreference(PreferenceKeys.Boleta, ""),
+        getPreference(PreferenceKeys.Password, "")
+    ))
 
     fun removeAuthData(){
         removePreference(PreferenceKeys.Boleta)
         removePreference(PreferenceKeys.Password)
+        authData.value = AuthData("", "")
     }
 
     inline fun <reified T>removePreference(preferenceKeys: PreferenceKeys<T>){
@@ -62,6 +71,13 @@ class UserPreferences private constructor(context: Context){
     }
 }
 
+
+data class AuthData(
+    val username: String,
+    val password: String
+){
+    fun isAuthDataSaved() : Boolean = username.isNotBlank() && password.isNotBlank()
+}
 
 sealed class PreferenceKeys<T>(val key: String) {
     object SchoolUrl: PreferenceKeys<String?>("new_url_escuela")

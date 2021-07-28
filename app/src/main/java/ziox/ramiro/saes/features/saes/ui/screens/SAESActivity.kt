@@ -2,7 +2,6 @@ package ziox.ramiro.saes.features.saes.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -15,7 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -25,18 +24,13 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import com.google.android.gms.ads.MobileAds
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.remoteConfig
-import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.data.repositories.BillingGooglePayRepository
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.Agenda
@@ -108,21 +102,11 @@ class SAESActivity : AppCompatActivity() {
             viewModelFactory { GradesViewModel(GradesWebViewRepository(this)) }
         ).get(GradesViewModel::class.java)
 
-        val remoteConfig = Firebase.remoteConfig
-        val configSettings = remoteConfigSettings {
-            minimumFetchIntervalInSeconds = 0
-        }
-        remoteConfig.setConfigSettingsAsync(configSettings)
-
-        remoteConfig.fetchAndActivate()
-
         val initialSection = try{
             MenuSection.valueOf(intent.getStringExtra(INTENT_EXTRA_REDIRECT)!!)
         }catch (e: Exception){
             SAESViewModel.SECTION_INITIAL.name
         }
-
-        MobileAds.initialize(this)
 
         listenToNavigationStates()
 

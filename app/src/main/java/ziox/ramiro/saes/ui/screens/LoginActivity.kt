@@ -44,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
         viewModelFactory { AuthViewModel(AuthWebViewRepository(this), true) }
     }
 
+    var isAuthDataSaved: Boolean = false
     private val schoolUrl = MutableStateFlow("")
     private lateinit var userPreferences : UserPreferences
 
@@ -59,6 +60,7 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         userPreferences = UserPreferences.invoke(this)
+        isAuthDataSaved = userPreferences.authData.value.isAuthDataSaved()
 
         setContent {
             val username = remember {
@@ -71,8 +73,7 @@ class LoginActivity : AppCompatActivity() {
             schoolUrl.value = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
 
             if(authViewModel.auth.value?.isLoggedIn == true){
-                userPreferences.setPreference(PreferenceKeys.Boleta, username.value)
-                userPreferences.setPreference(PreferenceKeys.Password, password.value)
+                userPreferences.setAuthData(username.value, password.value)
 
                 startActivity(Intent(this@LoginActivity, SAESActivity::class.java))
                 finish()
@@ -83,7 +84,7 @@ class LoginActivity : AppCompatActivity() {
 
             SAESParaAlumnosTheme {
                 Scaffold {
-                    if(username.value.isNotBlank() && password.value.isNotBlank() && userPreferences.isAuthDataSaved()){
+                    if(username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved){
                         LoginOnlyCaptcha(
                             authViewModel,
                             username,
@@ -267,7 +268,7 @@ fun Login(
                         .fillMaxWidth(),
                     isHighEmphasis = true,
                     text = "Iniciar sesión",
-                    isLoading = authViewModel.auth.value == null
+                    isLoading = authViewModel.auth.value == null || authViewModel.auth.value?.isLoggedIn == true
                 ){
                     if(listOf(usernameValidator, passwordValidator, captcha).validate()){
                         authViewModel.login(
@@ -361,7 +362,7 @@ fun LoginOnlyCaptcha(
                 .fillMaxWidth(),
             isHighEmphasis = true,
             text = "Iniciar sesión",
-            isLoading = authViewModel.auth.value == null
+            isLoading = authViewModel.auth.value == null || authViewModel.auth.value?.isLoggedIn == true
         ){
             if(captcha.validate()){
                 authViewModel.login(
@@ -385,6 +386,9 @@ fun LoginOnlyCaptcha(
         ) {
             username.value = ""
             password.value = ""
+            if(context is LoginActivity){
+                context.isAuthDataSaved = false
+            }
             userPreferences.removeAuthData()
         }
     }

@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material.Scaffold
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.ads.MobileAds
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
@@ -22,8 +26,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val userPreferences = UserPreferences.invoke(this)
+        initServices()
 
+        val userPreferences = UserPreferences.invoke(this)
         handleIntent(userPreferences)
 
         userPreferences.setPreference(PreferenceKeys.OfflineMode, false)
@@ -59,6 +64,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun initServices(){
+        Firebase.remoteConfig.apply {
+            setConfigSettingsAsync(remoteConfigSettings {
+                minimumFetchIntervalInSeconds = 3600
+            })
+        }.fetchAndActivate()
+        MobileAds.initialize(this)
     }
 
     private fun handleIntent(userPreferences: UserPreferences){

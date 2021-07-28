@@ -83,7 +83,7 @@ class AuthWebViewRepository(
             ){
                 it.result.getJSONObject("data").getBoolean("isLoggedIn")
             }
-            else -> isAuthDataSaved()
+            else -> authData.value.isAuthDataSaved()
         }
     }
 }
