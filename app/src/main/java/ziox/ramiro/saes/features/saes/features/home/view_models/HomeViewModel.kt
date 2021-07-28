@@ -3,21 +3,21 @@ package ziox.ramiro.saes.features.saes.features.home.view_models
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.twitter.sdk.android.core.models.Tweet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.data.models.HistoryItem
 import ziox.ramiro.saes.features.saes.data.repositories.HistoryRoomRepository
+import ziox.ramiro.saes.features.saes.features.home.data.models.Tweet
 import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import ziox.ramiro.saes.utils.runOnDefaultThread
 
 class HomeViewModel(
-    private val twitterRepository: TwitterRepository,
-    private val historyRoomRepository: HistoryRoomRepository
+    private val historyRoomRepository: HistoryRoomRepository,
+    private val twitterRepository: TwitterRepository
 ) : ViewModel() {
     val historyItems = mutableStateOf<List<HistoryItem>?>(null)
-    val schoolTweets = mutableStateOf<List<Tweet>?>(null)
+    val tweets = mutableStateOf<List<Tweet>?>(null)
     val error = MutableStateFlow<String?>(null)
 
     init {
@@ -39,14 +39,15 @@ class HomeViewModel(
     }
 
     fun fetchTweets() = viewModelScope.launch {
-        schoolTweets.value = null
+        tweets.value = null
 
         kotlin.runCatching {
             twitterRepository.getTimelineTweets()
         }.onSuccess {
-            schoolTweets.value = it
+            tweets.value = it
         }.onFailure {
-            error.value = "Error al obtener los Tweets"
+            it.printStackTrace()
+            error.value = "Error al obtener las noticias"
         }
     }
 }

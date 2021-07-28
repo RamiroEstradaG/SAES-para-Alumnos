@@ -21,7 +21,7 @@ class AuthViewModel(
     val auth = mutableStateOf<Auth?>(Auth.Empty)
     val error = MutableStateFlow<String?>(null)
     val isLoggedIn = mutableStateOf<Boolean?>(null)
-    val isCaptchaLoading = mutableStateOf(false)
+    private val isCaptchaLoading = mutableStateOf(false)
 
     init {
         error.dismissAfterTimeout()

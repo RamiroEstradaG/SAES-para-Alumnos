@@ -3,7 +3,6 @@ package ziox.ramiro.saes.features.about.ui.screens
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -36,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import com.google.accompanist.imageloading.rememberDrawablePainter
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -255,6 +253,9 @@ class AboutActivity : AppCompatActivity() {
                                         LicenceItem("Accompanist Library", "The Android Open Source Project", "2020", "https://github.com/google/accompanist")
                                         LicenceItem("ZXing Android Embedded", "Journey Mobile", "2012-2018", "https://github.com/journeyapps/zxing-android-embedded")
                                         LicenceItem("MPAndroidChart", "Philipp Jahoda", "2020", "https://github.com/PhilJay/MPAndroidChart")
+                                        LicenceItem("Retrofit", "Square, Inc", "2013", "https://square.github.io/retrofit/")
+                                        LicenceItem("Moshi", "Square, Inc", "2015", "https://github.com/square/moshi")
+                                        LicenceItem("Tweet UI", "ahmedrizwan", "2020", "https://github.com/ahmedrizwan/JetpackComposeTwitter")
                                         LicenceItem("Room", "The Android Open Source Project", "2018", "https://developer.android.com/jetpack/androidx/releases/room")
                                         LicenceItem("Google Play Core Library", "The Android Open Source Project", "2018", "https://developer.android.com/reference/com/google/android/play/core/release-notes")
                                         LicenceItem("Material Design Icons", "Google, Inc", "2016", "https://github.com/google/material-design-icons")

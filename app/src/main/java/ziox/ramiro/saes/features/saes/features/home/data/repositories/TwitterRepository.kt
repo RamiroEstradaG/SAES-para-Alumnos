@@ -1,73 +1,53 @@
 package ziox.ramiro.saes.features.saes.features.home.data.repositories
 
-import com.twitter.sdk.android.core.Callback
-import com.twitter.sdk.android.core.TwitterException
-import com.twitter.sdk.android.core.models.Tweet
-import com.twitter.sdk.android.tweetui.TimelineResult
-import com.twitter.sdk.android.tweetui.UserTimeline
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withTimeout
-import java.util.*
-import java.util.concurrent.TimeoutException
-import kotlin.collections.ArrayList
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Path
+import ziox.ramiro.saes.features.saes.features.home.data.models.Tweet
+import ziox.ramiro.saes.features.saes.features.home.data.models.TwitterResponse
 
 interface TwitterRepository {
     suspend fun getTimelineTweets() : List<Tweet>
 }
 
 
-class TwitterAPIRepository : TwitterRepository {
+class TwitterRetrofitRepository : TwitterRepository {
+    private interface TwitterAPI{
+        companion object{
+            fun build(): TwitterAPI = Retrofit.Builder()
+                .baseUrl("https://api.twitter.com/")
+                .client(OkHttpClient.Builder()
+                    .addInterceptor {
+                        it.proceed(it.request().newBuilder()
+                            .addHeader("Authorization", Firebase.remoteConfig.getString("twitter_token"))
+                            .build())
+                    }
+                    .build())
+                .addConverterFactory(MoshiConverterFactory.create())
+                .build().create(TwitterAPI::class.java)
+        }
+
+        @GET("/2/users/{userId}/tweets?max_results=5&user.fields=username,name,profile_image_url,verified&tweet.fields=created_at,attachments&expansions=author_id,attachments.media_keys&media.fields=preview_image_url,url&exclude=retweets,replies")
+        suspend fun getTimeline(@Path("userId") userId: String): TwitterResponse
+    }
+
     override suspend fun getTimelineTweets(): List<Tweet> {
-        val tweetList = ArrayList<Tweet>()
+        val api = TwitterAPI.build()
+        val response = ArrayList<Tweet>()
 
-        val secretariaIpn = UserTimeline.Builder()
-            .screenName("SecretariaIPN")
-            .includeRetweets(false)
-            .includeReplies(false)
-            .maxItemsPerRequest(5).build()
+        val secretariaIpn = api.getTimeline("3030986693")
+        val ipnMX = api.getTimeline("302901861")
 
-        val ipnMx = UserTimeline.Builder()
-            .screenName("IPN_MX")
-            .includeRetweets(false)
-            .includeReplies(false)
-            .maxItemsPerRequest(5).build()
+        response.addAll(Tweet.fromTwitterResponse(secretariaIpn))
+        response.addAll(Tweet.fromTwitterResponse(ipnMX))
 
-
-        tweetList.addAll(withTimeout(5000){
-            suspendCancellableCoroutine<List<Tweet>> {
-                ipnMx.next(null, object : Callback<TimelineResult<Tweet>>(){
-                    override fun success(result: com.twitter.sdk.android.core.Result<TimelineResult<Tweet>>) {
-                        it.resume(result.data.items)
-                    }
-                    override fun failure(exception: TwitterException?) {
-                        it.resumeWithException(exception ?: TimeoutException())
-
-                    }
-                })
-
-            }
-        })
-
-        tweetList.addAll(withTimeout(5000){
-            suspendCancellableCoroutine<List<Tweet>> {
-                secretariaIpn.next(null, object : Callback<TimelineResult<Tweet>>(){
-                    override fun success(result: com.twitter.sdk.android.core.Result<TimelineResult<Tweet>>) {
-                        it.resume(result.data.items)
-                    }
-                    override fun failure(exception: TwitterException?) {
-                        it.resumeWithException(exception ?: TimeoutException())
-
-                    }
-                })
-
-            }
-        })
-
-        return tweetList.sortedByDescending {
-            Date.parse(it.createdAt)
+        return response.sortedByDescending {
+            it.timestamp
         }
     }
+
 }

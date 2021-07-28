@@ -25,10 +25,10 @@ import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewR
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
-import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterAPIRepository
+import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterRetrofitRepository
 import ziox.ramiro.saes.features.saes.features.home.ui.components.RecentActivityItem
 import ziox.ramiro.saes.features.saes.features.home.ui.components.SmallGradeItem
-import ziox.ramiro.saes.features.saes.features.home.ui.components.TwitterItem
+import ziox.ramiro.saes.features.saes.features.home.ui.components.TweetItem
 import ziox.ramiro.saes.features.saes.features.home.view_models.HomeViewModel
 import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
 import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewModel
@@ -40,7 +40,6 @@ import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleView
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
-import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.updateWidgets
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -50,8 +49,8 @@ fun Home(
     homeViewModel: HomeViewModel = viewModel(
         factory = viewModelFactory {
             HomeViewModel(
-                TwitterAPIRepository(),
-                LocalAppDatabase.invoke(LocalContext.current).historyRepository()
+                LocalAppDatabase.invoke(LocalContext.current).historyRepository(),
+                TwitterRetrofitRepository()
             )
         }
     ),
@@ -68,220 +67,213 @@ fun Home(
     scheduleViewModel: ScheduleViewModel = viewModel(
         factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current)) }
     )
-) = Column(
-    modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .padding(top = 32.dp, bottom = 64.dp)
 ) {
-    homeViewModel.historyItems.value?.let {
-        if(it.isNotEmpty()){
-            HomeItem(
-                modifier = Modifier.padding(horizontal = 32.dp),
-                title = "Actividad reciente",
-                icon = Icons.Rounded.History
-            ){
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 32.dp)
-                ) {
-                    RecentActivityItem(
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(top = 32.dp, bottom = 64.dp)
+    ) {
+        homeViewModel.historyItems.value?.let {
+            if(it.isNotEmpty()){
+                HomeItem(
+                    modifier = Modifier.padding(horizontal = 32.dp),
+                    title = "Actividad reciente",
+                    icon = Icons.Rounded.History
+                ){
+                    Row(
                         modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 12.dp),
-                        historyItem = it.getOrNull(0)
-                    ){
-                        saesViewModel.changeSection(it.getOrNull(0)!!.section)
-                    }
-                    RecentActivityItem(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 4.dp),
-                        historyItem = it.getOrNull(1)
-                    ){
-                        saesViewModel.changeSection(it.getOrNull(1)!!.section)
-                    }
-                    RecentActivityItem(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(start = 12.dp),
-                        historyItem = it.getOrNull(2)
-                    ){
-                        saesViewModel.changeSection(it.getOrNull(2)!!.section)
+                            .fillMaxWidth()
+                            .padding(horizontal = 32.dp)
+                    ) {
+                        RecentActivityItem(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 12.dp),
+                            historyItem = it.getOrNull(0)
+                        ){
+                            saesViewModel.changeSection(it.getOrNull(0)!!.section)
+                        }
+                        RecentActivityItem(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(horizontal = 4.dp),
+                            historyItem = it.getOrNull(1)
+                        ){
+                            saesViewModel.changeSection(it.getOrNull(1)!!.section)
+                        }
+                        RecentActivityItem(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(start = 12.dp),
+                            historyItem = it.getOrNull(2)
+                        ){
+                            saesViewModel.changeSection(it.getOrNull(2)!!.section)
+                        }
                     }
                 }
             }
         }
-    }
 
 
-    AnimatedVisibility(visible = scheduleViewModel.scheduleList.value != null) {
-        scheduleViewModel.scheduleList.value?.let {
-            LocalContext.current.updateWidgets()
-            val currentClass = it.getCurrentClass()
+        AnimatedVisibility(visible = scheduleViewModel.scheduleList.value != null) {
+            scheduleViewModel.scheduleList.value?.let {
+                LocalContext.current.updateWidgets()
+                val currentClass = it.getCurrentClass()
 
-            if(currentClass != null){
-                HomeItem(
-                    modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
-                    title = "Clase en curso",
-                    icon = Icons.Outlined.Schedule
-                ){
-                    Card(
-                        modifier = Modifier
-                            .padding(horizontal = 32.dp)
-                            .fillMaxWidth(),
-                        backgroundColor = Color(currentClass.color.toULong())
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(16.dp),
-                            text = currentClass.className,
-                            style = MaterialTheme.typography.h5,
-                            color = Color.White
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    AnimatedVisibility(visible = scheduleViewModel.scheduleList.value != null) {
-        scheduleViewModel.scheduleList.value?.let {
-            val nextClass = it.getNextClass()
-
-            if(nextClass != null){
-                HomeItem(
-                    modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
-                    title = "Siguiente clase",
-                    icon = Icons.Rounded.Update
-                ){
-                    Card(
-                        modifier = Modifier
-                            .padding(horizontal = 32.dp)
-                            .fillMaxWidth(),
-                        backgroundColor = Color(nextClass.color.toULong())
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
+                if(currentClass != null){
+                    HomeItem(
+                        modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+                        title = "Clase en curso",
+                        icon = Icons.Outlined.Schedule
+                    ){
+                        Card(
+                            modifier = Modifier
+                                .padding(horizontal = 32.dp)
+                                .fillMaxWidth(),
+                            backgroundColor = Color(currentClass.color.toULong())
                         ) {
                             Text(
-                                modifier = Modifier.weight(1f).padding(16.dp),
-                                text = nextClass.className,
+                                modifier = Modifier.padding(16.dp),
+                                text = currentClass.className,
                                 style = MaterialTheme.typography.h5,
                                 color = Color.White
                             )
-                            Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = nextClass.hourRange.start.toString(),
-                                style = MaterialTheme.typography.subtitle2,
-                                color = Color.White
-                            )
                         }
                     }
                 }
             }
         }
-    }
 
-    AnimatedVisibility(visible = gradesViewModel.grades.value != null) {
-        gradesViewModel.grades.value?.let {
-            if(it.isNotEmpty()){
-                HomeItem(
-                    modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
-                    title = "Calificaciones",
-                    icon = Icons.Rounded.FactCheck
-                ){
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 28.dp)
-                    ) {
-                        items(it){ grade ->
-                            SmallGradeItem(
-                                modifier = Modifier.padding(horizontal = 4.dp),
-                                classGrades = grade
-                            ){
-                                saesViewModel.changeSection(MenuSection.GRADES)
+        AnimatedVisibility(visible = scheduleViewModel.scheduleList.value != null) {
+            scheduleViewModel.scheduleList.value?.let {
+                val nextClass = it.getNextClass()
+
+                if(nextClass != null){
+                    HomeItem(
+                        modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+                        title = "Siguiente clase",
+                        icon = Icons.Rounded.Update
+                    ){
+                        Card(
+                            modifier = Modifier
+                                .padding(horizontal = 32.dp)
+                                .fillMaxWidth(),
+                            backgroundColor = Color(nextClass.color.toULong())
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(16.dp),
+                                    text = nextClass.className,
+                                    style = MaterialTheme.typography.h5,
+                                    color = Color.White
+                                )
+                                Text(
+                                    modifier = Modifier.padding(16.dp),
+                                    text = nextClass.hourRange.start.toString(),
+                                    style = MaterialTheme.typography.subtitle2,
+                                    color = Color.White
+                                )
                             }
                         }
                     }
                 }
             }
         }
-    }
 
-
-    AnimatedVisibility(visible = etsViewModel.scores.value != null) {
-        etsViewModel.scores.value?.let {
-            if(it.isNotEmpty()){
-                HomeItem(
-                    modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
-                    title = "ETS",
-                    icon = Icons.Rounded.FactCheck
-                ){
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 28.dp)
-                    ) {
-                        items(it){ score ->
-                            SmallGradeItem(
-                                modifier = Modifier.padding(horizontal = 4.dp),
-                                etsScore = score
-                            ){
-                                saesViewModel.changeSection(MenuSection.GRADES)
+        AnimatedVisibility(visible = gradesViewModel.grades.value != null) {
+            gradesViewModel.grades.value?.let {
+                if(it.isNotEmpty()){
+                    HomeItem(
+                        modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+                        title = "Calificaciones",
+                        icon = Icons.Rounded.FactCheck
+                    ){
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 28.dp)
+                        ) {
+                            items(it){ grade ->
+                                SmallGradeItem(
+                                    modifier = Modifier.padding(horizontal = 4.dp),
+                                    classGrades = grade
+                                ){
+                                    saesViewModel.changeSection(MenuSection.GRADES)
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
 
 
-    AnimatedVisibility(visible = kardexViewModel.kardexData.value != null) {
-        kardexViewModel.kardexData.value?.let {
-            HomeItem(
-                modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
-                title = "Rendimiento",
-                icon = Icons.Rounded.Insights
-            ){
-                Box(
-                    modifier = Modifier.padding(horizontal = 32.dp)
-                ) {
-                    KardexChart(it)
+        AnimatedVisibility(visible = etsViewModel.scores.value != null) {
+            etsViewModel.scores.value?.let {
+                if(it.isNotEmpty()){
+                    HomeItem(
+                        modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+                        title = "ETS",
+                        icon = Icons.Rounded.FactCheck
+                    ){
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 28.dp)
+                        ) {
+                            items(it){ score ->
+                                SmallGradeItem(
+                                    modifier = Modifier.padding(horizontal = 4.dp),
+                                    etsScore = score
+                                ){
+                                    saesViewModel.changeSection(MenuSection.GRADES)
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
 
-    if(LocalContext.current.isNetworkAvailable()){
-        HomeItem(
-            modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
-            title = "Noticias",
-            icon = Icons.Rounded.Feed
-        ){
-            if(homeViewModel.schoolTweets.value != null){
-                Column {
-                    homeViewModel.schoolTweets.value?.forEach {
-                        TwitterItem(
-                            modifier = Modifier.padding(
-                                horizontal = 32.dp,
-                                vertical = 6.dp
-                            ),
-                            tweet = it
+
+        AnimatedVisibility(visible = kardexViewModel.kardexData.value != null) {
+            kardexViewModel.kardexData.value?.let {
+                HomeItem(
+                    modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+                    title = "Rendimiento",
+                    icon = Icons.Rounded.Insights
+                ){
+                    Box(
+                        modifier = Modifier.padding(horizontal = 32.dp)
+                    ) {
+                        KardexChart(it)
+                    }
+                }
+            }
+        }
+
+        AnimatedVisibility(visible = homeViewModel.tweets.value != null) {
+            homeViewModel.tweets.value?.let {
+                HomeItem(
+                    modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+                    title = "Noticias",
+                    icon = Icons.Rounded.Feed
+                ){
+                    Column(
+                        modifier = Modifier.padding(
+                            start = 32.dp,
+                            end = 32.dp,
+                            bottom = 16.dp
                         )
+                    ) {
+                        it.forEach {
+                            TweetItem(it)
+                        }
                     }
-                }
-            }else{
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 32.dp)
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
                 }
             }
         }
     }
-
     ErrorSnackbar(homeViewModel.error)
 }
 
