@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/RamiroEda/SAES-para-Alumnos">
-    <img src="https://raw.githubusercontent.com/RamiroEda/SAES-para-Alumnos/master/app/src/main/ic_launcher-playstore.png" alt="Logo" width=150 height=150>
+    <img src="https://raw.githubusercontent.com/RamiroEda/SAES-para-Alumnos/master/app/src/main/ic_launcher-playstore.png" alt="Logo" width=150 height=150 style="border-radius: 32px;">
   </a>
 
   <h1 align="center">SAES para Alumnos</h1>
@@ -41,7 +41,7 @@
 
 - [Tabla de contenidos](#tabla-de-contenidos)
 - [Inicio rápido](#inicio-rápido)
-- [Bugs y solicitudes de características nuevas](#bugs-y-solicitudes-de-características-nuevas)
+- [Reporte de bugs y solicitud de características nuevas](#reporte-de-bugs-y-solicitud-de-características-nuevas)
 - [Contribuir](#contribuir)
 - [Creadores](#creadores)
 - [Colaboradores](#colaboradores)
@@ -71,7 +71,7 @@ Además, todo HTML y CSS debe de cumplir con el [Code Guide](https://github.com/
 
 <p align="center">
     <a href="https://github.com/RamiroEda">
-        <img src="https://github.com/RamiroEda.png" style="border-radius: 9999px;" alt="Logo" width=150 height=150>
+        <img src="https://github.com/RamiroEda.png" style="border-radius: 9999px;" alt="@RamiroEda" width=150 height=150>
     </a>
     <h2 align="center">Ramiro Estrada Garcia</h2>
     <h4 align="center">Github: <a href="https://github.com/RamiroEda">@RamiroEda</a></h4>
