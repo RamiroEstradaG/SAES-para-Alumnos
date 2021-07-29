@@ -1,27 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ziox.ramiro.saes">
 
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     
-    <application android:allowBackup="true"
-                 android:label="@string/app_name"
-                 android:icon="@mipmap/ic_launcher"
-                 android:fullBackupContent="true"
-                 android:roundIcon="@mipmap/ic_launcher_round"
-                 android:supportsRtl="true"
-                 android:theme="@style/AppTheme"
-                 android:hardwareAccelerated="true">
+    <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
 
-        <activity android:name="ziox.ramiro.saes.activities.MainActivity"
-            android:theme="@style/AppTheme"
-            android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan">
-
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:hardwareAccelerated="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SAESParaAlumnos"
+        android:fullBackupContent="true"
+        android:allowBackup="true">
+        <activity
+            android:name="ziox.ramiro.saes.features.saes.ui.screens.SAESActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:label="@string/title_activity_saesactivity"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
+            android:name="ziox.ramiro.saes.ui.screens.LoginActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
+            android:name="ziox.ramiro.saes.features.about.ui.screens.AboutActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
+            android:name="ziox.ramiro.saes.features.settings.ui.screens.SettingsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
+            android:name="ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.AddClassToScheduleGeneratorActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
+            android:name="ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.ScheduleGeneratorActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
+            android:name=".ui.screens.SelectSchoolActivity"
+            android:exported="true"
+            android:label="@string/title_activity_select_school"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
+            android:name=".ui.screens.MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.SAESParaAlumnos">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <intent-filter android:label="SAES IPN">
@@ -149,14 +188,21 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
-                    android:host="148.204.250.26"/>
+                    android:host="www.saes.cecyt17.ipn.mx"/>
             </intent-filter>
             <intent-filter android:label="SAES CECyT 18" >
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
-                    android:host="148.204.250.24"/>
+                    android:host="www.saes.cecyt18.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES CECyT 19" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.cecyt19.ipn.mx"/>
             </intent-filter>
             <intent-filter android:label="SAES CET 1" >
                 <action android:name="android.intent.action.VIEW" />
@@ -289,7 +335,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
-                    android:host="148.204.250.37"/>
+                    android:host="www.saes.enba.ipn.mx"/>
             </intent-filter>
             <intent-filter android:label="SAES UPIBI" >
                 <action android:name="android.intent.action.VIEW" />
@@ -352,7 +398,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="https"
-                    android:host="148.204.250.36"/>
+                    android:host="www.saes.upiih.ipn.mx"/>
             </intent-filter>
             <intent-filter android:label="SAES UPIIZ" >
                 <action android:name="android.intent.action.VIEW" />
@@ -361,94 +407,65 @@
                 <data android:scheme="https"
                     android:host="www.saes.upiiz.ipn.mx"/>
             </intent-filter>
+            <intent-filter android:label="SAES UPIIC" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.upiic.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES UPIIP" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.upiip.ipn.mx"/>
+            </intent-filter>
+            <intent-filter android:label="SAES UPIEM" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.saes.upiem.ipn.mx"/>
+            </intent-filter>
         </activity>
-
-        <activity android:name="ziox.ramiro.saes.activities.SAESActivity"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme"/>
-
-        <activity android:name="ziox.ramiro.saes.activities.AddEventToAgendaActivity"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme"/>
-
-        <activity android:name="ziox.ramiro.saes.activities.StudentPerformanceActivity"
-            android:theme="@style/AppTheme"/>
-
-        <activity android:name="ziox.ramiro.saes.activities.ScheduleGeneratorActivity"
-            android:theme="@style/AppTheme"/>
-
-        <activity android:name="ziox.ramiro.saes.activities.AboutActivity"
-            android:theme="@style/AppTheme"/>
-
-        <activity android:name="ziox.ramiro.saes.activities.SettingsActivity"
-            android:theme="@style/AppTheme"/>
-
-        <activity android:name="ziox.ramiro.saes.activities.TeacherEvaluationActivity"
-            android:theme="@style/AppTheme"/>
-
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/admobAppId"/>
-
         <receiver
-            android:name="ziox.ramiro.saes.widgets.HorarioSmallWidget"
-            android:label="Clase actual">
+            android:name="ziox.ramiro.saes.ui.app_widgets.ScheduleSmallWidget"
+            android:label="Clase actual"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/horario_small_widget_info" />
+                android:resource="@xml/schedule_small_widget" />
         </receiver>
         <receiver
-            android:name="ziox.ramiro.saes.widgets.HorarioLargeWidget"
-            android:label="Horario semanal">
+            android:name="ziox.ramiro.saes.ui.app_widgets.ScheduleLargeWidget"
+            android:label="Horario semanal"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/horario_large_widget_info" />
+                android:resource="@xml/schedule_large_widget" />
         </receiver>
 
         <receiver
-            android:name="ziox.ramiro.saes.widgets.HorarioListWidget"
-            android:label="Horario del día">
+            android:name="ziox.ramiro.saes.ui.app_widgets.ScheduleMediumWidget"
+            android:label="Horario del día"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/horario_list_widget_info" />
+                android:resource="@xml/schedule_medium_widget" />
         </receiver>
-
-        <receiver
-            android:name="ziox.ramiro.saes.widgets.AgendaEscolarWidget"
-            android:label="Agenda escolar">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/agenda_escolar_widget_info" />
-        </receiver>
-
-        <receiver android:name=".services.AlarmReceiver"/>
-        <receiver android:name=".services.AlarmBootReceiver"
-            android:enabled="false">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name="ziox.ramiro.saes.services.AgendaEscolarWidgetRemoteViewService"
-            android:enabled="true"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <service
             android:name="ziox.ramiro.saes.services.ListWidgetRemoteViewService"
@@ -456,7 +473,8 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <service android:name=".services.MessagingService"
-            android:permission="android.permission.INTERNET">
+            android:permission="android.permission.INTERNET"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -472,5 +490,10 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="notificaciones_general" />
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/admob_key"/>
     </application>
+
 </manifest>
