@@ -50,7 +50,7 @@ fun Date.toShortString() = DateFormat
     .format(this)
 
 
-fun Date.toCalendar(): Calendar = Calendar.getInstance().apply {
+fun Date.toCalendar(): Calendar = Calendar.getInstance(TimeZone.getDefault()).apply {
     time = this@toCalendar
 }
 
@@ -63,7 +63,7 @@ fun String.toDate(format: String): Date? = try{
 
 @ExperimentalTime
 fun Date.offset(offset: Duration): Date{
-    return Calendar.getInstance().apply {
+    return Calendar.getInstance(TimeZone.getDefault()).apply {
         timeInMillis = this@offset.time + offset.inWholeMilliseconds
     }.time
 }
@@ -72,7 +72,7 @@ fun String.ddMMMyyyy_toDate() : Date{
     val values = split(" ")
 
     return if(values.size == 3){
-        Calendar.getInstance().apply {
+        Calendar.getInstance(TimeZone.getDefault()).apply {
             set(Calendar.YEAR, values[2].toInt())
             set(Calendar.MONTH, MES.indexOf(values[1].uppercase()))
             set(Calendar.DAY_OF_MONTH, values[0].toInt())
@@ -87,7 +87,7 @@ fun String.MMMddyyyy_toDate() : Date{
     val values = split(" ")
 
     return if(values.size == 3){
-        Calendar.getInstance().apply {
+        Calendar.getInstance(TimeZone.getDefault()).apply {
             set(Calendar.YEAR, values[2].toInt())
             set(Calendar.MONTH, MES.indexOf(values[0].uppercase()))
             set(Calendar.DAY_OF_MONTH, values[1].toInt())

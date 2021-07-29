@@ -413,9 +413,10 @@ data class Hour(
             }else null
         }
 
+        fun now() = fromDate(Date())
         fun fromValue(value: Double) = Hour(value.toInt(), value.mod(1.0).times(60).toInt())
         fun fromDate(value: Date) = value.let {
-            val calendar = Calendar.getInstance()
+            val calendar = Calendar.getInstance(TimeZone.getDefault())
             calendar.time = value
 
             Hour(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE))
@@ -469,7 +470,7 @@ data class ShortDate(
         }
     }
 
-    fun toDate(): Date = Calendar.getInstance().apply {
+    fun toDate(): Date = Calendar.getInstance(TimeZone.getDefault()).apply {
         timeInMillis = 0L
         set(Calendar.YEAR, year)
         set(Calendar.MONTH, month)
@@ -509,14 +510,15 @@ enum class WeekDay(val dayName: String, val calendarDayIndex: Int){
     companion object {
         fun today() = byDate(Date())
 
-        fun byDate(date: Date) = byDayOfWeek(date.toCalendar().get(Calendar.DAY_OF_WEEK))
+        fun byDate(date: Date)
+            = byDayOfWeek(date.toCalendar().get(Calendar.DAY_OF_WEEK))
 
         fun byDayOfWeek(dayOfWeek : Int) = when(dayOfWeek){
-            1 -> MONDAY
-            2 -> TUESDAY
-            3 -> WEDNESDAY
-            4 -> THURSDAY
-            5 -> FRIDAY
+            Calendar.MONDAY -> MONDAY
+            Calendar.TUESDAY -> TUESDAY
+            Calendar.WEDNESDAY -> WEDNESDAY
+            Calendar.THURSDAY -> THURSDAY
+            Calendar.FRIDAY -> FRIDAY
             else -> UNKNOWN
         }
     }
