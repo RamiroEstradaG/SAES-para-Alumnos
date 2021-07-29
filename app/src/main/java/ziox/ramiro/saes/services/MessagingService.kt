@@ -1,10 +1,8 @@
 package ziox.ramiro.saes.services
 
-import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import ziox.ramiro.saes.utils.Notification
-import ziox.ramiro.saes.databases.updateToken
+import ziox.ramiro.saes.data.models.Notification
 
 
 class MessagingService : FirebaseMessagingService() {
@@ -20,10 +18,5 @@ class MessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(p0: String) {
         super.onNewToken(p0)
-        try {
-            updateToken(this, p0)
-        }catch (e : Exception){
-            Log.e(this.javaClass.canonicalName, e.toString())
-        }
     }
 }

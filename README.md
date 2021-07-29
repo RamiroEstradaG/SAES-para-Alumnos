@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/RamiroEda/SAES-para-Alumnos">
-    <img src="https://raw.githubusercontent.com/RamiroEda/SAES-para-Alumnos/master/app/src/main/ic_launcher-web.png" alt="Logo" width=150 height=150>
+    <img src="https://raw.githubusercontent.com/RamiroEda/SAES-para-Alumnos/master/app/src/main/ic_launcher-playstore.png" alt="Logo" width=150 height=150 style="border-radius: 32px;">
   </a>
 
   <h1 align="center">SAES para Alumnos</h1>
@@ -19,9 +19,6 @@
     </span>
     <a href="https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE">
       <img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="License: MIT">
-    </a>
-    <a href="https://discord.gg/Pgczrsq">
-      <img src="https://img.shields.io/discord/755225426913132586.svg?label=Discord" alt="Discord">
     </a>
     <a href="https://twitter.com/ramiroeda">
       <img src="https://img.shields.io/twitter/follow/ramiroeda.svg?style=social" alt="Follow twitter">
@@ -43,29 +40,21 @@
 ## Tabla de contenidos
 
 - [Tabla de contenidos](#tabla-de-contenidos)
-- [Social](#social)
-  - [Canal de Discord](#canal-de-discord)
 - [Inicio rápido](#inicio-rápido)
-- [Bugs y solicitudes de características nuevas](#bugs-y-solicitudes-de-características-nuevas)
+- [Reporte de bugs y solicitud de características nuevas](#reporte-de-bugs-y-solicitud-de-características-nuevas)
 - [Contribuir](#contribuir)
 - [Creadores](#creadores)
 - [Colaboradores](#colaboradores)
 - [Copyright and license](#copyright-and-license)
 
-
-## Social
-Puedes unirte al canal de Discord de la aplicación para dudas rápidas a otros desarrolladores.
-
-### [Canal de Discord](https://discord.gg/Pgczrsq)
-
 ## Inicio rápido
 
-La aplicación fue hecha en Android Studio, por lo que es el editor recomendado para el desarrollo.
+La aplicación fue hecha en Jetpack Compose por lo que recomendamos usar la siguiente [guía](https://developer.android.com/jetpack/compose/setup?hl=es-419) para configurar Android Studio.
 
 - Clona el repositorio en la carpeta de preferencia.
-- Abre el proyecto desde Android Studio.
+- Abre el proyecto desde Android Studio (version Arctic Fox y superior).
 - El proyecto basa algunas características en Firebase, así que se necesita configurar un `google-services.json` personal.
-- El proyecto contiene claves de APIs secretas de Google Admob y Google Pay en `app/src/main/res/values/secrets.xml`.
+- El proyecto contiene claves de APIs secretas de Google Admob y Google Pay en `/app/src/release/res/values/strings.xml`.
 
 
 ## Reporte de bugs y solicitud de características nuevas
@@ -82,7 +71,7 @@ Además, todo HTML y CSS debe de cumplir con el [Code Guide](https://github.com/
 
 <p align="center">
     <a href="https://github.com/RamiroEda">
-        <img src="https://github.com/RamiroEda.png" style="border-radius: 9999px;" alt="Logo" width=150 height=150>
+        <img src="https://github.com/RamiroEda.png" style="border-radius: 9999px;" alt="@RamiroEda" width=150 height=150>
     </a>
     <h2 align="center">Ramiro Estrada Garcia</h2>
     <h4 align="center">Github: <a href="https://github.com/RamiroEda">@RamiroEda</a></h4>
@@ -95,4 +84,4 @@ Sin colaboradores.
 
 ## Copyright and license
 
-Code and documentation copyright 2018-2020 the authors. Code released under the [MIT License](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE).
+Code and documentation copyright 2018-2021 the authors. Code released under the [MIT License](https://github.com/RamiroEda/SAES-para-Alumnos/blob/master/LICENSE).
