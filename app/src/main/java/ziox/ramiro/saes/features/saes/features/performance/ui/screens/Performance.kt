@@ -64,7 +64,7 @@ fun Performance(
             PerformanceViewModel(
                 PerformanceFirebaseRepository(),
                 KardexWebViewRepository(LocalContext.current),
-                UserFirebaseRepository(LocalContext.current)
+                UserFirebaseRepository()
             )
         }
     )

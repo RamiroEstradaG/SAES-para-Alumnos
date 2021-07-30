@@ -197,7 +197,7 @@ fun CalendarList(
     ErrorSnackbar(agendaListViewModel.error)
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @Composable
 fun AgendaListItem(
     agendaListViewModel: AgendaListViewModel,

@@ -1,10 +1,11 @@
 package ziox.ramiro.saes.features.saes.features.agenda.data.repositories
 
 import android.content.Context
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -41,7 +42,7 @@ class AgendaWebViewRepository(
     context: Context
 ) : AgendaRepository{
     private val webViewProvider = WebViewProvider(context, "/Academica/agenda_escolar.aspx")
-    private val firebaseRepository = AgendaFirebaseRepository(context)
+    private val firebaseRepository = AgendaFirebaseRepository()
 
     @OptIn(ExperimentalTime::class)
     override suspend fun getEvents(calendarId: String): Flow<List<AgendaItem>> {
@@ -113,11 +114,10 @@ class AgendaWebViewRepository(
 }
 
 
-class AgendaFirebaseRepository(
-    context: Context
-) : AgendaRepository{
+class AgendaFirebaseRepository : AgendaRepository{
     private val db = Firebase.firestore
-    private val userRepository = UserFirebaseRepository(context)
+    private val auth = Firebase.auth
+    private val userRepository = UserFirebaseRepository()
 
     companion object {
         const val COLLECTION_ID_CALENDARS = "calendars_v2"
@@ -183,13 +183,15 @@ class AgendaFirebaseRepository(
     }
 
     override suspend fun addCalendar(name: String) {
-        val userId = userRepository.getUserData().id
+        val currentUser = auth.currentUser
 
-        db.collection(COLLECTION_ID_CALENDARS)
+        val calendar = db.collection(COLLECTION_ID_CALENDARS)
             .add(AgendaCalendar(
                 name = name,
-                admins = listOf(userId)
+                admins = listOf(currentUser?.uid ?: "")
             )).await()
+
+        userRepository.updateUserField("calendarIds", FieldValue.arrayUnion(calendar.get().await().id))
     }
 
     override suspend fun removeCalendar(calendarId: String) {

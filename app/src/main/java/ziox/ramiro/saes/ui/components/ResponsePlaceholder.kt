@@ -1,13 +1,17 @@
 package ziox.ramiro.saes.ui.components
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.*
-import androidx.compose.animation.core.Transition
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -15,11 +19,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
 @OptIn(ExperimentalAnimationApi::class)
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun ResponsePlaceholder(
     painter: Painter,
@@ -58,8 +60,8 @@ fun ResponsePlaceholder(
             }
         }
     }
-    rememberCoroutineScope().launch {
-        delay(0)
+    LaunchedEffect(text){
+        delay(100)
         isVisible.value = true
     }
 }

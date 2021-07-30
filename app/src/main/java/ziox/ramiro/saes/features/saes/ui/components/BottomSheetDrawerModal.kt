@@ -244,7 +244,9 @@ fun ProfileHeader(
                             request = ImageRequest
                                 .Builder(LocalContext.current)
                                 .data(it.profilePicture.url)
-                                .headers(it.profilePicture.headers).build()),
+                                .headers(it.profilePicture.headers).build(),
+                            fadeIn = true
+                        ),
                         contentDescription = "Profile picture",
                         contentScale = ContentScale.Crop
                     )

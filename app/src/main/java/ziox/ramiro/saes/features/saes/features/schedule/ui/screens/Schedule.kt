@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.schedule.ui.screens
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
@@ -29,7 +28,6 @@ import ziox.ramiro.saes.utils.updateWidgets
 val hourWidth = 70.dp
 val today = WeekDay.today()
 
-@ExperimentalAnimationApi
 @Composable
 fun Schedule(
     scheduleViewModel: ScheduleViewModel = viewModel(

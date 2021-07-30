@@ -1,11 +1,9 @@
 package ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -40,10 +38,7 @@ class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
         viewModelFactory { SchoolScheduleViewModel(SchoolScheduleWebViewRepository(this)) }
     }
 
-    @OptIn(ExperimentalMaterialApi::class,
-        androidx.compose.animation.ExperimentalAnimationApi::class,
-        kotlinx.coroutines.ExperimentalCoroutinesApi::class
-    )
+    @OptIn(ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

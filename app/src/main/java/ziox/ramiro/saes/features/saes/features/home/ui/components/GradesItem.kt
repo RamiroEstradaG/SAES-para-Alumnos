@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETSScore
 import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
@@ -82,7 +81,7 @@ fun SmallGradeItem(
             maxLines = 1
         )
         Text(
-            text = etsScore.grade.toString() ?: "-",
+            text = etsScore.grade?.toString() ?: "-",
             style = MaterialTheme.typography.h4,
             textAlign = TextAlign.Center,
             color = gradeColor(etsScore.grade)

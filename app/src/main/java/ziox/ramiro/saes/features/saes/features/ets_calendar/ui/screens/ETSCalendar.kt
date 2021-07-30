@@ -37,9 +37,7 @@ import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
-@OptIn(ExperimentalMaterialApi::class, androidx.compose.animation.ExperimentalAnimationApi::class,
-    kotlinx.coroutines.ExperimentalCoroutinesApi::class
-)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ETSCalendar(
     etsCalendarViewModel: ETSCalendarViewModel = viewModel(
@@ -132,6 +130,7 @@ fun ETSCalendarDayGroup(
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
