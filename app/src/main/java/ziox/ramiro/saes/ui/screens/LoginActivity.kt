@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -82,21 +83,24 @@ class LoginActivity : AppCompatActivity() {
 
             SAESParaAlumnosTheme {
                 Scaffold {
-                    if(username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved){
-                        LoginOnlyCaptcha(
-                            authViewModel,
-                            username,
-                            password
-                        )
-                    }else{
-                        Login(
-                            authViewModel,
-                            selectSchoolLauncher,
-                            schoolUrl.collectAsState(),
-                            username,
-                            password
-                        )
+                    Crossfade(targetState = username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved) {
+                        if(it){
+                            LoginOnlyCaptcha(
+                                authViewModel,
+                                username,
+                                password
+                            )
+                        }else{
+                            Login(
+                                authViewModel,
+                                selectSchoolLauncher,
+                                schoolUrl.collectAsState(),
+                                username,
+                                password
+                            )
+                        }
                     }
+
                     ErrorSnackbar(authViewModel.error)
                 }
             }
@@ -364,7 +368,9 @@ fun Login(
                             }
                         }
                         Row(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
                         ) {
                             TextButton(

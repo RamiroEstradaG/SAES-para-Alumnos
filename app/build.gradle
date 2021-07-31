@@ -16,7 +16,7 @@ android {
         minSdk 23
         targetSdk 30
         versionCode 106
-        versionName "2.0.0-alpha01"
+        versionName "2.0.0-beta01"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
