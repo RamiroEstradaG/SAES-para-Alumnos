@@ -141,7 +141,7 @@ class AboutActivity : AppCompatActivity() {
                                 launchUrl("https://github.com/RamiroEstradaG/SAES-para-Alumnos/issues/new?labels=feature&template=feature.md&title=%5BFECHA+EN+YY-MM-DD%5D%3A+%5BTITULO+DEL+ISSUE%5D")
                             }
                             AboutItem(leading = rememberVectorPainter(image = Icons.Rounded.Policy), text = "Politica de privacidad de la aplicación") {
-                                launchUrl("https://ramiroestradag.github.io/SAES-para-Alumnos/Politica/")
+                                launchUrl("https://ramiroestradag.github.io/SAES-para-Alumnos/privacy_policy")
                             }
                             AboutItem(leading = rememberVectorPainter(image = Icons.Rounded.Policy), text = "Politica de privacidad del SAES") {
                                 showSAESPrivacyPolicy.value = true

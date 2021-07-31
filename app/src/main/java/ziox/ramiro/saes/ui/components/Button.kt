@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Event
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +23,7 @@ import ziox.ramiro.saes.ui.theme.getCurrentTheme
 fun AsyncButton(
     modifier: Modifier = Modifier,
     text: String = "button",
+    icon: ImageVector? = null,
     isHighEmphasis: Boolean = false,
     isLoading: Boolean = false,
     onClick: () -> Unit
@@ -34,13 +35,26 @@ fun AsyncButton(
                 onClick()
             }
         },
-        shape = RoundedCornerShape(100)
+        shape = RoundedCornerShape(100),
+
     ) {
         if (!isLoading){
-            Text(
-                text = text.uppercase(),
-                modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if(icon != null){
+                    Icon(
+                        modifier = Modifier.padding(end = 16.dp),
+                        imageVector = icon,
+                        contentDescription = "Button icon",
+                        tint = MaterialTheme.colors.onPrimary
+                    )
+                }
+                Text(
+                    text = text.uppercase(),
+                    modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
+                )
+            }
         }else{
             Box {
                 CircularProgressIndicator(

@@ -810,8 +810,8 @@ fun DateSelectorItem(
     Card(
         modifier = Modifier
             .clip(MaterialTheme.shapes.medium)
-            .padding(end = 8.dp)
             .size(64.dp, 80.dp)
+            .padding(end = 8.dp)
             .clickable { onSelect() },
         elevation = 0.dp,
         backgroundColor = if (isSelected) MaterialTheme.colors.primary else if(date == today) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
@@ -833,7 +833,7 @@ fun DateSelectorItem(
         }
     }
     Row(
-        modifier = Modifier.padding(top = 4.dp)
+        modifier = Modifier.padding(top = 4.dp, end = 8.dp)
     ) {
         events.take(4).forEach {
             Box(

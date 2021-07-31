@@ -4,10 +4,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import ziox.ramiro.saes.features.saes.data.models.UserData
 
@@ -42,7 +45,9 @@ class UserFirebaseRepository: UserRepository{
             .addSnapshotListener { value, _ ->
                 val userData = value?.toObject(UserData::class.java)
                 if(userData != null){
-                    trySend(userData)
+                    CoroutineScope(Dispatchers.Default).launch {
+                        send(userData)
+                    }
                 }
             }
 
@@ -52,6 +57,10 @@ class UserFirebaseRepository: UserRepository{
     suspend fun isUserRegistered(userId: String) : Boolean {
         return functions.getHttpsCallable("isUserRegistered").call(userId).await().data as? Boolean ?: false
     }
+
+    suspend fun deleteUser() = functions.getHttpsCallable("removeUser").call().await().data as? Boolean ?: false
+
+    fun signOut() = Firebase.auth.signOut()
 
     suspend fun userExist(userId: String)
         = db.collection(COLLECTION_ID_USERS)

@@ -44,6 +44,8 @@ import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.features.settings.ui.screens.SettingsActivity
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
+import ziox.ramiro.saes.utils.PreferenceKeys
+import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.launchUrl
 import ziox.ramiro.saes.view_models.AuthViewModel
@@ -82,7 +84,9 @@ class BottomSheetDrawerModal: BottomSheetDialogFragment() {
                                         SectionMenuItem(section = MenuSection.KARDEX)
                                         SectionMenuItem(section = MenuSection.PERFORMANCE)
                                         SectionMenuItem(section = MenuSection.RE_REGISTRATION_APPOINTMENT)
-                                        SectionMenuItem(section = MenuSection.AGENDA)
+                                        if(UserPreferences.invoke(requireContext()).getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
+                                            SectionMenuItem(section = MenuSection.AGENDA)
+                                        }
                                         MenuHeader(name = "Académico")
                                         SectionMenuItem(section = MenuSection.ETS_CALENDAR)
                                         SectionMenuItem(section = MenuSection.SCHOOL_SCHEDULE)

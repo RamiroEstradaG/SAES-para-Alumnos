@@ -1,6 +1,8 @@
 package ziox.ramiro.saes.features.saes.features.agenda.data.models
 
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.*
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayTime
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 
 data class AgendaItem(
     val eventId: String = "",
@@ -22,6 +24,19 @@ data class AgendaItem(
         "classSchedule" to classSchedule?.id,
         "eventType" to eventType.name
     )
+
+    override fun toString() = """
+        AgendaItem(
+            eventId: $eventId
+            eventName: $eventName
+            date: $date
+            calendarId: $calendarId
+            scheduleDayTime: $scheduleDayTime
+            description: $description
+            classSchedule: $classSchedule
+            eventType: $eventType
+        )
+    """.trimIndent()
 }
 
 

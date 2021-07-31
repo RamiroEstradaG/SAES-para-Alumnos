@@ -37,14 +37,11 @@ import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
 import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
 import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewModel
-import ziox.ramiro.saes.features.saes.features.performance.data.models.TriStateBoolean
 import ziox.ramiro.saes.features.saes.features.performance.data.repositories.PerformanceFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.performance.view_models.PerformanceViewModel
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.MES_COMPLETO
-import ziox.ramiro.saes.utils.PreferenceKeys
-import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.toStringPrecision
 import kotlin.math.absoluteValue
 import kotlin.math.max
@@ -64,14 +61,13 @@ fun Performance(
             PerformanceViewModel(
                 PerformanceFirebaseRepository(),
                 KardexWebViewRepository(LocalContext.current),
-                UserFirebaseRepository()
+                UserFirebaseRepository(),
+                LocalContext.current
             )
         }
     )
 ) = Crossfade(targetState = kardexViewModel.kardexData.value) {
     if(it != null){
-        performanceViewModel.checkPerformancePermissions(LocalContext.current)
-
         Box(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
@@ -83,10 +79,6 @@ fun Performance(
                     bottom = 64.dp
                 )
             ) {
-                AnimatedVisibility(visible = performanceViewModel.permissionToSaveData.value == TriStateBoolean.UNSET) {
-                    PermissionCard(performanceViewModel)
-                }
-
                 if (it.kardexPeriods.size >= 2){
                     OtherStatisticsCard(
                         title = "Mejor semestre hasta el momento",
@@ -316,51 +308,6 @@ fun ComparePerformanceCard(
                 style = MaterialTheme.typography.caption,
                 color = valuePivotZeroColor(difference)
             )
-        }
-    }
-}
-
-@Composable
-fun PermissionCard(
-    performanceViewModel: PerformanceViewModel
-) = Card(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 16.dp),
-    elevation = 0.dp
-) {
-    val context = LocalContext.current
-    Column(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text(
-            text = "Estadísticas avanzadas"
-        )
-        Text(
-            modifier = Modifier.padding(top = 8.dp),
-            text = "Esto permite hacer comparaciones por carrera, unidad y el IPN. Los resultados dependen de la cantidad de usuarios que deciden compartir sus estadísticas.\n\nLos datos que se almacenarán son:\n• Número de boleta.\n• Unidad académica.\n• Nombre de la carrera.\n• Promedio global.\n• Kárdex.",
-            style = MaterialTheme.typography.body2
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            ziox.ramiro.saes.ui.components.TextButton(
-                text = "RECHAZAR",
-                textColor = getCurrentTheme().danger
-            ){
-                UserPreferences.invoke(context).setPreference(PreferenceKeys.PerformanceSaveDataPermission, false)
-                performanceViewModel.checkPerformancePermissions(context)
-            }
-            ziox.ramiro.saes.ui.components.TextButton(
-                text = "Aceptar",
-                textColor = getCurrentTheme().info
-            ){
-                UserPreferences.invoke(context).setPreference(PreferenceKeys.PerformanceSaveDataPermission, true)
-                performanceViewModel.checkPerformancePermissions(context)
-            }
         }
     }
 }

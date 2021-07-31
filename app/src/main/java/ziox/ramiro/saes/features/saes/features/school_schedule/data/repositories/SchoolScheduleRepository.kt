@@ -13,6 +13,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayT
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.scheduleColors
 import ziox.ramiro.saes.utils.toProperCase
+import java.util.*
 
 interface SchoolScheduleRepository: FilterRepository {
     suspend fun getSchoolSchedule(): List<ClassSchedule>
@@ -46,7 +47,7 @@ class SchoolScheduleWebViewRepository(
                             scheduledClass.push(...[...tr.children].map((td, e) => ({
                                 id: trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(),
                                 classId: trIndex.toString(),
-                                dayIndex: (e - cols.mondayIndex) % 5 + 1,               
+                                dayIndex: (e - cols.mondayIndex) % 5 + ${Calendar.MONDAY},               
                                 className: tr.children[cols.subjectIndex].innerText,               
                                 hours: td.innerText,               
                                 group: tr.children[cols.groupIndex].innerText,               

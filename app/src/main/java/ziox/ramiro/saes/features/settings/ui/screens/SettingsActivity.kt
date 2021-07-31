@@ -1,7 +1,10 @@
 package ziox.ramiro.saes.features.settings.ui.screens
 
+import android.Manifest
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.*
@@ -9,6 +12,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CloudDownload
+import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.ModeNight
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.runtime.Composable
@@ -18,15 +23,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.SelectableOptions
+import ziox.ramiro.saes.features.settings.view_models.PersonalSavedDataViewModel
+import ziox.ramiro.saes.ui.components.AsyncButton
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
+import ziox.ramiro.saes.ui.components.InfoSnackbar
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
-import ziox.ramiro.saes.utils.toStringPrecision
 import ziox.ramiro.saes.utils.updateWidgets
 
 class SettingsActivity : AppCompatActivity(){
+    private val personalSavedDataViewModel: PersonalSavedDataViewModel by viewModels{
+        viewModelFactory { PersonalSavedDataViewModel(this) }
+    }
+
+    private val permissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+        if (it){
+            personalSavedDataViewModel.downloadMyPersonalData()
+        }else{
+            personalSavedDataViewModel.error.value = "No hay permisos para guardar el archivo"
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -81,8 +102,29 @@ class SettingsActivity : AppCompatActivity(){
                                 )
                             }
                         }
+                        if(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
+                            SettingsSection("Datos almacenados en la nube") {
+                                AsyncButton(
+                                    text = "Descargar mis datos",
+                                    icon = Icons.Rounded.CloudDownload,
+                                    isLoading = personalSavedDataViewModel.isDownloading.value
+                                ) {
+                                    permissionsLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                }
+                                AsyncButton(
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    text = "Eliminar mis datos",
+                                    icon = Icons.Rounded.CloudOff,
+                                    isLoading = personalSavedDataViewModel.isDeleting.value
+                                ) {
+                                    personalSavedDataViewModel.deleteMyPersonalData()
+                                }
+                            }
+                        }
                     }
                 }
+                InfoSnackbar(personalSavedDataViewModel.info)
+                ErrorSnackbar(personalSavedDataViewModel.error)
             }
         }
     }
@@ -104,7 +146,8 @@ fun SettingsSection(
         elevation = 0.dp
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             content()
         }
@@ -125,7 +168,8 @@ fun SettingsItem(
         Icon(
             modifier = Modifier.padding(end = 8.dp),
             imageVector = icon,
-            contentDescription = "Settings icon"
+            contentDescription = "Settings icon",
+            tint = MaterialTheme.colors.primary
         )
         Text(
             text = title,

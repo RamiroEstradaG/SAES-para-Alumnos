@@ -14,6 +14,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.scheduleColo
 import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
+import java.util.*
 
 interface ScheduleRepository {
     suspend fun getMySchedule() : List<ClassSchedule>
@@ -50,7 +51,7 @@ class ScheduleWebViewRepository(
                             scheduledClass.push(...[...tr.children].map((td, e) => ({
                                 id: trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(),
                                 classId: trIndex.toString(),
-                                dayIndex: (e - cols.mondayIndex) % 5 + 1,               
+                                dayIndex: (e - cols.mondayIndex) % 5 + ${Calendar.MONDAY},               
                                 className: tr.children[cols.subjectIndex].innerText,               
                                 hours: td.innerText,               
                                 group: tr.children[cols.groupIndex].innerText,               

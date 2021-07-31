@@ -12,4 +12,12 @@ data class KardexPeriod(
 
             return scores.sum().div(scores.size.toDouble())
         }
+
+    override fun toString() = """
+KardexPeriod(
+    periodName: $periodName
+    kardexClasses:
+${kardexClasses.joinToString("\n") { it.toString().prependIndent() }}
+)
+    """.trimIndent()
 }

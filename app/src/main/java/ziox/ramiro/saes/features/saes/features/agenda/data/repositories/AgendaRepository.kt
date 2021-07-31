@@ -171,27 +171,27 @@ class AgendaFirebaseRepository : AgendaRepository{
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getCalendars() = userRepository.getUserDataFlow().map {
-        if(it.calendarIds.isNotEmpty()){
+        it.calendarIds.mapNotNull { id ->
             db.collection(COLLECTION_ID_CALENDARS)
-                .whereIn("calendarId", it.calendarIds)
+                .document(id)
                 .get()
                 .await()
-                .toObjects(AgendaCalendar::class.java)
-        }else{
-            listOf()
+                .toObject(AgendaCalendar::class.java)
         }
     }
 
     override suspend fun addCalendar(name: String) {
         val currentUser = auth.currentUser
 
-        val calendar = db.collection(COLLECTION_ID_CALENDARS)
+        val calendarId = db.collection(COLLECTION_ID_CALENDARS)
             .add(AgendaCalendar(
                 name = name,
                 admins = listOf(currentUser?.uid ?: "")
-            )).await()
+            )).await().id
 
-        userRepository.updateUserField("calendarIds", FieldValue.arrayUnion(calendar.get().await().id))
+        db.collection(UserFirebaseRepository.COLLECTION_ID_USERS)
+            .document(currentUser?.uid ?: "")
+            .update("calendarIds", FieldValue.arrayUnion(calendarId)).await()
     }
 
     override suspend fun removeCalendar(calendarId: String) {

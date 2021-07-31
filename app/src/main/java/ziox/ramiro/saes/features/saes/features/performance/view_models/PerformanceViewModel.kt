@@ -12,7 +12,6 @@ import ziox.ramiro.saes.features.saes.data.repositories.UserRepository
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
 import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRepository
 import ziox.ramiro.saes.features.saes.features.performance.data.models.PerformanceData
-import ziox.ramiro.saes.features.saes.features.performance.data.models.TriStateBoolean
 import ziox.ramiro.saes.features.saes.features.performance.data.repositories.PerformanceRepository
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
@@ -21,43 +20,38 @@ import ziox.ramiro.saes.utils.dismissAfterTimeout
 class PerformanceViewModel(
     private val performanceRepository: PerformanceRepository,
     private val kardexRepository: KardexRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    context: Context
 ): ViewModel() {
     val schoolPerformance = mutableStateOf<PerformanceData?>(null)
     val generalPerformance = mutableStateOf<PerformanceData?>(null)
     val careerPerformance = mutableStateOf<PerformanceData?>(null)
-    val permissionToSaveData = mutableStateOf<TriStateBoolean?>(null)
     val error = MutableStateFlow<String?>(null)
+    val userPreferences = UserPreferences.invoke(context)
 
     init {
         error.dismissAfterTimeout()
+        if(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
+            uploadUserData()
+        }
     }
 
-    fun checkPerformancePermissions(
-        context: Context
-    ) = viewModelScope.launch {
-        val userPreferences = UserPreferences.invoke(context)
-        val permission = userPreferences.getPreference(PreferenceKeys.PerformanceSaveDataPermission, null)
+    fun uploadUserData() = viewModelScope.launch {
+        val schoolName = School
+            .findSchoolByUrl(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: "")
+            ?.schoolName ?: "Unknown"
 
-        permissionToSaveData.value = TriStateBoolean.fromBoolean(permission)
+        kotlin.runCatching {
+            kardexRepository.getMyKardexData()
+        }.onSuccess {
+            if(schoolPerformance.value == null
+                && careerPerformance.value == null
+                && generalPerformance.value == null){
 
-        if(permission == true){
-            val schoolName = School
-                .findSchoolByUrl(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: "")
-                ?.schoolName ?: "Unknown"
-
-            kotlin.runCatching {
-                kardexRepository.getMyKardexData()
-            }.onSuccess {
-                if(schoolPerformance.value == null
-                    && careerPerformance.value == null
-                    && generalPerformance.value == null){
-
-                    updateMyPerformance(it, schoolName)
-                    fetchCareerPerformance(it.careerName)
-                    fetchGeneralPerformance()
-                    fetchSchoolPerformance(schoolName)
-                }
+                updateMyPerformance(it, schoolName)
+                fetchCareerPerformance(it.careerName)
+                fetchGeneralPerformance()
+                fetchSchoolPerformance(schoolName)
             }
         }
     }

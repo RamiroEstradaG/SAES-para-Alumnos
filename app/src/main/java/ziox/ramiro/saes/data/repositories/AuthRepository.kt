@@ -75,7 +75,9 @@ class AuthWebViewRepository(
                 data.getString("errorMessage")
             )
         }.also {
-            tryRegisterUser(it, username, password)
+            if(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
+                tryRegisterUser(it, username, password)
+            }
         }
     }
 
