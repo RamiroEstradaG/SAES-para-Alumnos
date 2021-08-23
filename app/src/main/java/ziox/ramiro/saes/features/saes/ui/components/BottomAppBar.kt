@@ -6,21 +6,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
+import ziox.ramiro.saes.ui.theme.secondaryColor
 
 @Composable
 fun BottomAppBar(
@@ -28,7 +26,7 @@ fun BottomAppBar(
     etsViewModel : ETSViewModel,
     onMenuIconClick: () -> Unit = {}
 ){
-    val selectedItemMenu = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
+
 
     androidx.compose.material.BottomAppBar(
         backgroundColor = getCurrentTheme().toolbar
@@ -45,71 +43,37 @@ fun BottomAppBar(
                     tint = getCurrentTheme().onToolbar
                 )
             }
-            IconButton(onClick = {
-                saesViewModel.changeSection(MenuSection.HOME)
-            }) {
-                Icon(
-                    modifier = Modifier.size(if (selectedItemMenu.value == MenuSection.HOME) 32.dp else 24.dp),
-                    imageVector = Icons.Rounded.Home,
-                    contentDescription = "Home",
-                    tint = if (selectedItemMenu.value == MenuSection.HOME) {
-                        MaterialTheme.colors.secondary
-                    } else getCurrentTheme().onToolbar
-                )
-            }
-            IconButton(onClick = {
-                saesViewModel.changeSection(MenuSection.SCHEDULE)
-            }) {
-                Icon(
-                    modifier = Modifier.size(if (selectedItemMenu.value == MenuSection.SCHEDULE) 32.dp else 24.dp),
-                    imageVector = Icons.Rounded.Schedule,
-                    contentDescription = "Schedule",
-                    tint = if (selectedItemMenu.value == MenuSection.SCHEDULE) {
-                        MaterialTheme.colors.secondary
-                    } else getCurrentTheme().onToolbar
-                )
-            }
+            AppBarIconButton(section = MenuSection.HOME)
+            AppBarIconButton(section = MenuSection.SCHEDULE)
 
             if(!etsViewModel.availableETS.value.isNullOrEmpty() || !etsViewModel.scores.value.isNullOrEmpty()){
-                IconButton(onClick = {
-                    saesViewModel.changeSection(MenuSection.ETS)
-                }) {
-                    Text(
-                        text = "ETS",
-                        color = if (selectedItemMenu.value == MenuSection.ETS) {
-                            MaterialTheme.colors.secondary
-                        } else getCurrentTheme().onToolbar,
-                        style = MaterialTheme.typography.h5,
-                        fontSize = if (selectedItemMenu.value == MenuSection.ETS) 18.sp else 14.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                AppBarIconButton(section = MenuSection.ETS)
             }else{
-                IconButton(onClick = {
-                    saesViewModel.changeSection(MenuSection.GRADES)
-                }) {
-                    Icon(
-                        modifier = Modifier.size(if (selectedItemMenu.value == MenuSection.GRADES) 32.dp else 24.dp),
-                        imageVector = Icons.Rounded.FactCheck,
-                        contentDescription = "Grades",
-                        tint = if (selectedItemMenu.value == MenuSection.GRADES) {
-                            MaterialTheme.colors.secondary
-                        } else getCurrentTheme().onToolbar
-                    )
-                }
+                AppBarIconButton(section = MenuSection.GRADES)
             }
-            IconButton(onClick = {
-                saesViewModel.changeSection(MenuSection.PROFILE)
-            }) {
-                Icon(
-                    modifier = Modifier.size(if (selectedItemMenu.value == MenuSection.PROFILE) 32.dp else 24.dp),
-                    imageVector = Icons.Rounded.Person,
-                    contentDescription = "Profile",
-                    tint = if (selectedItemMenu.value == MenuSection.PROFILE) {
-                        MaterialTheme.colors.secondary
-                    } else getCurrentTheme().onToolbar
-                )
-            }
+
+            AppBarIconButton(section = MenuSection.PROFILE)
         }
+    }
+}
+
+@Composable
+fun AppBarIconButton(
+    saesViewModel: SAESViewModel = viewModel(),
+    section: MenuSection
+){
+    val selectedItemMenu = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
+
+    IconButton(onClick = {
+        saesViewModel.changeSection(section)
+    }) {
+        Icon(
+            modifier = Modifier.size(if (selectedItemMenu.value == section) 32.dp else 24.dp),
+            imageVector = section.icon,
+            contentDescription = section.sectionName,
+            tint = if (selectedItemMenu.value == section) {
+                secondaryColor.s100
+            } else getCurrentTheme().onToolbar
+        )
     }
 }

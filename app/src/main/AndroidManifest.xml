@@ -35,6 +35,10 @@
             android:exported="true"
             android:theme="@style/Theme.SAESParaAlumnos" />
         <activity
+            android:name="ziox.ramiro.saes.features.saes.features.schedule.features.edit_class.ui.screens.EditClassActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SAESParaAlumnos" />
+        <activity
             android:name="ziox.ramiro.saes.features.settings.ui.screens.SettingsActivity"
             android:exported="true"
             android:theme="@style/Theme.SAESParaAlumnos" />

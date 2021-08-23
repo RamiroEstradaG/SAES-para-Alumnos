@@ -26,7 +26,7 @@ class HomeViewModel(
         error.dismissAfterTimeout()
     }
 
-    fun fetchUserHistory() = viewModelScope.launch {
+    private fun fetchUserHistory() = viewModelScope.launch {
         historyItems.value = null
 
         kotlin.runCatching {
@@ -38,7 +38,7 @@ class HomeViewModel(
         }
     }
 
-    fun fetchTweets() = viewModelScope.launch {
+    private fun fetchTweets() = viewModelScope.launch {
         tweets.value = null
 
         kotlin.runCatching {

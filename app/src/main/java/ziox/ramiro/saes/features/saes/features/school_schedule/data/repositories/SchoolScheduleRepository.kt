@@ -46,14 +46,14 @@ class SchoolScheduleWebViewRepository(
                         children.filter(tr => tr.innerText.trim().length > 0).forEach((tr, trIndex) => {
                             scheduledClass.push(...[...tr.children].map((td, e) => ({
                                 id: trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(),
-                                classId: trIndex.toString(),
+                                classId: trIndex.toString() + tr.children[cols.subjectIndex].innerText.trim() + tr.children[cols.groupIndex].innerText.trim(),
                                 dayIndex: (e - cols.mondayIndex) % 5 + ${Calendar.MONDAY},               
-                                className: tr.children[cols.subjectIndex].innerText,               
-                                hours: td.innerText,               
-                                group: tr.children[cols.groupIndex].innerText,               
-                                teacherName: tr.children[cols.teacherIndex].innerText,               
-                                building: tr.children[cols.buildingIndex].innerText,               
-                                classroom: tr.children[cols.classroomIndex].innerText
+                                className: tr.children[cols.subjectIndex].innerText.trim(),               
+                                hours: td.innerText.trim(),               
+                                group: tr.children[cols.groupIndex].innerText.trim(),               
+                                teacherName: tr.children[cols.teacherIndex].innerText.trim(),               
+                                building: tr.children[cols.buildingIndex].innerText.trim(),               
+                                classroom: tr.children[cols.classroomIndex].innerText.trim()
                             })));
                         });
                     }

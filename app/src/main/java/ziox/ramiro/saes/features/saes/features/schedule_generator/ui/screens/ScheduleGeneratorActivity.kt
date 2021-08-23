@@ -27,10 +27,11 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassScheduleCollection
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.GeneratorClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleHeader
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleWeekContainer
-import ziox.ramiro.saes.features.saes.features.schedule_generator.models.reposotories.AddClassToScheduleGeneratorContract
+import ziox.ramiro.saes.features.saes.features.schedule_generator.data.models.AddClassToScheduleGeneratorContract
 import ziox.ramiro.saes.features.saes.features.schedule_generator.view_models.ScheduleGeneratorViewModel
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
@@ -43,7 +44,9 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
         viewModelFactory { ScheduleGeneratorViewModel(LocalAppDatabase.invoke(this).scheduleGeneratorRepository()) }
     }
 
-    private val addClassToScheduleGeneratorLauncher = registerForActivityResult(AddClassToScheduleGeneratorContract()){
+    private val addClassToScheduleGeneratorLauncher = registerForActivityResult(
+        AddClassToScheduleGeneratorContract()
+    ){
         if(it == null) return@registerForActivityResult
 
         scheduleGeneratorViewModel.addClassToGenerator(ClassScheduleCollection.toGeneratorClassScheduleList(it))
@@ -101,6 +104,7 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
                         if(scheduleGeneratorViewModel.scheduleItems.value != null){
                             scheduleGeneratorViewModel.scheduleItems.value?.let {
                                 if(it.isNotEmpty()){
+                                    val colors = arrayListOf<GeneratorClassSchedule>()
                                     val classSchedules = it.map {schedule -> ClassSchedule.fromGeneratorClassSchedule(schedule) }
                                     val classCollections = ClassScheduleCollection.fromClassScheduleList(classSchedules)
                                     LazyColumn(

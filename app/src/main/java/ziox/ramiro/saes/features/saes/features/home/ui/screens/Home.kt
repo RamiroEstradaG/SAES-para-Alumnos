@@ -67,7 +67,7 @@ fun Home(
         factory = viewModelFactory { ETSViewModel(ETSWebViewRepository(LocalContext.current)) }
     ),
     scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current),LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()) }
     )
 ) {
     Column(
@@ -117,69 +117,65 @@ fun Home(
         }
 
 
-        AnimatedVisibility(visible = scheduleViewModel.scheduleList.value != null) {
-            scheduleViewModel.scheduleList.value?.let {
-                LocalContext.current.updateWidgets()
-                val currentClass = it.getCurrentClass()
+        AnimatedVisibility(visible = scheduleViewModel.scheduleList.isNotEmpty()) {
+            LocalContext.current.updateWidgets()
+            val currentClass = scheduleViewModel.scheduleList.getCurrentClass()
 
-                if(currentClass != null){
-                    HomeItem(
-                        modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
-                        title = "Clase en curso",
-                        icon = Icons.Outlined.Schedule
-                    ){
-                        Card(
-                            modifier = Modifier
-                                .padding(horizontal = 32.dp)
-                                .fillMaxWidth(),
-                            backgroundColor = Color(currentClass.color.toULong())
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = currentClass.className,
-                                style = MaterialTheme.typography.h5,
-                                color = Color.White
-                            )
-                        }
+            if(currentClass != null){
+                HomeItem(
+                    modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+                    title = "Clase en curso",
+                    icon = Icons.Outlined.Schedule
+                ){
+                    Card(
+                        modifier = Modifier
+                            .padding(horizontal = 32.dp)
+                            .fillMaxWidth(),
+                        backgroundColor = Color(currentClass.color.toULong())
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(16.dp),
+                            text = currentClass.className,
+                            style = MaterialTheme.typography.h5,
+                            color = Color.White
+                        )
                     }
                 }
             }
         }
 
-        AnimatedVisibility(visible = scheduleViewModel.scheduleList.value != null) {
-            scheduleViewModel.scheduleList.value?.let {
-                val nextClass = it.getNextClass()
+        AnimatedVisibility(visible = scheduleViewModel.scheduleList.isNotEmpty()) {
+            val nextClass = scheduleViewModel.scheduleList.getNextClass()
 
-                if(nextClass != null){
-                    HomeItem(
-                        modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
-                        title = "Siguiente clase",
-                        icon = Icons.Rounded.Update
-                    ){
-                        Card(
-                            modifier = Modifier
-                                .padding(horizontal = 32.dp)
-                                .fillMaxWidth(),
-                            backgroundColor = Color(nextClass.color.toULong())
+            if(nextClass != null){
+                HomeItem(
+                    modifier = Modifier.padding(top = 32.dp, start = 32.dp, end = 32.dp),
+                    title = "Siguiente clase",
+                    icon = Icons.Rounded.Update
+                ){
+                    Card(
+                        modifier = Modifier
+                            .padding(horizontal = 32.dp)
+                            .fillMaxWidth(),
+                        backgroundColor = Color(nextClass.color.toULong())
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .padding(16.dp),
-                                    text = nextClass.className,
-                                    style = MaterialTheme.typography.h5,
-                                    color = Color.White
-                                )
-                                Text(
-                                    modifier = Modifier.padding(16.dp),
-                                    text = nextClass.scheduleDayTime.start.toString(),
-                                    style = MaterialTheme.typography.subtitle2,
-                                    color = Color.White
-                                )
-                            }
+                            Text(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(16.dp),
+                                text = nextClass.className,
+                                style = MaterialTheme.typography.h5,
+                                color = Color.White
+                            )
+                            Text(
+                                modifier = Modifier.padding(16.dp),
+                                text = nextClass.scheduleDayTime.start.toString(),
+                                style = MaterialTheme.typography.subtitle2,
+                                color = Color.White
+                            )
                         }
                     }
                 }

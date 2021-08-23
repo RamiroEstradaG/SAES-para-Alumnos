@@ -55,6 +55,7 @@ class SettingsActivity : AppCompatActivity(){
 
         setContent {
             SAESParaAlumnosTheme {
+                val nightModeOptions = listOf(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -69,20 +70,25 @@ class SettingsActivity : AppCompatActivity(){
                         )
                         SettingsSection("Sistema") {
                             SettingsItem(icon = Icons.Rounded.ModeNight, title = "Modo oscuro") {
+                                val index = nightModeOptions.indexOf(AppCompatDelegate.getDefaultNightMode())
                                 SelectableOptions(
-                                    options = listOf("Predeterminado del sistema", "Modo claro", "Modo oscuro"),
-                                    initialSelection = when(AppCompatDelegate.getDefaultNightMode()){
-                                        AppCompatDelegate.MODE_NIGHT_NO -> 1
-                                        AppCompatDelegate.MODE_NIGHT_YES -> 2
-                                        else -> 0
+                                    options = nightModeOptions,
+                                    initialSelection = if (index >= 0) {
+                                        index
+                                    } else {
+                                        0
+                                    },
+                                    stringAdapter = {
+                                        when(it){
+                                            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> "Predeterminado del sistema"
+                                            AppCompatDelegate.MODE_NIGHT_NO -> "Modo claro"
+                                            AppCompatDelegate.MODE_NIGHT_YES -> "Modo oscuro"
+                                            else -> ""
+                                        }
                                     }
                                 ) {
-                                    userPreferences.setPreference(PreferenceKeys.DefaultNightMode, it ?: 0)
-                                    AppCompatDelegate.setDefaultNightMode(when(it){
-                                        1 -> AppCompatDelegate.MODE_NIGHT_NO
-                                        2 -> AppCompatDelegate.MODE_NIGHT_YES
-                                        else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                                    })
+                                    userPreferences.setPreference(PreferenceKeys.DefaultNightMode, it ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                                    AppCompatDelegate.setDefaultNightMode(it ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                                 }
                             }
                         }

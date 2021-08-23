@@ -33,11 +33,10 @@ class MainActivity : AppCompatActivity() {
         handleIntent(userPreferences)
 
         userPreferences.setPreference(PreferenceKeys.OfflineMode, false)
-        AppCompatDelegate.setDefaultNightMode(when(userPreferences.getPreference(PreferenceKeys.DefaultNightMode, null)){
-            1 -> AppCompatDelegate.MODE_NIGHT_NO
-            2 -> AppCompatDelegate.MODE_NIGHT_YES
-            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        })
+
+        AppCompatDelegate.setDefaultNightMode(
+            userPreferences.getPreference(PreferenceKeys.DefaultNightMode, null) ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        )
 
         authViewModel = ViewModelProvider(
             this,

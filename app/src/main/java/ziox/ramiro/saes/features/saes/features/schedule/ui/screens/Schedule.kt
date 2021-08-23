@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
@@ -31,37 +32,38 @@ val today = WeekDay.today()
 @Composable
 fun Schedule(
     scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { ScheduleViewModel(
+            ScheduleWebViewRepository(LocalContext.current),
+            LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()
+        ) }
     )
 ) {
-    if(scheduleViewModel.scheduleList.value != null){
-        scheduleViewModel.scheduleList.value?.let {
-            LocalContext.current.updateWidgets()
-            if(it.isNotEmpty()){
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    val selectedDayOfWeek: MutableState<WeekDay?> = remember {
-                        mutableStateOf(null)
-                    }
+    if(!scheduleViewModel.isLoading.value){
+        LocalContext.current.updateWidgets()
+        if(scheduleViewModel.scheduleList.isNotEmpty()){
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                val selectedDayOfWeek: MutableState<WeekDay?> = remember {
+                    mutableStateOf(null)
+                }
 
-                    ScheduleHeader(
-                        selectedDayOfWeek = selectedDayOfWeek
-                    )
-                    ScheduleWeekContainer(
-                        classSchedules = it,
-                        selectedDayOfWeek = selectedDayOfWeek
-                    )
-                }
-            }else{
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 32.dp)) {
-                    ResponsePlaceholder(
-                        painter = painterResource(id = R.drawable.logging_off),
-                        text = "No tienes ninguna materia registrada"
-                    )
-                }
+                ScheduleHeader(
+                    selectedDayOfWeek = selectedDayOfWeek
+                )
+                ScheduleWeekContainer(
+                    classSchedules = scheduleViewModel.scheduleList,
+                    selectedDayOfWeek = selectedDayOfWeek
+                )
+            }
+        }else{
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 32.dp)) {
+                ResponsePlaceholder(
+                    painter = painterResource(id = R.drawable.logging_off),
+                    text = "No tienes ninguna materia registrada"
+                )
             }
         }
     }else{

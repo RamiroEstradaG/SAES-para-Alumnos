@@ -12,7 +12,7 @@ data class Tweet(
 ) {
     companion object{
         fun fromTwitterResponse(twitterResponse: TwitterResponse) = twitterResponse.data.map { tweet ->
-            val singleImage = twitterResponse.includes.media.find { it.media_key == tweet.attachments.media_keys.singleOrNull() }
+            val singleImage = twitterResponse.includes.media.find { it.media_key == tweet.attachments?.media_keys?.singleOrNull() }
             val image = if(singleImage?.type == "photo"){
                 singleImage.url
             }else{
