@@ -132,7 +132,7 @@ fun Performance(
                         )
                     }
                 }
-                if (gradesViewModel.grades.value != null){
+                if (gradesViewModel.grades.value != null && it.kardexPeriods.isNotEmpty()){
                     gradesViewModel.grades.value?.let { gradesValue ->
                         val grades = gradesValue.mapNotNull { classGrades -> classGrades.finalScore }
                         val gradesAverage = if(grades.isNotEmpty()){

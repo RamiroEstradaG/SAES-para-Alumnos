@@ -16,14 +16,13 @@ import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
-import java.util.*
 
 
 /**
  * Creado por Ramiro el 15/04/2019 a las 03:33 PM para SAESv2.
  */
 class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : RemoteViewsService.RemoteViewsFactory {
-    private val scheduleData = ArrayList<ClassSchedule>()
+    private val scheduleData = mutableListOf<ClassSchedule>()
 
     override fun onCreate() {
         CoroutineScope(Dispatchers.Default).launch {
@@ -33,7 +32,7 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
 
     override fun getLoadingView(): RemoteViews? = null
 
-    override fun getItemId(position: Int) = scheduleData[position].id.hashCode().toLong()
+    override fun getItemId(position: Int) = scheduleData.getOrNull(position)?.id?.hashCode()?.toLong() ?: -1
 
     override fun onDataSetChanged() {
         CoroutineScope(Dispatchers.Default).launch {
@@ -48,11 +47,11 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
     override fun hasStableIds(): Boolean = true
 
     override fun getViewAt(position: Int): RemoteViews? {
-        if (position == AdapterView.INVALID_POSITION || scheduleData.isEmpty()) return null
+        val classSchedule = scheduleData.getOrNull(position)
+
+        if (position == AdapterView.INVALID_POSITION || scheduleData.isEmpty() || classSchedule == null) return null
 
         val remoteViews = RemoteViews(context.packageName, R.layout.widget_schedule_medium_item)
-
-        val classSchedule = scheduleData[position]
 
         remoteViews.setInt(R.id.widgetHoraParent, "setBackgroundColor", Color(classSchedule.color.toULong()).toArgb())
         remoteViews.setTextViewText(R.id.course_name_text_view, classSchedule.className)

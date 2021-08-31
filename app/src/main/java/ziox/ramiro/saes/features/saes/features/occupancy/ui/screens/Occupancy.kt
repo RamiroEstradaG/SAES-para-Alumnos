@@ -104,7 +104,7 @@ fun OccupancyItem(
         .height(64.dp)
         .padding(top = 8.dp)
 ) {
-    val progress = if(classOccupancy.maximumQuota != 0){
+    val progress = if(classOccupancy.maximumQuota != 0 && classOccupancy.currentlySignedUp in 0..classOccupancy.maximumQuota){
         classOccupancy.currentlySignedUp.div(classOccupancy.maximumQuota.toDouble()).toFloat()
     }else{
         1f

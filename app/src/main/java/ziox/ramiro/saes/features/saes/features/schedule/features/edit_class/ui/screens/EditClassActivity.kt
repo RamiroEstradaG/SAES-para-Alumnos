@@ -34,7 +34,12 @@ class EditClassActivity: AppCompatActivity() {
 
         if(!intent.hasExtra(EditClassContract.EditClassInput)) finish()
 
-        val initialClass = intent.getParcelableExtra<ClassSchedule>(EditClassContract.EditClassInput)!!
+        val initialClass = intent.getParcelableExtra<ClassSchedule>(EditClassContract.EditClassInput)
+
+        if (initialClass == null){
+            finish()
+            return
+        }
 
         setContent {
             SAESParaAlumnosTheme {

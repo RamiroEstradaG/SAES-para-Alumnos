@@ -15,8 +15,8 @@ android {
         applicationId "ziox.ramiro.saes"
         minSdk 23
         targetSdk 30
-        versionCode 107
-        versionName "2.0.0"
+        versionCode 110
+        versionName "2.0.0-hotfix.2"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
