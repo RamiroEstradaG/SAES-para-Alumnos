@@ -11,23 +11,22 @@ import androidx.compose.ui.graphics.toArgb
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runBlocking
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
+import java.util.*
 
 
 /**
  * Creado por Ramiro el 15/04/2019 a las 03:33 PM para SAESv2.
  */
 class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : RemoteViewsService.RemoteViewsFactory {
-    private val scheduleData = mutableListOf<ClassSchedule>()
+    private val scheduleData = Collections.synchronizedList(mutableListOf<ClassSchedule>())
 
     override fun onCreate() {
-        CoroutineScope(Dispatchers.Default).launch {
-            fetchScheduleData()
-        }
+        fetchScheduleData()
     }
 
     override fun getLoadingView(): RemoteViews? = null
@@ -70,9 +69,11 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
 
     override fun getViewTypeCount(): Int = 1
 
-    private suspend fun fetchScheduleData() = withContext(Dispatchers.Default){
+    private fun fetchScheduleData(){
         val db = LocalAppDatabase(context).scheduleRepository()
-        val scheduleList = db.getMySchedule()
+        val scheduleList = runBlocking(Dispatchers.Default){
+            db.getMySchedule()
+        }
         val weekDay = WeekDay.today()
 
         scheduleData.clear()
