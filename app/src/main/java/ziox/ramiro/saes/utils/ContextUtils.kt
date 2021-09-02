@@ -1,34 +1,24 @@
 package ziox.ramiro.saes.utils
 
-import android.app.Activity
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
-import android.util.Log
-import com.anjlab.android.iab.v3.BillingProcessor
-import com.anjlab.android.iab.v3.TransactionDetails
-import ziox.ramiro.saes.R
+import android.net.Uri
+import ziox.ramiro.saes.ui.app_widgets.ScheduleLargeWidget
+import ziox.ramiro.saes.ui.app_widgets.ScheduleMediumWidget
+import ziox.ramiro.saes.ui.app_widgets.ScheduleSmallWidget
 
-fun Context.haveDonated() : Boolean {
-    val billingProcessor = BillingProcessor(
-        this,
-        this.resources.getString(R.string.billingKey),
-        object : BillingProcessor.IBillingHandler{
-            override fun onBillingInitialized() {}
-            override fun onPurchaseHistoryRestored() {}
-            override fun onProductPurchased(productId: String, details: TransactionDetails?) {}
-            override fun onBillingError(errorCode: Int, error: Throwable?) {}
-        }
-    )
-
-
-    return billingProcessor.listOwnedProducts().isNotEmpty()
+fun Context.launchUrl(url: String){
+    startActivity(Intent(Intent.ACTION_VIEW).apply {
+        data = Uri.parse(url)
+    })
 }
 
-
 fun Context.isNetworkAvailable() : Boolean{
-    if(getPreference(this, "offline_mode", false)){
+    if(UserPreferences.invoke(this).getPreference(PreferenceKeys.OfflineMode, false)){
         return false
     }
 
@@ -46,17 +36,26 @@ fun Context.isNetworkAvailable() : Boolean{
     return false
 }
 
-/**
- * Obtiene las propiedades de la pantalla actual del dispositivo
- * @return Un par, siendo el primero el ancho (width) y el segundo el alto (height)
- */
-@Suppress("DEPRECATION")
-fun Context.getWindowMetrics() : Pair<Int, Int> {
-    return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-        val window = (this as Activity).windowManager.currentWindowMetrics.bounds
-        Pair(window.width(), window.height())
-    }else{
-        val window = (this as Activity).windowManager.defaultDisplay
-        Pair(window.width, window.height)
-    }
+
+fun Context.updateWidgets() {
+    val widgetLarge = Intent(this, ScheduleLargeWidget::class.java)
+    widgetLarge.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+    val idsLarge = AppWidgetManager.getInstance(this)
+        .getAppWidgetIds(ComponentName(this, ScheduleLargeWidget::class.java))
+    widgetLarge.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, idsLarge)
+    sendBroadcast(widgetLarge)
+
+    val widgetList = Intent(this, ScheduleMediumWidget::class.java)
+    widgetList.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+    val idsList = AppWidgetManager.getInstance(this)
+        .getAppWidgetIds(ComponentName(this, ScheduleMediumWidget::class.java))
+    widgetList.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, idsList)
+    sendBroadcast(widgetList)
+
+    val widgetAgenda = Intent(this, ScheduleSmallWidget::class.java)
+    widgetAgenda.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+    val idsAgenda = AppWidgetManager.getInstance(this)
+        .getAppWidgetIds(ComponentName(this, ScheduleSmallWidget::class.java))
+    widgetAgenda.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, idsAgenda)
+    sendBroadcast(widgetAgenda)
 }

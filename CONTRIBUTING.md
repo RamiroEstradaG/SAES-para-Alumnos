@@ -24,5 +24,4 @@ Para más información puedes leer el [artículo oficial](https://kotlinlang.org
 ## Notas sobre el desarrollo
 
 * Kotlin tiene muchas herramientas de programación funcional, usarlas de ser posible.
-* Gran parte del código no sigue correctamente ninguna arquitectura (como MVC o MVVM) y no se usa correctamente el paradigma orientado a objetos. Si ves una manera de mejorar el código "sin estropear la funcionalidad" puedes modificarlo.
 * Poco a poco se irán incluyendo pruebas unitarias al proyecto. Si escribes nuevas funcionalidades, haz las correspondientes pruebas unitarias.

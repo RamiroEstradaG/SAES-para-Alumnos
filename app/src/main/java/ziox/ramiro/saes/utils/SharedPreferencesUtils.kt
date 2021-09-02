@@ -1,66 +1,91 @@
 package ziox.ramiro.saes.utils
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
+import kotlinx.coroutines.flow.MutableStateFlow
 
-fun <T>setPreference(context: Context?, key : String, value : T){
-    val pref = context?.getSharedPreferences("preferences", Context.MODE_PRIVATE)?.edit()
-    when(value){
-        is Int -> pref?.putInt(key, value)
-        is Long -> pref?.putLong(key, value)
-        is Float -> pref?.putFloat(key, value)
-        is String -> pref?.putString(key, value)
-        is Boolean -> pref?.putBoolean(key, value)
+class UserPreferences private constructor(context: Context){
+    companion object {
+        @Volatile private var instance: UserPreferences? = null
+        private val LOCK = Any()
+
+        operator fun invoke(context: Context) = instance ?: synchronized(LOCK){
+            instance ?: UserPreferences(context).also { instance = it }
+        }
     }
-    pref?.apply()
-}
 
-fun getPreference(context: Context?, type: ValType, key : String) : Any?{
-    val pref = context?.getSharedPreferences("preferences", Context.MODE_PRIVATE)
-    return when(type){
-        ValType.INT -> pref?.getInt(key, 0)
-        ValType.LONG -> pref?.getLong(key, 0)
-        ValType.FLOAT -> pref?.getFloat(key, 0f)
-        ValType.STRING -> pref?.getString(key, "")
-        ValType.BOOLEAN -> pref?.getBoolean(key, false)
+    val sharedPreferences : SharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE)
+
+    inline fun <reified T>setPreference(preferenceKeys : PreferenceKeys<T>, value : T){
+        sharedPreferences.edit().let {
+            when(T::class){
+                Int::class -> it.putInt(preferenceKeys.key, value as Int)
+                Long::class -> it.putLong(preferenceKeys.key, value as Long)
+                Float::class -> it.putFloat(preferenceKeys.key, value as Float)
+                String::class -> it.putString(preferenceKeys.key, value as String)
+                Boolean::class -> it.putBoolean(preferenceKeys.key, value as Boolean)
+                else -> it
+            }
+        }.commit().also {
+            Log.d("SharedPreferenceSET ${preferenceKeys::class.simpleName}", if(it) "$value" else "Not set")
+        }
+    }
+
+    inline fun <reified T>getPreference(preferenceKeys : PreferenceKeys<T>, default: T) : T{
+        return sharedPreferences.let {
+            if(sharedPreferences.contains(preferenceKeys.key)){
+                when(T::class) {
+                    Int::class -> sharedPreferences.getInt(preferenceKeys.key, 0) as T
+                    Long::class -> sharedPreferences.getLong(preferenceKeys.key, 0L) as T
+                    Float::class -> sharedPreferences.getFloat(preferenceKeys.key, 0f) as T
+                    String::class -> sharedPreferences.getString(preferenceKeys.key, "") as T
+                    Boolean::class -> sharedPreferences.getBoolean(preferenceKeys.key, false) as T
+                    else -> null
+                }
+            }else{
+                null
+            }
+        } ?: default
+    }
+
+    fun setAuthData(username: String, password: String){
+        setPreference(PreferenceKeys.Boleta, username)
+        setPreference(PreferenceKeys.Password, password)
+        authData.value = AuthData(username, password)
+    }
+
+    val authData = MutableStateFlow(AuthData(
+        getPreference(PreferenceKeys.Boleta, ""),
+        getPreference(PreferenceKeys.Password, "")
+    ))
+
+    fun removeAuthData(){
+        removePreference(PreferenceKeys.Boleta)
+        removePreference(PreferenceKeys.Password)
+        authData.value = AuthData("", "")
+    }
+
+    inline fun <reified T>removePreference(preferenceKeys: PreferenceKeys<T>){
+        sharedPreferences.edit().remove(preferenceKeys.key).apply()
     }
 }
 
-@Suppress("UNCHECKED_CAST")
-fun <T>getPreference(context: Context?, key : String, default: T) : T{
-    val pref = context?.getSharedPreferences("preferences", Context.MODE_PRIVATE)
-    return when (default) {
-        is Int -> pref?.getInt(key, default) as? T
-        is Long -> pref?.getLong(key, default) as? T
-        is Float -> pref?.getFloat(key, default) as? T
-        is String -> pref?.getString(key, default) as? T
-        is Boolean -> pref?.getBoolean(key, default) as? T
-        else -> null
-    } ?:default
+
+data class AuthData(
+    val username: String,
+    val password: String
+){
+    fun isAuthDataSaved() : Boolean = username.isNotBlank() && password.isNotBlank()
 }
 
-fun removePreference(context: Context?, key: String){
-    context?.getSharedPreferences("preferences", Context.MODE_PRIVATE)?.edit()?.remove(key)?.apply()
+sealed class PreferenceKeys<T>(val key: String) {
+    object SchoolUrl: PreferenceKeys<String?>("new_url_escuela")
+    object Boleta: PreferenceKeys<String>("boleta")
+    object Password: PreferenceKeys<String>("pass")
+    object QrUrl: PreferenceKeys<String>("qr_url")
+    object OfflineMode: PreferenceKeys<Boolean>("offline_mode")
+    object ScheduleWidgetLeveling: PreferenceKeys<Int>("widget_nivel")
+    object DefaultNightMode: PreferenceKeys<Int?>("dark_mode")
+    object IsFirebaseEnabled: PreferenceKeys<Boolean>("IsFirebaseEnabled")
 }
-
-
-fun getBoleta(context: Context?) = getPreference(context, "boleta", "")
-
-fun getUrl(context: Context?) : String = getPreference(context, ValType.STRING, "new_url_escuela") as String? ?: ""
-
-fun getSchoolName(context: Context?) = getPreference(
-    context,
-    "name_escuela",
-    "Instituto Politecnico Nacional"
-)
-
-fun getCareerName(context: Context?) = getPreference(context, "carrera", "Sin definir")
-
-/**
- * Si se pueden compartir o no datos sobre el rendimiento escolar de un alumno
- *  0: No se ha elegido una opcion
- *  1: Compartir datos
- * -1: No volver a mostrar
- */
-fun isShareStatsEnable(context: Context?) = getPreference(context,"share_stats_enable", 0)
-
-fun setShareStatsEnable(context: Context?, value : Int) = setPreference(context, "share_stats_enable", value)

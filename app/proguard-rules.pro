@@ -20,18 +20,24 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep class * extends com.bumptech.glide.module.AppGlideModule {
- <init>(...);
-}
--keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
-  **[] $VALUES;
-  public *;
-}
--keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder {
-  *** rewind();
+-keepattributes Signature
+
+-keepclassmembers class ziox.ramiro.saes.features.saes.features.agenda.data.models.** {
+    *;
 }
 
--keepclassmembers class * {
-    @android.webkit.JavascriptInterface <methods>;
+-keepclassmembers class ziox.ramiro.saes.features.saes.features.kardex.data.models.** {
+    *;
+}
+
+-keepclassmembers class ziox.ramiro.saes.features.saes.features.performance.data.models.** {
+    *;
+}
+
+-keepclassmembers class ziox.ramiro.saes.features.saes.features.schedule.data.models.** {
+    *;
+}
+
+-keepclassmembers class ziox.ramiro.saes.features.saes.data.models.** {
+    *;
 }
