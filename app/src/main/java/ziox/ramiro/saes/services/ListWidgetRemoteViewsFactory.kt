@@ -8,22 +8,19 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
-import java.util.*
 
 
 /**
  * Creado por Ramiro el 15/04/2019 a las 03:33 PM para SAESv2.
  */
 class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : RemoteViewsService.RemoteViewsFactory {
-    private val scheduleData = Collections.synchronizedList(mutableListOf<ClassSchedule>())
+    private val scheduleData = mutableListOf<ClassSchedule>()
 
     override fun onCreate() {
         fetchScheduleData()
@@ -34,13 +31,11 @@ class ListWidgetRemoteViewsFactory (val context: Context, val intent: Intent) : 
     override fun getItemId(position: Int) = scheduleData.getOrNull(position)?.id?.hashCode()?.toLong() ?: -1
 
     override fun onDataSetChanged() {
-        CoroutineScope(Dispatchers.Default).launch {
-            val idToken = Binder.clearCallingIdentity()
+        val idToken = Binder.clearCallingIdentity()
 
-            fetchScheduleData()
+        fetchScheduleData()
 
-            Binder.restoreCallingIdentity(idToken)
-        }
+        Binder.restoreCallingIdentity(idToken)
     }
 
     override fun hasStableIds(): Boolean = true

@@ -46,11 +46,13 @@ class ScheduleViewModel(
             it.id == classSchedule.id
         }
 
-        runOnDefaultThread {
-            customScheduleRoomRepository.removeClass(classSchedule.id)
-            customScheduleRoomRepository.addClass(classSchedule)
-        }
+        if(index in scheduleList.indices){
+            runOnDefaultThread {
+                customScheduleRoomRepository.removeClass(classSchedule.id)
+                customScheduleRoomRepository.addClass(classSchedule)
+            }
 
-        scheduleList[index] = classSchedule.toClassSchedule()
+            scheduleList[index] = classSchedule.toClassSchedule()
+        }
     }
 }

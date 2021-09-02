@@ -26,7 +26,8 @@ import kotlin.random.Random
 
 class WebViewProvider(
     context: Context,
-    val path: String = "/"
+    val path: String = "/",
+    val withTestFile: String? = null
 ) {
     val webView = createWebView(context).also {
         it.addJavascriptInterface(ResultJavascriptInterface(), "JSI")
@@ -160,7 +161,11 @@ class WebViewProvider(
                 }
 
                 if (reloadPage) {
-                    webView.loadUrl(url)
+                    if(withTestFile == null){
+                        webView.loadUrl(url)
+                    }else{
+                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                    }
                 } else {
                     webView.loadUrl(scriptBase)
                 }
@@ -206,7 +211,11 @@ class WebViewProvider(
                 }
 
                 if (reloadPage) {
-                    webView.loadUrl(url)
+                    if(withTestFile == null){
+                        webView.loadUrl(url)
+                    }else{
+                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                    }
                 } else {
                     Log.d("WebViewProvider", "Running script at $currentScriptIndex")
                     webView.loadUrl("${scriptTemplate(jobId)}\n${preRequests[currentScriptIndex++]}")
@@ -247,7 +256,11 @@ class WebViewProvider(
                 }
 
                 if (reloadPage) {
-                    webView.loadUrl(url)
+                    if(withTestFile == null){
+                        webView.loadUrl(url)
+                    }else{
+                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                    }
                 } else {
                     webView.loadUrl(preRequestBase)
                 }

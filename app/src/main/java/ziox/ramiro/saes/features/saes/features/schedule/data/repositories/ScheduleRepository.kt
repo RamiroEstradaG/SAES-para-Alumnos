@@ -51,7 +51,6 @@ class ScheduleWebViewRepository(
                         
                         children.filter(tr => tr.innerText.trim().length > 0).forEach((tr, trIndex) => {
                             scheduledClass.push(...[...tr.children].map((td, e) => ({
-                                id: trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(),
                                 classId: trIndex.toString() + tr.children[cols.subjectIndex].innerText.trim() + tr.children[cols.groupIndex].innerText.trim(),
                                 dayIndex: (e - cols.mondayIndex) % 5 + ${Calendar.MONDAY},               
                                 className: tr.children[cols.subjectIndex].innerText,               
@@ -91,18 +90,21 @@ class ScheduleWebViewRepository(
                             registered.getValue(classId)
                         }
 
-                        addAll(hours.map { range ->
-                            val id = classSchedule.getString("id")+range.start.toString()
+                        addAll(hours.mapIndexed { rangeIndex, range ->
+                            val group = classSchedule.getString("group")
+                            val className = classSchedule.getString("className").toProperCase()
+
+                            val id = "${classId}_${group}_${className.replace(" ", "_")}_${range.weekDay}_${range.start.toDouble()}_${rangeIndex}"
 
                             val customClass = customSchedule.find { cc -> cc.id == id }
 
-                            if (customClass?.isDeleted == true) return@map null
+                            if (customClass?.isDeleted == true) return@mapIndexed null
 
                             customClass?.toClassSchedule() ?: ClassSchedule(
                                 id,
                                 classId,
-                                classSchedule.getString("className").toProperCase(),
-                                classSchedule.getString("group"),
+                                className,
+                                group,
                                 classSchedule.getString("building"),
                                 classSchedule.getString("classroom"),
                                 classSchedule.getString("teacherName").toProperCase(),
