@@ -1,13 +1,15 @@
 package ziox.ramiro.saes.features.saes.features.profile.ui.screens
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -28,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
-import com.google.android.play.core.internal.t
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
@@ -37,7 +38,7 @@ import ziox.ramiro.saes.features.saes.features.profile.ui.components.BarcodeCode
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.QRCode
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
-import ziox.ramiro.saes.utils.*
+import ziox.ramiro.saes.utils.toLongString
 import kotlin.math.absoluteValue
 
 
@@ -254,7 +255,9 @@ fun ProfileAppBar(
                                 request = ImageRequest
                                     .Builder(LocalContext.current)
                                     .data(profileUser.profilePicture.url)
-                                    .headers(profileUser.profilePicture.headers).build()),
+                                    .headers(profileUser.profilePicture.headers).build(),
+                                fadeIn = true
+                            ),
                             contentDescription = "Profile picture",
                             contentScale = ContentScale.Crop
                         )

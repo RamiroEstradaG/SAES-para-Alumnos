@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.features.schedule_generator.models.reposotories
+package ziox.ramiro.saes.features.saes.features.schedule_generator.data.repositories
 
 import androidx.room.Dao
 import androidx.room.Insert

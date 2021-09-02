@@ -14,7 +14,7 @@ data class ResponseTweet(
     val author_id: String,
     val created_at: String,
     val text: String,
-    val attachments: ResponseAttachments
+    val attachments: ResponseAttachments?
 )
 
 @JsonClass(generateAdapter = true)

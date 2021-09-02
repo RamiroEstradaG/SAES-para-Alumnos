@@ -1,22 +1,38 @@
 package ziox.ramiro.saes.features.saes.features.schedule.ui.components
 
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
+import ziox.ramiro.saes.features.saes.features.schedule.features.edit_class.data.models.EditClassContract
+import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
 import ziox.ramiro.saes.utils.getInitials
 
 @Composable
 fun ScheduleClassView(
+    scheduleViewModel: ScheduleViewModel = viewModel(
+        factory = viewModelFactory {
+            ScheduleViewModel(
+                ScheduleWebViewRepository(LocalContext.current),
+                LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()
+            )
+        }
+    ),
     isExpanded: Boolean = false,
     startHour: Int,
     classSchedule: ClassSchedule,
@@ -30,6 +46,14 @@ fun ScheduleClassView(
     shape = MaterialTheme.shapes.small,
     elevation = 0.dp
 ) {
+    val editLauncher = rememberLauncherForActivityResult(
+        contract = EditClassContract()
+    ){
+        if (it != null){
+            scheduleViewModel.editClass(it)
+        }
+    }
+
     Crossfade(targetState = isExpanded) {
         if(it){
             Column(
@@ -37,24 +61,38 @@ fun ScheduleClassView(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Text(
-                    text = classSchedule.className,
-                    color = MaterialTheme.colors.onPrimary,
-                    style = MaterialTheme.typography.h5,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = classSchedule.className,
+                        color = Color.White,
+                        style = MaterialTheme.typography.h5,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    IconButton(
+                        modifier = Modifier.size(32.dp),
+                        onClick = {
+                            editLauncher.launch(classSchedule)
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Rounded.Edit, contentDescription = "Edit", tint = Color.White)
+                    }
+                }
                 Text(
                     modifier = Modifier.padding(top = 8.dp),
                     text = "Profesor/a",
-                    color = MaterialTheme.colors.onPrimary,
+                    color = Color.White,
                     style = MaterialTheme.typography.caption,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = classSchedule.teacherName,
-                    color = MaterialTheme.colors.onPrimary,
+                    color = Color.White,
                     style = MaterialTheme.typography.subtitle1,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -65,14 +103,14 @@ fun ScheduleClassView(
                     Column {
                         Text(
                             text = "Edificio",
-                            color = MaterialTheme.colors.onPrimary,
+                            color = Color.White,
                             style = MaterialTheme.typography.caption,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = classSchedule.building,
-                            color = MaterialTheme.colors.onPrimary,
+                            color = Color.White,
                             style = MaterialTheme.typography.subtitle1,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -83,14 +121,14 @@ fun ScheduleClassView(
                     ) {
                         Text(
                             text = "Salón",
-                            color = MaterialTheme.colors.onPrimary,
+                            color = Color.White,
                             style = MaterialTheme.typography.caption,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = classSchedule.classroom,
-                            color = MaterialTheme.colors.onPrimary,
+                            color = Color.White,
                             style = MaterialTheme.typography.subtitle1,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -108,7 +146,7 @@ fun ScheduleClassView(
             ) {
                 Text(
                     text = classSchedule.className.getInitials(),
-                    color = MaterialTheme.colors.onPrimary,
+                    color = Color.White,
                     style = MaterialTheme.typography.h5,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -117,7 +155,7 @@ fun ScheduleClassView(
                 Text(
                     modifier = Modifier.padding(top = 12.dp),
                     text = classSchedule.building,
-                    color = MaterialTheme.colors.onPrimary,
+                    color = Color.White,
                     style = MaterialTheme.typography.subtitle1,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -126,7 +164,7 @@ fun ScheduleClassView(
                 Text(
                     modifier = Modifier.padding(top = 8.dp),
                     text = classSchedule.classroom,
-                    color = MaterialTheme.colors.onPrimary,
+                    color = Color.White,
                     style = MaterialTheme.typography.subtitle1,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

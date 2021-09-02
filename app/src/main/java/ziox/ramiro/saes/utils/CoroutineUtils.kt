@@ -8,6 +8,9 @@ suspend fun <T>runOnDefaultThread(block: () -> T) : T = withContext(Dispatchers.
     block()
 }
 
+suspend fun <T>runOnIOThread(block: () -> T) : T = withContext(Dispatchers.IO){
+    block()
+}
 
 suspend fun <T>runOnMainThread(block: () -> T) : T = withContext(Dispatchers.Main){
     block()

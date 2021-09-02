@@ -13,6 +13,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayT
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.scheduleColors
 import ziox.ramiro.saes.utils.toProperCase
+import java.util.*
 
 interface SchoolScheduleRepository: FilterRepository {
     suspend fun getSchoolSchedule(): List<ClassSchedule>
@@ -45,14 +46,14 @@ class SchoolScheduleWebViewRepository(
                         children.filter(tr => tr.innerText.trim().length > 0).forEach((tr, trIndex) => {
                             scheduledClass.push(...[...tr.children].map((td, e) => ({
                                 id: trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(),
-                                classId: trIndex.toString(),
-                                dayIndex: (e - cols.mondayIndex) % 5 + 1,               
-                                className: tr.children[cols.subjectIndex].innerText,               
-                                hours: td.innerText,               
-                                group: tr.children[cols.groupIndex].innerText,               
-                                teacherName: tr.children[cols.teacherIndex].innerText,               
-                                building: tr.children[cols.buildingIndex].innerText,               
-                                classroom: tr.children[cols.classroomIndex].innerText
+                                classId: trIndex.toString() + tr.children[cols.subjectIndex].innerText.trim() + tr.children[cols.groupIndex].innerText.trim(),
+                                dayIndex: (e - cols.mondayIndex) % 5 + ${Calendar.MONDAY},               
+                                className: tr.children[cols.subjectIndex].innerText.trim(),               
+                                hours: td.innerText.trim(),               
+                                group: tr.children[cols.groupIndex].innerText.trim(),               
+                                teacherName: tr.children[cols.teacherIndex].innerText.trim(),               
+                                building: tr.children[cols.buildingIndex].innerText.trim(),               
+                                classroom: tr.children[cols.classroomIndex].innerText.trim()
                             })));
                         });
                     }

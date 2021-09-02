@@ -23,6 +23,16 @@ data class KardexData(
 
         return untilPeriod.sum().div(untilPeriod.size.toDouble())
     }
+
+    override fun toString() = """
+KardexData(
+    generalScore: $generalScore
+    careerName: $careerName
+    userId: $userId
+    kardexPeriods: 
+${kardexPeriods.joinToString("\n") { it.toString().prependIndent() }}
+)
+    """.trimIndent()
 }
 
 

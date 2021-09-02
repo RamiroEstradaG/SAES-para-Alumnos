@@ -7,13 +7,11 @@ import androidx.room.Query
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayTime
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.scheduleColors
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.*
 import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
+import java.util.*
 
 interface ScheduleRepository {
     suspend fun getMySchedule() : List<ClassSchedule>
@@ -25,8 +23,13 @@ class ScheduleWebViewRepository(
 ) : ScheduleRepository {
     private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/Horario_Alumno.aspx")
     private val persistenceRepository = LocalAppDatabase.invoke(context).scheduleRepository()
+    private val customClassSchedule = LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()
 
     override suspend fun getMySchedule(): List<ClassSchedule> {
+        val customSchedule = runOnDefaultThread {
+            customClassSchedule.getMySchedule()
+        }
+
         return if(context.isNetworkAvailable()){
             webView.scrap(
                 script = """
@@ -48,9 +51,8 @@ class ScheduleWebViewRepository(
                         
                         children.filter(tr => tr.innerText.trim().length > 0).forEach((tr, trIndex) => {
                             scheduledClass.push(...[...tr.children].map((td, e) => ({
-                                id: trIndex.toString() + tr.children[cols.groupIndex].innerText + tr.children[cols.subjectIndex].innerText + (e%5).toString(),
-                                classId: trIndex.toString(),
-                                dayIndex: (e - cols.mondayIndex) % 5 + 1,               
+                                classId: trIndex.toString() + tr.children[cols.subjectIndex].innerText.trim() + tr.children[cols.groupIndex].innerText.trim(),
+                                dayIndex: (e - cols.mondayIndex) % 5 + ${Calendar.MONDAY},               
                                 className: tr.children[cols.subjectIndex].innerText,               
                                 hours: td.innerText,               
                                 group: tr.children[cols.groupIndex].innerText,               
@@ -68,10 +70,9 @@ class ScheduleWebViewRepository(
             """.trimIndent(),
             ){
                 val data = it.result.getJSONArray("data")
-
                 val registered = mutableMapOf<String, Long>()
 
-                ArrayList<ClassSchedule>().apply {
+                ArrayList<ClassSchedule?>().apply {
                     for (i in 0 until data.length()) {
                         val classSchedule = data[i] as JSONObject
 
@@ -89,12 +90,21 @@ class ScheduleWebViewRepository(
                             registered.getValue(classId)
                         }
 
-                        addAll(hours.map { range ->
-                            ClassSchedule(
-                                classSchedule.getString("id")+range.start.toString(),
+                        addAll(hours.mapIndexed { rangeIndex, range ->
+                            val group = classSchedule.getString("group")
+                            val className = classSchedule.getString("className").toProperCase()
+
+                            val id = "${classId}_${group}_${className.replace(" ", "_")}_${range.weekDay}_${range.start.toDouble()}_${rangeIndex}"
+
+                            val customClass = customSchedule.find { cc -> cc.id == id }
+
+                            if (customClass?.isDeleted == true) return@mapIndexed null
+
+                            customClass?.toClassSchedule() ?: ClassSchedule(
+                                id,
                                 classId,
-                                classSchedule.getString("className").toProperCase(),
-                                classSchedule.getString("group"),
+                                className,
+                                group,
                                 classSchedule.getString("building"),
                                 classSchedule.getString("classroom"),
                                 classSchedule.getString("teacherName").toProperCase(),
@@ -103,7 +113,7 @@ class ScheduleWebViewRepository(
                             )
                         })
                     }
-                }.filter { f ->
+                }.filterNotNull().filter { f ->
                     f.scheduleDayTime.duration > 0
                 }
             }.also {
@@ -130,4 +140,25 @@ interface ScheduleRoomRepository{
 
     @Query("DELETE FROM class_schedule")
     fun removeSchedule()
+}
+
+@Dao
+interface CustomScheduleRoomRepository{
+    @Query("SELECT * FROM custom_class_schedule")
+    fun getMySchedule() : List<CustomClassSchedule>
+
+    @Insert
+    fun addSchedule(schedule: List<CustomClassSchedule>)
+
+    @Insert
+    fun addClass(customClassSchedule: CustomClassSchedule)
+
+    @Query("DELETE FROM custom_class_schedule")
+    fun removeSchedule()
+
+    @Query("UPDATE custom_class_schedule SET is_deleted = 1 WHERE id = :id")
+    fun hideClass(id: String)
+
+    @Query("DELETE FROM custom_class_schedule WHERE id = :id")
+    fun removeClass(id: String)
 }

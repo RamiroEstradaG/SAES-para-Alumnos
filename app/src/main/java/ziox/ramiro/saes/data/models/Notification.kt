@@ -10,60 +10,79 @@ import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
-import ziox.ramiro.saes.ui.screens.MainActivity
 
 
-@SuppressLint("UnspecifiedImmutableFlag")
-class Notification (context: Context, title: String?, body : String?, redirect: String = "") {
-    private val notificationManager : NotificationManager
-    private val notificationBuilder : NotificationCompat.Builder
-
-    companion object{
-        const val NOTIFICATION_ID_MESSAGING_SERVICE =   0b0000001
-    }
+class NotificationBuilder(val context: Context){
+    private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    private val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+    private var title: String = ""
+    private var message: String = ""
+    private var pendingIntent: PendingIntent? = null
+    private var channelId: String = ""
+    private var channelName: String = ""
+    private var channelDescription: String = ""
 
     init {
-        val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        setChannel(
+            "general_notifications",
+            "general_notifications",
+            "Notificaciones generales"
+        )
+    }
 
-        val intent = Intent(context, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-        if(redirect.isNotBlank()){
-            intent.putExtra(SAESActivity.INTENT_EXTRA_REDIRECT, redirect)
-        }
-        val pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    fun setTitle(title: String) = this.also {
+        this.title = title
+    }
 
-        notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "6"
+    fun setDescription(message: String) = this.also {
+        this.message = message
+    }
+
+    fun setChannel(
+        channelId: String,
+        channelName: String,
+        channelDescription: String
+    ) = this.also {
+        this.channelId = channelId
+        this.channelName = channelName
+        this.channelDescription = channelDescription
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
                 channelId,
-                "notificaciones_general",
+                channelName,
                 NotificationManager.IMPORTANCE_DEFAULT
             )
 
-            notificationChannel.description = "Notificaciones generales"
+            notificationChannel.description = channelDescription
             notificationChannel.enableLights(true)
             notificationChannel.vibrationPattern = longArrayOf(0, 50, 50, 50, 50, 50)
             notificationChannel.enableVibration(true)
 
             notificationManager.createNotificationChannel(notificationChannel)
         }
-        notificationBuilder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
-            .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher_round))
-            .setContentTitle(title)
-            .setSound(defaultSound)
-            .setContentText(body)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
-            .setContentIntent(pendingIntent)
-            .setColor(0x6C1D45)
-            .setAutoCancel(true)
     }
 
-    fun sendNotification(id: Int){
-        notificationManager.notify(id, notificationBuilder.build())
+    @SuppressLint("UnspecifiedImmutableFlag")
+    fun setPendingIntent(intent: Intent) = this.also {
+        pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    fun buildAndNotify(notificationId: Int) {
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.ic_launcher_foreground))
+            .setContentTitle(title)
+            .setSound(defaultSound)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setContentIntent(pendingIntent)
+            .setColor(ContextCompat.getColor(context, R.color.primary500))
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(notificationId, notification)
     }
 }

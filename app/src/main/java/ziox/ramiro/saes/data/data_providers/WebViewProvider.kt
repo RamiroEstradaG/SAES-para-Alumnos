@@ -12,17 +12,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.perf.ktx.performance
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.*
 import okhttp3.Headers
 import org.json.JSONArray
 import org.json.JSONObject
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.UtilsJavascriptInterface
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.random.Random
@@ -30,7 +26,8 @@ import kotlin.random.Random
 
 class WebViewProvider(
     context: Context,
-    val path: String = "/"
+    val path: String = "/",
+    val withTestFile: String? = null
 ) {
     val webView = createWebView(context).also {
         it.addJavascriptInterface(ResultJavascriptInterface(), "JSI")
@@ -164,7 +161,11 @@ class WebViewProvider(
                 }
 
                 if (reloadPage) {
-                    webView.loadUrl(url)
+                    if(withTestFile == null){
+                        webView.loadUrl(url)
+                    }else{
+                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                    }
                 } else {
                     webView.loadUrl(scriptBase)
                 }
@@ -175,7 +176,7 @@ class WebViewProvider(
     }
 
     fun handleResume(jobId: String, block: () -> Unit) {
-        if(javascriptInterfaceJobs[jobId]?.isResumed == false){
+        if(javascriptInterfaceJobs[jobId]?.isResumed == false && javascriptInterfaceJobs[jobId]?.continuation?.isActive == true){
             block()
             javascriptInterfaceJobs[jobId]?.isResumed = true
         }
@@ -210,7 +211,11 @@ class WebViewProvider(
                 }
 
                 if (reloadPage) {
-                    webView.loadUrl(url)
+                    if(withTestFile == null){
+                        webView.loadUrl(url)
+                    }else{
+                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                    }
                 } else {
                     Log.d("WebViewProvider", "Running script at $currentScriptIndex")
                     webView.loadUrl("${scriptTemplate(jobId)}\n${preRequests[currentScriptIndex++]}")
@@ -251,7 +256,11 @@ class WebViewProvider(
                 }
 
                 if (reloadPage) {
-                    webView.loadUrl(url)
+                    if(withTestFile == null){
+                        webView.loadUrl(url)
+                    }else{
+                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                    }
                 } else {
                     webView.loadUrl(preRequestBase)
                 }
@@ -263,7 +272,7 @@ class WebViewProvider(
 
     fun attachWebViewClient(
         jobId: String,
-        continuation: Continuation<*>,
+        continuation: CancellableContinuation<*>,
         onPageFinished: () -> Unit
     ){
         webView.webViewClient = object : WebViewClient(){
@@ -344,7 +353,7 @@ data class JavascriptInterfaceJob(
     val jobId: String,
     var isResumed: Boolean,
     val resultAdapter: (ScrapResult) -> Any?,
-    val continuation: Continuation<ScrapResultAdapter<Any?>>
+    val continuation: CancellableContinuation<ScrapResultAdapter<Any?>>
 )
 
 data class ScrapResultAdapter<T>(

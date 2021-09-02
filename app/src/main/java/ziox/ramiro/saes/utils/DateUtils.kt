@@ -37,15 +37,19 @@ val MES_COMPLETO = arrayOf(
     "Diciembre"
 )
 
-fun Date.toLongString() = DateFormat
+fun Date.toLongString(): String = DateFormat
     .getDateInstance(SimpleDateFormat.LONG, Locale("es","MX"))
     .format(this)
 
-fun Date.toMediumString() = DateFormat
+fun Date.toLongStringAndHour() = DateFormat
+    .getDateInstance(SimpleDateFormat.LONG, Locale("es","MX"))
+    .format(this) + " ${Hour.fromDate(this)}"
+
+fun Date.toMediumString(): String = DateFormat
     .getDateInstance(SimpleDateFormat.MEDIUM, Locale("es","MX"))
     .format(this)
 
-fun Date.toShortString() = DateFormat
+fun Date.toShortString(): String = DateFormat
     .getDateInstance(SimpleDateFormat.SHORT, Locale("es","MX"))
     .format(this)
 

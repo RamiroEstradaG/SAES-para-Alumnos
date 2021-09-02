@@ -9,7 +9,18 @@ data class KardexClass(
     val period: String = "",
     val evaluationType: EvaluationType = EvaluationType.ORDINARY,
     val score: Int? = null
-)
+){
+    override fun toString() = """
+        KardexClass(
+            id: $id
+            name: $name
+            date: $date
+            period: $period
+            evaluationType: $evaluationType
+            score: $score
+        )
+    """.trimIndent()
+}
 
 enum class EvaluationType{
     EXTRAORDINARY,

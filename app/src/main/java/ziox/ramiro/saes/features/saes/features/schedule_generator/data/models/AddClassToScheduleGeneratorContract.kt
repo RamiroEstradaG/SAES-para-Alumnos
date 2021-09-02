@@ -1,4 +1,4 @@
-package ziox.ramiro.saes.features.saes.features.schedule_generator.models.reposotories
+package ziox.ramiro.saes.features.saes.features.schedule_generator.data.models
 
 import android.app.Activity
 import android.content.Context

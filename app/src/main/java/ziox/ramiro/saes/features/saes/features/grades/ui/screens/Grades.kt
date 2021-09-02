@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.grades.ui.screens
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,7 +22,6 @@ import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
 
-@ExperimentalAnimationApi
 @Composable
 fun Grades(
     gradesViewModel: GradesViewModel = viewModel(

@@ -55,8 +55,8 @@ class ReRegistrationWebViewRepository(
 
             ReRegistrationData(
                 UserPreferences.invoke(context).getPreference(PreferenceKeys.Boleta, ""),
-                data.getString("appointmentDate").toDate("dd/MM/yyyy hh:mm:ss a."),
-                data.getString("appointmentDateExpiration").toDate("dd/MM/yyyy hh:mm:ss a."),
+                data.getString("appointmentDate").safeReplaceHour().toDate("dd/MM/yyyy hh:mm:ss a"),
+                data.getString("appointmentDateExpiration").safeReplaceHour().toDate("dd/MM/yyyy hh:mm:ss a"),
                 data.getString("creditsTotal").toDouble(),
                 data.getString("creditsMaximum").toDouble(),
                 data.getString("creditsMedium").toDouble(),
@@ -68,4 +68,6 @@ class ReRegistrationWebViewRepository(
             )
         }
     }
+
+    private fun String.safeReplaceHour() = this.replace("a. m.", "AM").replace("p. m.", "PM")
 }

@@ -1,6 +1,6 @@
 package ziox.ramiro.saes.ui.theme
 
-import androidx.compose.material.*
+import androidx.compose.material.Colors
 import androidx.compose.ui.graphics.Color
 
 val primaryColor = object : ColorShade {
@@ -17,16 +17,16 @@ val primaryColor = object : ColorShade {
 }
 
 val secondaryColor = object : ColorShade {
-    override val s50 = Color(0xFFFFF8E1)
-    override val s100 = Color(0xFFFFECB3)
-    override val s200 = Color(0xFFFFE082)
-    override val s300 = Color(0xFFFFD54F)
-    override val s400 = Color(0xFFFFCA28)
-    override val s500 = Color(0xFFFFC107)
-    override val s600 = Color(0xFFFFB300)
-    override val s700 = Color(0xFFFFA000)
-    override val s800 = Color(0xFFFF8F00)
-    override val s900 = Color(0xFFFF6F00)
+    override val s50 = Color(0xFFfbf0db)
+    override val s100 = Color(0xFFf5d9a6)
+    override val s200 = Color(0xFFeec06b)
+    override val s300 = Color(0xFFe7a72c)
+    override val s400 = Color(0xFFf4a236)
+    override val s500 = Color(0xFFf29323)
+    override val s600 = Color(0xFFed8720)
+    override val s700 = Color(0xFFe7791e)
+    override val s800 = Color(0xFFe06a1c)
+    override val s900 = Color(0xFFd65116)
 }
 
 interface ComposableTheme {

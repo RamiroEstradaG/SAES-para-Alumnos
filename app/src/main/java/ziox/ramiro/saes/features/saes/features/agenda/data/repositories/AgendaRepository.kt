@@ -1,10 +1,11 @@
 package ziox.ramiro.saes.features.saes.features.agenda.data.repositories
 
 import android.content.Context
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -41,7 +42,7 @@ class AgendaWebViewRepository(
     context: Context
 ) : AgendaRepository{
     private val webViewProvider = WebViewProvider(context, "/Academica/agenda_escolar.aspx")
-    private val firebaseRepository = AgendaFirebaseRepository(context)
+    private val firebaseRepository = AgendaFirebaseRepository()
 
     @OptIn(ExperimentalTime::class)
     override suspend fun getEvents(calendarId: String): Flow<List<AgendaItem>> {
@@ -113,11 +114,10 @@ class AgendaWebViewRepository(
 }
 
 
-class AgendaFirebaseRepository(
-    context: Context
-) : AgendaRepository{
+class AgendaFirebaseRepository : AgendaRepository{
     private val db = Firebase.firestore
-    private val userRepository = UserFirebaseRepository(context)
+    private val auth = Firebase.auth
+    private val userRepository = UserFirebaseRepository()
 
     companion object {
         const val COLLECTION_ID_CALENDARS = "calendars_v2"
@@ -171,25 +171,27 @@ class AgendaFirebaseRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getCalendars() = userRepository.getUserDataFlow().map {
-        if(it.calendarIds.isNotEmpty()){
+        it.calendarIds.mapNotNull { id ->
             db.collection(COLLECTION_ID_CALENDARS)
-                .whereIn("calendarId", it.calendarIds)
+                .document(id)
                 .get()
                 .await()
-                .toObjects(AgendaCalendar::class.java)
-        }else{
-            listOf()
+                .toObject(AgendaCalendar::class.java)
         }
     }
 
     override suspend fun addCalendar(name: String) {
-        val userId = userRepository.getUserData().id
+        val currentUser = auth.currentUser
 
-        db.collection(COLLECTION_ID_CALENDARS)
+        val calendarId = db.collection(COLLECTION_ID_CALENDARS)
             .add(AgendaCalendar(
                 name = name,
-                admins = listOf(userId)
-            )).await()
+                admins = listOf(currentUser?.uid ?: "")
+            )).await().id
+
+        db.collection(UserFirebaseRepository.COLLECTION_ID_USERS)
+            .document(currentUser?.uid ?: "")
+            .update("calendarIds", FieldValue.arrayUnion(calendarId)).await()
     }
 
     override suspend fun removeCalendar(calendarId: String) {

@@ -29,7 +29,7 @@ import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewMode
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Kardex(
     kardexViewModel: KardexViewModel = viewModel(

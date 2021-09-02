@@ -4,4 +4,12 @@ data class AgendaCalendar(
     val calendarId: String = "",
     val name: String = "",
     val admins: List<String> = listOf()
-)
+){
+    override fun toString() = """
+        AgendaCalendar(
+            calendarId: $calendarId
+            name: $name
+            admins: $admins
+        )
+    """.trimIndent()
+}

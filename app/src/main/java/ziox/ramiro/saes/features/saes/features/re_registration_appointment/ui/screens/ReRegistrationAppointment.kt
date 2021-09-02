@@ -24,12 +24,11 @@ import ziox.ramiro.saes.features.saes.features.re_registration_appointment.data.
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.view_models.ReRegistrationAppointmentViewModel
 import ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.ScheduleGeneratorActivity
 import ziox.ramiro.saes.features.saes.ui.components.FlexView
-import ziox.ramiro.saes.features.saes.view_models.MenuSection
-import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.OutlineButton
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.toLongString
+import ziox.ramiro.saes.utils.toLongStringAndHour
 import ziox.ramiro.saes.utils.toStringPrecision
 
 @Composable
@@ -53,9 +52,18 @@ fun ReRegistrationAppointment(
                     style = MaterialTheme.typography.h4
                 )
                 Text(
-                    text = it.appointmentDate?.toLongString() ?: "Reinscripción no disponible",
+                    text = it.appointmentDate?.toLongStringAndHour() ?: "Reinscripción no disponible",
                     style = MaterialTheme.typography.h6
                 )
+                if(it.appointmentDateExpiration != null){
+                    Text(
+                        text = """
+                            Hasta
+                            ${it.appointmentDateExpiration.toLongStringAndHour()}
+                        """.trimIndent(),
+                        style = MaterialTheme.typography.h6
+                    )
+                }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()

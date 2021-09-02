@@ -1,9 +1,14 @@
 package ziox.ramiro.saes.data.repositories
 
 import android.content.Context
+import android.net.Uri
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.models.Auth
 import ziox.ramiro.saes.data.models.Captcha
+import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.isNetworkAvailable
@@ -19,6 +24,7 @@ class AuthWebViewRepository(
     private val context: Context
 ) : AuthRepository {
     private val webViewProvider = WebViewProvider(context)
+    private val userPreferences = UserPreferences.invoke(context)
 
     override suspend fun getCaptcha(): Captcha {
         return if(context.isNetworkAvailable()){
@@ -68,10 +74,32 @@ class AuthWebViewRepository(
                 data.getBoolean("isLoggedIn"),
                 data.getString("errorMessage")
             )
+        }.also {
+            if(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
+                tryRegisterUser(it, username, password)
+            }
         }
     }
 
-    override suspend fun isLoggedIn() = UserPreferences.invoke(context).run {
+    private suspend fun tryRegisterUser(auth: Auth, username: String, password: String){
+        val userFirebaseRepository = UserFirebaseRepository()
+
+        if (auth.isLoggedIn){
+            val schoolDomain = Uri.parse(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)).host?.replace("www.", "")
+
+            kotlin.runCatching {
+                if(userFirebaseRepository.isUserRegistered(username.trim())){
+                    Firebase.auth.signInWithEmailAndPassword("${username}@${schoolDomain}", password).await()
+                }else{
+                    Firebase.auth.createUserWithEmailAndPassword("${username}@${schoolDomain}", password).await()
+                }
+            }.onFailure {
+                it.printStackTrace()
+            }
+        }
+    }
+
+    override suspend fun isLoggedIn() = userPreferences.run {
         when {
             getPreference(PreferenceKeys.SchoolUrl, null) == null -> false
             getPreference(PreferenceKeys.OfflineMode, false) -> true
@@ -85,6 +113,10 @@ class AuthWebViewRepository(
                 it.result.getJSONObject("data").getBoolean("isLoggedIn")
             }
             else -> authData.value.isAuthDataSaved()
+        }.also {
+            if(!it){
+                Firebase.auth.signOut()
+            }
         }
     }
 }

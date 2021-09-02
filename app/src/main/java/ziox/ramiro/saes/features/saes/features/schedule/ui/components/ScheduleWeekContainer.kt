@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.features.saes.features.schedule.ui.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,6 +23,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourHeight
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
+import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.toHour
 import java.util.*
 
@@ -144,10 +146,15 @@ fun HourColumn(
             modifier = Modifier.fillMaxSize()
         ) {
             hourRange.forEach {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp).background(getCurrentTheme().divider),
+                )
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(hourHeight),
+                        .height(hourHeight - 1.dp),
                     text = it.toDouble().toHour(),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.subtitle1
@@ -157,7 +164,9 @@ fun HourColumn(
         val iconPadding = hourHeight.times(currentHour.toDouble().minus(hourRange.first).toFloat()).minus(12.dp)
         if(iconPadding >= 0.dp){
             Icon(
-                modifier = Modifier.padding(top = iconPadding).align(Alignment.TopEnd),
+                modifier = Modifier
+                    .padding(top = iconPadding)
+                    .align(Alignment.TopEnd),
                 imageVector = Icons.Rounded.ArrowRightAlt,
                 contentDescription = "Current hour",
                 tint = MaterialTheme.colors.primary

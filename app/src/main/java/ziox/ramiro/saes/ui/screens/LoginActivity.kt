@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -24,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
@@ -33,10 +35,7 @@ import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
 import ziox.ramiro.saes.ui.components.*
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
-import ziox.ramiro.saes.utils.MutableStateWithValidation
-import ziox.ramiro.saes.utils.PreferenceKeys
-import ziox.ramiro.saes.utils.UserPreferences
-import ziox.ramiro.saes.utils.validate
+import ziox.ramiro.saes.utils.*
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 class LoginActivity : AppCompatActivity() {
@@ -84,21 +83,24 @@ class LoginActivity : AppCompatActivity() {
 
             SAESParaAlumnosTheme {
                 Scaffold {
-                    if(username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved){
-                        LoginOnlyCaptcha(
-                            authViewModel,
-                            username,
-                            password
-                        )
-                    }else{
-                        Login(
-                            authViewModel,
-                            selectSchoolLauncher,
-                            schoolUrl.collectAsState(),
-                            username,
-                            password
-                        )
+                    Crossfade(targetState = username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved) {
+                        if(it){
+                            LoginOnlyCaptcha(
+                                authViewModel,
+                                username,
+                                password
+                            )
+                        }else{
+                            Login(
+                                authViewModel,
+                                selectSchoolLauncher,
+                                schoolUrl.collectAsState(),
+                                username,
+                                password
+                            )
+                        }
                     }
+
                     ErrorSnackbar(authViewModel.error)
                 }
             }
@@ -122,7 +124,9 @@ fun Login(
     username: MutableState<String>,
     password: MutableState<String>
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
+    val userPreferences = UserPreferences.invoke(context)
 
     val passwordVisible = remember {
         mutableStateOf(false)
@@ -149,6 +153,14 @@ fun Login(
     }){
         if(it.isEmpty()) "El campo está vacío."
         else null
+    }
+
+    val isFirebaseServicesEnabled = remember {
+        mutableStateOf(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false))
+    }
+
+    val showFirebaseDialog = remember {
+        mutableStateOf(false)
     }
 
     Column(
@@ -209,7 +221,7 @@ fun Login(
                     },
                     singleLine = true,
                     onValueChange = password.component2(),
-                    visualTransformation = if (!passwordVisible.value){
+                    visualTransformation = if (!passwordVisible.value) {
                         PasswordVisualTransformation()
                     } else VisualTransformation.None,
                     keyboardOptions = KeyboardOptions(
@@ -224,9 +236,9 @@ fun Login(
                             }
                         ) {
                             Icon(
-                                imageVector = if (!passwordVisible.value){
+                                imageVector = if (!passwordVisible.value) {
                                     Icons.Rounded.Visibility
-                                }else{
+                                } else {
                                     Icons.Rounded.VisibilityOff
                                 },
                                 contentDescription = "Visibility"
@@ -243,17 +255,32 @@ fun Login(
                 Text(
                     modifier = Modifier.padding(start = 8.dp),
                     color = MaterialTheme.colors.error,
-                    text = authViewModel.auth.value?.errorMessage ?: passwordValidator.errorState.value ?: "",
+                    text = authViewModel.auth.value?.errorMessage
+                        ?: passwordValidator.errorState.value ?: "",
                     style = MaterialTheme.typography.body2
                 )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = isFirebaseServicesEnabled.component1(),
+                        onCheckedChange = {
+                            showFirebaseDialog.value = true
+                        }
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        text = "Habilitar los servicios personalizados"
+                    )
+                }
                 CaptchaInput(
                     modifier = Modifier
                         .padding(top = 16.dp)
                         .fillMaxWidth(),
                     authViewModel = authViewModel,
                     captcha = captcha,
-                ){
-                    if(listOf(usernameValidator, passwordValidator, captcha).validate()){
+                ) {
+                    if (listOf(usernameValidator, passwordValidator, captcha).validate()) {
                         authViewModel.login(
                             username.value,
                             password.value,
@@ -270,8 +297,8 @@ fun Login(
                     isHighEmphasis = true,
                     text = "Iniciar sesión",
                     isLoading = authViewModel.auth.value == null || authViewModel.auth.value?.isLoggedIn == true
-                ){
-                    if(listOf(usernameValidator, passwordValidator, captcha).validate()){
+                ) {
+                    if (listOf(usernameValidator, passwordValidator, captcha).validate()) {
                         authViewModel.login(
                             username.value,
                             password.value,
@@ -291,8 +318,80 @@ fun Login(
             ),
             isSmall = true,
             school = School.findSchoolByUrl(schoolUrl.value)
-        ){
+        ) {
             selectSchoolLauncher.launch()
+        }
+
+
+        if (showFirebaseDialog.value) {
+            Dialog(
+                onDismissRequest = {
+                    showFirebaseDialog.value = false
+                }
+            ){
+                Card {
+                    Column {
+                        Text(
+                            modifier = Modifier.padding(16.dp),
+                            text = "Servicios personalizados",
+                            style = MaterialTheme.typography.h5
+                        )
+                        Column(
+                            modifier = Modifier
+                                .heightIn(0.dp, 300.dp)
+                                .padding(horizontal = 16.dp)
+                                .verticalScroll(rememberScrollState()),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = """
+                                    Son características de la aplicación que utilizan servicios basados en la nube para funcionar.
+                                    Al activar esta opción estás de acuerdo en enviar la siguiente información a servidores que no son propiedad del Instituto Politécnico Nacional (IPN).
+                                    • Número de boleta.
+                                    • Unidad académica.
+                                    • Nombre de la carrera.
+                                    • Promedio global.
+                                    • Kárdex.
+                                    
+                                    Al no activar esta opción se desactivarán las siguientes características:
+                                    • Comparación de tu promedio con el de tu carrera, unidad académica y el IPN en la sección "Rendimiento escolar".
+                                    • Agenda personal
+                                    
+                                    Puedes ver y eliminar tus datos almacenados en la nube en cualquier momento en el apartado "Configuración" al iniciar sesión.
+                                    Al activar esta característica aceptas nuestra política de privacidad.
+                                """.trimIndent()
+                            )
+                            TextButton(
+                                text = "Ver política de privacidad"
+                            ){
+                                context.launchUrl("https://ramiroestradag.github.io/SAES-para-Alumnos/privacy_policy")
+                            }
+                        }
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            TextButton(
+                                text = "Aceptar",
+                                textColor = getCurrentTheme().info
+                            ){
+                                showFirebaseDialog.value = false
+                                isFirebaseServicesEnabled.value = true
+                                userPreferences.setPreference(PreferenceKeys.IsFirebaseEnabled, true)
+                            }
+                            TextButton(
+                                text = "No acepto"
+                            ){
+                                showFirebaseDialog.value = false
+                                isFirebaseServicesEnabled.value = false
+                                userPreferences.removePreference(PreferenceKeys.IsFirebaseEnabled)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

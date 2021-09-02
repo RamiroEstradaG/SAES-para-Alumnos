@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.GeneratorClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.checkIfOccupied
-import ziox.ramiro.saes.features.saes.features.schedule_generator.models.reposotories.ScheduleGeneratorRepository
+import ziox.ramiro.saes.features.saes.features.schedule_generator.data.repositories.ScheduleGeneratorRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import ziox.ramiro.saes.utils.runOnDefaultThread
 

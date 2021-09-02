@@ -37,6 +37,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaCalendar
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaEventType
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
@@ -197,7 +198,7 @@ fun CalendarList(
     ErrorSnackbar(agendaListViewModel.error)
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @Composable
 fun AgendaListItem(
     agendaListViewModel: AgendaListViewModel,
@@ -252,7 +253,7 @@ fun AgendaListItem(
 fun AgendaView(
     selectedAgenda: MutableState<String?>,
     scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current), LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()) }
     ),
     agendaViewModel: AgendaViewModel = viewModel(
         factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(LocalContext.current), selectedAgenda.value) },
@@ -374,7 +375,7 @@ fun AgendaView(
                     }
 
                     val hourRange = MutableStateWithValidation(remember {
-                        mutableStateOf<ScheduleDayTime?>(null)
+                        mutableStateOf<Pair<Hour, Hour>?>(null)
                     }, remember {
                         mutableStateOf(null)
                     }){
@@ -479,16 +480,12 @@ fun AgendaView(
                             text = hourRange.errorState.value ?: "",
                             style = MaterialTheme.typography.body2
                         )
-                        scheduleViewModel.scheduleList.value?.let {
-                            if(it.isNotEmpty()){
-                                SelectAddAgendaEventList(
-                                    title = "Vincular a una clase",
-                                    options = it.map { clazz -> clazz.className }
-                                ) { newIndex ->
-                                    selectedClassSchedule.value = if(newIndex != null){
-                                        it[newIndex]
-                                    }else null
-                                }
+                        if(scheduleViewModel.scheduleList.isNotEmpty()){
+                            SelectAddAgendaEventList(
+                                title = "Vincular a una clase",
+                                options = scheduleViewModel.scheduleList
+                            ) { newItem ->
+                                selectedClassSchedule.value = newItem
                             }
                         }
                     }
@@ -504,7 +501,10 @@ fun AgendaView(
                                 eventName = name.mutableState.value,
                                 eventType = AgendaEventType.PERSONAL,
                                 date = date.mutableState.value,
-                                scheduleDayTime = hourRange.mutableState.value!!,
+                                scheduleDayTime = ScheduleDayTime(
+                                    hourRange.mutableState.value!!.first,
+                                    hourRange.mutableState.value!!.second,
+                                ),
                                 calendarId = selectedAgenda.value!!,
                                 description = description.value,
                                 classSchedule = selectedClassSchedule.value,
@@ -520,16 +520,18 @@ fun AgendaView(
     ErrorSnackbar(agendaViewModel.error)
 }
 
-fun showHourRangePickerDialog(context: Context, onChange: (ScheduleDayTime) -> Unit){
-    TimePickerDialog(context, { _, hour, minute ->
-        TimePickerDialog(context, { _, hour2, minute2 ->
-            onChange(ScheduleDayTime(
-                Hour(hour, minute),
-                Hour(hour2, minute2),
-                WeekDay.UNKNOWN
-            ))
-        }, 13, 0, false).show()
-    }, 12, 0, false).show()
+fun showHourPickerDialog(context: Context, default: Hour? = null, onChange: (Hour) -> Unit){
+    TimePickerDialog(context, { _, hour2, minute2 ->
+        onChange(Hour(hour2, minute2))
+    }, default?.hours ?: 12, default?.minutes ?: 0, false).show()
+}
+
+fun showHourRangePickerDialog(context: Context, onChange: (Pair<Hour, Hour>) -> Unit){
+    showHourPickerDialog(context){ h1 ->
+        showHourPickerDialog(context){ h2 ->
+            onChange(Pair(h1, h2))
+        }
+    }
 }
 
 fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit){
@@ -540,10 +542,11 @@ fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit){
 }
 
 @Composable
-fun SelectableOptions(
-    options: List<String>?,
+fun <T>SelectableOptions(
+    options: List<T>?,
+    stringAdapter: (T) -> String = {it.toString()},
     initialSelection: Int? = null,
-    onSelectionChange: (Int?) -> Unit
+    onSelectionChange: (T?) -> Unit
 ) {
     val infoColor = getCurrentTheme().info
     val selectedIndex = remember {
@@ -555,7 +558,7 @@ fun SelectableOptions(
             {
                 OutlineButton(
                     modifier = Modifier.padding(end = 8.dp, top = 8.dp),
-                    text = value,
+                    text = stringAdapter(value),
                     borderColor = infoColor,
                     textColor = if (i != selectedIndex.value) infoColor else MaterialTheme.colors.onPrimary,
                     backgroundColor = if (i == selectedIndex.value) infoColor else null
@@ -566,7 +569,7 @@ fun SelectableOptions(
 
                     selectedIndex.value = newIndex
 
-                    onSelectionChange(newIndex)
+                    onSelectionChange(if(newIndex == null) null else options.getOrNull(newIndex))
                 }
             }
         } ?: listOf()
@@ -576,9 +579,9 @@ fun SelectableOptions(
 @Composable
 fun SelectAddAgendaEventList(
     title: String,
-    options: List<String>?,
+    options: List<ClassSchedule>?,
     initialSelection: Int? = null,
-    onSelectionChange: (Int?) -> Unit
+    onSelectionChange: (ClassSchedule?) -> Unit
 ) = Column(
     modifier = Modifier.padding(bottom = 16.dp)
 ) {
@@ -589,7 +592,12 @@ fun SelectAddAgendaEventList(
         style = MaterialTheme.typography.subtitle2
     )
     SelectableOptions(
-        options, initialSelection, onSelectionChange
+        options = options,
+        initialSelection = initialSelection,
+        onSelectionChange = onSelectionChange,
+        stringAdapter = {
+            it.className
+        }
     )
 }
 
@@ -810,8 +818,8 @@ fun DateSelectorItem(
     Card(
         modifier = Modifier
             .clip(MaterialTheme.shapes.medium)
-            .padding(end = 8.dp)
             .size(64.dp, 80.dp)
+            .padding(end = 8.dp)
             .clickable { onSelect() },
         elevation = 0.dp,
         backgroundColor = if (isSelected) MaterialTheme.colors.primary else if(date == today) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
@@ -833,7 +841,7 @@ fun DateSelectorItem(
         }
     }
     Row(
-        modifier = Modifier.padding(top = 4.dp)
+        modifier = Modifier.padding(top = 4.dp, end = 8.dp)
     ) {
         events.take(4).forEach {
             Box(
