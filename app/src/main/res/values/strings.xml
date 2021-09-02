@@ -2,4 +2,7 @@
     <string name="app_name">SAES para Alumnos</string>
     <string name="title_activity_select_school">SelectSchoolActivity</string>
     <string name="title_activity_saesactivity">SAESActivity</string>
+    <string name="admob_key">ca-app-pub-3940256099942544~3347511713</string><!--Llave de ejemplo-->
+    <string name="banner_ad_key">ca-app-pub-3940256099942544/6300978111</string><!--Banner de prueba-->
+    <string name="billing_key"/>
 </resources>
