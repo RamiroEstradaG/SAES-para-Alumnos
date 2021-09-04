@@ -34,8 +34,7 @@ data class Tweet(
             timeDiff >= (1000 * 60 * 60 * 24) -> "${timeDiff / (1000 * 60 * 60 * 24)}d"
             timeDiff >= (1000 * 60 * 60) -> "${timeDiff / (1000 * 60 * 60)}h"
             timeDiff >= (1000 * 60) -> "${timeDiff / (1000 * 60)}m"
-            timeDiff >= 1000 -> "${timeDiff / 1000}s"
-            else -> "0s"
+            else -> "${timeDiff / 1000}s"
         }
     }
 }

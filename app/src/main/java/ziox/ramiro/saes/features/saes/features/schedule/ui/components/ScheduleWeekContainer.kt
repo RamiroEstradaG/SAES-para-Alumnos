@@ -30,7 +30,8 @@ import java.util.*
 @Composable
 fun ScheduleWeekContainer(
     classSchedules: List<ClassSchedule>,
-    selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null)
+    selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null),
+    isClassActionsEnabled: Boolean = false
 ) {
     val hourRange = classSchedules.getRangeBy { it.scheduleDayTime }
 
@@ -54,7 +55,8 @@ fun ScheduleWeekContainer(
             },
             weekDay = WeekDay.MONDAY,
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -71,7 +73,8 @@ fun ScheduleWeekContainer(
                 }
             },
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -88,7 +91,8 @@ fun ScheduleWeekContainer(
             },
             weekDay = WeekDay.WEDNESDAY,
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -105,7 +109,8 @@ fun ScheduleWeekContainer(
             },
             weekDay = WeekDay.THURSDAY,
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -122,7 +127,8 @@ fun ScheduleWeekContainer(
             },
             weekDay = WeekDay.FRIDAY,
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
