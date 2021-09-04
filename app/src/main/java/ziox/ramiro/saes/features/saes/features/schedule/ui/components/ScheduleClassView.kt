@@ -52,7 +52,7 @@ fun ScheduleClassView(
     startHour: Int,
     classSchedule: ClassSchedule,
     hourHeight: Dp = 170.dp,
-    canEdit: Boolean
+    isClassActionsEnabled: Boolean,
 ) = Card(
     modifier = Modifier
         .offset(y = hourHeight.times((classSchedule.scheduleDayTime.start.toDouble() - startHour).toFloat()))
@@ -91,7 +91,7 @@ fun ScheduleClassView(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    if(canEdit){
+                    if(isClassActionsEnabled){
                         IconButton(
                             modifier = Modifier.size(32.dp),
                             onClick = {

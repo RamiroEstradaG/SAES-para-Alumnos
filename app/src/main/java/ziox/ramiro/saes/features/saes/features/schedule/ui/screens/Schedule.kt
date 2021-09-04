@@ -63,7 +63,8 @@ fun Schedule(
                 )
                 ScheduleWeekContainer(
                     classSchedules = scheduleViewModel.scheduleList,
-                    selectedDayOfWeek = selectedDayOfWeek
+                    selectedDayOfWeek = selectedDayOfWeek,
+                    isClassActionsEnabled = true
                 )
             }
         }else{
