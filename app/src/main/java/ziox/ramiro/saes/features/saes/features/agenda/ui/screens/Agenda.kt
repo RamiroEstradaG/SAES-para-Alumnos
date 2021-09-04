@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.collect
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
@@ -592,37 +593,33 @@ fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit) {
 }
 
 @Composable
-fun <T> SelectableOptions(
-    options: List<T>?,
-    stringAdapter: (T) -> String = { it.toString() },
-    initialSelection: Int? = null,
-    onSelectionChange: (T?) -> Unit
+fun <T>SelectableOptions(
+    options: List<T> = listOf(),
+    stringAdapter: (T) -> String = {it.toString()},
+    selectionState: MutableState<T>,
+    deSelectValue: T = selectionState.value,
+    isDeselectEnabled: Boolean = false
 ) {
     val infoColor = MaterialTheme.colorScheme.secondary
-    val selectedIndex = remember {
-        mutableStateOf(initialSelection)
-    }
 
     FlexView(
-        content = options?.mapIndexed { i, value ->
+        content = options.map { value ->
             {
                 OutlineButton(
                     modifier = Modifier.padding(end = 8.dp, top = 8.dp),
                     text = stringAdapter(value),
                     borderColor = infoColor,
-                    textColor = if (i != selectedIndex.value) infoColor else MaterialTheme.colorScheme.onPrimary,
-                    backgroundColor = if (i == selectedIndex.value) infoColor else null
-                ) {
-                    val newIndex = if (selectedIndex.value != i) {
-                        i
-                    } else null
-
-                    selectedIndex.value = newIndex
-
-                    onSelectionChange(if (newIndex == null) null else options.getOrNull(newIndex))
+                    textColor = if (value != selectionState.value) infoColor else MaterialTheme.colorScheme.onPrimary,
+                    backgroundColor = if (value == selectionState.value) infoColor else null
+                ){
+                    selectionState.value = if (isDeselectEnabled && selectionState.value == value){
+                        deSelectValue
+                    }else{
+                        value
+                    }
                 }
             }
-        } ?: listOf()
+        }
     )
 }
 
@@ -635,20 +632,28 @@ fun SelectAddAgendaEventList(
 ) = Column(
     modifier = Modifier.padding(bottom = 16.dp)
 ) {
-
+    val selection = remember {
+        mutableStateOf(initialSelection?.let { options?.get(it) })
+    }
 
     Text(
         text = if (options?.isNotEmpty() == true) title else "",
         style = MaterialTheme.typography.titleMedium
     )
     SelectableOptions(
-        options = options,
-        initialSelection = initialSelection,
-        onSelectionChange = onSelectionChange,
+        options = options ?: listOf(),
         stringAdapter = {
-            it.className
-        }
+            "${it?.className} - ${it?.scheduleDayTime?.weekDay?.dayName}"
+        },
+        selectionState = selection,
+        isDeselectEnabled = true
     )
+
+    LaunchedEffect(key1 = selection){
+        snapshotFlow { selection.value }.collect {
+            onSelectionChange(it)
+        }
+    }
 }
 
 

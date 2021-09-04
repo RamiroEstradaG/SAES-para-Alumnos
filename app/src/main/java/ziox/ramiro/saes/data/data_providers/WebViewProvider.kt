@@ -196,7 +196,9 @@ class WebViewProvider(
 
     fun handleResume(jobId: String, block: () -> Unit) {
         if(javascriptInterfaceJobs[jobId]?.isResumed == false && javascriptInterfaceJobs[jobId]?.continuation?.isActive == true){
-            block()
+            kotlin.runCatching {
+                block()
+            }
             javascriptInterfaceJobs[jobId]?.isResumed = true
         }
     }

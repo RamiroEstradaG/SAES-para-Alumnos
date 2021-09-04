@@ -524,7 +524,7 @@ fun getOverallScoresDataSet(kardexData: KardexData): LineDataSet {
     val averages = kardexData.kardexPeriods.mapIndexed { i, _ ->
         Entry(i.toFloat(), kardexData.generalScoreAt(i).toFloat())
     }
-    val averageDataSet = LineDataSet(averages, "Promedio global")
+    val averageDataSet = LineDataSet(averages, "Promedio general")
     averageDataSet.color = getCurrentTheme().colors.secondary.toArgb()
     averageDataSet.setCircleColor(getCurrentTheme().primaryText.toArgb())
     averageDataSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER

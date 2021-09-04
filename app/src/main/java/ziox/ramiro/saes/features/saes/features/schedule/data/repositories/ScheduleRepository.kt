@@ -144,6 +144,9 @@ interface ScheduleRoomRepository{
     @Query("SELECT * FROM class_schedule")
     fun getMySchedule() : List<ClassSchedule>
 
+    @Query("SELECT * FROM class_schedule WHERE id = :id")
+    fun getClass(id: String): ClassSchedule?
+
     @Insert
     fun addSchedule(schedule: List<ClassSchedule>)
 

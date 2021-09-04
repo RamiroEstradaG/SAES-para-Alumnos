@@ -55,7 +55,7 @@ fun ScheduleClassView(
     canEdit: Boolean
 ) = Card(
     modifier = Modifier
-        .padding(top = hourHeight.times((classSchedule.scheduleDayTime.start.toDouble() - startHour).toFloat()))
+        .offset(y = hourHeight.times((classSchedule.scheduleDayTime.start.toDouble() - startHour).toFloat()))
         .height(hourHeight.times(classSchedule.scheduleDayTime.duration.toFloat()))
         .fillMaxWidth(),
     colors = CardDefaults.cardColors(

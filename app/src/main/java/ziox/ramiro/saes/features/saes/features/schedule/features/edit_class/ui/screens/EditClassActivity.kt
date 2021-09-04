@@ -4,9 +4,14 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
@@ -14,8 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import ziox.ramiro.saes.data.models.ValidatorState
 import ziox.ramiro.saes.data.models.validate
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.SelectableOptions
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.showHourPickerDialog
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
@@ -39,6 +47,10 @@ class EditClassActivity: AppCompatActivity() {
         if (initialClass == null){
             finish()
             return
+        }
+
+        val originalClass = runBlocking(Dispatchers.Default) {
+            LocalAppDatabase.invoke(this@EditClassActivity).scheduleRepository().getClass(initialClass.id)
         }
 
         setContent {
@@ -78,7 +90,7 @@ class EditClassActivity: AppCompatActivity() {
                 }
 
                 val dayOfWeek = remember {
-                    mutableStateOf<WeekDay?>(initialClass.scheduleDayTime.weekDay)
+                    mutableStateOf<WeekDay>(initialClass.scheduleDayTime.weekDay)
                 }
 
                 val startHour = remember {
@@ -101,33 +113,118 @@ class EditClassActivity: AppCompatActivity() {
                     )
                     SAESTextField(
                         state = groupValidator,
-                        label = "Grupo"
+                        label = "Grupo",
+                        trailing = originalClass?.group?.let {
+                            {
+                                if (it != groupValidator.value){
+                                    IconButton(
+                                        onClick = {
+                                            groupValidator.value = it
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.History,
+                                            contentDescription = "Undo",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     )
                     SAESTextField(
                         state = buildingValidator,
-                        label = "Edificio"
+                        label = "Edificio",
+                        trailing = originalClass?.building?.let {
+                            {
+                                if (it != buildingValidator.value){
+                                    IconButton(
+                                        onClick = {
+                                            buildingValidator.value = it
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.History,
+                                            contentDescription = "Undo",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     )
                     SAESTextField(
                         state = classroomValidator,
-                        label = "Salón"
+                        label = "Salón",
+                        trailing = originalClass?.classroom?.let {
+                            {
+                                if (it != classroomValidator.value){
+                                    IconButton(
+                                        onClick = {
+                                            classroomValidator.value = it
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.History,
+                                            contentDescription = "Undo",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     )
                     SAESTextField(
                         state = teacherNameValidator,
-                        label = "Nombre del profesor/a"
+                        label = "Nombre del profesor/a",
+                        trailing = originalClass?.teacherName?.let {
+                            {
+                                if (it != teacherNameValidator.value){
+                                    IconButton(
+                                        onClick = {
+                                            teacherNameValidator.value = it
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.History,
+                                            contentDescription = "Undo",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     )
                     Text(
                         modifier = Modifier.padding(top = 8.dp),
                         text = "Dia de la semana",
                         style = MaterialTheme.typography.titleMedium
                     )
-                    SelectableOptions(
-                        options = weekDayOptions,
-                        initialSelection = weekDayOptions.indexOf(dayOfWeek.value),
-                        stringAdapter = {
-                            it.dayName
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SelectableOptions(
+                            options = weekDayOptions,
+                            selectionState = dayOfWeek,
+                            stringAdapter = {
+                                it.dayName
+                            }
+                        )
+                        originalClass?.scheduleDayTime?.weekDay?.let {
+                            if (it != dayOfWeek.value){
+                                IconButton(
+                                    onClick = {
+                                        dayOfWeek.value = it
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.History,
+                                        contentDescription = "Undo",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
                         }
-                    ){
-                        dayOfWeek.value = it
                     }
                     SAESTextField(
                         modifier = Modifier.padding(top = 16.dp),
@@ -138,6 +235,23 @@ class EditClassActivity: AppCompatActivity() {
                             showHourPickerDialog(this@EditClassActivity, startHour.value){
                                 startHour.value = it
                             }
+                        },
+                        trailing = originalClass?.scheduleDayTime?.start?.let {
+                            {
+                                if (it != startHour.value){
+                                    IconButton(
+                                        onClick = {
+                                            startHour.value = it
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.History,
+                                            contentDescription = "Undo",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                            }
                         }
                     )
                     SAESTextField(
@@ -147,6 +261,23 @@ class EditClassActivity: AppCompatActivity() {
                         onClick = {
                             showHourPickerDialog(this@EditClassActivity, endHour.value){
                                 endHour.value = it
+                            }
+                        },
+                        trailing = originalClass?.scheduleDayTime?.end?.let {
+                            {
+                                if (it != endHour.value){
+                                    IconButton(
+                                        onClick = {
+                                            endHour.value = it
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.History,
+                                            contentDescription = "Undo",
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
                             }
                         }
                     )
