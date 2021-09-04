@@ -16,13 +16,12 @@ import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.ModeNight
 import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.collect
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.SelectableOptions
 import ziox.ramiro.saes.features.settings.view_models.PersonalSavedDataViewModel
@@ -70,14 +69,13 @@ class SettingsActivity : AppCompatActivity(){
                         )
                         SettingsSection("Sistema") {
                             SettingsItem(icon = Icons.Rounded.ModeNight, title = "Modo oscuro") {
-                                val index = nightModeOptions.indexOf(AppCompatDelegate.getDefaultNightMode())
+                                val selectedUiMode = remember {
+                                    mutableStateOf(AppCompatDelegate.getDefaultNightMode())
+                                }
                                 SelectableOptions(
                                     options = nightModeOptions,
-                                    initialSelection = if (index >= 0) {
-                                        index
-                                    } else {
-                                        0
-                                    },
+                                    selectionState = selectedUiMode,
+                                    deSelectValue = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
                                     stringAdapter = {
                                         when(it){
                                             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> "Predeterminado del sistema"
@@ -86,9 +84,15 @@ class SettingsActivity : AppCompatActivity(){
                                             else -> ""
                                         }
                                     }
-                                ) {
-                                    userPreferences.setPreference(PreferenceKeys.DefaultNightMode, it ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                                    AppCompatDelegate.setDefaultNightMode(it ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                                )
+
+                                LaunchedEffect(key1 = selectedUiMode){
+                                    snapshotFlow { selectedUiMode.value }.collect {
+                                        runOnUiThread {
+                                            userPreferences.setPreference(PreferenceKeys.DefaultNightMode, it)
+                                            AppCompatDelegate.setDefaultNightMode(it)
+                                        }
+                                    }
                                 }
                             }
                         }
