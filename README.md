@@ -54,7 +54,7 @@ La aplicación fue hecha en Jetpack Compose por lo que recomendamos usar la sigu
 - Clona el repositorio en la carpeta de preferencia.
 - Abre el proyecto desde Android Studio (version Arctic Fox y superior).
 - El proyecto basa algunas características en Firebase, así que se necesita configurar un `google-services.json` personal.
-- El proyecto contiene claves de APIs secretas de Google Admob y Google Pay en `/app/src/release/res/values/strings.xml`.
+- El proyecto contiene claves de APIs secretas de Google Admob y Google Pay en `/app/src/main/res/values/strings.xml`.
 
 
 ## Reporte de bugs y solicitud de características nuevas
