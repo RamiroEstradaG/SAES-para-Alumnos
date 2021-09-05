@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.data.data_providers
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.net.http.SslError
 import android.util.Log
@@ -35,6 +36,9 @@ import kotlin.coroutines.resumeWithException
 import kotlin.random.Random
 
 
+
+
+
 class WebViewProvider(
     context: Context,
     val path: String = "/",
@@ -49,7 +53,7 @@ class WebViewProvider(
 
     @Composable
     fun WebViewProviderDebugView() = AndroidView(
-        modifier = Modifier.height(400.dp),
+        modifier = Modifier.height(600.dp),
         factory = {
             webView
         }
@@ -297,26 +301,33 @@ class WebViewProvider(
         onPageFinished: () -> Unit
     ){
         webView.webViewClient = object : WebViewClient(){
-            override fun onReceivedHttpError(
-                view: WebView?,
-                request: WebResourceRequest?,
-                errorResponse: WebResourceResponse?
-            ) {
-                super.onReceivedHttpError(view, request, errorResponse)
-                handleResume(jobId){
-                    continuation.resumeWithException(Exception("Error HTTP ${errorResponse?.statusCode}"))
-                }
-            }
-
             override fun onReceivedSslError(
                 view: WebView?,
                 handler: SslErrorHandler?,
                 error: SslError?
             ) {
                 super.onReceivedSslError(view, handler, error)
-                handleResume(jobId){
-                    continuation.resumeWithException(Exception("Error SSL ${error?.primaryError}"))
+
+                val builder: AlertDialog.Builder = AlertDialog.Builder(webView.context)
+                val errorMessage = when (error?.primaryError) {
+                    SslError.SSL_UNTRUSTED -> "La autoridad del certificado no es confiable."
+                    SslError.SSL_EXPIRED -> "El certificado ha expirado."
+                    SslError.SSL_IDMISMATCH -> "El nombre del host no coincide."
+                    SslError.SSL_NOTYETVALID -> "El certificado aún no es válido."
+                    else -> "Error en el certificado SSL"
                 }
+
+                builder.setTitle("Error en el certificado SSL")
+                builder.setMessage("$errorMessage ¿Quieres continuar?")
+                builder.setPositiveButton("Continuar") { _, _ -> handler?.proceed() }
+                builder.setNegativeButton("Cancelar") { _, _ ->
+                    handler?.cancel()
+                    handleResume(jobId){
+                        continuation.resumeWithException(Exception(errorMessage))
+                    }
+                }
+                val dialog: AlertDialog = builder.create()
+                dialog.show()
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {

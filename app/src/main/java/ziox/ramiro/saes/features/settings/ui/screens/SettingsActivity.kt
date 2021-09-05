@@ -39,6 +39,7 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.SelectableOptions
 import ziox.ramiro.saes.features.settings.view_models.PersonalSavedDataViewModel
 import ziox.ramiro.saes.ui.components.AsyncButton
+import ziox.ramiro.saes.ui.components.BaseButton
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.InfoSnackbar
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
@@ -67,13 +68,21 @@ class SettingsActivity : AppCompatActivity(){
 
         setContent {
             SAESParaAlumnosTheme {
-                Scaffold { paddingValues ->
-                    val nightModeOptions = listOf(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES)
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(paddingValues)
-                            .verticalScroll(rememberScrollState())
+                val nightModeOptions = listOf(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES)
+                val showDeleteConfirmation = remember {
+                    mutableStateOf(false)
+                }
+                val isFirebaseEnabled = remember {
+                    mutableStateOf(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false))
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Column(
+                        Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
                     ) {
                         Text(
                             text = "Configuración",
@@ -110,41 +119,74 @@ class SettingsActivity : AppCompatActivity(){
                                     }
                                 }
                             }
-                            SettingsSection("Widgets") {
-                                val sliderValue = remember {
-                                    mutableFloatStateOf(userPreferences.getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0).toFloat())
+                        }
+                        SettingsSection("Widgets") {
+                            val sliderValue = remember {
+                                mutableStateOf(userPreferences.getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0).toFloat())
+                            }
+                            SettingsItem(icon = Icons.Rounded.Tune, title = "Calibración del Widget \"Horario semanal\" (${sliderValue.value.toInt()})") {
+                                Slider(
+                                    value = sliderValue.component1(),
+                                    valueRange = -100f..100f,
+                                    onValueChange = sliderValue.component2(),
+                                    onValueChangeFinished = {
+                                        userPreferences.setPreference(PreferenceKeys.ScheduleWidgetLeveling, sliderValue.value.toInt())
+                                        updateWidgets()
+                                    }
+                                )
+                            }
+                        }
+                        if(isFirebaseEnabled.value){
+                            SettingsSection("Datos almacenados en la nube") {
+                                AsyncButton(
+                                    text = "Descargar mis datos",
+                                    icon = Icons.Rounded.CloudDownload,
+                                    isLoading = personalSavedDataViewModel.isDownloading.value
+                                ) {
+                                    permissionsLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                 }
-                                SettingsItem(icon = Icons.Rounded.Tune, title = "Calibración del Widget \"Horario semanal\" (${sliderValue.value.toInt()})") {
-                                    Slider(
-                                        value = sliderValue.component1(),
-                                        valueRange = -100f..100f,
-                                        onValueChange = sliderValue.component2(),
-                                        onValueChangeFinished = {
-                                            userPreferences.setPreference(PreferenceKeys.ScheduleWidgetLeveling, sliderValue.floatValue.toInt())
-                                            updateWidgets()
-                                        }
-                                    )
+                                BaseButton(
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    text = "Eliminar mis datos",
+                                    icon = Icons.Rounded.CloudOff,
+                                ) {
+                                    showDeleteConfirmation.value = true
                                 }
                             }
-                            if(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
-                                SettingsSection("Datos almacenados en la nube") {
+                        }
+
+                        if (showDeleteConfirmation.value){
+                            AlertDialog(
+                                onDismissRequest = { showDeleteConfirmation.value = false },
+                                title = {
+                                        Text(
+                                            text = "Eliminar mis datos",
+                                            style = MaterialTheme.typography.h5
+                                        )
+                                },
+                                text = {
+                                    Text(text = "¿Deseas eliminar tus datos de servidores externos?")
+                                },
+                                confirmButton = {
                                     AsyncButton(
-                                        text = "Descargar mis datos",
-                                        icon = Icons.Rounded.CloudDownload,
-                                        isLoading = personalSavedDataViewModel.isDownloading.value
-                                    ) {
-                                        permissionsLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                    }
-                                    AsyncButton(
-                                        modifier = Modifier.padding(top = 8.dp),
-                                        text = "Eliminar mis datos",
-                                        icon = Icons.Rounded.CloudOff,
+                                        text = "Eliminar",
                                         isLoading = personalSavedDataViewModel.isDeleting.value
                                     ) {
-                                        personalSavedDataViewModel.deleteMyPersonalData()
+                                        personalSavedDataViewModel.deleteMyPersonalData().invokeOnCompletion {
+                                            showDeleteConfirmation.value = false
+                                            isFirebaseEnabled.value = false
+                                        }
+                                    }
+                                },
+                                dismissButton = {
+                                    ziox.ramiro.saes.ui.components.TextButton(
+                                        text = "Cancelar",
+                                        textColor = getCurrentTheme().info
+                                    ){
+                                        showDeleteConfirmation.value = false
                                     }
                                 }
-                            }
+                            )
                         }
                     }
                 }

@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import kotlinx.coroutines.flow.collect
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
@@ -53,13 +56,17 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             SAESParaAlumnosTheme {
-                authViewModel.isLoggedIn.value?.let {
-                    if(it){
-                        startActivity(Intent(this@MainActivity, SAESActivity::class.java))
-                    }else{
-                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                LaunchedEffect(authViewModel.isLoggedIn){
+                    snapshotFlow { authViewModel.isLoggedIn.value }.collect {
+                        it?.let {
+                            if(it){
+                                startActivity(Intent(this@MainActivity, SAESActivity::class.java))
+                            }else{
+                                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                            }
+                            finish()
+                        }
                     }
-                    finish()
                 }
 
                 Scaffold { paddingValues ->
