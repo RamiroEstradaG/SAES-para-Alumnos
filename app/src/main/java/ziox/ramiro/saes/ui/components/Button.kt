@@ -74,16 +74,29 @@ fun BaseButton(
     modifier: Modifier = Modifier,
     text: String = "button",
     isHighEmphasis: Boolean = false,
+    icon: ImageVector? = null,
     onClick: () -> Unit = {}
 ) = Button(
     modifier = modifier,
     onClick = onClick,
     shape = RoundedCornerShape(100),
 ) {
-    Text(
-        text = text.uppercase(),
-        modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
-    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if(icon != null){
+            Icon(
+                modifier = Modifier.padding(end = 16.dp),
+                imageVector = icon,
+                contentDescription = "Button icon",
+                tint = MaterialTheme.colors.onPrimary
+            )
+        }
+        Text(
+            text = text.uppercase(),
+            modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
+        )
+    }
 }
 
 

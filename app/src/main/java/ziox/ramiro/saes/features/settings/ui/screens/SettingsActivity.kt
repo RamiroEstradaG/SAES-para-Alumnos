@@ -26,6 +26,7 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.SelectableOptions
 import ziox.ramiro.saes.features.settings.view_models.PersonalSavedDataViewModel
 import ziox.ramiro.saes.ui.components.AsyncButton
+import ziox.ramiro.saes.ui.components.BaseButton
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.InfoSnackbar
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
@@ -55,6 +56,13 @@ class SettingsActivity : AppCompatActivity(){
         setContent {
             SAESParaAlumnosTheme {
                 val nightModeOptions = listOf(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES)
+                val showDeleteConfirmation = remember {
+                    mutableStateOf(false)
+                }
+                val isFirebaseEnabled = remember {
+                    mutableStateOf(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false))
+                }
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -112,7 +120,7 @@ class SettingsActivity : AppCompatActivity(){
                                 )
                             }
                         }
-                        if(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
+                        if(isFirebaseEnabled.value){
                             SettingsSection("Datos almacenados en la nube") {
                                 AsyncButton(
                                     text = "Descargar mis datos",
@@ -121,15 +129,48 @@ class SettingsActivity : AppCompatActivity(){
                                 ) {
                                     permissionsLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                 }
-                                AsyncButton(
+                                BaseButton(
                                     modifier = Modifier.padding(top = 8.dp),
                                     text = "Eliminar mis datos",
                                     icon = Icons.Rounded.CloudOff,
-                                    isLoading = personalSavedDataViewModel.isDeleting.value
                                 ) {
-                                    personalSavedDataViewModel.deleteMyPersonalData()
+                                    showDeleteConfirmation.value = true
                                 }
                             }
+                        }
+
+                        if (showDeleteConfirmation.value){
+                            AlertDialog(
+                                onDismissRequest = { showDeleteConfirmation.value = false },
+                                title = {
+                                        Text(
+                                            text = "Eliminar mis datos",
+                                            style = MaterialTheme.typography.h5
+                                        )
+                                },
+                                text = {
+                                    Text(text = "¿Deseas eliminar tus datos de servidores externos?")
+                                },
+                                confirmButton = {
+                                    AsyncButton(
+                                        text = "Eliminar",
+                                        isLoading = personalSavedDataViewModel.isDeleting.value
+                                    ) {
+                                        personalSavedDataViewModel.deleteMyPersonalData().invokeOnCompletion {
+                                            showDeleteConfirmation.value = false
+                                            isFirebaseEnabled.value = false
+                                        }
+                                    }
+                                },
+                                dismissButton = {
+                                    ziox.ramiro.saes.ui.components.TextButton(
+                                        text = "Cancelar",
+                                        textColor = getCurrentTheme().info
+                                    ){
+                                        showDeleteConfirmation.value = false
+                                    }
+                                }
+                            )
                         }
                     }
                 }
