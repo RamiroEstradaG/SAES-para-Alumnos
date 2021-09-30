@@ -27,4 +27,16 @@
         <item name="colorControlHighlight">@color/colorRipple</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
+
+    <style name="DialogAlert" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:buttonBarButtonStyle">@style/ButtonAlertDialog</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ButtonAlertDialog</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ButtonAlertDialog</item>
+    </style>
+
+    <style name="ButtonAlertDialog" parent="Widget.MaterialComponents.Button.TextButton.Dialog.Flush">
+        <item name="android:textColor">@color/colorSecondary</item>
+    </style>
 </resources>

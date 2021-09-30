@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
@@ -100,7 +99,8 @@ class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
                         }
                     }
                 }
-                ErrorSnackbar(listOf(schoolScheduleViewModel.error, schoolScheduleViewModel.filterError).merge())
+                ErrorSnackbar(schoolScheduleViewModel.error)
+                ErrorSnackbar(schoolScheduleViewModel.filterError)
             }
         }
     }

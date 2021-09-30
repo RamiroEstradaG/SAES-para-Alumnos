@@ -15,8 +15,8 @@ android {
         applicationId "ziox.ramiro.saes"
         minSdk 23
         targetSdk 30
-        versionCode 114
-        versionName "2.0.0-hotfix.6"
+        versionCode 115
+        versionName "2.0.0-hotfix.7"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -48,6 +48,10 @@ android {
     }
 }
 
+kotlin.sourceSets.all {
+    languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+}
+
 dependencies {
     def activity_version = "1.3.1"
     def room_version = "2.3.0"
@@ -63,7 +67,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-functions'
 
-    implementation 'com.google.android.gms:play-services-ads:20.3.0'
+    implementation 'com.google.android.gms:play-services-ads:20.4.0'
     implementation 'com.anjlab.android.iab.v3:library:1.0.44'
 
     kapt "androidx.room:room-compiler:$room_version"
@@ -89,7 +93,7 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.3.6"
 
 
-    implementation 'com.google.android.play:core:1.10.0'
+    implementation 'com.google.android.play:core:1.10.2'
     implementation 'com.google.android.play:core-ktx:1.8.1'
     implementation 'com.google.android.material:material:1.4.0'
 

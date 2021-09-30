@@ -106,7 +106,8 @@ fun ETSCalendar(
         }
     }
 
-    ErrorSnackbar(listOf(etsCalendarViewModel.error, etsCalendarViewModel.filterError).merge())
+    ErrorSnackbar(etsCalendarViewModel.error)
+    ErrorSnackbar(etsCalendarViewModel.filterError)
 }
 
 @Composable

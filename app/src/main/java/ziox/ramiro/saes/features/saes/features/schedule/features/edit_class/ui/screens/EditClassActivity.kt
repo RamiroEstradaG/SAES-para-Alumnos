@@ -90,7 +90,7 @@ class EditClassActivity: AppCompatActivity() {
                 }
 
                 val dayOfWeek = remember {
-                    mutableStateOf<WeekDay>(initialClass.scheduleDayTime.weekDay)
+                    mutableStateOf(initialClass.scheduleDayTime.weekDay)
                 }
 
                 val startHour = remember {
@@ -308,7 +308,7 @@ class EditClassActivity: AppCompatActivity() {
                                     initialClass.color,
                                     false,
                                     ScheduleDayTime(
-                                        weekDay = if(dayOfWeek.component1() == null) WeekDay.UNKNOWN else dayOfWeek.component1()!!,
+                                        weekDay = dayOfWeek.value,
                                         start = startHour.value,
                                         end = endHour.value
                                     )

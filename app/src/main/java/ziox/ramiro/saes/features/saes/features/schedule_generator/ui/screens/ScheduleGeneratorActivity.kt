@@ -27,7 +27,6 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassScheduleCollection
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.GeneratorClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleHeader
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleWeekContainer
@@ -104,7 +103,6 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
                         if(scheduleGeneratorViewModel.scheduleItems.value != null){
                             scheduleGeneratorViewModel.scheduleItems.value?.let {
                                 if(it.isNotEmpty()){
-                                    val colors = arrayListOf<GeneratorClassSchedule>()
                                     val classSchedules = it.map {schedule -> ClassSchedule.fromGeneratorClassSchedule(schedule) }
                                     val classCollections = ClassScheduleCollection.fromClassScheduleList(classSchedules)
                                     LazyColumn(

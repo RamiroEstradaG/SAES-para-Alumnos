@@ -45,6 +45,7 @@ class AgendaListViewModel(
         isAddingAgenda.value = false
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun removeAgenda(calendarId: String) = viewModelScope.launch {
         isRemovingAgenda.value = (isRemovingAgenda.value.clone() as ArrayList<String>).also {
             it.add(calendarId)
