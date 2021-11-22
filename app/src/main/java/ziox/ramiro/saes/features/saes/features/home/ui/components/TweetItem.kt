@@ -25,11 +25,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.accompanist.coil.rememberCoilPainter
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.LocalImageLoader
+import coil.compose.rememberImagePainter
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.features.saes.features.home.data.models.Tweet
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun TweetItem(tweet: Tweet) {
     Card(
@@ -52,7 +55,10 @@ fun TweetItem(tweet: Tweet) {
                     modifier = Modifier
                         .height(180.dp)
                         .fillMaxWidth(),
-                    painter = rememberCoilPainter(tweet.image),
+                    painter = rememberImagePainter(
+                        data = tweet.image,
+                        imageLoader = LocalImageLoader.current,
+                    ),
                     contentScale = ContentScale.Crop,
                     contentDescription = "Tweet and image"
                 )
@@ -156,13 +162,17 @@ private fun NameAndUserName(tweet: Tweet) {
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun UserAvatar(tweet: Tweet) {
     Image(
         modifier = Modifier
             .size(42.dp)
             .clip(CircleShape),
-        painter = rememberCoilPainter(tweet.user.profile_image_url),
+        painter = rememberImagePainter(
+            data = tweet.user.profile_image_url,
+            imageLoader = LocalImageLoader.current,
+        ),
         contentScale = ContentScale.Crop,
         contentDescription = "User avatar"
     )

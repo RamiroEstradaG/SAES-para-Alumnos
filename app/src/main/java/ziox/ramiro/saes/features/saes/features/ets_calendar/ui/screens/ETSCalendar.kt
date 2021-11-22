@@ -18,18 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
-import ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories.ETSCalendarWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets_calendar.view_models.ETSCalendarViewModel
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
@@ -40,9 +36,7 @@ import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ETSCalendar(
-    etsCalendarViewModel: ETSCalendarViewModel = viewModel(
-        factory = viewModelFactory { ETSCalendarViewModel(ETSCalendarWebViewRepository(LocalContext.current)) }
-    )
+    etsCalendarViewModel: ETSCalendarViewModel = viewModel()
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()

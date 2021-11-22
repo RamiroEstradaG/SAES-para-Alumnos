@@ -165,4 +165,4 @@ fun Typography(theme: ComposableTheme) = Typography(
                 fontWeight = FontWeight.SemiBold
         ),
         defaultFontFamily = Nunito
-);
+)

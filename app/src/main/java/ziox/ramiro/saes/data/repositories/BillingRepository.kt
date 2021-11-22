@@ -5,10 +5,13 @@ import android.content.Context
 import android.util.Log
 import com.anjlab.android.iab.v3.BillingProcessor
 import com.anjlab.android.iab.v3.PurchaseData
-import com.anjlab.android.iab.v3.TransactionDetails
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import com.anjlab.android.iab.v3.PurchaseInfo
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import ziox.ramiro.saes.R
+import kotlin.coroutines.suspendCoroutine
 
 interface BillingRepository {
     val purchase: SharedFlow<PurchaseData?>
@@ -24,7 +27,7 @@ class BillingGooglePayRepository(
     private val context: Context
 ): BillingRepository, BillingProcessor.IBillingHandler {
     private val client = BillingProcessor.newBillingProcessor(context, context.getString(R.string.billing_key), this)
-    private val initializeFlow = MutableStateFlow(false)
+    private val initializeFlow = MutableStateFlow<Boolean?>(null)
 
     init {
         client.initialize()
@@ -40,8 +43,20 @@ class BillingGooglePayRepository(
     }
 
     override suspend fun hasDonated(): Boolean{
-        waitToInitialize()
-        client.loadOwnedPurchasesFromGoogle()
+        if(!waitToInitialize()){
+            return false
+        }
+        suspendCoroutine<Boolean> {
+            client.loadOwnedPurchasesFromGoogleAsync(object : BillingProcessor.IPurchasesResponseListener{
+                override fun onPurchasesSuccess() {
+                    it.resumeWith(Result.success(true))
+                }
+
+                override fun onPurchasesError() {
+                    it.resumeWith(Result.failure(Exception()))
+                }
+            })
+        }
         return client.listOwnedProducts().isNotEmpty()
     }
 
@@ -49,9 +64,10 @@ class BillingGooglePayRepository(
         client.release()
     }
 
-    override fun onProductPurchased(productId: String, details: TransactionDetails?) {
-        _purchase.value = details?.purchaseInfo?.purchaseData
+    override fun onProductPurchased(productId: String, details: PurchaseInfo?) {
+        _purchase.value = details?.purchaseData
     }
+
 
     override fun onPurchaseHistoryRestored() {
         Log.d("Billing", "Purchase History Restored")
@@ -60,13 +76,10 @@ class BillingGooglePayRepository(
     override fun onBillingError(errorCode: Int, error: Throwable?) {
         error?.printStackTrace()
         _billingError.value = error
+        initializeFlow.tryEmit(false)
     }
 
-    private suspend fun waitToInitialize() = if(initializeFlow.value){
-        true
-    }else{
-        initializeFlow.first { it }
-    }
+    private suspend fun waitToInitialize(): Boolean = initializeFlow.value ?: initializeFlow.first { it != null } ?: false
 
     override fun onBillingInitialized() {
         Log.d("Billing", "Billing initialized")

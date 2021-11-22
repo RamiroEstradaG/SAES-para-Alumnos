@@ -19,23 +19,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassScheduleCollection
 import ziox.ramiro.saes.features.saes.features.schedule_generator.data.models.AddClassToScheduleGeneratorContract
-import ziox.ramiro.saes.features.saes.features.school_schedule.data.repositories.SchoolScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.school_schedule.view_models.SchoolScheduleViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 
+@AndroidEntryPoint
 class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
-    private val schoolScheduleViewModel: SchoolScheduleViewModel by viewModels {
-        viewModelFactory { SchoolScheduleViewModel(SchoolScheduleWebViewRepository(this)) }
-    }
+    private val schoolScheduleViewModel: SchoolScheduleViewModel by viewModels()
 
     @OptIn(ExperimentalMaterialApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {

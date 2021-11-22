@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import ziox.ramiro.saes.data.models.ValidatorState
@@ -36,6 +37,7 @@ import ziox.ramiro.saes.ui.components.SAESTextField
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import java.util.*
 
+@AndroidEntryPoint
 class EditClassActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

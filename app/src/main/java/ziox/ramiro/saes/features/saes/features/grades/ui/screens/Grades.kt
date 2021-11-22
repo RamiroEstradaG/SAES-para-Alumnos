@@ -9,13 +9,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.components.GradeItem
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
@@ -24,9 +21,7 @@ import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
 @Composable
 fun Grades(
-    gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(LocalContext.current)) }
-    )
+    gradesViewModel: GradesViewModel = viewModel()
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)

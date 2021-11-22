@@ -12,6 +12,7 @@
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/drawable/ic_play_arrow_black_24dp.xml" value="0.1485" />
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/drawable/widget_horario_semanal_gradient.xml" value="0.1485" />
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/sample_horario_clase_item.xml" value="0.2318840579710145" />
+        <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_agenda.xml" value="0.20260416666666667" />
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_horario_list.xml" value="0.2318840579710145" />
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_horario_max.xml" value="0.18645833333333334" />
         <entry key="..\:/Github/SAES-para-Alumnos/app/src/main/res/layout/widget_schedule_background_item.xml" value="0.2318840579710145" />
@@ -29,7 +30,7 @@
       <item index="0" class="java.lang.String" itemvalue="android.webkit.JavascriptInterface" />
     </list>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

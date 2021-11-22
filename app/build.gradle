@@ -5,18 +5,19 @@ plugins {
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
     id 'com.google.firebase.firebase-perf'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
-    compileSdk 30
+    compileSdk 31
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "ziox.ramiro.saes"
         minSdk 23
-        targetSdk 30
+        targetSdk 31
         versionCode 115
-        versionName "2.0.0-hotfix.7"
+        versionName "2.1.0"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -31,6 +32,7 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -53,7 +55,7 @@ kotlin.sourceSets.all {
 }
 
 dependencies {
-    def activity_version = "1.3.1"
+    def activity_version = '1.4.0'
     def room_version = "2.3.0"
 
     implementation platform('com.google.firebase:firebase-bom:28.2.0')
@@ -67,17 +69,22 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-functions'
 
-    implementation 'com.google.android.gms:play-services-ads:20.4.0'
-    implementation 'com.anjlab.android.iab.v3:library:1.0.44'
+    implementation("org.jsoup:jsoup:1.14.3")
+
+    kapt "com.google.dagger:hilt-android-compiler:2.40.1"
+    implementation "com.google.dagger:hilt-android:2.40.1"
+
+    implementation 'com.google.android.gms:play-services-ads:20.5.0'
+    implementation 'com.anjlab.android.iab.v3:library:2.0.3'
 
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.5.10"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.0"
 
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation "androidx.multidex:multidex:2.0.1"
 
     implementation "androidx.compose.ui:ui:$compose_version"
@@ -85,33 +92,33 @@ dependencies {
 
     implementation "androidx.compose.foundation:foundation:$compose_version"
 
-    implementation 'com.google.accompanist:accompanist-coil:0.13.0'
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.13.0"
+    implementation 'com.google.accompanist:accompanist-coil:0.15.0'
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.20.0"
 
     implementation "androidx.activity:activity-compose:$activity_version"
     implementation "androidx.activity:activity-ktx:$activity_version"
-    implementation "androidx.fragment:fragment-ktx:1.3.6"
+    implementation 'androidx.fragment:fragment-ktx:1.4.0'
 
 
     implementation 'com.google.android.play:core:1.10.2'
     implementation 'com.google.android.play:core-ktx:1.8.1'
     implementation 'com.google.android.material:material:1.4.0'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.2-native-mt'
 
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
 
     kapt "com.squareup.moshi:moshi-kotlin-codegen:1.12.0"
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation "com.squareup.okhttp3:okhttp:4.9.0"
-    implementation "com.squareup.retrofit2:converter-moshi:2.4.0"
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
     implementation "com.squareup.moshi:moshi-kotlin:1.12.0"
 
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
 
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
     implementation 'com.journeyapps:zxing-android-embedded:3.5.0'

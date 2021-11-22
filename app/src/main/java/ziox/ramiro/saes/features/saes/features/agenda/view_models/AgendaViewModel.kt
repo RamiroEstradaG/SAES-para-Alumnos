@@ -13,7 +13,7 @@ import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
 import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 
-class AgendaViewModel(
+class AgendaViewModel constructor(
     private val agendaRepository: AgendaRepository,
     private val calendarId: String?
 ) : ViewModel() {
@@ -29,7 +29,7 @@ class AgendaViewModel(
         error.dismissAfterTimeout()
     }
 
-    fun fetchAgendaEvents(calendarId: String) = viewModelScope.launch {
+    private fun fetchAgendaEvents(calendarId: String) = viewModelScope.launch {
         kotlin.runCatching {
             agendaRepository.getEvents(calendarId).catch {
                 error.value = "Error al obtener los eventos"

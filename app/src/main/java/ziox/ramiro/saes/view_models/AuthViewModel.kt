@@ -4,18 +4,19 @@ import android.webkit.CookieManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.data_providers.WebViewProvider.Companion.DEFAULT_TIMEOUT
 import ziox.ramiro.saes.data.models.Auth
 import ziox.ramiro.saes.data.models.Captcha
 import ziox.ramiro.saes.data.repositories.AuthRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    initCaptcha: Boolean = false
 ) : ViewModel(){
     val captcha = mutableStateOf<Captcha?>(null)
     val auth = mutableStateOf<Auth?>(Auth.Empty)
@@ -23,12 +24,18 @@ class AuthViewModel(
     val isLoggedIn = mutableStateOf<Boolean?>(null)
     private var isCaptchaLoading = false
 
-    init {
-        error.dismissAfterTimeout()
-        checkSession()
+    constructor(
+        authRepository: AuthRepository,
+        initCaptcha: Boolean
+    ): this(authRepository){
         if (initCaptcha){
             fetchCaptcha()
         }
+    }
+
+    init {
+        error.dismissAfterTimeout()
+        checkSession()
     }
 
     fun fetchCaptcha() {
@@ -87,10 +94,8 @@ class AuthViewModel(
                 isLoggedIn.value = it
             }.onFailure {
                 checkSession()
-                error.value = if(it is TimeoutCancellationException){
-                    "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)}s)"
-                }else{
-                    "Error al revisar la sesión"
+                if (it !is TimeoutCancellationException) {
+                    error.value = "Error al revisar la sesión"
                 }
             }
         }

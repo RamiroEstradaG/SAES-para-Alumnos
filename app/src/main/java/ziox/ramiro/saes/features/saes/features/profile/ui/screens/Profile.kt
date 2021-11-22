@@ -23,17 +23,14 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.request.ImageRequest
-import com.google.accompanist.coil.rememberCoilPainter
+import coil.annotation.ExperimentalCoilApi
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.data.data_providers.rememberJsoupPainter
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
-import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.BarcodeCode39
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.QRCode
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
@@ -44,9 +41,7 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun Profile(
-    profileViewModel: ProfileViewModel = viewModel(
-        factory = viewModelFactory { ProfileViewModel(ProfileWebViewRepository(LocalContext.current)) }
-    )
+    profileViewModel: ProfileViewModel = viewModel()
 ) {
     val headerHeight = remember {
         mutableStateOf(280.dp)
@@ -164,6 +159,7 @@ fun Profile(
 }
 
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileAppBar(
     profileUser: ProfileUser,
@@ -196,11 +192,10 @@ fun ProfileAppBar(
                 modifier = Modifier
                     .clip(CircleShape)
                     .size(42.dp),
-                painter = rememberCoilPainter(
-                    request = ImageRequest
-                        .Builder(LocalContext.current)
-                        .data(profileUser.profilePicture.url)
-                        .headers(profileUser.profilePicture.headers).build()),
+                painter = rememberJsoupPainter(
+                    imageUrl = profileUser.profilePicture.url,
+                    headers = profileUser.profilePicture.headers
+                ),
                 contentDescription = "Profile picture",
                 contentScale = ContentScale.Crop
             )
@@ -251,12 +246,9 @@ fun ProfileAppBar(
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .size(150.dp),
-                            painter = rememberCoilPainter(
-                                request = ImageRequest
-                                    .Builder(LocalContext.current)
-                                    .data(profileUser.profilePicture.url)
-                                    .headers(profileUser.profilePicture.headers).build(),
-                                fadeIn = true
+                            painter = rememberJsoupPainter(
+                                imageUrl = profileUser.profilePicture.url,
+                                headers = profileUser.profilePicture.headers
                             ),
                             contentDescription = "Profile picture",
                             contentScale = ContentScale.Crop

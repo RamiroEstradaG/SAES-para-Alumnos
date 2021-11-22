@@ -11,7 +11,7 @@ class SelectSchoolContract : ActivityResultContract<Unit, School?>() {
         const val RESULT = "select_school_result"
     }
 
-    override fun createIntent(context: Context, input: Unit?)
+    override fun createIntent(context: Context, input: Unit)
         = Intent(context, SelectSchoolActivity::class.java)
 
     override fun parseResult(resultCode: Int, intent: Intent?): School? {

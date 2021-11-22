@@ -12,16 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ExperimentalGraphicsApi
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.occupancy.data.models.ClassOccupancy
-import ziox.ramiro.saes.features.saes.features.occupancy.data.repositories.OccupancyWebViewRepository
 import ziox.ramiro.saes.features.saes.features.occupancy.view_models.OccupancyViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
@@ -31,9 +28,7 @@ import ziox.ramiro.saes.ui.theme.getCurrentTheme
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Occupancy(
-    occupancyViewModel: OccupancyViewModel = viewModel(
-        factory = viewModelFactory { OccupancyViewModel(OccupancyWebViewRepository(LocalContext.current)) }
-    )
+    occupancyViewModel: OccupancyViewModel = viewModel()
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()

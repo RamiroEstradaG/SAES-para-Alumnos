@@ -14,11 +14,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
-import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleHeader
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleWeekContainer
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
@@ -31,12 +28,7 @@ val today = WeekDay.today()
 
 @Composable
 fun Schedule(
-    scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(
-            ScheduleWebViewRepository(LocalContext.current),
-            LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()
-        ) }
-    )
+    scheduleViewModel: ScheduleViewModel = viewModel()
 ) {
     if(!scheduleViewModel.isLoading.value){
         LocalContext.current.updateWidgets()

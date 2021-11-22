@@ -8,20 +8,18 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.request.ImageRequest
-import com.google.accompanist.coil.rememberCoilPainter
+import ziox.ramiro.saes.data.data_providers.rememberJsoupPainter
 import ziox.ramiro.saes.utils.MutableStateWithValidation
 import ziox.ramiro.saes.view_models.AuthViewModel
 
@@ -46,13 +44,7 @@ fun CaptchaInput(
                     .size(captchaWidth, captchaWidth.div(2f))
                     .clip(MaterialTheme.shapes.medium),
                 contentScale = ContentScale.Crop,
-                painter = rememberCoilPainter(
-                    fadeIn = true,
-                    request = ImageRequest
-                        .Builder(LocalContext.current)
-                        .data(it.url)
-                        .headers(it.headers).build(),
-                ),
+                painter = rememberJsoupPainter(imageUrl = it.url, headers = it.headers),
                 contentDescription = "Captcha"
             )
         }

@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.launch
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.*
@@ -26,6 +25,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
@@ -37,15 +38,16 @@ import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.*
 import ziox.ramiro.saes.view_models.AuthViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
-    private val authViewModel: AuthViewModel by viewModels {
-        viewModelFactory { AuthViewModel(AuthWebViewRepository(this), true) }
-    }
+    private lateinit var authViewModel: AuthViewModel
 
     var isAuthDataSaved: Boolean = false
     private val schoolUrl = MutableStateFlow("")
-    private lateinit var userPreferences : UserPreferences
+
+    @Inject lateinit var userPreferences : UserPreferences
 
     private val selectSchoolLauncher = registerForActivityResult(SelectSchoolContract()){
         if (it == null) return@registerForActivityResult
@@ -58,7 +60,11 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        userPreferences = UserPreferences.invoke(this)
+        authViewModel = ViewModelProvider(
+            viewModelStore,
+            viewModelFactory { AuthViewModel(AuthWebViewRepository(this), true) }
+        )[AuthViewModel::class.java]
+
         isAuthDataSaved = userPreferences.authData.value.isAuthDataSaved()
 
         setContent {

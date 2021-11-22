@@ -319,14 +319,26 @@ data class ScheduleDayTime(
         fun parse(hourRange: String, weekDay: WeekDay = WeekDay.UNKNOWN): List<ScheduleDayTime>{
             val hours = Regex("[0-9]+:[0-9]+\\s*-\\s*[0-9]+:[0-9]+").findAll(hourRange)
 
-            return hours.map {
+            val hoursList = hours.map {
                 val values = it.value.replace(" ", "").split("-")
                 ScheduleDayTime(
                     Hour.parse(values[0])!!,
                     Hour.parse(values[1])!!,
                     weekDay
                 )
-            }.toList()
+            }.toMutableList()
+
+            val hoursCopy = hoursList.toList()
+
+            hoursCopy.forEachIndexed { i, hourCheck ->
+                hoursCopy.subList(i+1, hoursCopy.size).forEach {
+                    if (it == hourCheck){
+                        hoursList.remove(it)
+                    }
+                }
+            }
+
+            return hoursList
         }
 
         override fun createFromParcel(parcel: Parcel): ScheduleDayTime {

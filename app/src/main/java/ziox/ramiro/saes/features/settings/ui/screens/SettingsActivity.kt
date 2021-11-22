@@ -21,8 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.SelectableOptions
 import ziox.ramiro.saes.features.settings.view_models.PersonalSavedDataViewModel
 import ziox.ramiro.saes.ui.components.AsyncButton
@@ -35,10 +35,9 @@ import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.updateWidgets
 
+@AndroidEntryPoint
 class SettingsActivity : AppCompatActivity(){
-    private val personalSavedDataViewModel: PersonalSavedDataViewModel by viewModels{
-        viewModelFactory { PersonalSavedDataViewModel(this) }
-    }
+    private val personalSavedDataViewModel: PersonalSavedDataViewModel by viewModels()
 
     private val permissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){
         if (it){

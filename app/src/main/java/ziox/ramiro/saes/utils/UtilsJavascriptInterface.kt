@@ -1,7 +1,6 @@
 package ziox.ramiro.saes.utils
 
 import android.webkit.JavascriptInterface
-import org.json.JSONArray
 import org.json.JSONObject
 
 class UtilsJavascriptInterface {

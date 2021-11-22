@@ -113,8 +113,10 @@ class WebViewProvider(
         private fun createWebView(context: Context) : WebView {
             val webView = WebView(context)
 
-            webView.settings.javaScriptEnabled = true
-            webView.settings.domStorageEnabled = true
+            webView.settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+            }
 
             webView.webChromeClient = object : WebChromeClient(){
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {

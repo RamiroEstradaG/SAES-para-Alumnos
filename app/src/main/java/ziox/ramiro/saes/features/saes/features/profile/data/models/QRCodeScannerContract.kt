@@ -10,7 +10,7 @@ import com.google.zxing.integration.android.IntentResult
 
 
 class QRCodeScannerContract : ActivityResultContract<Unit, String?>() {
-    override fun createIntent(context: Context, input: Unit?) : Intent
+    override fun createIntent(context: Context, input: Unit) : Intent
         = IntentIntegrator(context as Activity)
             .setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
             .setBarcodeImageEnabled(true)

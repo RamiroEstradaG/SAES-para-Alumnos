@@ -35,7 +35,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.collect
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaCalendar
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaEventType
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
@@ -43,7 +42,6 @@ import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaWe
 import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaListViewModel
 import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaViewModel
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.*
-import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FlexView
@@ -78,9 +76,7 @@ fun Agenda(){
 
 @Composable
 fun CalendarList(
-    agendaListViewModel: AgendaListViewModel = viewModel(
-        factory = viewModelFactory { AgendaListViewModel(AgendaWebViewRepository(LocalContext.current)) }
-    ),
+    agendaListViewModel: AgendaListViewModel = viewModel(),
     selectedAgenda: MutableState<String?>
 ){
     val showAddAgendaDialog = remember {
@@ -250,9 +246,7 @@ fun AgendaListItem(
 @Composable
 fun AgendaView(
     selectedAgenda: MutableState<String?>,
-    scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current), LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()) }
-    ),
+    scheduleViewModel: ScheduleViewModel = viewModel(),
     agendaViewModel: AgendaViewModel = viewModel(
         factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(LocalContext.current), selectedAgenda.value) },
         key = selectedAgenda.value

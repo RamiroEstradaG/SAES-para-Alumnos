@@ -22,23 +22,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
-import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
-import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
-import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterRetrofitRepository
 import ziox.ramiro.saes.features.saes.features.home.ui.components.RecentActivityItem
 import ziox.ramiro.saes.features.saes.features.home.ui.components.SmallGradeItem
 import ziox.ramiro.saes.features.saes.features.home.ui.components.TweetItem
 import ziox.ramiro.saes.features.saes.features.home.view_models.HomeViewModel
-import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
 import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewModel
 import ziox.ramiro.saes.features.saes.features.performance.ui.screens.KardexChart
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getCurrentClass
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getNextClass
-import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
@@ -48,27 +41,12 @@ import ziox.ramiro.saes.utils.updateWidgets
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Home(
-    homeViewModel: HomeViewModel = viewModel(
-        factory = viewModelFactory {
-            HomeViewModel(
-                LocalAppDatabase.invoke(LocalContext.current).historyRepository(),
-                TwitterRetrofitRepository()
-            )
-        }
-    ),
-    gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(LocalContext.current)) }
-    ),
-    kardexViewModel: KardexViewModel = viewModel(
-        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(LocalContext.current)) }
-    ),
+    homeViewModel: HomeViewModel = viewModel(),
+    gradesViewModel: GradesViewModel = viewModel(),
+    kardexViewModel: KardexViewModel = viewModel(),
     saesViewModel: SAESViewModel = viewModel(),
-    etsViewModel: ETSViewModel = viewModel(
-        factory = viewModelFactory { ETSViewModel(ETSWebViewRepository(LocalContext.current)) }
-    ),
-    scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current),LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()) }
-    )
+    etsViewModel: ETSViewModel = viewModel(),
+    scheduleViewModel: ScheduleViewModel = viewModel()
 ) {
     Column(
         modifier = Modifier

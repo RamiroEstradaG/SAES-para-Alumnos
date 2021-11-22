@@ -38,9 +38,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import com.google.accompanist.imageloading.rememberDrawablePainter
 import com.google.android.play.core.review.ReviewManagerFactory
+import dagger.hilt.android.AndroidEntryPoint
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.BillingGooglePayRepository
 import ziox.ramiro.saes.ui.components.BaseButton
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
@@ -48,14 +47,10 @@ import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.launchUrl
 import ziox.ramiro.saes.view_models.BillingViewModel
 
-
+@AndroidEntryPoint
 class AboutActivity : AppCompatActivity() {
-    private val billingViewModel: BillingViewModel by viewModels {
-        viewModelFactory { BillingViewModel(BillingGooglePayRepository(this)) }
-    }
+    private val billingViewModel: BillingViewModel by viewModels()
 
-
-    @ExperimentalTextApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -275,7 +270,7 @@ class AboutActivity : AppCompatActivity() {
     }
 }
 
-@ExperimentalTextApi
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun LicenceItem(
     itemName: String,

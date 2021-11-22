@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -29,15 +28,10 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
-import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
-import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
 import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewModel
-import ziox.ramiro.saes.features.saes.features.performance.data.repositories.PerformanceFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.performance.view_models.PerformanceViewModel
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
@@ -50,22 +44,9 @@ import kotlin.math.max
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Performance(
-    kardexViewModel: KardexViewModel = viewModel(
-        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(LocalContext.current)) }
-    ),
-    gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(LocalContext.current)) }
-    ),
-    performanceViewModel: PerformanceViewModel = viewModel(
-        factory = viewModelFactory {
-            PerformanceViewModel(
-                PerformanceFirebaseRepository(),
-                KardexWebViewRepository(LocalContext.current),
-                UserFirebaseRepository(),
-                LocalContext.current
-            )
-        }
-    )
+    kardexViewModel: KardexViewModel = viewModel(),
+    gradesViewModel: GradesViewModel = viewModel(),
+    performanceViewModel: PerformanceViewModel = viewModel()
 ) = Crossfade(targetState = kardexViewModel.kardexData.value) {
     if(it != null){
         Box(
