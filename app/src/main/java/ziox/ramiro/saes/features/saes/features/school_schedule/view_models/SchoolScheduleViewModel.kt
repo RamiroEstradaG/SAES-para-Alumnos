@@ -2,14 +2,17 @@ package ziox.ramiro.saes.features.saes.features.school_schedule.view_models
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.data.models.FilterViewModel
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.school_schedule.data.repositories.SchoolScheduleRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
+import javax.inject.Inject
 
-class SchoolScheduleViewModel(
+@HiltViewModel
+class SchoolScheduleViewModel @Inject constructor(
     private val schoolScheduleRepository: SchoolScheduleRepository
 ) : FilterViewModel() {
     val schoolSchedule = mutableStateOf<List<ClassSchedule>?>(null)

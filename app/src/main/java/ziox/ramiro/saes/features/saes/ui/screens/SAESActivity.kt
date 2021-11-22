@@ -19,11 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
@@ -34,18 +34,15 @@ import ziox.ramiro.saes.data.repositories.BillingGooglePayRepository
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.Agenda
-import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.ui.screens.ETS
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.ets_calendar.ui.screens.ETSCalendar
-import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.ui.screens.Grades
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.screens.Home
 import ziox.ramiro.saes.features.saes.features.kardex.ui.screens.Kardex
 import ziox.ramiro.saes.features.saes.features.occupancy.ui.screens.Occupancy
 import ziox.ramiro.saes.features.saes.features.performance.ui.screens.Performance
-import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.screens.Profile
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.ui.screens.ReRegistrationAppointment
@@ -61,6 +58,7 @@ import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.view_models.AuthViewModel
 import ziox.ramiro.saes.view_models.BillingViewModel
 
+@AndroidEntryPoint
 class SAESActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModels {
         viewModelFactory { AuthViewModel(AuthWebViewRepository(this), StorageFirebaseRepository()) }
@@ -76,11 +74,9 @@ class SAESActivity : AppCompatActivity() {
         viewModelFactory { SAESViewModel(LocalAppDatabase.invoke(this).historyRepository()) }
     }
 
-    private val billingViewModel: BillingViewModel by viewModels {
-        viewModelFactory { BillingViewModel(BillingGooglePayRepository(this)) }
-    }
+    private val billingViewModel: BillingViewModel by viewModels()
 
-    private lateinit var gradesViewModel: GradesViewModel
+    private val gradesViewModel: GradesViewModel by viewModels()
 
     companion object {
         const val INTENT_EXTRA_REDIRECT = "redirect"
@@ -175,7 +171,7 @@ class SAESActivity : AppCompatActivity() {
                         Crossfade(targetState = selectedMenuItem.value) {
                             when (it) {
                                 MenuSection.HOME -> Home()
-                                MenuSection.GRADES -> Grades()
+                                MenuSection.GRADES -> Grades(gradesViewModel)
                                 MenuSection.SCHEDULE -> Schedule()
                                 MenuSection.PROFILE -> Profile()
                                 MenuSection.ETS -> ETS()

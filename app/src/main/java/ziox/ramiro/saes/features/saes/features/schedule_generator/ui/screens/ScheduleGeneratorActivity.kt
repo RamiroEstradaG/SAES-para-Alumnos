@@ -38,9 +38,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import dagger.hilt.android.AndroidEntryPoint
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassScheduleCollection
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
@@ -54,10 +53,9 @@ import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.isNetworkAvailable
 
+@AndroidEntryPoint
 class ScheduleGeneratorActivity: AppCompatActivity() {
-    private val scheduleGeneratorViewModel: ScheduleGeneratorViewModel by viewModels {
-        viewModelFactory { ScheduleGeneratorViewModel(LocalAppDatabase.invoke(this).scheduleGeneratorRepository()) }
-    }
+    private val scheduleGeneratorViewModel: ScheduleGeneratorViewModel by viewModels()
 
     private val addClassToScheduleGeneratorLauncher = registerForActivityResult(
         AddClassToScheduleGeneratorContract()

@@ -3,6 +3,7 @@ package ziox.ramiro.saes.features.saes.features.profile.view_models
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.data_providers.ScrapException
@@ -12,6 +13,7 @@ import ziox.ramiro.saes.features.saes.features.profile.data.repositories.Profile
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import java.util.Date
 
+@HiltViewModel
 class ProfileViewModel(
     private val userRepository: ProfileRepository,
     private val storageRepository: StorageRepository
@@ -26,12 +28,12 @@ class ProfileViewModel(
         fetchMyData()
     }
 
-    fun fetchMyData() {
+    private fun fetchMyData() {
         viewModelScope.launch {
             profile.value = null
 
             kotlin.runCatching {
-                userRepository.getMyUserData()
+                profileRepository.getMyUserData()
             }.onSuccess {
                 profile.value = it
             }.onFailure {

@@ -1,8 +1,10 @@
 package ziox.ramiro.saes.ui.screens
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.padding
@@ -11,11 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
@@ -28,12 +30,18 @@ import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.isUrl
 import ziox.ramiro.saes.view_models.AuthViewModel
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private lateinit var authViewModel: AuthViewModel
+    private val authViewModel: AuthViewModel by viewModels()
+
+    companion object {
+        @Volatile var context: Context? = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initServices()
+        context = this
 
         val userPreferences = UserPreferences.invoke(this)
         handleIntent(userPreferences)

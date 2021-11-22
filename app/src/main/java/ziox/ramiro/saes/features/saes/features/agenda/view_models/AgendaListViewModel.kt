@@ -3,14 +3,17 @@ package ziox.ramiro.saes.features.saes.features.agenda.view_models
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaCalendar
 import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
+import javax.inject.Inject
 
-class AgendaListViewModel(
+@HiltViewModel
+class AgendaListViewModel @Inject constructor(
     private val agendaRepository: AgendaRepository
 ) : ViewModel() {
     val agendaList = mutableStateOf<List<AgendaCalendar>?>(null)
@@ -23,7 +26,7 @@ class AgendaListViewModel(
         error.dismissAfterTimeout()
     }
 
-    fun fetchAgendas() = viewModelScope.launch {
+    private fun fetchAgendas() = viewModelScope.launch {
         kotlin.runCatching {
             agendaRepository.getCalendars().collect {
                 agendaList.value = it

@@ -3,11 +3,14 @@ package ziox.ramiro.saes.view_models
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.repositories.BillingRepository
+import javax.inject.Inject
 
-class BillingViewModel(
+@HiltViewModel
+class BillingViewModel @Inject constructor (
     private val billingRepository: BillingRepository,
 ): ViewModel() {
     val hasDonated = mutableStateOf<Boolean?>(null)

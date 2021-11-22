@@ -4,6 +4,7 @@ import android.webkit.CookieManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -15,8 +16,10 @@ import ziox.ramiro.saes.data.repositories.AuthRepository
 import ziox.ramiro.saes.features.saes.data.repositories.StorageRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import java.util.Date
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val storageRepository: StorageRepository,
     initCaptcha: Boolean = false
@@ -37,6 +40,11 @@ class AuthViewModel(
         if (initCaptcha) {
             fetchCaptcha()
         }
+    }
+
+    init {
+        error.dismissAfterTimeout()
+        checkSession()
     }
 
     fun fetchCaptcha() {

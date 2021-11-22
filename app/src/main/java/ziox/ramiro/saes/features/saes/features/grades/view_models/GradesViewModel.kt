@@ -3,6 +3,7 @@ package ziox.ramiro.saes.features.saes.features.grades.view_models
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.data_providers.ScrapException
@@ -12,6 +13,7 @@ import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesRe
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import java.util.Date
 
+@HiltViewModel
 class GradesViewModel(
     private val gradesRepository: GradesRepository,
     private val storageRepository: StorageRepository
@@ -25,7 +27,7 @@ class GradesViewModel(
         error.dismissAfterTimeout()
     }
 
-    fun fetchGrades() = viewModelScope.launch {
+    private fun fetchGrades() = viewModelScope.launch {
         grades.value = null
 
         kotlin.runCatching {

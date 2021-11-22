@@ -5,7 +5,10 @@ import androidx.core.net.toUri
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
+import okhttp3.Headers
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
+import ziox.ramiro.saes.data.data_providers.jsoup
+import ziox.ramiro.saes.data.data_providers.jsoupForm
 import ziox.ramiro.saes.data.models.Auth
 import ziox.ramiro.saes.data.models.Captcha
 import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
@@ -19,6 +22,77 @@ interface AuthRepository {
     suspend fun isLoggedIn() : Boolean
 }
 
+
+class AuthJsoupRepository(
+    private val context: Context
+): AuthRepository{
+    private val userPreferences = UserPreferences.invoke(context)
+
+    override suspend fun getCaptcha(): Captcha {
+        return context.jsoup{ document ->
+            val src = document.getElementById("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage")?.attr("src")
+
+            Captcha(
+                userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) + (src ?: ""),
+                src == null,
+                Headers.headersOf()
+            )
+        }
+    }
+
+    override suspend fun login(username: String, password: String, captcha: String): Auth {
+        return context.jsoupForm(data = mapOf(
+            "ctl00\$leftColumn\$LoginUser\$UserName" to username,
+            "ctl00\$leftColumn\$LoginUser\$Password" to password,
+            "ctl00\$leftColumn\$LoginUser\$CaptchaCodeTextBox" to captcha
+        )) {
+            val error = it.getElementsByClass("failureNotification")
+            println(it.html())
+            Auth(
+                isLoggedIn = it.getElementById("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") == null,
+                errorMessage = if(error.size >= 3) error[2].text().trim() else null
+            )
+        }.also {
+            if(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
+                tryRegisterUser(it, username, password)
+            }
+        }
+    }
+
+    private suspend fun tryRegisterUser(auth: Auth, username: String, password: String){
+        val userFirebaseRepository = UserFirebaseRepository()
+
+        if (auth.isLoggedIn){
+            val schoolDomain = Uri.parse(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)).host?.replace("www.", "")
+
+            kotlin.runCatching {
+                if(userFirebaseRepository.isUserRegistered(username.trim())){
+                    Firebase.auth.signInWithEmailAndPassword("${username}@${schoolDomain}", password).await()
+                }else{
+                    Firebase.auth.createUserWithEmailAndPassword("${username}@${schoolDomain}", password).await()
+                }
+            }.onFailure {
+                it.printStackTrace()
+            }
+        }
+    }
+
+    override suspend fun isLoggedIn() = userPreferences.run {
+        when {
+            getPreference(PreferenceKeys.SchoolUrl, null) == null -> false
+            getPreference(PreferenceKeys.OfflineMode, false) -> true
+            context.isNetworkAvailable() -> context.jsoup {
+                it.getElementById("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage")?.attr("src") == null
+            }
+            else -> authData.value.isAuthDataSaved()
+        }.also {
+            if(!it){
+                Firebase.auth.signOut()
+            }
+        }
+    }
+
+}
 
 class AuthWebViewRepository(
     private val context: Context,
@@ -98,13 +172,13 @@ class AuthWebViewRepository(
         val userFirebaseRepository = UserFirebaseRepository()
 
         if (auth.isLoggedIn){
-            val schoolDomain = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)?.toUri()?.host?.replace("www.", "")
-
+            val schoolDomain = Uri.parse(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)).host?.replace("www.", "")
+            val userEmail = "${username}@${schoolDomain}"
             kotlin.runCatching {
-                if(userFirebaseRepository.isUserRegistered("${username}@${schoolDomain}")){
-                    Firebase.auth.signInWithEmailAndPassword("${username}@${schoolDomain}", password).await()
+                if(userFirebaseRepository.isUserRegistered(userEmail)){
+                    Firebase.auth.signInWithEmailAndPassword(userEmail, password).await()
                 }else{
-                    Firebase.auth.createUserWithEmailAndPassword("${username}@${schoolDomain}", password).await()
+                    Firebase.auth.createUserWithEmailAndPassword(userEmail, password).await()
                 }
             }.onFailure {
                 it.printStackTrace()

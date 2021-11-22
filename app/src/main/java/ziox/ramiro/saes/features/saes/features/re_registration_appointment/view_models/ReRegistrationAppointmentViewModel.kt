@@ -3,13 +3,16 @@ package ziox.ramiro.saes.features.saes.features.re_registration_appointment.view
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.data.models.ReRegistrationData
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.data.repositories.ReRegistrationRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
+import javax.inject.Inject
 
-class ReRegistrationAppointmentViewModel(
+@HiltViewModel
+class ReRegistrationAppointmentViewModel @Inject constructor(
     private val reRegistrationRepository: ReRegistrationRepository
 ) : ViewModel() {
     val reRegistrationData = mutableStateOf<ReRegistrationData?>(null)

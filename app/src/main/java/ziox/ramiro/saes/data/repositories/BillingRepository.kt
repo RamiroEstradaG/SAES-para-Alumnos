@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.lastOrNull
+import ziox.ramiro.saes.R
+import kotlin.coroutines.suspendCoroutine
 
 interface BillingRepository {
     val productList: SharedFlow<List<ProductDetails>?>
@@ -91,11 +93,7 @@ class BillingGooglePayRepository(
         client.endConnection()
     }
 
-    private suspend fun waitToInitialize() = if(initializeFlow.value){
-        true
-    }else{
-        initializeFlow.first { it }
-    }
+    private suspend fun waitToInitialize(): Boolean = initializeFlow.value ?: initializeFlow.first { it != null } ?: false
 
     override fun onBillingServiceDisconnected() {
         Log.e("Billing", "Billing service disconnected")
