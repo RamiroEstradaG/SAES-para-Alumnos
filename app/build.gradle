@@ -16,7 +16,7 @@ android {
         applicationId "ziox.ramiro.saes"
         minSdk 23
         targetSdk 31
-        versionCode 115
+        versionCode 116
         versionName "2.1.0"
         multiDexEnabled true
 
