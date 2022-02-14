@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.ui.theme
 
+import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.ui.graphics.Color
 
@@ -48,4 +49,5 @@ object DarkTheme : ComposableTheme {
         error = Color(0xFFE57373),
         onError = Color.Black
     )
+    override val typography: Typography = Typography(this)
 }

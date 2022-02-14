@@ -449,7 +449,7 @@
                 android:resource="@xml/schedule_small_widget" />
         </receiver>
         <receiver
-            android:name="ziox.ramiro.saes.ui.app_widgets.ScheduleLargeWidget"
+            android:name="ziox.ramiro.saes.ui.app_widgets.ScheduleFullWidgetReceiver"
             android:label="Horario semanal"
             android:exported="true">
             <intent-filter>

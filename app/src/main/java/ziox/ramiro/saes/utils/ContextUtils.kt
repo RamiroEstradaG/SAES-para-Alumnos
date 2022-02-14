@@ -7,7 +7,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import ziox.ramiro.saes.ui.app_widgets.ScheduleLargeWidget
+import ziox.ramiro.saes.ui.app_widgets.ScheduleFullWidgetReceiver
 import ziox.ramiro.saes.ui.app_widgets.ScheduleMediumWidget
 import ziox.ramiro.saes.ui.app_widgets.ScheduleSmallWidget
 
@@ -38,10 +38,10 @@ fun Context.isNetworkAvailable() : Boolean{
 
 
 fun Context.updateWidgets() {
-    val widgetLarge = Intent(this, ScheduleLargeWidget::class.java)
+    val widgetLarge = Intent(this, ScheduleFullWidgetReceiver::class.java)
     widgetLarge.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     val idsLarge = AppWidgetManager.getInstance(this)
-        .getAppWidgetIds(ComponentName(this, ScheduleLargeWidget::class.java))
+        .getAppWidgetIds(ComponentName(this, ScheduleFullWidgetReceiver::class.java))
     widgetLarge.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, idsLarge)
     sendBroadcast(widgetLarge)
 
