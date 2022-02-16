@@ -11,6 +11,7 @@ import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
+import ziox.ramiro.saes.utils.withoutClassId
 
 interface GradesRepository {
     suspend fun getMyGrades() : List<ClassGrades>
@@ -56,7 +57,7 @@ class GradesWebViewRepository(
                 List(data.length()){ i ->
                     val item = data[i] as JSONObject
                     ClassGrades(
-                        item.getString("className").toProperCase(),
+                        item.getString("className").withoutClassId().toProperCase(),
                         item.get("p1") as? Int,
                         item.get("p2") as? Int,
                         item.get("p3") as? Int,

@@ -19,7 +19,7 @@ class UtilsJavascriptInterface {
             it.trim().matches(Regex("sal[oó]n", RegexOption.IGNORE_CASE))
         }
         val teacherIndex = cols.indexOfFirst {
-            it.trim().matches(Regex("profesor|maestro", RegexOption.IGNORE_CASE))
+            it.trim().matches(Regex("profesor((es)?)|maestro(s?)", RegexOption.IGNORE_CASE))
         }
         val subjectIndex = firstRow.withIndex().indexOfFirst {
             it.value.trim().length >= 7 && it.index != teacherIndex

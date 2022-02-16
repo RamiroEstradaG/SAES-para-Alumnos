@@ -11,6 +11,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.*
 import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
+import ziox.ramiro.saes.utils.withoutClassId
 import java.util.*
 
 interface ScheduleRepository {
@@ -55,10 +56,10 @@ class ScheduleWebViewRepository(
                                 dayIndex: (e - cols.mondayIndex) % 5 + ${Calendar.MONDAY},               
                                 className: tr.children[cols.subjectIndex].innerText,               
                                 hours: td.innerText,               
-                                group: tr.children[cols.groupIndex].innerText,               
-                                teacherName: tr.children[cols.teacherIndex].innerText,               
-                                building: tr.children[cols.buildingIndex].innerText,               
-                                classroom: tr.children[cols.classroomIndex].innerText
+                                group: getIndexIfExists(tr.children, cols.groupIndex, "No especificado", (it) => it.innerText),               
+                                teacherName: getIndexIfExists(tr.children, cols.teacherIndex, "No especificado", (it) => it.innerText),               
+                                building: getIndexIfExists(tr.children, cols.buildingIndex, "N/E", (it) => it.innerText),               
+                                classroom: getIndexIfExists(tr.children, cols.classroomIndex, "N/E", (it) => it.innerText)
                             })));
                         });
                     }
@@ -103,7 +104,7 @@ class ScheduleWebViewRepository(
                             customClass?.toClassSchedule() ?: ClassSchedule(
                                 id,
                                 classId,
-                                className,
+                                className.withoutClassId(),
                                 group,
                                 classSchedule.getString("building"),
                                 classSchedule.getString("classroom"),

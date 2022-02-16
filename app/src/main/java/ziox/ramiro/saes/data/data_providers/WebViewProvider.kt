@@ -60,6 +60,10 @@ class WebViewProvider(
             function byClass(className){
                 return document.getElementsByClassName(className);
             }
+            function getIndexIfExists(array, index, def, lambda = (it) => it){
+                if(index < 0 || index >= array.length) return def;
+                return lambda(array[index]);
+            }
             function byTag(tag){
                 return document.getElementsByTagName(tag);
             }
