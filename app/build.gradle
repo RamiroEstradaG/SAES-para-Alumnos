@@ -8,13 +8,13 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "ziox.ramiro.saes"
         minSdk 23
-        targetSdk 32
+        targetSdk 33
         versionCode 112
         versionName "2.0.0-hotfix.4"
         multiDexEnabled true
