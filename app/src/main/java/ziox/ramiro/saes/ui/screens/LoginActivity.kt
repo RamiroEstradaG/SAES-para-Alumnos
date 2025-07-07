@@ -4,38 +4,66 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.*
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
-import ziox.ramiro.saes.ui.components.*
+import ziox.ramiro.saes.ui.components.AsyncButton
+import ziox.ramiro.saes.ui.components.CaptchaInput
+import ziox.ramiro.saes.ui.components.ErrorSnackbar
+import ziox.ramiro.saes.ui.components.SchoolButton
+import ziox.ramiro.saes.ui.components.TextButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
-import ziox.ramiro.saes.utils.*
+import ziox.ramiro.saes.utils.MutableStateWithValidation
+import ziox.ramiro.saes.utils.PreferenceKeys
+import ziox.ramiro.saes.utils.UserPreferences
+import ziox.ramiro.saes.utils.launchUrl
+import ziox.ramiro.saes.utils.validate
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 class LoginActivity : AppCompatActivity() {
@@ -60,6 +88,7 @@ class LoginActivity : AppCompatActivity() {
 
         userPreferences = UserPreferences.invoke(this)
         isAuthDataSaved = userPreferences.authData.value.isAuthDataSaved()
+        schoolUrl.value = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
 
         setContent {
             val username = remember {
@@ -68,8 +97,6 @@ class LoginActivity : AppCompatActivity() {
             val password = remember {
                 mutableStateOf(userPreferences.getPreference(PreferenceKeys.Password, ""))
             }
-
-            schoolUrl.value = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
 
             if(authViewModel.auth.value?.isLoggedIn == true){
                 userPreferences.setAuthData(username.value, password.value)
@@ -82,8 +109,10 @@ class LoginActivity : AppCompatActivity() {
             }
 
             SAESParaAlumnosTheme {
-                Scaffold {
-                    Crossfade(targetState = username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved) {
+                Scaffold { paddingValues ->
+                    Crossfade(
+                        modifier = Modifier.padding(paddingValues),
+                        targetState = username.value.isNotBlank() && password.value.isNotBlank() && isAuthDataSaved) {
                         if(it){
                             LoginOnlyCaptcha(
                                 authViewModel,
@@ -119,7 +148,7 @@ class LoginActivity : AppCompatActivity() {
 @Composable
 fun Login(
     authViewModel: AuthViewModel,
-    selectSchoolLauncher: ActivityResultLauncher<Unit>,
+    selectSchoolLauncher: ActivityResultLauncher<Unit?>,
     schoolUrl: State<String>,
     username: MutableState<String>,
     password: MutableState<String>
@@ -181,7 +210,7 @@ fun Login(
             ) {
                 Text(
                     text = "Iniciar sesión",
-                    style = MaterialTheme.typography.h4
+                    style = MaterialTheme.typography.headlineLarge
                 )
                 OutlinedTextField(
                     modifier = Modifier
@@ -207,9 +236,9 @@ fun Login(
                 )
                 Text(
                     modifier = Modifier.padding(start = 8.dp),
-                    color = MaterialTheme.colors.error,
+                    color = MaterialTheme.colorScheme.error,
                     text = usernameValidator.errorState.value ?: "",
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 OutlinedTextField(
                     modifier = Modifier
@@ -225,7 +254,6 @@ fun Login(
                         PasswordVisualTransformation()
                     } else VisualTransformation.None,
                     keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Characters,
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Next
                     ),
@@ -254,10 +282,10 @@ fun Login(
                 )
                 Text(
                     modifier = Modifier.padding(start = 8.dp),
-                    color = MaterialTheme.colors.error,
+                    color = MaterialTheme.colorScheme.error,
                     text = authViewModel.auth.value?.errorMessage
                         ?: passwordValidator.errorState.value ?: "",
-                    style = MaterialTheme.typography.body2
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -319,32 +347,30 @@ fun Login(
             isSmall = true,
             school = School.findSchoolByUrl(schoolUrl.value)
         ) {
-            selectSchoolLauncher.launch()
+            selectSchoolLauncher.launch(Unit)
         }
 
 
         if (showFirebaseDialog.value) {
-            Dialog(
+            AlertDialog(
                 onDismissRequest = {
                     showFirebaseDialog.value = false
-                }
-            ){
-                Card {
-                    Column {
+                },
+                title = @Composable {
+                    Text(
+                        text = "Servicios personalizados",
+                    )
+                },
+                text = @Composable {
+                    Column(
+                        modifier = Modifier
+                            .heightIn(0.dp, 300.dp)
+                            .padding(horizontal = 16.dp)
+                            .verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
-                            modifier = Modifier.padding(16.dp),
-                            text = "Servicios personalizados",
-                            style = MaterialTheme.typography.h5
-                        )
-                        Column(
-                            modifier = Modifier
-                                .heightIn(0.dp, 300.dp)
-                                .padding(horizontal = 16.dp)
-                                .verticalScroll(rememberScrollState()),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = """
+                            text = """
                                     Son características de la aplicación que utilizan servicios basados en la nube para funcionar.
                                     Al activar esta opción estás de acuerdo en enviar la siguiente información a servidores que no son propiedad del Instituto Politécnico Nacional (IPN).
                                     • Número de boleta.
@@ -360,38 +386,31 @@ fun Login(
                                     Puedes ver y eliminar tus datos almacenados en la nube en cualquier momento en el apartado "Configuración" al iniciar sesión.
                                     Al activar esta característica aceptas nuestra política de privacidad.
                                 """.trimIndent()
-                            )
-                            TextButton(
-                                text = "Ver política de privacidad"
-                            ){
-                                context.launchUrl("https://ramiroestradag.github.io/SAES-para-Alumnos/privacy_policy")
-                            }
-                        }
-                        Row(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 4.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            TextButton(
-                                text = "Aceptar",
-                                textColor = getCurrentTheme().info
-                            ){
-                                showFirebaseDialog.value = false
-                                isFirebaseServicesEnabled.value = true
-                                userPreferences.setPreference(PreferenceKeys.IsFirebaseEnabled, true)
-                            }
-                            TextButton(
-                                text = "No acepto"
-                            ){
-                                showFirebaseDialog.value = false
-                                isFirebaseServicesEnabled.value = false
-                                userPreferences.removePreference(PreferenceKeys.IsFirebaseEnabled)
-                            }
+                        )
+                        TextButton(
+                            text = "Ver política de privacidad"
+                        ){
+                            context.launchUrl("https://ramiroestradag.github.io/SAES-para-Alumnos/privacy_policy")
                         }
                     }
+                },
+                confirmButton = {
+                    TextButton(
+                        text = "Aceptar",
+                    ) {
+                        showFirebaseDialog.value = false
+                        isFirebaseServicesEnabled.value = true
+                        userPreferences.setPreference(PreferenceKeys.IsFirebaseEnabled, true)
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        text = "Cancelar",
+                    ) {
+                        showFirebaseDialog.value = false
+                    }
                 }
-            }
+            )
         }
     }
 }
@@ -426,11 +445,11 @@ fun LoginOnlyCaptcha(
     ) {
         Text(
             text = "Iniciar sesión como",
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.headlineSmall
         )
         Text(
             text = userPreferences.getPreference(PreferenceKeys.Boleta, ""),
-            style = MaterialTheme.typography.h4
+            style = MaterialTheme.typography.headlineLarge
         )
         Box(
             modifier = Modifier.weight(1f)

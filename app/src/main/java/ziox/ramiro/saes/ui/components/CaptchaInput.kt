@@ -4,10 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,9 +91,9 @@ fun CaptchaInput(
         )
     )
     Text(
-        color = MaterialTheme.colors.error,
+        color = MaterialTheme.colorScheme.error,
         text = overrideError ?: captcha.errorState.value ?: "",
-        style = MaterialTheme.typography.body2,
+        style = MaterialTheme.typography.bodyMedium,
         textAlign = TextAlign.Center
     )
 }

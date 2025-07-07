@@ -1,17 +1,31 @@
 package ziox.ramiro.saes.features.saes.features.performance.ui.screens
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.TrendingDown
+import androidx.compose.material.icons.automirrored.rounded.TrendingFlat
+import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.outlined.WatchLater
-import androidx.compose.material.icons.rounded.TrendingDown
-import androidx.compose.material.icons.rounded.TrendingFlat
-import androidx.compose.material.icons.rounded.TrendingUp
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,24 +64,25 @@ import kotlin.math.max
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Performance(
+    context: Context = LocalContext.current,
     kardexViewModel: KardexViewModel = viewModel(
-        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(context)) }
     ),
     gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(context)) }
     ),
     performanceViewModel: PerformanceViewModel = viewModel(
         factory = viewModelFactory {
             PerformanceViewModel(
                 PerformanceFirebaseRepository(),
-                KardexWebViewRepository(LocalContext.current),
+                KardexWebViewRepository(context),
                 UserFirebaseRepository(),
-                LocalContext.current
+                context
             )
         }
     )
 ) = Crossfade(targetState = kardexViewModel.kardexData.value) {
-    if(it != null){
+    if (it != null) {
         Box(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
@@ -79,18 +94,20 @@ fun Performance(
                     bottom = 64.dp
                 )
             ) {
-                if (it.kardexPeriods.size >= 2){
+                if (it.kardexPeriods.size >= 2) {
                     OtherStatisticsCard(
                         title = "Mejor semestre hasta el momento",
-                        value = it.kardexPeriods.maxByOrNull {period -> period.average }?.periodName ?: "",
+                        value = it.kardexPeriods.maxByOrNull { period -> period.average }?.periodName
+                            ?: "",
                         backgroundColor = getCurrentTheme().info,
-                        contentColor = MaterialTheme.colors.onPrimary
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                     OtherStatisticsCard(
                         title = "Peor semestre hasta el momento",
-                        value = it.kardexPeriods.minByOrNull {period -> period.average }?.periodName ?: "",
+                        value = it.kardexPeriods.minByOrNull { period -> period.average }?.periodName
+                            ?: "",
                         backgroundColor = getCurrentTheme().danger,
-                        contentColor = MaterialTheme.colors.onPrimary
+                        contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 }
                 AnimatedVisibility(visible = performanceViewModel.careerPerformance.value != null) {
@@ -132,12 +149,13 @@ fun Performance(
                         )
                     }
                 }
-                if (gradesViewModel.grades.value != null && it.kardexPeriods.isNotEmpty()){
+                if (gradesViewModel.grades.value != null && it.kardexPeriods.isNotEmpty()) {
                     gradesViewModel.grades.value?.let { gradesValue ->
-                        val grades = gradesValue.mapNotNull { classGrades -> classGrades.finalScore }
-                        val gradesAverage = if(grades.isNotEmpty()){
+                        val grades =
+                            gradesValue.mapNotNull { classGrades -> classGrades.finalScore }
+                        val gradesAverage = if (grades.isNotEmpty()) {
                             grades.sum().div(grades.size.toDouble())
-                        }else null
+                        } else null
                         ComparePerformanceCard(
                             title2 = "Semestre en curso",
                             value2 = gradesAverage,
@@ -146,7 +164,7 @@ fun Performance(
                         )
                     }
                 }
-                if (it.kardexPeriods.size >= 2){
+                if (it.kardexPeriods.size >= 2) {
                     ComparePerformanceCard(
                         title2 = it.kardexPeriods.last().periodName,
                         value2 = it.kardexPeriods.last().average,
@@ -160,7 +178,7 @@ fun Performance(
                         value1 = it.generalScoreAt(it.kardexPeriods.lastIndex - 1)
                     )
                 }
-                if (it.kardexPeriods.isNotEmpty()){
+                if (it.kardexPeriods.isNotEmpty()) {
                     ComparePerformanceCard(
                         title2 = it.kardexPeriods.last().periodName,
                         value2 = it.kardexPeriods.last().average,
@@ -169,20 +187,20 @@ fun Performance(
                     )
                 }
                 KardexChart(it)
-                if(it.kardexPeriods.size >= 2){
+                if (it.kardexPeriods.size >= 2) {
                     TendencyCard(
                         title = "Tendencia del promedio por semestre",
                         values = it.kardexPeriods.map { period -> period.average }
                     )
                     TendencyCard(
                         title = "Tendencia del promedio general",
-                        values = it.kardexPeriods.mapIndexed {i, _ -> it.generalScoreAt(i) }
+                        values = it.kardexPeriods.mapIndexed { i, _ -> it.generalScoreAt(i) }
                     )
                 }
             }
         }
 
-    }else{
+    } else {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -192,8 +210,6 @@ fun Performance(
     }
     ErrorSnackbar(performanceViewModel.error)
 }
-
-
 
 
 @Composable
@@ -208,106 +224,108 @@ fun ComparePerformanceCard(
     modifier = Modifier
         .fillMaxWidth()
         .padding(bottom = 16.dp),
-    elevation = 0.dp
+    elevation = CardDefaults.cardElevation(0.dp)
 ) {
-    Column {
-        Row {
+    Box {
+        Column {
+            Row {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = title1,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = value1?.toStringPrecision(2) ?: "-",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = gradeColor(value1?.toInt())
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = title2,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = value2?.toStringPrecision(2) ?: "-",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = gradeColor(value2?.toInt())
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (sizeOfData != null) {
+                    Text(
+                        text = "S=${sizeOfData}",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+
+                if (monthUpdated != null) {
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp),
+                        text = "Actualizado en ${MES_COMPLETO[monthUpdated]}",
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            val difference = if (value1 != null && value2 != null) {
+                (value2 - value1) / value1
+            } else null
+
+            val sign = when {
+                difference == null || difference == 0.0 -> ""
+                difference < 0 -> "-"
+                else -> "+"
+            }
+
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = title1,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    text = "",
+                    textAlign = TextAlign.Center
+                )
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    imageVector = when {
+                        difference == null -> Icons.Outlined.WatchLater
+                        difference > 0 -> Icons.AutoMirrored.Rounded.TrendingUp
+                        difference < 0 -> Icons.AutoMirrored.Rounded.TrendingDown
+                        else -> Icons.AutoMirrored.Rounded.TrendingFlat
+                    },
+                    contentDescription = "Arrows",
+                    tint = valuePivotZeroColor(difference)
                 )
                 Text(
-                    text = value1?.toStringPrecision(2) ?: "-",
-                    style = MaterialTheme.typography.h4,
-                    color = gradeColor(value1?.toInt())
+                    text = "$sign${difference?.times(100)?.absoluteValue?.toStringPrecision(2) ?: "-"}%",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = valuePivotZeroColor(difference)
                 )
             }
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = title2,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = value2?.toStringPrecision(2) ?: "-",
-                    style = MaterialTheme.typography.h4,
-                    color = gradeColor(value2?.toInt())
-                )
-            }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            if(sizeOfData != null){
-                Text(
-                    text = "S=${sizeOfData}",
-                    style = MaterialTheme.typography.caption
-                )
-            }
-
-            if(monthUpdated != null){
-                Text(
-                    modifier = Modifier.padding(start = 8.dp),
-                    text = "Actualizado en ${MES_COMPLETO[monthUpdated]}",
-                    style = MaterialTheme.typography.caption
-                )
-            }
-        }
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        val difference = if(value1 != null && value2 != null){
-            (value2 - value1) / value1
-        }else null
-
-        val sign = when{
-            difference == null || difference == 0.0 -> ""
-            difference < 0 -> "-"
-            else -> "+"
-        }
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "",
-                textAlign = TextAlign.Center
-            )
-            Icon(
-                modifier = Modifier.size(16.dp),
-                imageVector = when {
-                    difference == null -> Icons.Outlined.WatchLater
-                    difference > 0 -> Icons.Rounded.TrendingUp
-                    difference < 0 -> Icons.Rounded.TrendingDown
-                    else -> Icons.Rounded.TrendingFlat
-                },
-                contentDescription = "Arrows",
-                tint = valuePivotZeroColor(difference)
-            )
-            Text(
-                text = "$sign${difference?.times(100)?.absoluteValue?.toStringPrecision(2) ?: "-"}%",
-                style = MaterialTheme.typography.caption,
-                color = valuePivotZeroColor(difference)
-            )
         }
     }
 }
@@ -317,7 +335,7 @@ fun KardexChart(
     kardexData: KardexData
 ) = Card(
     modifier = Modifier.padding(bottom = 16.dp),
-    elevation = 0.dp
+    elevation = CardDefaults.cardElevation(0.dp)
 ) {
     val currentThemeColors = getCurrentTheme()
     val scores = getScoresDataSet(kardexData)
@@ -357,7 +375,7 @@ fun KardexChart(
                     xAxis.textColor = currentThemeColors.primaryText.toArgb()
                     xAxis.valueFormatter = object : IndexAxisValueFormatter() {
                         override fun getFormattedValue(value: Float): String {
-                            return "${value.toInt()+1}°"
+                            return "${value.toInt() + 1}°"
                         }
                     }
                     xAxis.position = XAxis.XAxisPosition.BOTTOM
@@ -385,7 +403,7 @@ fun KardexChart(
                     invalidate()
                 }
             }
-        ){
+        ) {
             val datasets = listOf(scores, averages)
             val xMax = max(scores.xMax, averages.xMax)
 
@@ -407,8 +425,10 @@ fun OtherStatisticsCard(
     modifier = Modifier
         .fillMaxWidth()
         .padding(bottom = 16.dp),
-    elevation = 0.dp,
-    backgroundColor = backgroundColor ?: MaterialTheme.colors.surface
+    elevation = CardDefaults.cardElevation(0.dp),
+    colors = CardDefaults.cardColors(
+        containerColor = backgroundColor ?: MaterialTheme.colorScheme.surface,
+    )
 ) {
 
     Column(
@@ -416,12 +436,12 @@ fun OtherStatisticsCard(
     ) {
         Text(
             text = title,
-            color = contentColor ?: MaterialTheme.colors.onSurface
+            color = contentColor ?: MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.h4,
-            color = contentColor ?: MaterialTheme.colors.onSurface
+            style = MaterialTheme.typography.headlineLarge,
+            color = contentColor ?: MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -435,11 +455,11 @@ fun TendencyCard(
     modifier = Modifier
         .fillMaxWidth()
         .padding(bottom = 16.dp),
-    elevation = 0.dp
+    elevation = CardDefaults.cardElevation(0.dp)
 ) {
     val lastThree = values.takeLast(3)
-    val firstHalf = lastThree.subList(0, lastThree.size/2)
-    val secondHalf = lastThree.subList(lastThree.size/2, lastThree.size)
+    val firstHalf = lastThree.subList(0, lastThree.size / 2)
+    val secondHalf = lastThree.subList(lastThree.size / 2, lastThree.size)
 
     val averageFirstHalf = firstHalf.sum().div(firstHalf.size.toDouble())
     val averageSecondHalf = secondHalf.sum().div(secondHalf.size.toDouble())
@@ -460,20 +480,20 @@ fun TendencyCard(
                     .padding(end = 8.dp)
                     .size(42.dp),
                 imageVector = when {
-                    averageDifference > changeThreshold -> Icons.Rounded.TrendingUp
-                    averageDifference < -changeThreshold -> Icons.Rounded.TrendingDown
-                    else -> Icons.Rounded.TrendingFlat
+                    averageDifference > changeThreshold -> Icons.AutoMirrored.Rounded.TrendingUp
+                    averageDifference < -changeThreshold -> Icons.AutoMirrored.Rounded.TrendingDown
+                    else -> Icons.AutoMirrored.Rounded.TrendingFlat
                 },
                 contentDescription = "Arrows",
                 tint = valuePivotZeroColor(if (averageDifference in -changeThreshold..changeThreshold) 0.0 else averageDifference)
             )
             Text(
-                text = when{
+                text = when {
                     averageDifference > changeThreshold -> "Al Alza"
                     averageDifference < -changeThreshold -> "A la baja"
                     else -> "Lateral"
                 },
-                style = MaterialTheme.typography.h4,
+                style = MaterialTheme.typography.headlineLarge,
                 color = valuePivotZeroColor(if (averageDifference in -changeThreshold..changeThreshold) 0.0 else averageDifference)
             )
         }
@@ -481,7 +501,7 @@ fun TendencyCard(
 }
 
 @Composable
-fun getScoresDataSet(kardexData: KardexData) : LineDataSet {
+fun getScoresDataSet(kardexData: KardexData): LineDataSet {
     val scores = kardexData.kardexPeriods.mapIndexed { i, period ->
         Entry(i.toFloat(), period.average.toFloat())
     }
@@ -498,7 +518,7 @@ fun getScoresDataSet(kardexData: KardexData) : LineDataSet {
 }
 
 @Composable
-fun getOverallScoresDataSet(kardexData: KardexData) : LineDataSet {
+fun getOverallScoresDataSet(kardexData: KardexData): LineDataSet {
     val averages = kardexData.kardexPeriods.mapIndexed { i, _ ->
         Entry(i.toFloat(), kardexData.generalScoreAt(i).toFloat())
     }
@@ -514,7 +534,7 @@ fun getOverallScoresDataSet(kardexData: KardexData) : LineDataSet {
 }
 
 @Composable
-fun valuePivotZeroColor(difference: Double?) = when{
+fun valuePivotZeroColor(difference: Double?) = when {
     difference == null || difference == 0.0 -> getCurrentTheme().primaryText
     difference < 0 -> getCurrentTheme().danger
     else -> getCurrentTheme().info

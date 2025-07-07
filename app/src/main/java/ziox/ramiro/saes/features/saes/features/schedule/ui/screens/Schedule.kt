@@ -1,7 +1,8 @@
 package ziox.ramiro.saes.features.saes.features.schedule.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -31,10 +32,11 @@ val today = WeekDay.today()
 
 @Composable
 fun Schedule(
+    context: Context = LocalContext.current,
     scheduleViewModel: ScheduleViewModel = viewModel(
         factory = viewModelFactory { ScheduleViewModel(
-            ScheduleWebViewRepository(LocalContext.current),
-            LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()
+            ScheduleWebViewRepository(context),
+            LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()
         ) }
     )
 ) {

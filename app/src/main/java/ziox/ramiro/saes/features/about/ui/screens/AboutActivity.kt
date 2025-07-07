@@ -7,17 +7,37 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.icons.rounded.AlternateEmail
+import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.Campaign
+import androidx.compose.material.icons.rounded.Copyright
+import androidx.compose.material.icons.rounded.NewReleases
+import androidx.compose.material.icons.rounded.Policy
+import androidx.compose.material.icons.rounded.Reviews
+import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,10 +49,14 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.*
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withAnnotation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
@@ -43,6 +67,7 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.BillingGooglePayRepository
 import ziox.ramiro.saes.ui.components.BaseButton
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
+import ziox.ramiro.saes.ui.components.TextButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.launchUrl
@@ -73,9 +98,9 @@ class AboutActivity : AppCompatActivity() {
             }
 
             SAESParaAlumnosTheme {
-                Scaffold {
+                Scaffold { paddingValues ->
                     Box(
-                        modifier = Modifier.verticalScroll(rememberScrollState())
+                        modifier = Modifier.verticalScroll(rememberScrollState()).padding(paddingValues)
                     ){
                         Column(
                             modifier = Modifier.padding(
@@ -88,7 +113,7 @@ class AboutActivity : AppCompatActivity() {
                                 leading = rememberVectorPainter(image = Icons.Rounded.Warning),
                                 text = "La aplicación no está asociada al Instituto Politécnico Nacional (IPN) ni a sus unidades académicas. El desarrollo es independiente y está siendo manejado por estudiantes del IPN.",
                                 backgroundColor = getCurrentTheme().danger,
-                                contentColor = MaterialTheme.colors.onPrimary
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             )
                             if(billingViewModel.hasDonated.value == false){
                                 AboutItem(
@@ -216,7 +241,7 @@ class AboutActivity : AppCompatActivity() {
                                         .padding(16.dp),
                                     contentAlignment = Alignment.CenterEnd
                                 ) {
-                                    ziox.ramiro.saes.ui.components.TextButton(
+                                    TextButton(
                                         text = "OK",
                                         textColor = getCurrentTheme().info
                                     ){
@@ -241,7 +266,7 @@ class AboutActivity : AppCompatActivity() {
                                     Text(
                                         modifier = Modifier.padding(16.dp),
                                         text = "Licencias",
-                                        style = MaterialTheme.typography.h5,
+                                        style = MaterialTheme.typography.headlineMedium,
                                     )
                                     Column(
                                         Modifier
@@ -284,6 +309,7 @@ fun LicenceItem(
     url: String
 ) = Box {
     val context = LocalContext.current
+    val colors = MaterialTheme.colorScheme
     val annotatedString = buildAnnotatedString {
         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)){
             append(itemName)
@@ -299,7 +325,7 @@ fun LicenceItem(
             tag = "URL",
             annotation = url
         ){
-            withStyle(style = SpanStyle(color = MaterialTheme.colors.primary, textDecoration = TextDecoration.Underline)){
+            withStyle(style = SpanStyle(color = colors.primary, textDecoration = TextDecoration.Underline)){
                 append(url)
             }
         }
@@ -307,7 +333,7 @@ fun LicenceItem(
     ClickableText(
         modifier = Modifier.padding(bottom = 8.dp),
         text = annotatedString,
-        style = MaterialTheme.typography.body2,
+        style = MaterialTheme.typography.bodyMedium,
         onClick = {
             val linkUrl = annotatedString
                 .getStringAnnotations("URL", it, it)
@@ -361,11 +387,11 @@ fun AppInfoItem() {
             ) {
                 Text(
                     text = "Versión",
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.labelMedium,
                 )
                 Text(
-                    text = appInfo.versionName,
-                    style = MaterialTheme.typography.h5,
+                    text = appInfo.versionName ?: "",
+                    style = MaterialTheme.typography.headlineMedium,
                 )
             }
         }
@@ -377,7 +403,7 @@ fun AboutItem(
     leading: Painter,
     text: String,
     isHighEmphasis : Boolean = false,
-    backgroundColor: Color = MaterialTheme.colors.surface,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     contentColor: Color = getCurrentTheme().primaryText,
     onClick: (() -> Unit)? = null
 ) = Card(
@@ -386,14 +412,18 @@ fun AboutItem(
         .padding(bottom = 8.dp)
         .clip(MaterialTheme.shapes.medium)
         .clickable(
-            interactionSource = MutableInteractionSource(),
+            interactionSource = remember {
+                MutableInteractionSource()
+            },
             enabled = onClick != null,
-            indication = rememberRipple(),
+            indication = LocalIndication.current,
             onClick = {
                 onClick?.invoke()
             }
         ),
-    backgroundColor = backgroundColor
+    colors = CardDefaults.cardColors(
+        containerColor = backgroundColor
+    )
 ) {
     Row(
         modifier = Modifier.padding(if (isHighEmphasis) 16.dp else 8.dp),
@@ -408,7 +438,7 @@ fun AboutItem(
         Text(
             modifier = Modifier.padding(start = 16.dp),
             text = text,
-            style = if (isHighEmphasis) MaterialTheme.typography.h5 else MaterialTheme.typography.subtitle2,
+            style = if (isHighEmphasis) MaterialTheme.typography.headlineMedium else MaterialTheme.typography.titleMedium,
             color = contentColor
         )
     }

@@ -1,9 +1,10 @@
 package ziox.ramiro.saes.ui.theme
 
-import androidx.compose.material.lightColors
+import android.content.Context
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.ui.graphics.Color
 
-object LightTheme : ComposableTheme {
+class LightTheme(context: Context) : ComposableTheme {
     override val primaryText = Color(0xFF292929)
     override val secondaryText = Color(0xFF575757)
     override val hintText = Color(0xFF959595)
@@ -31,22 +32,5 @@ object LightTheme : ComposableTheme {
         override val e24 = Color(0xFFFFFFFF)
     }
 
-    override val colors = lightColors(
-        primary = primaryColor.s500,
-        primaryVariant = primaryColor.s700,
-        onPrimary = Color.White,
-
-        secondary = secondaryColor.s500,
-        secondaryVariant = secondaryColor.s700,
-        onSecondary = Color.White,
-
-        background = Color(0xFFEDF0F3),
-        onBackground = primaryText,
-
-        surface = Color.White,
-        onSurface = primaryText,
-
-        error = Color(0xFFB00020),
-        onError = Color.White
-    )
+    override val colors = dynamicLightColorScheme(context)
 }

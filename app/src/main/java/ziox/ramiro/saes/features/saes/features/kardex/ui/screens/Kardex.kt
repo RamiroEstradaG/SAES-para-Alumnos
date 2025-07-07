@@ -1,17 +1,31 @@
 package ziox.ramiro.saes.features.saes.features.kardex.ui.screens
 
+import android.content.Context
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.UnfoldLess
 import androidx.compose.material.icons.rounded.UnfoldMore
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,11 +43,12 @@ import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewMode
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Kardex(
+    context: Context = LocalContext.current,
     kardexViewModel: KardexViewModel = viewModel(
-        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(context)) }
     )
 ) {
     val isExpanded = remember {
@@ -54,8 +69,8 @@ fun Kardex(
                 )
             }
         }
-    ) {
-        Crossfade(targetState = kardexViewModel.kardexData.value) {
+    ) { paddingValues ->
+        Crossfade(targetState = kardexViewModel.kardexData.value, modifier = Modifier.padding(paddingValues)) {
             if (it != null){
                 Column(
                     modifier = Modifier
@@ -71,11 +86,11 @@ fun Kardex(
                     ) {
                         Text(
                             text = "Promedio general",
-                            style = MaterialTheme.typography.subtitle2
+                            style = MaterialTheme.typography.titleMedium
                         )
                         Text(
                             text = it.generalScore?.toString() ?: "-",
-                            style = MaterialTheme.typography.h3,
+                            style = MaterialTheme.typography.displaySmall,
                             color = gradeColor(it.generalScore?.toInt())
                         )
                     }
@@ -97,22 +112,22 @@ fun Kardex(
                                     modifier = Modifier.clickable {
                                         isExpandedSingle.value = !isExpandedSingle.value
                                     },
-                                    text = {
+                                    headlineContent = {
                                         Text(
                                             modifier = Modifier.padding(start = 16.dp),
                                             text = period.periodName,
-                                            style = MaterialTheme.typography.h5,
-                                            color = if(expandableState) MaterialTheme.colors.primary else getCurrentTheme().primaryText
+                                            style = MaterialTheme.typography.headlineMedium,
+                                            color = if(expandableState) MaterialTheme.colorScheme.primary else getCurrentTheme().primaryText
                                         )
                                     },
-                                    trailing = {
+                                    trailingContent = {
                                         Icon(
                                             modifier = Modifier
                                                 .padding(end = 8.dp)
                                                 .size(32.dp),
                                             imageVector = if (expandableState) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
                                             contentDescription = "Expand",
-                                            tint = if(expandableState) MaterialTheme.colors.primary else getCurrentTheme().primaryText
+                                            tint = if(expandableState) MaterialTheme.colorScheme.primary else getCurrentTheme().primaryText
                                         )
                                     }
                                 )
@@ -123,7 +138,7 @@ fun Kardex(
                                 ) {
                                     period.kardexClasses.forEach {
                                         ListItem(
-                                            text = {
+                                            headlineContent = {
                                                 Text(
                                                     modifier = Modifier.padding(start = 16.dp),
                                                     text = it.name,
@@ -131,12 +146,12 @@ fun Kardex(
                                                     overflow = TextOverflow.Ellipsis
                                                 )
                                             },
-                                            trailing = {
+                                            trailingContent = {
                                                 Text(
                                                     modifier = Modifier.padding(end = 16.dp),
                                                     text = it.score?.toString() ?: "-",
                                                     color = gradeColor(it.score),
-                                                    style = MaterialTheme.typography.h5
+                                                    style = MaterialTheme.typography.headlineMedium
                                                 )
                                             }
                                         )

@@ -6,16 +6,41 @@ import android.content.Context
 import android.text.util.Linkify
 import android.widget.TextView
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -44,7 +68,12 @@ import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
 import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaWebViewRepository
 import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaListViewModel
 import ziox.ramiro.saes.features.saes.features.agenda.view_models.AgendaViewModel
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.*
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayTime
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.checkIfOccupied
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
@@ -54,24 +83,28 @@ import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.OutlineButton
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
-import ziox.ramiro.saes.utils.*
-import java.util.*
-import kotlin.time.Duration
+import ziox.ramiro.saes.utils.MES
+import ziox.ramiro.saes.utils.MutableStateWithValidation
+import ziox.ramiro.saes.utils.offset
+import ziox.ramiro.saes.utils.toHour
+import ziox.ramiro.saes.utils.validate
+import java.util.Date
+import kotlin.time.Duration.Companion.days
 import kotlin.time.ExperimentalTime
 
 val hourHeight = 128.dp
 val eventWidth = 250.dp
 
 @Composable
-fun Agenda(){
+fun Agenda() {
     val selectedAgenda = remember {
         mutableStateOf<String?>(null)
     }
 
     Crossfade(targetState = selectedAgenda.value) {
-        if(it != null){
-            AgendaView(selectedAgenda)
-        }else{
+        if (it != null) {
+            AgendaView(LocalContext.current, selectedAgenda)
+        } else {
             CalendarList(selectedAgenda = selectedAgenda)
         }
     }
@@ -80,11 +113,12 @@ fun Agenda(){
 
 @Composable
 fun CalendarList(
+    context: Context = LocalContext.current,
     agendaListViewModel: AgendaListViewModel = viewModel(
-        factory = viewModelFactory { AgendaListViewModel(AgendaWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { AgendaListViewModel(AgendaWebViewRepository(context)) }
     ),
     selectedAgenda: MutableState<String?>
-){
+) {
     val showAddAgendaDialog = remember {
         mutableStateOf(false)
     }
@@ -92,7 +126,6 @@ fun CalendarList(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                modifier = Modifier.padding(bottom = 64.dp),
                 onClick = {
                     showAddAgendaDialog.value = true
                 }
@@ -100,13 +133,14 @@ fun CalendarList(
                 Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add")
             }
         }
-    ) {
-        if(agendaListViewModel.agendaList.value != null){
+    ) { paddingValues ->
+        if (agendaListViewModel.agendaList.value != null) {
             agendaListViewModel.agendaList.value?.let {
-                if(it.isNotEmpty()){
+                if (it.isNotEmpty()) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
+                            .padding(paddingValues)
                             .verticalScroll(rememberScrollState())
                     ) {
                         Column(
@@ -118,27 +152,27 @@ fun CalendarList(
                             )
                         ) {
                             it.forEach { calendar ->
-                                AgendaListItem(agendaListViewModel,selectedAgenda, calendar)
+                                AgendaListItem(agendaListViewModel, selectedAgenda, calendar)
                             }
                         }
                     }
-                }else{
+                } else {
                     ResponsePlaceholder(
                         painter = painterResource(id = R.drawable.logging_off),
                         text = "No has agregado agendas"
                     )
                 }
             }
-        }else{
+        } else {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         }
     }
-    if (showAddAgendaDialog.value){
+    if (showAddAgendaDialog.value) {
         Dialog(
             onDismissRequest = {
                 showAddAgendaDialog.value = false
@@ -151,19 +185,19 @@ fun CalendarList(
             ) {
                 val name = MutableStateWithValidation(remember {
                     mutableStateOf("")
-                },remember {
+                }, remember {
                     mutableStateOf("")
-                }){
-                    if (it.isBlank()){
+                }) {
+                    if (it.isBlank()) {
                         "El campo está vacío"
-                    }else null
+                    } else null
                 }
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
                     Text(
                         text = "Nueva agenda",
-                        style = MaterialTheme.typography.h5
+                        style = MaterialTheme.typography.headlineMedium
                     )
                     OutlinedTextField(
                         value = name.mutableState.component1(),
@@ -174,9 +208,9 @@ fun CalendarList(
                     )
                     Text(
                         modifier = Modifier.padding(start = 8.dp),
-                        color = MaterialTheme.colors.error,
+                        color = MaterialTheme.colorScheme.error,
                         text = name.errorState.value ?: "",
-                        style = MaterialTheme.typography.body2
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     AsyncButton(
                         modifier = Modifier
@@ -184,11 +218,12 @@ fun CalendarList(
                             .align(Alignment.End),
                         text = "Agregar",
                         isLoading = agendaListViewModel.isAddingAgenda.value
-                    ){
-                        if(name.validate()){
-                            agendaListViewModel.addAgenda(name.mutableState.value).invokeOnCompletion {
-                                showAddAgendaDialog.value = false
-                            }
+                    ) {
+                        if (name.validate()) {
+                            agendaListViewModel.addAgenda(name.mutableState.value)
+                                .invokeOnCompletion {
+                                    showAddAgendaDialog.value = false
+                                }
                         }
                     }
                 }
@@ -213,7 +248,7 @@ fun AgendaListItem(
         .clickable {
             selectedAgenda.value = calendar.calendarId
         },
-    elevation = 0.dp
+    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
 ) {
     Row(
         modifier = Modifier.padding(horizontal = 24.dp),
@@ -223,15 +258,15 @@ fun AgendaListItem(
             modifier = Modifier
                 .weight(1f),
             text = calendar.name,
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.headlineMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        if(agendaListViewModel.isRemovingAgenda.value.contains(calendar.calendarId)){
+        if (agendaListViewModel.isRemovingAgenda.value.contains(calendar.calendarId)) {
             CircularProgressIndicator(
                 modifier = Modifier.size(24.dp)
             )
-        }else{
+        } else {
             IconButton(
                 onClick = {
                     agendaListViewModel.removeAgenda(calendar.calendarId)
@@ -251,12 +286,23 @@ fun AgendaListItem(
 @OptIn(ExperimentalTime::class)
 @Composable
 fun AgendaView(
+    context: Context = LocalContext.current,
     selectedAgenda: MutableState<String?>,
     scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current), LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()) }
+        factory = viewModelFactory {
+            ScheduleViewModel(
+                ScheduleWebViewRepository(context),
+                LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()
+            )
+        }
     ),
     agendaViewModel: AgendaViewModel = viewModel(
-        factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(LocalContext.current), selectedAgenda.value) },
+        factory = viewModelFactory {
+            AgendaViewModel(
+                AgendaWebViewRepository(context),
+                selectedAgenda.value
+            )
+        },
         key = selectedAgenda.value
     )
 ) {
@@ -269,8 +315,8 @@ fun AgendaView(
     val selectedDateIndex = remember {
         mutableStateOf(0)
     }
-    val availableDates = List(182){
-        ShortDate.fromDate(today.offset(Duration.days(it)))
+    val availableDates = List(182) {
+        ShortDate.fromDate(today.offset(it.days))
     }
 
     Scaffold(
@@ -284,10 +330,10 @@ fun AgendaView(
                 Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add event")
             }
         }
-    ) {
+    ) { paddingValues ->
         Column {
             Row(
-                modifier = Modifier.padding(start = 22.dp, bottom = 8.dp),
+                modifier = Modifier.padding(paddingValues),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
@@ -299,17 +345,17 @@ fun AgendaView(
                 }
                 Text(
                     text = "SALIR",
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.headlineMedium
                 )
             }
 
-            if(agendaViewModel.eventList.value != null){
+            if (agendaViewModel.eventList.value != null) {
                 agendaViewModel.eventList.value?.let {
                     LazyRow(
                         modifier = Modifier.padding(bottom = 8.dp),
                         contentPadding = PaddingValues(horizontal = 32.dp)
                     ) {
-                        items(availableDates.size){ i ->
+                        items(availableDates.size) { i ->
                             DateSelectorItem(
                                 date = availableDates[i],
                                 today = todayShortDate,
@@ -317,7 +363,7 @@ fun AgendaView(
                                 events = it.filter { event ->
                                     event.date == availableDates[i]
                                 }
-                            ){
+                            ) {
                                 selectedDateIndex.value = i
                             }
                         }
@@ -330,7 +376,7 @@ fun AgendaView(
                         agendaViewModel
                     )
                 }
-            }else{
+            } else {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -340,7 +386,7 @@ fun AgendaView(
             }
         }
     }
-    if(showAddEventDialog.value){
+    if (showAddEventDialog.value) {
         Dialog(
             onDismissRequest = {
                 showAddEventDialog.value = false
@@ -358,30 +404,30 @@ fun AgendaView(
                         mutableStateOf("")
                     }, remember {
                         mutableStateOf(null)
-                    }){
-                        if(it.isBlank()){
+                    }) {
+                        if (it.isBlank()) {
                             "El campo está vacío"
-                        }else null
+                        } else null
                     }
 
                     val date = MutableStateWithValidation(remember {
                         mutableStateOf(ShortDate.fromDate(Date()))
                     }, remember {
                         mutableStateOf(null)
-                    }){
-                        if(it.toDate().before(ShortDate.fromDate(Date()).toDate())){
+                    }) {
+                        if (it.toDate().before(ShortDate.fromDate(Date()).toDate())) {
                             "La fecha no es válida"
-                        }else null
+                        } else null
                     }
 
                     val hourRange = MutableStateWithValidation(remember {
                         mutableStateOf<Pair<Hour, Hour>?>(null)
                     }, remember {
                         mutableStateOf(null)
-                    }){
-                        if(it == null){
+                    }) {
+                        if (it == null) {
                             "El rango de horas no es válido"
-                        }else null
+                        } else null
                     }
                     val description = remember {
                         mutableStateOf("")
@@ -392,7 +438,7 @@ fun AgendaView(
 
                     Text(
                         text = "Agregar evento",
-                        style = MaterialTheme.typography.h5
+                        style = MaterialTheme.typography.headlineMedium
                     )
                     Column(
                         modifier = Modifier
@@ -410,9 +456,9 @@ fun AgendaView(
                         )
                         Text(
                             modifier = Modifier.padding(start = 8.dp),
-                            color = MaterialTheme.colors.error,
+                            color = MaterialTheme.colorScheme.error,
                             text = name.errorState.value ?: "",
-                            style = MaterialTheme.typography.body2
+                            style = MaterialTheme.typography.bodyMedium
                         )
                         OutlinedTextField(
                             modifier = Modifier.padding(top = 8.dp),
@@ -447,9 +493,9 @@ fun AgendaView(
                         }
                         Text(
                             modifier = Modifier.padding(start = 8.dp),
-                            color = MaterialTheme.colors.error,
+                            color = MaterialTheme.colorScheme.error,
                             text = date.errorState.value ?: "",
-                            style = MaterialTheme.typography.body2
+                            style = MaterialTheme.typography.bodyMedium
                         )
                         Box(
                             modifier = Modifier.padding(top = 8.dp),
@@ -476,11 +522,11 @@ fun AgendaView(
                         }
                         Text(
                             modifier = Modifier.padding(start = 8.dp),
-                            color = MaterialTheme.colors.error,
+                            color = MaterialTheme.colorScheme.error,
                             text = hourRange.errorState.value ?: "",
-                            style = MaterialTheme.typography.body2
+                            style = MaterialTheme.typography.bodyMedium
                         )
-                        if(scheduleViewModel.scheduleList.isNotEmpty()){
+                        if (scheduleViewModel.scheduleList.isNotEmpty()) {
                             SelectAddAgendaEventList(
                                 title = "Vincular a una clase",
                                 options = scheduleViewModel.scheduleList
@@ -496,19 +542,21 @@ fun AgendaView(
                         text = "Agregar",
                         isLoading = agendaViewModel.isAddAgendaLoading.value
                     ) {
-                        if(listOf(name, date, hourRange).validate()){
-                            agendaViewModel.addAgendaEvent(AgendaItem(
-                                eventName = name.mutableState.value,
-                                eventType = AgendaEventType.PERSONAL,
-                                date = date.mutableState.value,
-                                scheduleDayTime = ScheduleDayTime(
-                                    hourRange.mutableState.value!!.first,
-                                    hourRange.mutableState.value!!.second,
-                                ),
-                                calendarId = selectedAgenda.value!!,
-                                description = description.value,
-                                classSchedule = selectedClassSchedule.value,
-                            )).invokeOnCompletion {
+                        if (listOf(name, date, hourRange).validate()) {
+                            agendaViewModel.addAgendaEvent(
+                                AgendaItem(
+                                    eventName = name.mutableState.value,
+                                    eventType = AgendaEventType.PERSONAL,
+                                    date = date.mutableState.value,
+                                    scheduleDayTime = ScheduleDayTime(
+                                        hourRange.mutableState.value!!.first,
+                                        hourRange.mutableState.value!!.second,
+                                    ),
+                                    calendarId = selectedAgenda.value!!,
+                                    description = description.value,
+                                    classSchedule = selectedClassSchedule.value,
+                                )
+                            ).invokeOnCompletion {
                                 showAddEventDialog.value = false
                             }
                         }
@@ -520,21 +568,21 @@ fun AgendaView(
     ErrorSnackbar(agendaViewModel.error)
 }
 
-fun showHourPickerDialog(context: Context, default: Hour? = null, onChange: (Hour) -> Unit){
+fun showHourPickerDialog(context: Context, default: Hour? = null, onChange: (Hour) -> Unit) {
     TimePickerDialog(context, { _, hour2, minute2 ->
         onChange(Hour(hour2, minute2))
     }, default?.hours ?: 12, default?.minutes ?: 0, false).show()
 }
 
-fun showHourRangePickerDialog(context: Context, onChange: (Pair<Hour, Hour>) -> Unit){
-    showHourPickerDialog(context){ h1 ->
-        showHourPickerDialog(context){ h2 ->
+fun showHourRangePickerDialog(context: Context, onChange: (Pair<Hour, Hour>) -> Unit) {
+    showHourPickerDialog(context) { h1 ->
+        showHourPickerDialog(context) { h2 ->
             onChange(Pair(h1, h2))
         }
     }
 }
 
-fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit){
+fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit) {
     val today = ShortDate.fromDate(Date())
     DatePickerDialog(context, { _, year, month, day ->
         onChange(ShortDate(day, month, year))
@@ -542,13 +590,13 @@ fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit){
 }
 
 @Composable
-fun <T>SelectableOptions(
+fun <T> SelectableOptions(
     options: List<T>?,
-    stringAdapter: (T) -> String = {it.toString()},
+    stringAdapter: (T) -> String = { it.toString() },
     initialSelection: Int? = null,
     onSelectionChange: (T?) -> Unit
 ) {
-    val infoColor = getCurrentTheme().info
+    val infoColor = MaterialTheme.colorScheme.secondary
     val selectedIndex = remember {
         mutableStateOf(initialSelection)
     }
@@ -560,16 +608,16 @@ fun <T>SelectableOptions(
                     modifier = Modifier.padding(end = 8.dp, top = 8.dp),
                     text = stringAdapter(value),
                     borderColor = infoColor,
-                    textColor = if (i != selectedIndex.value) infoColor else MaterialTheme.colors.onPrimary,
+                    textColor = if (i != selectedIndex.value) infoColor else MaterialTheme.colorScheme.onPrimary,
                     backgroundColor = if (i == selectedIndex.value) infoColor else null
-                ){
-                    val newIndex = if(selectedIndex.value != i){
+                ) {
+                    val newIndex = if (selectedIndex.value != i) {
                         i
-                    }else null
+                    } else null
 
                     selectedIndex.value = newIndex
 
-                    onSelectionChange(if(newIndex == null) null else options.getOrNull(newIndex))
+                    onSelectionChange(if (newIndex == null) null else options.getOrNull(newIndex))
                 }
             }
         } ?: listOf()
@@ -588,8 +636,8 @@ fun SelectAddAgendaEventList(
 
 
     Text(
-        text = if(options?.isNotEmpty() == true) title else "",
-        style = MaterialTheme.typography.subtitle2
+        text = if (options?.isNotEmpty() == true) title else "",
+        style = MaterialTheme.typography.titleMedium
     )
     SelectableOptions(
         options = options,
@@ -617,7 +665,7 @@ fun AgendaSchedule(
             modifier = Modifier
                 .verticalScroll(yScrollState)
                 .focusable(false)
-        ){
+        ) {
             val hourRange = events.getRangeBy { it.scheduleDayTime }
 
             HourColumn(hourRange)
@@ -625,7 +673,7 @@ fun AgendaSchedule(
                 modifier = Modifier
                     .horizontalScroll(xScrollState)
                     .focusable(false)
-            ){
+            ) {
                 EventsContainer(hourRange, rearrangeList(events), agendaViewModel)
             }
         }
@@ -634,7 +682,7 @@ fun AgendaSchedule(
                 .fillMaxSize()
                 .pointerInput(Unit) {
                     detectDragGestures { change, dragAmount ->
-                        change.consumeAllChanges()
+                        change.consume()
                         xScrollState.dispatchRawDelta(-dragAmount.x)
                         yScrollState.dispatchRawDelta(-dragAmount.y)
                     }
@@ -644,7 +692,7 @@ fun AgendaSchedule(
 }
 
 
-private fun rearrangeList(events: List<AgendaItem>) : List<List<AgendaItem>>{
+private fun rearrangeList(events: List<AgendaItem>): List<List<AgendaItem>> {
     val columns = ArrayList<ArrayList<AgendaItem>>()
     columns.add(arrayListOf())
     var currentColumnsLength = columns.size
@@ -655,16 +703,20 @@ private fun rearrangeList(events: List<AgendaItem>) : List<List<AgendaItem>>{
 
     sorted.forEach { agendaItem ->
         var i = 0
-        while (i < currentColumnsLength){
+        while (i < currentColumnsLength) {
             val column = columns[i++]
 
-            if(checkIfOccupied(column.map { it.scheduleDayTime }, agendaItem.scheduleDayTime) != null){
-                if(i >= currentColumnsLength){
+            if (checkIfOccupied(
+                    column.map { it.scheduleDayTime },
+                    agendaItem.scheduleDayTime
+                ) != null
+            ) {
+                if (i >= currentColumnsLength) {
                     columns.add(arrayListOf(agendaItem))
                     currentColumnsLength = columns.size
                     break
                 }
-            }else{
+            } else {
                 column.add(agendaItem)
                 break
             }
@@ -713,12 +765,14 @@ fun EventCard(
         .padding(horizontal = 8.dp)
         .fillMaxSize(),
     shape = MaterialTheme.shapes.small,
-    elevation = 0.dp,
-    backgroundColor = if (agendaItem.classSchedule != null) {
-        Color(agendaItem.classSchedule.color.toULong()).copy(alpha = 0.1f)
-    } else {
-        MaterialTheme.colors.surface
-    }
+    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+    colors = CardDefaults.cardColors(
+        containerColor = if (agendaItem.classSchedule != null) {
+            Color(agendaItem.classSchedule.color.toULong()).copy(alpha = 0.1f)
+        } else {
+            MaterialTheme.colorScheme.surface
+        }
+    ),
 ) {
     val secondaryText = getCurrentTheme().secondaryText
 
@@ -732,7 +786,7 @@ fun EventCard(
             Text(
                 modifier = Modifier.weight(1f),
                 text = agendaItem.eventName,
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.headlineMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -779,7 +833,7 @@ fun HourDividers(
         .height(hourHeight * (hourRange.last - hourRange.first))
 ) {
     hourRange.forEach { _ ->
-        Divider()
+        HorizontalDivider()
         Box(
             modifier = Modifier
                 .height(127.dp)
@@ -800,7 +854,7 @@ fun HourColumn(
                 .height(hourHeight),
             text = it.toDouble().toHour(),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.titleLarge
         )
     }
 }
@@ -821,8 +875,10 @@ fun DateSelectorItem(
             .size(64.dp, 80.dp)
             .padding(end = 8.dp)
             .clickable { onSelect() },
-        elevation = 0.dp,
-        backgroundColor = if (isSelected) MaterialTheme.colors.primary else if(date == today) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else if (date == today) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface
+        ),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -830,13 +886,13 @@ fun DateSelectorItem(
         ) {
             Text(
                 text = MES[date.month].uppercase(),
-                style = MaterialTheme.typography.h5,
-                color = if (isSelected) MaterialTheme.colors.onPrimary else if(date == today) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface
+                style = MaterialTheme.typography.headlineMedium,
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else if (date == today) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = date.day.toString(),
-                style = MaterialTheme.typography.h4,
-                color = if (isSelected) MaterialTheme.colors.onPrimary else if(date == today) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface
+                style = MaterialTheme.typography.headlineLarge,
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else if (date == today) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface
             )
         }
     }

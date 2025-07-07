@@ -4,13 +4,26 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreTime
-import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -20,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
@@ -38,7 +50,7 @@ class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
         viewModelFactory { SchoolScheduleViewModel(SchoolScheduleWebViewRepository(this)) }
     }
 
-    @OptIn(ExperimentalMaterialApi::class)
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -51,17 +63,17 @@ class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
                     sheetContent = {
                         FilterBottomSheet(filterViewModel = schoolScheduleViewModel)
                     },
-                    floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = {
-                                scope.launch {
-                                    scaffoldState.bottomSheetState.expand()
-                                }
-                            }
-                        ) {
-                            Icon(imageVector = Icons.Rounded.Search, contentDescription = "Search")
-                        }
-                    },
+//                    floatingActionButton = { //TODO: Encontrar reemplazo para FAB en BottomSheetScaffold
+//                        FloatingActionButton(
+//                            onClick = {
+//                                scope.launch {
+//                                    scaffoldState.bottomSheetState.expand()
+//                                }
+//                            }
+//                        ) {
+//                            Icon(imageVector = Icons.Rounded.Search, contentDescription = "Search")
+//                        }
+//                    },
                     scaffoldState = scaffoldState,
                 ) {
                     if (schoolScheduleViewModel.schoolSchedule.value != null){
@@ -106,7 +118,7 @@ class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectableClassItem(
     classSchedule: ClassSchedule,
@@ -116,34 +128,34 @@ fun SelectableClassItem(
         .fillMaxWidth()
         .clip(MaterialTheme.shapes.medium)
         .padding(bottom = 16.dp),
-    elevation = 0.dp
+    elevation = CardDefaults.cardElevation(0.dp),
 ) {
     ListItem(
-        text = {
+        headlineContent = {
             Text(
                 text = classSchedule.className,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
-        secondaryText = {
+        supportingContent = {
             Text(
                 text = classSchedule.teacherName,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
-        overlineText = {
+        overlineContent = {
             Text(text = classSchedule.group.uppercase())
         },
-        trailing = {
+        trailingContent = {
             IconButton(
                 onClick = onClick,
             ) {
                 Icon(
                     imageVector = Icons.Rounded.MoreTime,
                     contentDescription = "Add class",
-                    tint = MaterialTheme.colors.primary
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

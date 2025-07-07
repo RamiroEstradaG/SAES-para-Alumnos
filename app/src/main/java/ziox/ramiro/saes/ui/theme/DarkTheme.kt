@@ -1,9 +1,10 @@
 package ziox.ramiro.saes.ui.theme
 
-import androidx.compose.material.darkColors
+import android.content.Context
+import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.ui.graphics.Color
 
-object DarkTheme : ComposableTheme {
+class DarkTheme(context: Context) : ComposableTheme {
     override val primaryText = Color(0xFFFFFFFF)
     override val secondaryText = Color(0xFFB6B6B6)
     override val hintText = Color(0xFF686868)
@@ -30,22 +31,5 @@ object DarkTheme : ComposableTheme {
     override val onToolbar = Color.White
     override val divider = Color(0xFF595959)
 
-    override val colors = darkColors(
-        primary = primaryColor.s200,
-        primaryVariant = primaryColor.s500,
-        onPrimary = Color.Black,
-
-        secondary = secondaryColor.s200,
-        secondaryVariant = secondaryColor.s500,
-        onSecondary = Color.Black,
-
-        background = surfaceElevation.e0,
-        onBackground = primaryText,
-
-        surface = surfaceElevation.e1,
-        onSurface = primaryText,
-
-        error = Color(0xFFE57373),
-        onError = Color.Black
-    )
+    override val colors = dynamicDarkColorScheme(context)
 }

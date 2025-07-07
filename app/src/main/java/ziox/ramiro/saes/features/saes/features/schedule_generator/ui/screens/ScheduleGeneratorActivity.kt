@@ -4,14 +4,28 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Preview
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -91,14 +105,14 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
                             }
                         }
                     }
-                ) {
+                ) { paddingValues ->
                     Column(
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier.padding(paddingValues)
                     ){
                         Text(
                             modifier = Modifier.padding(horizontal = 32.dp),
                             text = "Generador de horario",
-                            style = MaterialTheme.typography.h4
+                            style = MaterialTheme.typography.headlineLarge
                         )
 
                         if(scheduleGeneratorViewModel.scheduleItems.value != null){
@@ -163,34 +177,34 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleGeneratorItem(
     generatorClassSchedule: ClassScheduleCollection,
     scheduleGeneratorViewModel: ScheduleGeneratorViewModel
 ) = Card(
     modifier = Modifier.padding(bottom = 16.dp),
-    elevation = 0.dp
+    elevation = CardDefaults.cardElevation(0.dp),
 ) {
     ListItem(
-        text = {
+        headlineContent = {
             Text(
                 text = generatorClassSchedule.className,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
-        secondaryText = {
+        supportingContent = {
             Text(
                 text = generatorClassSchedule.teacherName,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         },
-        overlineText = {
+        overlineContent = {
             Text(text = generatorClassSchedule.group)
         },
-        trailing = {
+        trailingContent = {
             IconButton(
                 onClick = {
                     scheduleGeneratorViewModel.removeClass(generatorClassSchedule.classId)

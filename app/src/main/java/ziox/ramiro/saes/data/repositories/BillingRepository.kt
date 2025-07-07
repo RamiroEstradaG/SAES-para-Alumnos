@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.Log
 import com.anjlab.android.iab.v3.BillingProcessor
 import com.anjlab.android.iab.v3.PurchaseData
-import com.anjlab.android.iab.v3.TransactionDetails
+import com.anjlab.android.iab.v3.PurchaseInfo
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import ziox.ramiro.saes.R
@@ -41,7 +41,7 @@ class BillingGooglePayRepository(
 
     override suspend fun hasDonated(): Boolean{
         waitToInitialize()
-        client.loadOwnedPurchasesFromGoogle()
+//        client.loadOwnedPurchasesFromGoogle()
         return client.listOwnedProducts().isNotEmpty()
     }
 
@@ -49,8 +49,8 @@ class BillingGooglePayRepository(
         client.release()
     }
 
-    override fun onProductPurchased(productId: String, details: TransactionDetails?) {
-        _purchase.value = details?.purchaseInfo?.purchaseData
+    override fun onProductPurchased(productId: String, details: PurchaseInfo?) {
+        _purchase.value = details?.purchaseData
     }
 
     override fun onPurchaseHistoryRestored() {

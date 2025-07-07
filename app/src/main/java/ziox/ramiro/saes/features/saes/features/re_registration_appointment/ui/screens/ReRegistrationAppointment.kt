@@ -1,15 +1,30 @@
 package ziox.ramiro.saes.features.saes.features.re_registration_appointment.ui.screens
 
+import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreTime
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,20 +41,17 @@ import ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.Sch
 import ziox.ramiro.saes.features.saes.ui.components.FlexView
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.OutlineButton
-import ziox.ramiro.saes.ui.theme.getCurrentTheme
-import ziox.ramiro.saes.utils.toLongString
 import ziox.ramiro.saes.utils.toLongStringAndHour
 import ziox.ramiro.saes.utils.toStringPrecision
 
 @Composable
 fun ReRegistrationAppointment(
+    context: Context = LocalContext.current,
     reRegistrationViewModel: ReRegistrationAppointmentViewModel = viewModel(
         factory = viewModelFactory { ReRegistrationAppointmentViewModel(ReRegistrationWebViewRepository(
-            LocalContext.current)) }
+            context)) }
     )
 ) = Crossfade(targetState = reRegistrationViewModel.reRegistrationData.value) {
-    val context = LocalContext.current
-
     if(it != null){
         Box(
             modifier = Modifier.verticalScroll(rememberScrollState())
@@ -49,11 +61,11 @@ fun ReRegistrationAppointment(
             ) {
                 Text(
                     text = "Reinscripción",
-                    style = MaterialTheme.typography.h4
+                    style = MaterialTheme.typography.headlineLarge
                 )
                 Text(
                     text = it.appointmentDate?.toLongStringAndHour() ?: "Reinscripción no disponible",
-                    style = MaterialTheme.typography.h6
+                    style = MaterialTheme.typography.headlineSmall
                 )
                 if(it.appointmentDateExpiration != null){
                     Text(
@@ -61,7 +73,7 @@ fun ReRegistrationAppointment(
                             Hasta
                             ${it.appointmentDateExpiration.toLongStringAndHour()}
                         """.trimIndent(),
-                        style = MaterialTheme.typography.h6
+                        style = MaterialTheme.typography.headlineSmall
                     )
                 }
                 Column(
@@ -95,7 +107,7 @@ fun ReRegistrationAppointment(
                         ChartElement(
                             "Obtenidos",
                             it.creditsObtained,
-                            MaterialTheme.colors.primary
+                            MaterialTheme.colorScheme.primary
                         )
                     )
                 )
@@ -107,12 +119,12 @@ fun ReRegistrationAppointment(
                         ChartElement(
                             "Cursado",
                             it.careerCurrentDuration.toDouble(),
-                            MaterialTheme.colors.primary
+                            MaterialTheme.colorScheme.primary
                         ),
                         ChartElement(
                             "Previsto",
                             it.careerMediumDuration.toDouble(),
-                            MaterialTheme.colors.secondary
+                            MaterialTheme.colorScheme.secondary
                         )
                     )
                 ){ value ->
@@ -142,11 +154,11 @@ fun CreditsElement(
 ) {
     Text(
         text = title,
-        style = MaterialTheme.typography.subtitle2
+        style = MaterialTheme.typography.titleMedium
     )
     Text(
         text = value,
-        style = MaterialTheme.typography.h5
+        style = MaterialTheme.typography.headlineMedium
     )
 }
 
@@ -162,14 +174,17 @@ fun ProgressChart(
 ) {
     Text(
         text = title,
-        style = MaterialTheme.typography.subtitle2
+        style = MaterialTheme.typography.titleMedium
     )
     Card(
         modifier = Modifier
             .height(70.dp)
             .padding(top = 8.dp),
-        elevation = 0.dp,
-        backgroundColor = getCurrentTheme().divider
+        elevation = CardDefaults.cardElevation(0.dp),
+        shape = RoundedCornerShape(100),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        )
     ) {
         elements.forEach {
             LinearProgressIndicator(
@@ -181,8 +196,8 @@ fun ProgressChart(
                             .toFloat()
                     ),
                 color = it.color,
-                progress = it.value.div(max).toFloat(),
-                backgroundColor = Color.Transparent
+                progress = { it.value.div(max).toFloat() },
+                trackColor = Color.Transparent,
             )
         }
     }

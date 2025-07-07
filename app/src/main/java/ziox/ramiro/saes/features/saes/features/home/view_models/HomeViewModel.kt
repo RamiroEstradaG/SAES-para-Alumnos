@@ -22,7 +22,7 @@ class HomeViewModel(
 
     init {
         fetchUserHistory()
-        fetchTweets()
+//        fetchTweets()
         error.dismissAfterTimeout()
     }
 

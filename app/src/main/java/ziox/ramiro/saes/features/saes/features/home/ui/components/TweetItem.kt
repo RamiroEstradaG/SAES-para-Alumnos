@@ -4,11 +4,21 @@ import android.text.util.Linkify
 import android.widget.TextView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +44,7 @@ import ziox.ramiro.saes.ui.theme.getCurrentTheme
 fun TweetItem(tweet: Tweet) {
     Card(
         modifier = Modifier.padding(bottom = 16.dp),
-        elevation = 0.dp
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column {
             Row(modifier = Modifier.padding(all = 10.dp)) {
@@ -130,7 +140,7 @@ private fun NameAndUserName(tweet: Tweet) {
                 Spacer(modifier = Modifier.size(5.dp))
                 Text(
                     text = "@${tweet.user.username}",
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
             Box(
@@ -141,7 +151,7 @@ private fun NameAndUserName(tweet: Tweet) {
                     })
                     .height(20.dp)
                     .width(50.dp)
-                    .background(MaterialTheme.colors.surface)
+                    .background(MaterialTheme.colorScheme.surface)
             )
         }
         Text(
@@ -151,7 +161,7 @@ private fun NameAndUserName(tweet: Tweet) {
                 }
             },
             text = " · ${tweet.timeAgo()}",
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

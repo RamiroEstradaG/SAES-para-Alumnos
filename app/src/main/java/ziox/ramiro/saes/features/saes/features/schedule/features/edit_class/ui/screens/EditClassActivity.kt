@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -97,7 +97,7 @@ class EditClassActivity: AppCompatActivity() {
                     Text(
                         modifier = Modifier.padding(bottom = 32.dp),
                         text = initialClass.className,
-                        style = MaterialTheme.typography.h4
+                        style = MaterialTheme.typography.headlineLarge
                     )
                     SAESTextField(
                         state = groupValidator,
@@ -118,7 +118,7 @@ class EditClassActivity: AppCompatActivity() {
                     Text(
                         modifier = Modifier.padding(top = 8.dp),
                         text = "Dia de la semana",
-                        style = MaterialTheme.typography.subtitle2
+                        style = MaterialTheme.typography.titleMedium
                     )
                     SelectableOptions(
                         options = weekDayOptions,

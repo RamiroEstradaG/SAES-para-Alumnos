@@ -6,14 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.Uri
+import androidx.core.net.toUri
 import ziox.ramiro.saes.ui.app_widgets.ScheduleLargeWidget
 import ziox.ramiro.saes.ui.app_widgets.ScheduleMediumWidget
 import ziox.ramiro.saes.ui.app_widgets.ScheduleSmallWidget
 
 fun Context.launchUrl(url: String){
     startActivity(Intent(Intent.ACTION_VIEW).apply {
-        data = Uri.parse(url)
+        data = url.toUri()
     })
 }
 

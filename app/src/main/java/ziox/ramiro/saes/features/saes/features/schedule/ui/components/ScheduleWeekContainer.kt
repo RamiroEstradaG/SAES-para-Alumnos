@@ -5,9 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowRightAlt
 import androidx.compose.runtime.Composable
@@ -157,7 +157,7 @@ fun HourColumn(
                         .height(hourHeight - 1.dp),
                     text = it.toDouble().toHour(),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.subtitle1
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
         }
@@ -169,7 +169,7 @@ fun HourColumn(
                     .align(Alignment.TopEnd),
                 imageVector = Icons.Rounded.ArrowRightAlt,
                 contentDescription = "Current hour",
-                tint = MaterialTheme.colors.primary
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }

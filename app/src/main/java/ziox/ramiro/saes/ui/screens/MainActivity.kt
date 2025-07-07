@@ -1,12 +1,14 @@
 package ziox.ramiro.saes.ui.screens
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.material.Scaffold
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Modifier
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.ktx.Firebase
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         authViewModel = ViewModelProvider(
             this,
             viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
-        ).get(AuthViewModel::class.java)
+        )[AuthViewModel::class.java]
 
         if(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) == null){
             startActivity(Intent(this, LoginActivity::class.java))
@@ -59,8 +61,10 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
 
-                Scaffold {
-                    SplashScreen()
+                Scaffold { paddingValues ->
+                    SplashScreen(
+                        modifier = Modifier.padding(paddingValues)
+                    )
                     ErrorSnackbar(authViewModel.error)
                 }
             }
@@ -89,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse(intent.getStringExtra(SAESActivity.INTENT_EXTRA_REDIRECT))
+                        intent.getStringExtra(SAESActivity.INTENT_EXTRA_REDIRECT)?.toUri()
                     )
                 )
             }

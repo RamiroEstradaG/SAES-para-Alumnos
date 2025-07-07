@@ -1,6 +1,6 @@
 package ziox.ramiro.saes.ui.theme
 
-import androidx.compose.material.Colors
+import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 
 val primaryColor = object : ColorShade {
@@ -30,7 +30,7 @@ val secondaryColor = object : ColorShade {
 }
 
 interface ComposableTheme {
-    val colors: Colors
+    val colors: ColorScheme
 
     val primaryText: Color
     val secondaryText: Color

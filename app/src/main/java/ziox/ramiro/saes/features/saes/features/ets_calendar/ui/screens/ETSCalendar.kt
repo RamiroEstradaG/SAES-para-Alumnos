@@ -1,15 +1,29 @@
 package ziox.ramiro.saes.features.saes.features.ets_calendar.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material.icons.rounded.Preview
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,7 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
@@ -36,33 +49,36 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
+import ziox.ramiro.saes.ui.components.TextButton
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ETSCalendar(
+    context: Context = LocalContext.current,
     etsCalendarViewModel: ETSCalendarViewModel = viewModel(
-        factory = viewModelFactory { ETSCalendarViewModel(ETSCalendarWebViewRepository(LocalContext.current)) }
+        factory = viewModelFactory { ETSCalendarViewModel(ETSCalendarWebViewRepository(context)) }
     )
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
     BottomSheetScaffold(
-        sheetContent = {
+        sheetContent = @Composable {
             FilterBottomSheet(etsCalendarViewModel)
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.padding(bottom = 90.dp),
-                onClick = {
-                    coroutineScope.launch {
-                        scaffoldState.bottomSheetState.expand()
-                    }
-                }
-            ) {
-                Icon(imageVector = Icons.Rounded.FilterAlt, contentDescription = "Filter")
-            }
-        },
+
+//        floatingActionButton = @Composable { TODO: Encontrar reemplazo para FAB en BottomSheetScaffold
+//            FloatingActionButton(
+//                modifier = Modifier.padding(bottom = 90.dp),
+//                onClick = {
+//                    coroutineScope.launch {
+//                        scaffoldState.bottomSheetState.expand()
+//                    }
+//                }
+//            ) {
+//                Icon(imageVector = Icons.Rounded.FilterAlt, contentDescription = "Filter")
+//            }
+//        },
         scaffoldState = scaffoldState
     ) {
         if(etsCalendarViewModel.etsCalendar.value != null){
@@ -119,7 +135,7 @@ fun ETSCalendarDayGroup(
     Text(
         modifier = Modifier.fillMaxWidth(),
         text = date.toString(),
-        style = MaterialTheme.typography.h6,
+        style = MaterialTheme.typography.headlineSmall,
         textAlign = TextAlign.Center
     )
     Column {
@@ -132,7 +148,6 @@ fun ETSCalendarDayGroup(
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ETSCalendarHourGroup(
     hour: Hour,
@@ -149,14 +164,14 @@ fun ETSCalendarHourGroup(
         modifier = Modifier
             .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
             .height(height.value)
-            .background(MaterialTheme.colors.primary.copy(alpha = 0.1f))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
     ){
         Text(
             modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp),
             text = hour.toString(),
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.primary
+            color = MaterialTheme.colorScheme.primary
         )
     }
     Column(
@@ -175,10 +190,10 @@ fun ETSCalendarHourGroup(
                 modifier = Modifier.clickable {
                       isDialogVisible.value = true
                 },
-                text = {
+                headlineContent = {
                     Text(text = it.className)
                 },
-                trailing = {
+                trailingContent = {
                     Icon(imageVector = Icons.Rounded.Preview, contentDescription = "Preview icon")
                 }
             )
@@ -190,34 +205,40 @@ fun ETSCalendarHourGroup(
                     onDismissRequest = {
                         isDialogVisible.value = false
                     },
-                    title = {
+                    title = @Composable {
                         Text(
                             text = it.className,
-                            style = MaterialTheme.typography.h5
+                            style = MaterialTheme.typography.headlineMedium
                         )
                     },
-                    text = {
+                    text = @Composable {
                         Column {
                             Text(
                                 text = "Edificio",
-                                style = MaterialTheme.typography.subtitle2
+                                style = MaterialTheme.typography.titleMedium
                             )
                             Text(
                                 text = it.building,
-                                style = MaterialTheme.typography.h6
+                                style = MaterialTheme.typography.headlineSmall
                             )
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
                                 text = "Salón",
-                                style = MaterialTheme.typography.subtitle2
+                                style = MaterialTheme.typography.titleMedium
                             )
                             Text(
                                 text = it.classroom,
-                                style = MaterialTheme.typography.h6
+                                style = MaterialTheme.typography.headlineSmall
                             )
                         }
                     },
-                    buttons = {}
+                    confirmButton = {
+                        TextButton(
+                            text = "Aceptar",
+                        ) {
+                            isDialogVisible.value = false
+                        }
+                    },
                 )
             }
         }

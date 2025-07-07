@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Snackbar
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -41,7 +41,7 @@ fun ErrorSnackbar(
     ) {
         Snackbar(
             modifier = Modifier.padding(16.dp),
-            backgroundColor = getCurrentTheme().danger,
+            containerColor = getCurrentTheme().danger,
             shape = MaterialTheme.shapes.medium,
         ) {
             Row(
@@ -57,12 +57,12 @@ fun ErrorSnackbar(
                 Column {
                     Text(
                         text = "Error",
-                        color = MaterialTheme.colors.onPrimary,
-                        style = MaterialTheme.typography.h5
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.headlineMedium
                     )
                     Text(
                         text = error.value ?: "",
-                        color = MaterialTheme.colors.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -89,7 +89,7 @@ fun InfoSnackbar(
     ) {
         Snackbar(
             modifier = Modifier.padding(16.dp),
-            backgroundColor = getCurrentTheme().info,
+            containerColor = getCurrentTheme().info,
             shape = MaterialTheme.shapes.medium,
         ) {
             Row(
@@ -105,12 +105,12 @@ fun InfoSnackbar(
                 Column {
                     Text(
                         text = "Información",
-                        color = MaterialTheme.colors.onPrimary,
-                        style = MaterialTheme.typography.h5
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.headlineMedium
                     )
                     Text(
                         text = info.value ?: "",
-                        color = MaterialTheme.colors.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

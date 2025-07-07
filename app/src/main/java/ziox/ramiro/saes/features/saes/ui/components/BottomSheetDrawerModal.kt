@@ -9,11 +9,28 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.Event
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Logout
+import androidx.compose.material.icons.rounded.MoreTime
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -51,7 +68,7 @@ import ziox.ramiro.saes.utils.launchUrl
 import ziox.ramiro.saes.view_models.AuthViewModel
 
 
-class BottomSheetDrawerModal: BottomSheetDialogFragment() {
+class BottomSheetDrawerModal : BottomSheetDialogFragment() {
     private val remoteConfig = Firebase.remoteConfig
     private val profileViewModel: ProfileViewModel by activityViewModels()
     private val saesViewModel: SAESViewModel by activityViewModels()
@@ -66,10 +83,13 @@ class BottomSheetDrawerModal: BottomSheetDialogFragment() {
             setContent {
                 SAESParaAlumnosTheme {
                     Column(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background)
+                            .verticalScroll(rememberScrollState())
                     ) {
                         ProfileHeader(profileState = profileViewModel.profile)
-                        Divider()
+                        HorizontalDivider()
                         AndroidView(
                             factory = {
                                 NestedScrollView(it)
@@ -84,31 +104,78 @@ class BottomSheetDrawerModal: BottomSheetDialogFragment() {
                                         SectionMenuItem(section = MenuSection.KARDEX)
                                         SectionMenuItem(section = MenuSection.PERFORMANCE)
                                         SectionMenuItem(section = MenuSection.RE_REGISTRATION_APPOINTMENT)
-                                        if(UserPreferences.invoke(requireContext()).getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
+                                        if (UserPreferences.invoke(requireContext()).getPreference(
+                                                PreferenceKeys.IsFirebaseEnabled,
+                                                false
+                                            )
+                                        ) {
                                             SectionMenuItem(section = MenuSection.AGENDA)
                                         }
                                         MenuHeader(name = "Académico")
                                         SectionMenuItem(section = MenuSection.ETS_CALENDAR)
                                         SectionMenuItem(section = MenuSection.SCHOOL_SCHEDULE)
                                         SectionMenuItem(section = MenuSection.OCCUPANCY)
-                                        ActionMenuItem(icon = Icons.Rounded.MoreTime, name = "Generador de horario"){
-                                            startActivity(Intent(requireContext(), ScheduleGeneratorActivity::class.java))
+                                        ActionMenuItem(
+                                            icon = Icons.Rounded.MoreTime,
+                                            name = "Generador de horario"
+                                        ) {
+                                            startActivity(
+                                                Intent(
+                                                    requireContext(),
+                                                    ScheduleGeneratorActivity::class.java
+                                                )
+                                            )
                                         }
-                                        MenuHeader(name = "Calendario académico")
-                                        ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad Escolarizada"){
-                                            context?.launchUrl(remoteConfig.getString("calendario_escolarizado"))
+                                        if (
+                                            remoteConfig.getString("calendario_escolarizado") != ""
+                                            || remoteConfig.getString("calendario_no_escolarizado") != ""
+                                        ) {
+                                            MenuHeader(name = "Calendario académico")
                                         }
-                                        ActionMenuItem(icon = Icons.Rounded.Event, name = "Calendario Modalidad No-Escolarizada"){
-                                            context?.launchUrl(remoteConfig.getString("calendario_no_escolarizado"))
+                                        if (remoteConfig.getString("calendario_escolarizado") != "") {
+                                            ActionMenuItem(
+                                                icon = Icons.Rounded.Event,
+                                                name = "Calendario Modalidad Escolarizada"
+                                            ) {
+                                                context?.launchUrl(remoteConfig.getString("calendario_escolarizado"))
+                                            }
+                                        }
+                                        if (remoteConfig.getString("calendario_no_escolarizado") != "") {
+                                            ActionMenuItem(
+                                                icon = Icons.Rounded.Event,
+                                                name = "Calendario Modalidad No-Escolarizada"
+                                            ) {
+                                                context?.launchUrl(remoteConfig.getString("calendario_no_escolarizado"))
+                                            }
                                         }
                                         MenuHeader(name = "Aplicación")
-                                        ActionMenuItem(icon = Icons.Rounded.Settings, name = "Configuración"){
-                                            startActivity(Intent(requireContext(), SettingsActivity::class.java))
+                                        ActionMenuItem(
+                                            icon = Icons.Rounded.Settings,
+                                            name = "Configuración"
+                                        ) {
+                                            startActivity(
+                                                Intent(
+                                                    requireContext(),
+                                                    SettingsActivity::class.java
+                                                )
+                                            )
                                         }
-                                        ActionMenuItem(icon = Icons.Rounded.Info, name = "Acerca de la aplicación"){
-                                            startActivity(Intent(requireContext(), AboutActivity::class.java))
+                                        ActionMenuItem(
+                                            icon = Icons.Rounded.Info,
+                                            name = "Acerca de la aplicación"
+                                        ) {
+                                            startActivity(
+                                                Intent(
+                                                    requireContext(),
+                                                    AboutActivity::class.java
+                                                )
+                                            )
                                         }
-                                        ActionMenuItem(icon = Icons.Rounded.Logout, name = "Cerrar sesión", contentColor = getCurrentTheme().danger){
+                                        ActionMenuItem(
+                                            icon = Icons.Rounded.Logout,
+                                            name = "Cerrar sesión",
+                                            contentColor = getCurrentTheme().danger
+                                        ) {
                                             authViewModel.logout()
                                         }
                                     }
@@ -125,9 +192,10 @@ class BottomSheetDrawerModal: BottomSheetDialogFragment() {
     fun SectionMenuItem(
         section: MenuSection
     ) {
-        val currentSection = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
+        val currentSection =
+            saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
 
-        if(LocalContext.current.isNetworkAvailable() || section.supportsOfflineMode){
+        if (LocalContext.current.isNetworkAvailable() || section.supportsOfflineMode) {
             Box(
                 Modifier.padding(
                     horizontal = 8.dp,
@@ -143,7 +211,7 @@ class BottomSheetDrawerModal: BottomSheetDialogFragment() {
                             dismiss()
                         }
                         .background(
-                            if (currentSection.value == section) MaterialTheme.colors.primary.copy(
+                            if (currentSection.value == section) MaterialTheme.colorScheme.primary.copy(
                                 alpha = 0.1f
                             ) else Color.Transparent
                         )
@@ -154,12 +222,12 @@ class BottomSheetDrawerModal: BottomSheetDialogFragment() {
                     Icon(
                         imageVector = section.icon,
                         contentDescription = section.name,
-                        tint = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText
+                        tint = if (currentSection.value == section) MaterialTheme.colorScheme.primary else getCurrentTheme().primaryText
                     )
                     Text(
                         modifier = Modifier.padding(start = 16.dp),
                         text = section.sectionName,
-                        color = if (currentSection.value == section) MaterialTheme.colors.primary else getCurrentTheme().primaryText,
+                        color = if (currentSection.value == section) MaterialTheme.colorScheme.primary else getCurrentTheme().primaryText,
                         fontWeight = if (currentSection.value == section) FontWeight.Bold else FontWeight.Normal,
                     )
                 }
@@ -215,20 +283,20 @@ fun MenuHeader(
 ) = Text(
     modifier = Modifier.padding(top = 16.dp, start = 16.dp),
     text = name,
-    style = MaterialTheme.typography.subtitle2,
+    style = MaterialTheme.typography.titleMedium,
     color = getCurrentTheme().secondaryText
 )
 
 @Composable
 fun ProfileHeader(
-    profileState : State<ProfileUser?>
-) = Crossfade(targetState = profileState.value) {
+    profileState: State<ProfileUser?>
+) = Crossfade(targetState = profileState.value) { crossFadeState ->
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
     ) {
-        if (it != null){
+        if (crossFadeState != null) {
             profileState.value?.let {
                 Row(
                     modifier = Modifier
@@ -260,17 +328,17 @@ fun ProfileHeader(
                     ) {
                         Text(
                             text = it.name,
-                            style = MaterialTheme.typography.h5
+                            style = MaterialTheme.typography.headlineMedium
                         )
 
                         Text(
                             text = it.id,
-                            style = MaterialTheme.typography.subtitle1
+                            style = MaterialTheme.typography.titleLarge
                         )
                     }
                 }
             }
-        }else{
+        } else {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

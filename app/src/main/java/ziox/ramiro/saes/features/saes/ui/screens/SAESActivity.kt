@@ -10,8 +10,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +24,6 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.R
@@ -113,7 +113,7 @@ class SAESActivity : AppCompatActivity() {
                 val selectedMenuItem = saesViewModel.currentSection.collectAsState(initial = initialSection)
 
                 val statusBarColor = when(selectedMenuItem.value){
-                    MenuSection.PROFILE -> MaterialTheme.colors.surface
+                    MenuSection.PROFILE -> MaterialTheme.colorScheme.surface
                     else -> Color.Transparent
                 }
 
@@ -133,8 +133,10 @@ class SAESActivity : AppCompatActivity() {
                             BottomSheetDrawerModal().show(supportFragmentManager, "menu")
                         }
                     }
-                ) {
-                    Column {
+                ) { paddingValues ->
+                    Column(
+                        modifier = Modifier.padding(paddingValues)
+                    ) {
                         if(billingViewModel.hasDonated.value == false){
                             AndroidView(
                                 modifier = Modifier
@@ -143,7 +145,7 @@ class SAESActivity : AppCompatActivity() {
                                     .background(statusBarColor),
                                 factory = {
                                     AdView(it).apply {
-                                        adSize = AdSize.BANNER
+                                        setAdSize(AdSize.BANNER)
                                         adUnitId = getString(R.string.banner_ad_key)
                                         loadAd(AdRequest.Builder().build())
                                     }
