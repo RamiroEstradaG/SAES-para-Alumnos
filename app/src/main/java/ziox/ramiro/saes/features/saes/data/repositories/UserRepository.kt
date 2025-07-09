@@ -80,6 +80,7 @@ class UserFirebaseRepository: UserRepository{
     override suspend fun update(data: Map<String, Any?>): UserData {
         val ref = db.collection(COLLECTION_ID_USERS)
             .document(currentUser?.uid ?: "")
+        println("UID ${currentUser?.uid}")
         ref.update(data).await()
         return ref.get().await().toObject(UserData::class.java)!!
     }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -149,7 +150,7 @@ fun CalendarList(
                                 start = 32.dp,
                                 end = 32.dp,
                                 bottom = 64.dp
-                            )
+                            ),
                         ) {
                             it.forEach { calendar ->
                                 AgendaListItem(agendaListViewModel, selectedAgenda, calendar)
@@ -244,14 +245,13 @@ fun AgendaListItem(
         .fillMaxWidth()
         .height(80.dp)
         .clip(MaterialTheme.shapes.medium)
-        .padding(bottom = 16.dp)
         .clickable {
             selectedAgenda.value = calendar.calendarId
         },
     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
 ) {
     Row(
-        modifier = Modifier.padding(horizontal = 24.dp),
+        modifier = Modifier.padding(horizontal = 24.dp).fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -770,7 +770,7 @@ fun EventCard(
         containerColor = if (agendaItem.classSchedule != null) {
             Color(agendaItem.classSchedule.color.toULong()).copy(alpha = 0.1f)
         } else {
-            MaterialTheme.colorScheme.surface
+            MaterialTheme.colorScheme.surfaceContainer
         }
     ),
 ) {
@@ -877,16 +877,17 @@ fun DateSelectorItem(
             .clickable { onSelect() },
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else if (date == today) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else if (date == today) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surfaceContainer
         ),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth().fillMaxHeight()
         ) {
             Text(
                 text = MES[date.month].uppercase(),
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.titleMedium,
                 color = if (isSelected) MaterialTheme.colorScheme.onPrimary else if (date == today) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface
             )
             Text(

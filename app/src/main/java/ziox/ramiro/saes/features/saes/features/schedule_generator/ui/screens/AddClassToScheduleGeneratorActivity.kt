@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -83,7 +82,8 @@ class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
                                 LazyColumn(
                                     contentPadding = PaddingValues(
                                         top = 16.dp, start = 32.dp, end = 32.dp, bottom = 64.dp
-                                    )
+                                    ),
+
                                 ) {
                                     items(scheduleCollections){ classSchedule ->
                                         SelectableClassItem(
@@ -126,7 +126,6 @@ fun SelectableClassItem(
 ) = Card(
     modifier = Modifier
         .fillMaxWidth()
-        .clip(MaterialTheme.shapes.medium)
         .padding(bottom = 16.dp),
     elevation = CardDefaults.cardElevation(0.dp),
 ) {

@@ -2,14 +2,22 @@ package ziox.ramiro.saes.features.saes.features.schedule.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowRightAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowRightAlt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -25,12 +33,13 @@ import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.getHourHeight
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.toHour
-import java.util.*
+import java.util.Date
 
 @Composable
 fun ScheduleWeekContainer(
     classSchedules: List<ClassSchedule>,
-    selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null)
+    selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null),
+    canEdit: Boolean = true
 ) {
     val hourRange = classSchedules.getRangeBy { it.scheduleDayTime }
 
@@ -54,7 +63,8 @@ fun ScheduleWeekContainer(
             },
             weekDay = WeekDay.MONDAY,
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            canEdit = canEdit
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -71,7 +81,8 @@ fun ScheduleWeekContainer(
                 }
             },
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            canEdit = canEdit
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -88,7 +99,8 @@ fun ScheduleWeekContainer(
             },
             weekDay = WeekDay.WEDNESDAY,
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            canEdit = canEdit
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -105,7 +117,8 @@ fun ScheduleWeekContainer(
             },
             weekDay = WeekDay.THURSDAY,
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            canEdit = canEdit
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -122,7 +135,8 @@ fun ScheduleWeekContainer(
             },
             weekDay = WeekDay.FRIDAY,
             classSchedules = classSchedules,
-            hourRange = hourRange
+            hourRange = hourRange,
+            canEdit = canEdit
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it

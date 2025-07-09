@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.core.graphics.createBitmap
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.MultiFormatWriter
 
@@ -71,7 +72,7 @@ fun createBarcodeImage(message: String, type: BarcodeTypes = BarcodeTypes.QRCode
             }
         }
     }
-    val bitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(bitmapWidth, bitmapHeight)
     bitmap.setPixels(pixels, 0, bitmapWidth, 0, 0, bitmapWidth, bitmapHeight)
     return bitmap
 }

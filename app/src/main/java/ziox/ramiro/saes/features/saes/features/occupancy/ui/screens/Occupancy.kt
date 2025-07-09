@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -115,7 +116,8 @@ fun OccupancyItem(
     modifier = Modifier
         .fillMaxWidth()
         .height(64.dp)
-        .padding(top = 8.dp)
+        .padding(top = 8.dp),
+    shape = RoundedCornerShape(100)
 ) {
     val progress =
         if (classOccupancy.maximumQuota != 0 && classOccupancy.currentlySignedUp in 0..classOccupancy.maximumQuota) {
@@ -135,31 +137,33 @@ fun OccupancyItem(
         )
     }
 
-    LinearProgressIndicator(
-        progress = { progress },
-        modifier = Modifier.fillMaxSize(),
-        color = progressColor,
-        trackColor = Color.Transparent,
-        strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
-    )
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
+    Box {
+        LinearProgressIndicator(
+            progress = { progress },
+            modifier = Modifier.fillMaxSize(),
+            color = progressColor,
+            trackColor = Color.Transparent,
+            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+        )
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .padding(end = 16.dp),
-            text = classOccupancy.className,
-            style = MaterialTheme.typography.headlineMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Text(
-            text = "${classOccupancy.currentlySignedUp}/${classOccupancy.maximumQuota}",
-            style = MaterialTheme.typography.headlineSmall
-        )
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 16.dp),
+                text = classOccupancy.className,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = "${classOccupancy.currentlySignedUp}/${classOccupancy.maximumQuota}",
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
     }
 }

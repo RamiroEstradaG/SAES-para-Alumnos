@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -31,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -66,7 +68,6 @@ fun ETSCalendar(
         sheetContent = @Composable {
             FilterBottomSheet(etsCalendarViewModel)
         },
-
 //        floatingActionButton = @Composable { TODO: Encontrar reemplazo para FAB en BottomSheetScaffold
 //            FloatingActionButton(
 //                modifier = Modifier.padding(bottom = 90.dp),
@@ -153,7 +154,7 @@ fun ETSCalendarHourGroup(
     hour: Hour,
     groupList: List<ETSCalendarItem>
 ) = Row(
-    modifier = Modifier.padding(vertical = 2.dp)
+    modifier = Modifier.padding(vertical = 4.dp)
 ) {
     val density = LocalDensity.current
     val height = remember {
@@ -175,11 +176,15 @@ fun ETSCalendarHourGroup(
         )
     }
     Column(
-        modifier = Modifier.onGloballyPositioned {
-            with(density){
-                height.value = it.size.height.toDp()
+        modifier = Modifier
+            .clip(
+            RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
+            ).background(MaterialTheme.colorScheme.surfaceContainer)
+            .onGloballyPositioned {
+                with(density){
+                    height.value = it.size.height.toDp()
+                }
             }
-        }
     ) {
         groupList.forEach {
             val isDialogVisible = remember {
@@ -187,6 +192,9 @@ fun ETSCalendarHourGroup(
             }
 
             ListItem(
+                colors = ListItemDefaults.colors(
+                    containerColor = Color.Transparent
+                ),
                 modifier = Modifier.clickable {
                       isDialogVisible.value = true
                 },

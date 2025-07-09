@@ -107,7 +107,7 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
                     }
                 ) { paddingValues ->
                     Column(
-                        modifier = Modifier.padding(paddingValues)
+                        modifier = Modifier.padding(paddingValues).padding(vertical = 16.dp)
                     ){
                         Text(
                             modifier = Modifier.padding(horizontal = 32.dp),

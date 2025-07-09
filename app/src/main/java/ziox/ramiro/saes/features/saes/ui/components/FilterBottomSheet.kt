@@ -1,7 +1,6 @@
 package ziox.ramiro.saes.features.saes.ui.components
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,7 +33,6 @@ fun FilterBottomSheet(
 ) = Column(
     modifier = Modifier
         .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)
 ) {
     val scrollState = rememberScrollState()
 
@@ -47,13 +45,13 @@ fun FilterBottomSheet(
 //            .background(getCurrentTheme().divider)
 //    ) {}
     Row(
-        modifier = Modifier.padding(start = 32.dp, end = 32.dp, bottom = 16.dp, top = 8.dp),
+        modifier = Modifier.padding(start = 32.dp, end = 32.dp, bottom = 8.dp, top = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             modifier = Modifier.weight(1f),
             text = "Filtros",
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineMedium
         )
         if (filterViewModel.filterFields.value == null) {
             CircularProgressIndicator(
@@ -133,6 +131,7 @@ fun SelectFilter(
         content = selectFilterField.items.mapIndexed { i, value ->
             {
                 FilterChip(
+                    modifier = Modifier.padding(end = 8.dp),
                     selected = i == selectFilterField.selectedIndex,
                     label = {
                         Text(value)
@@ -180,6 +179,7 @@ fun RadioGroupFilter(
         content = selectFilterField.items.mapIndexed { i, value ->
             {
                 FilterChip(
+                    modifier = Modifier.padding(end = 8.dp),
                     selected = i == selectFilterField.selectedIndex,
                     label = {
                         Text(value.second)

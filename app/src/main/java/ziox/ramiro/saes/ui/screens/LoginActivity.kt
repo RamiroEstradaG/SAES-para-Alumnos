@@ -58,7 +58,6 @@ import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.SchoolButton
 import ziox.ramiro.saes.ui.components.TextButton
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
-import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.MutableStateWithValidation
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
@@ -292,8 +291,13 @@ fun Login(
                 ) {
                     Checkbox(
                         checked = isFirebaseServicesEnabled.component1(),
-                        onCheckedChange = {
-                            showFirebaseDialog.value = true
+                        onCheckedChange = { isChecked ->
+                            if(isChecked){
+                                showFirebaseDialog.value = true
+                            }else{
+                                isFirebaseServicesEnabled.component2().invoke(false)
+                                userPreferences.setPreference(PreferenceKeys.IsFirebaseEnabled, false)
+                            }
                         }
                     )
                     Text(
@@ -406,6 +410,7 @@ fun Login(
                 dismissButton = {
                     TextButton(
                         text = "Cancelar",
+                        textColor = MaterialTheme.colorScheme.error
                     ) {
                         showFirebaseDialog.value = false
                     }
@@ -493,7 +498,7 @@ fun LoginOnlyCaptcha(
         }
         TextButton(
             text = "MODO OFFLINE",
-            textColor = getCurrentTheme().info
+            textColor = MaterialTheme.colorScheme.secondary
         ) {
             userPreferences.setPreference(PreferenceKeys.OfflineMode, true)
             authViewModel.checkSession()

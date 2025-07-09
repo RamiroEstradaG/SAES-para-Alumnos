@@ -1,7 +1,7 @@
 package ziox.ramiro.saes.data.repositories
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -85,10 +85,10 @@ class AuthWebViewRepository(
         val userFirebaseRepository = UserFirebaseRepository()
 
         if (auth.isLoggedIn){
-            val schoolDomain = Uri.parse(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)).host?.replace("www.", "")
+            val schoolDomain = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)?.toUri()?.host?.replace("www.", "")
 
             kotlin.runCatching {
-                if(userFirebaseRepository.isUserRegistered(username.trim())){
+                if(userFirebaseRepository.isUserRegistered("${username}@${schoolDomain}")){
                     Firebase.auth.signInWithEmailAndPassword("${username}@${schoolDomain}", password).await()
                 }else{
                     Firebase.auth.createUserWithEmailAndPassword("${username}@${schoolDomain}", password).await()

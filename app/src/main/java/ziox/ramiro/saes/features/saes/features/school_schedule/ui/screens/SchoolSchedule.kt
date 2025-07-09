@@ -77,7 +77,8 @@ fun SchoolSchedule(
                         )
                         ScheduleWeekContainer(
                             classSchedules = it,
-                            selectedDayOfWeek = selectedDayOfWeek
+                            selectedDayOfWeek = selectedDayOfWeek,
+                            canEdit = false,
                         )
                     }
                 }else{
