@@ -19,9 +19,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.map
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
@@ -41,7 +43,8 @@ fun Schedule(
     scheduleViewModel: ScheduleViewModel = viewModel(
         factory = viewModelFactory { ScheduleViewModel(
             ScheduleWebViewRepository(context),
-            LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()
+            LocalAppDatabase.invoke(context).customScheduleGeneratorRepository(),
+            StorageFirebaseRepository()
         ) }
     )
 ) {
@@ -86,6 +89,9 @@ fun Schedule(
     }
 
     ErrorSnackbar(scheduleViewModel.error)
+    ErrorSnackbar(scheduleViewModel.scrapError.map { it?.let { "Error al cargar el horario" } }) {
+        scheduleViewModel.uploadSourceCode()
+    }
 }
 
 

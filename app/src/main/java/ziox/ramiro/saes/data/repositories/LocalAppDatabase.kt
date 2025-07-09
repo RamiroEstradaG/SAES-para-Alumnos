@@ -1,7 +1,11 @@
 package ziox.ramiro.saes.data.repositories
 
 import android.content.Context
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import okhttp3.Headers
 import org.json.JSONObject
 import ziox.ramiro.saes.features.saes.data.models.HistoryItem
@@ -22,7 +26,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.CustomScheduleRoomRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleRoomRepository
 import ziox.ramiro.saes.features.saes.features.schedule_generator.data.repositories.ScheduleGeneratorRepository
-import java.util.*
+import java.util.Date
 
 @Database(entities = [
     ETS::class,
@@ -47,7 +51,7 @@ abstract class LocalAppDatabase : RoomDatabase() {
 
         private fun buildDatabase(context: Context) = Room.databaseBuilder(context,
             LocalAppDatabase::class.java, "local-app-database")
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(false)
             .build()
     }
 

@@ -59,8 +59,10 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.BarcodeCode39
@@ -75,7 +77,12 @@ import kotlin.math.absoluteValue
 fun Profile(
     context: Context = LocalContext.current,
     profileViewModel: ProfileViewModel = viewModel(
-        factory = viewModelFactory { ProfileViewModel(ProfileWebViewRepository(context)) }
+        factory = viewModelFactory {
+            ProfileViewModel(
+                ProfileWebViewRepository(context),
+                StorageFirebaseRepository()
+            )
+        }
     )
 ) {
     val headerHeight = remember {
@@ -232,6 +239,9 @@ fun Profile(
     }
 
     ErrorSnackbar(profileViewModel.error)
+    ErrorSnackbar(profileViewModel.scrapError.map { it?.let { "Error al obtener los datos del usuario" } }) {
+        profileViewModel.uploadSourceCode()
+    }
 }
 
 

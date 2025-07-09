@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.features.edit_class.data.models.EditClassContract
@@ -42,7 +43,8 @@ fun ScheduleClassView(
         factory = viewModelFactory {
             ScheduleViewModel(
                 ScheduleWebViewRepository(context),
-                LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()
+                LocalAppDatabase.invoke(context).customScheduleGeneratorRepository(),
+                StorageFirebaseRepository()
             )
         }
     ),

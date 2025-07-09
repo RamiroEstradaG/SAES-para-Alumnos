@@ -65,6 +65,7 @@ firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx"
 firebase-functions = { module = "com.google.firebase:firebase-functions" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-perf-ktx = { module = "com.google.firebase:firebase-perf-ktx" }
+firebase-storage = { module = "com.google.firebase:firebase-storage" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

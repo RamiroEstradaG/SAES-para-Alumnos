@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
@@ -26,7 +28,8 @@ import ziox.ramiro.saes.ui.theme.getCurrentTheme
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ErrorSnackbar(
-    errorState: Flow<String?>
+    errorState: Flow<String?>,
+    onUploadPage: (() -> Unit)? = null
 ) {
     val error = errorState.collectAsState(initial = null)
 
@@ -37,33 +40,54 @@ fun ErrorSnackbar(
         ),
         exit = slideOutVertically(
             targetOffsetY = { -it }
-        )
+        ),
     ) {
         Snackbar(
             modifier = Modifier.padding(16.dp),
             containerColor = getCurrentTheme().danger,
             shape = MaterialTheme.shapes.medium,
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .padding(end = 16.dp)
-                        .size(28.dp),
-                    imageVector = Icons.Rounded.Warning,
-                    contentDescription = "Icono",
-                )
-                Column {
-                    Text(
-                        text = "Error",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.headlineMedium
+            Column {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(28.dp),
+                        imageVector = Icons.Rounded.Warning,
+                        contentDescription = "Icono",
                     )
+                    Column {
+                        Text(
+                            text = "Error",
+                            color = MaterialTheme.colorScheme.onError,
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Text(
+                            text = error.value ?: "",
+                            color = MaterialTheme.colorScheme.onError
+                        )
+                    }
+                }
+                if (onUploadPage != null && error.value != null) {
+                    Box(
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        HorizontalDivider(
+                            color = MaterialTheme.colorScheme.onError.copy(alpha = 0.5f),
+                        )
+                    }
                     Text(
-                        text = error.value ?: "",
-                        color = MaterialTheme.colorScheme.onPrimary
+                        "¿Quieres ayudar a arreglar este error? Puedes subir la página actual para que el equipo de desarrollo pueda revisarla.",
+                        color = MaterialTheme.colorScheme.onError
                     )
+                    TextButton(
+                        text = "Subir página",
+                        textColor = MaterialTheme.colorScheme.onError
+                    ) {
+                        onUploadPage()
+                    }
                 }
             }
         }

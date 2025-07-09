@@ -44,6 +44,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import ziox.ramiro.saes.data.models.viewModelFactory
+import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
@@ -69,7 +70,8 @@ fun Performance(
         factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(context)) }
     ),
     gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(context)) }
+        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(context),
+            StorageFirebaseRepository()) }
     ),
     performanceViewModel: PerformanceViewModel = viewModel(
         factory = viewModelFactory {

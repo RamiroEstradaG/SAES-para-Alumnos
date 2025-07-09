@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
@@ -69,7 +70,8 @@ fun Home(
         }
     ),
     gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(context)) }
+        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(context),
+            StorageFirebaseRepository()) }
     ),
     kardexViewModel: KardexViewModel = viewModel(
         factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(context)) }
@@ -79,7 +81,13 @@ fun Home(
         factory = viewModelFactory { ETSViewModel(ETSWebViewRepository(context)) }
     ),
     scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(context),LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()) }
+        factory = viewModelFactory {
+            ScheduleViewModel(
+                ScheduleWebViewRepository(context),
+                LocalAppDatabase.invoke(context).customScheduleGeneratorRepository(),
+                StorageFirebaseRepository()
+            )
+        }
     )
 ) {
     Column(

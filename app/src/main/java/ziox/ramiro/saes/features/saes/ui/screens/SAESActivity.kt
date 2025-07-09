@@ -31,6 +31,7 @@ import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
 import ziox.ramiro.saes.data.repositories.BillingGooglePayRepository
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.Agenda
 import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.ui.screens.ETS
@@ -64,13 +65,13 @@ class SAESActivity : AppCompatActivity() {
         viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
     }
 
-    private lateinit var profileViewModel : ProfileViewModel
+    private lateinit var profileViewModel: ProfileViewModel
 
-    private val etsViewModel : ETSViewModel by viewModels {
+    private val etsViewModel: ETSViewModel by viewModels {
         viewModelFactory { ETSViewModel(ETSWebViewRepository(this)) }
     }
 
-    private val saesViewModel : SAESViewModel by viewModels{
+    private val saesViewModel: SAESViewModel by viewModels {
         viewModelFactory { SAESViewModel(LocalAppDatabase.invoke(this).historyRepository()) }
     }
 
@@ -88,21 +89,30 @@ class SAESActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         profileViewModel = ViewModelProvider(
             this,
-            viewModelFactory { ProfileViewModel(ProfileWebViewRepository(this)) }
-        ).get(ProfileViewModel::class.java)
+            viewModelFactory {
+                ProfileViewModel(
+                    ProfileWebViewRepository(this),
+                    StorageFirebaseRepository()
+                )
+            }
+        )[ProfileViewModel::class.java]
 
         gradesViewModel = ViewModelProvider(
             this,
-            viewModelFactory { GradesViewModel(GradesWebViewRepository(this)) }
-        ).get(GradesViewModel::class.java)
+            viewModelFactory {
+                GradesViewModel(
+                    GradesWebViewRepository(this),
+                    StorageFirebaseRepository()
+                )
+            }
+        )[GradesViewModel::class.java]
 
         super.onCreate(savedInstanceState)
 
 
-
-        val initialSection = try{
+        val initialSection = try {
             MenuSection.valueOf(intent.getStringExtra(INTENT_EXTRA_REDIRECT)!!)
-        }catch (e: Exception){
+        } catch (_: Exception) {
             SAESViewModel.SECTION_INITIAL.name
         }
 
@@ -110,16 +120,17 @@ class SAESActivity : AppCompatActivity() {
 
         setContent {
             SAESParaAlumnosTheme { uiController ->
-                val selectedMenuItem = saesViewModel.currentSection.collectAsState(initial = initialSection)
+                val selectedMenuItem =
+                    saesViewModel.currentSection.collectAsState(initial = initialSection)
 
-                val statusBarColor = when(selectedMenuItem.value){
+                val statusBarColor = when (selectedMenuItem.value) {
                     MenuSection.PROFILE -> MaterialTheme.colorScheme.surface
                     else -> Color.Transparent
                 }
 
                 uiController.setStatusBarColor(statusBarColor)
 
-                if(authViewModel.isLoggedIn.value == false){
+                if (authViewModel.isLoggedIn.value == false) {
                     startActivity(Intent(this@SAESActivity, MainActivity::class.java))
                     finish()
                 }
@@ -129,7 +140,7 @@ class SAESActivity : AppCompatActivity() {
                         BottomAppBar(
                             saesViewModel,
                             etsViewModel
-                        ){
+                        ) {
                             BottomSheetDrawerModal().show(supportFragmentManager, "menu")
                         }
                     }
@@ -137,7 +148,7 @@ class SAESActivity : AppCompatActivity() {
                     Column(
                         modifier = Modifier.padding(paddingValues)
                     ) {
-                        if(billingViewModel.hasDonated.value == false){
+                        if (billingViewModel.hasDonated.value == false) {
                             AndroidView(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -153,7 +164,7 @@ class SAESActivity : AppCompatActivity() {
                             )
                         }
                         Crossfade(targetState = selectedMenuItem.value) {
-                            when(it){
+                            when (it) {
                                 MenuSection.HOME -> Home()
                                 MenuSection.GRADES -> Grades()
                                 MenuSection.SCHEDULE -> Schedule()
@@ -170,15 +181,20 @@ class SAESActivity : AppCompatActivity() {
                         }
                     }
                 }
-                ErrorSnackbar(errorState = listOf(authViewModel.error, profileViewModel.error).merge())
+                ErrorSnackbar(
+                    errorState = listOf(
+                        authViewModel.error,
+                        profileViewModel.error
+                    ).merge()
+                )
             }
         }
     }
 
     override fun onBackPressed() {
-        if(saesViewModel.canGoBack()){
+        if (saesViewModel.canGoBack()) {
             saesViewModel.goBack()
-        }else{
+        } else {
             super.onBackPressed()
         }
     }

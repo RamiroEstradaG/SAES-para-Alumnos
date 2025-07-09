@@ -4,7 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.http.SslError
 import android.util.Log
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.JavascriptInterface
+import android.webkit.SslErrorHandler
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,7 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.perf.ktx.performance
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 import okhttp3.Headers
 import org.json.JSONArray
 import org.json.JSONObject
@@ -51,6 +62,13 @@ class WebViewProvider(
             javascript:
             function next(obj){
                 window.JSI.result("$jobId", JSON.stringify(obj));
+            }
+            function throwError(error){
+                window.JSI.error("$jobId", JSON.stringify({
+                    error: error.message,
+                    stack: error.stack,
+                    currentPage: document.getElementsByTagName("html")[0].outerHTML
+                }));
             }
             function byId(id){
                 return document.getElementById(id);
@@ -342,6 +360,31 @@ class WebViewProvider(
                 }
             }
         }
+
+        @JavascriptInterface
+        fun error(jobId: String, errorJson: String){
+            Log.e("WebViewProvider", "Error received for $jobId")
+            runBlocking {
+                handleResume(jobId){
+                    javascriptInterfaceJobs[jobId]?.let { job ->
+                        val errorObject = JSONObject(errorJson)
+                        val errorMessage = errorObject.optString("error", "Unknown error")
+                        val stackTrace = errorObject.optString("stack", "")
+                        val sourceCode = errorObject.optString("currentPage", "")
+
+                        Log.e("WebViewProvider", "Error in job $jobId: $errorMessage\nStack trace: $stackTrace")
+
+                        job.continuation.resumeWithException(
+                            ScrapException(
+                                message = errorMessage,
+                                stackTrace = stackTrace,
+                                sourceCode = sourceCode
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -371,6 +414,14 @@ data class ScrapResultAdapter<T>(
 data class ScrapResult(
     val result: JSONObject,
     val headers: Headers
+)
+
+class ScrapException(
+    message: String,
+    stackTrace: String? = null,
+    val sourceCode: String? = null
+) : Exception(
+    "ScrapException: $message\nStack trace: $stackTrace"
 )
 
 
