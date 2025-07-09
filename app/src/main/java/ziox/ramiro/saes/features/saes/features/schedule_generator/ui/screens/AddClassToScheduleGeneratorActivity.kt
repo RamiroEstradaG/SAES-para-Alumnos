@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -80,6 +82,7 @@ class AddClassToScheduleGeneratorActivity : AppCompatActivity() {
                             val scheduleCollections = ClassScheduleCollection.fromClassScheduleList(it)
                             if(it.isNotEmpty()){
                                 LazyColumn(
+                                    modifier = Modifier.padding(vertical = 16.dp),
                                     contentPadding = PaddingValues(
                                         top = 16.dp, start = 32.dp, end = 32.dp, bottom = 64.dp
                                     ),
@@ -130,6 +133,9 @@ fun SelectableClassItem(
     elevation = CardDefaults.cardElevation(0.dp),
 ) {
     ListItem(
+        colors = ListItemDefaults.colors(
+            containerColor = Color.Transparent
+        ),
         headlineContent = {
             Text(
                 text = classSchedule.className,

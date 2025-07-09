@@ -23,6 +23,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -147,7 +149,8 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
                                                     ScheduleHeader(selectedWeekDay)
                                                     ScheduleWeekContainer(
                                                         classSchedules,
-                                                        selectedWeekDay
+                                                        selectedWeekDay,
+                                                        canEdit = false
                                                     )
                                                 }
                                             }
@@ -187,6 +190,9 @@ fun ScheduleGeneratorItem(
     elevation = CardDefaults.cardElevation(0.dp),
 ) {
     ListItem(
+        colors = ListItemDefaults.colors(
+            containerColor = Color.Transparent
+        ),
         headlineContent = {
             Text(
                 text = generatorClassSchedule.className,

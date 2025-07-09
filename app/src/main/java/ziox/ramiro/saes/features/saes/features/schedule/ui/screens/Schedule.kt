@@ -1,7 +1,12 @@
 package ziox.ramiro.saes.features.saes.features.schedule.ui.screens
 
 import android.content.Context
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -44,7 +49,7 @@ fun Schedule(
         LocalContext.current.updateWidgets()
         if(scheduleViewModel.scheduleList.isNotEmpty()){
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize().padding(vertical = 16.dp),
             ) {
                 val selectedDayOfWeek: MutableState<WeekDay?> = remember {
                     mutableStateOf(null)
