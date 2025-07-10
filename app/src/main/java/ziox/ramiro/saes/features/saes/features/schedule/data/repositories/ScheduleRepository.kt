@@ -23,9 +23,10 @@ interface ScheduleRepository {
 
 
 class ScheduleWebViewRepository(
-    private val context: Context
+    private val context: Context,
+    withTestFile: String? = null
 ) : ScheduleRepository {
-    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/Horario_Alumno.aspx")
+    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/Horario_Alumno.aspx", withTestFile)
     private val persistenceRepository = LocalAppDatabase.invoke(context).scheduleRepository()
     private val customClassSchedule = LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()
 

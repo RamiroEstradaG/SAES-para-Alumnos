@@ -182,7 +182,7 @@ class WebViewProvider(
                     if(withTestFile == null){
                         webView.loadUrl(url)
                     }else{
-                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                        webView.loadUrl("file:///android_asset/${withTestFile}")
                     }
                 } else {
                     webView.loadUrl(scriptBase)

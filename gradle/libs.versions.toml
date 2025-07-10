@@ -12,7 +12,7 @@ fragmentKtx = "1.8.8"
 kotlin = "2.1.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
-junitVersion = "1.2.1"
+junitVersion = "1.6.2"
 espressoCore = "3.6.1"
 kotlinReflect = "2.2.0"
 kotlinxCoroutinesAndroid = "1.10.2"
@@ -36,12 +36,14 @@ review = "2.0.2"
 reviewKtx = "2.0.2"
 roomVersion = "2.7.2"
 zxingAndroidEmbedded = "4.3.0"
+junitKtx = "1.2.1"
 
 [libraries]
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityVersion" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-core = { module = "androidx.test:core" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-foundation = { module = "androidx.compose.foundation:foundation" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
@@ -53,8 +55,8 @@ androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "mult
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+androidx-runner = { module = "androidx.test:runner", version.ref = "junitVersion" }
 converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
-core-ktx = { module = "com.google.android.play:core-ktx", version.ref = "coreKtxVersion" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx" }
@@ -68,7 +70,6 @@ firebase-perf-ktx = { module = "com.google.firebase:firebase-perf-ktx" }
 firebase-storage = { module = "com.google.firebase:firebase-storage" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -96,6 +97,7 @@ review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "rev
 ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 ui = { module = "androidx.compose.ui:ui" }
 zxing-android-embedded = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "junitKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
