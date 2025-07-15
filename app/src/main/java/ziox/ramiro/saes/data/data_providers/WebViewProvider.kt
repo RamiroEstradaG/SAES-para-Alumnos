@@ -135,6 +135,7 @@ class WebViewProvider(
             webView.webChromeClient = object : WebChromeClient(){
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
                     super.onProgressChanged(view, newProgress)
+                    Log.d("WebViewProvider", "Progress: $newProgress%")
                     if(newProgress > 95) view?.stopLoading()
                 }
             }
@@ -232,7 +233,7 @@ class WebViewProvider(
                     if(withTestFile == null){
                         webView.loadUrl(url)
                     }else{
-                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                        webView.loadUrl("file:///android_asset/${withTestFile}")
                     }
                 } else {
                     Log.d("WebViewProvider", "Running script at $currentScriptIndex")
@@ -277,7 +278,7 @@ class WebViewProvider(
                     if(withTestFile == null){
                         webView.loadUrl(url)
                     }else{
-                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                        webView.loadUrl("file:///android_asset/${withTestFile}")
                     }
                 } else {
                     webView.loadUrl(preRequestBase)

@@ -51,7 +51,7 @@ class GradesViewModel(
         runCatching {
             storageRepository.uploadFile(
                 content = sourceCode,
-                filePath = "schedule_errors",
+                filePath = "grades_errors",
                 fileName = "${Date().time}.html"
             )
         }
