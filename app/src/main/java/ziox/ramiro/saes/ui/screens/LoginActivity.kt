@@ -47,6 +47,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
@@ -130,6 +131,9 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                     ErrorSnackbar(authViewModel.error)
+                    ErrorSnackbar(authViewModel.scrapError.map { "Error en la página de inicio de sesión" }) {
+                        authViewModel.uploadSourceCode()
+                    }
                 }
             }
         }

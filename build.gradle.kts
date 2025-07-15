@@ -21,9 +21,11 @@ tasks.register("downloadTestFiles", Exec::class) {
         "schedule_errors",
         "grades_errors",
         "profile_errors",
+        "login_errors",
     )
 
     testFolders.forEach { folder ->
+        println("Downloading test files for folder: $folder")
         if(System.getProperty("os.name").lowercase().contains("windows")){
             commandLine(
                 "cmd", "/c", "gsutil", "-m", "cp", "-r",
