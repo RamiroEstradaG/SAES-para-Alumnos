@@ -16,6 +16,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
+import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         authViewModel = ViewModelProvider(
             this,
-            viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
+            viewModelFactory { AuthViewModel(AuthWebViewRepository(this), StorageFirebaseRepository()) }
         )[AuthViewModel::class.java]
 
         if(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) == null){

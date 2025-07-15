@@ -52,6 +52,7 @@ import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.data.models.SelectSchoolContract
 import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
+import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.ui.screens.SAESActivity
 import ziox.ramiro.saes.ui.components.AsyncButton
 import ziox.ramiro.saes.ui.components.CaptchaInput
@@ -68,7 +69,7 @@ import ziox.ramiro.saes.view_models.AuthViewModel
 
 class LoginActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModels {
-        viewModelFactory { AuthViewModel(AuthWebViewRepository(this), true) }
+        viewModelFactory { AuthViewModel(AuthWebViewRepository(this), StorageFirebaseRepository(), true) }
     }
 
     var isAuthDataSaved: Boolean = false

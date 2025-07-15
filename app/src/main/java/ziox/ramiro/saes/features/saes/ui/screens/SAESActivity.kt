@@ -62,7 +62,7 @@ import ziox.ramiro.saes.view_models.BillingViewModel
 
 class SAESActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModels {
-        viewModelFactory { AuthViewModel(AuthWebViewRepository(this)) }
+        viewModelFactory { AuthViewModel(AuthWebViewRepository(this), StorageFirebaseRepository()) }
     }
 
     private lateinit var profileViewModel: ProfileViewModel
