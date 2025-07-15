@@ -10,41 +10,61 @@ plugins {
     id("com.google.firebase.crashlytics") version "3.0.4" apply false
 }
 
-tasks.register("downloadTestFiles", Exec::class) {
-    workingDir = file("src/main/assets/").apply {
-        if (!exists()) {
-            mkdirs()
+
+val testFolders = listOf(
+    "schedule_errors",
+    "grades_errors",
+    "profile_errors",
+    "login_errors",
+)
+
+val downloadTasks = testFolders.mapIndexed { index, folder ->
+    tasks.register("downloadTestFiles$index", Exec::class) {
+        workingDir = file("app/src/main/assets/").apply {
+            if (!exists()) {
+                mkdirs()
+            }
         }
-    }
 
-    val testFolders = listOf(
-        "schedule_errors",
-        "grades_errors",
-        "profile_errors",
-        "login_errors",
-    )
+        val dir = File(workingDir, folder)
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
 
-    testFolders.forEach { folder ->
         println("Downloading test files for folder: $folder")
-        if(System.getProperty("os.name").lowercase().contains("windows")){
+        if (System.getProperty("os.name").lowercase().contains("windows")) {
             commandLine(
                 "cmd", "/c", "gsutil", "-m", "cp", "-r",
                 "gs://saes-para-alumnos.appspot.com/files/$folder",
                 "."
             )
-        }else{
+        } else {
             commandLine(
                 "bash", "-c", "gsutil", "-m", "cp", "-r",
                 "gs://saes-para-alumnos.appspot.com/files/$folder",
                 "."
             )
         }
-    }
 
-    standardOutput = ByteArrayOutputStream()
+        isIgnoreExitValue = true
+        standardOutput = ByteArrayOutputStream()
 
-    doLast {
-        val output = standardOutput.toString()
-        println("Download completed: $output")
+        doLast {
+            val output = standardOutput.toString()
+            println("Download completed for $folder: $output")
+        }
     }
+}
+
+downloadTasks.forEachIndexed { index, task ->
+    if (index > 0) {
+        task.configure {
+            dependsOn(downloadTasks[index - 1])
+        }
+    }
+}
+
+tasks.register("downloadTestFiles") {
+    dependsOn(downloadTasks.last())
+    description = "Download all test files sequentially"
 }
