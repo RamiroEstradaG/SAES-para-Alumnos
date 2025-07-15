@@ -21,6 +21,7 @@ gitHooks {
         from {
             """
                 ./gradlew downloadTestFiles
+                ./gradlew test
                 exit 1
             """.trimIndent()
         }
