@@ -22,7 +22,7 @@ interface AuthRepository {
 
 class AuthWebViewRepository(
     private val context: Context,
-    withTestFile: String? = null
+    private val withTestFile: String? = null
 ) : AuthRepository {
     private val webViewProvider = WebViewProvider(context, withTestFile = withTestFile)
     private val userPreferences = UserPreferences.invoke(context)
@@ -79,7 +79,7 @@ class AuthWebViewRepository(
                     throwError(e);
                 }
             """.trimIndent(),
-            reloadPage = false,
+            reloadPage = withTestFile != null,
             timeout = 30000
         ){
             val data = it.result.getJSONObject("data")

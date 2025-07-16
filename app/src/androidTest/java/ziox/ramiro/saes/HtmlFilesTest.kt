@@ -216,7 +216,6 @@ class HtmlFilesTest {
                             it
                         )
                     }.onSuccess {
-                        it.isLoggedIn
                         Log.d(
                             "HtmlFilesTest",
                             "File $file processed successfully with data: $it"
