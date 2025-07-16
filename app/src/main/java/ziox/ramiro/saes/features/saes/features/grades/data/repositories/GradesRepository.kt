@@ -17,9 +17,10 @@ interface GradesRepository {
 }
 
 class GradesWebViewRepository(
-    private val context: Context
+    private val context: Context,
+    withTestFile: String? = null
 ) : GradesRepository {
-    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/calificaciones_sem.aspx")
+    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/calificaciones_sem.aspx", withTestFile)
     private val persistenceRepository = LocalAppDatabase.invoke(context).gradesRepository()
 
     override suspend fun getMyGrades(): List<ClassGrades> {

@@ -24,9 +24,10 @@ interface ProfileRepository {
 }
 
 class ProfileWebViewRepository(
-    private val context: Context
+    private val context: Context,
+    withTestFile: String? = null
 ) : ProfileRepository{
-    private val webViewProvider = WebViewProvider(context, "/Alumnos/info_alumnos/Datos_Alumno.aspx")
+    private val webViewProvider = WebViewProvider(context, "/Alumnos/info_alumnos/Datos_Alumno.aspx", withTestFile)
     private val persistenceRepository = LocalAppDatabase.invoke(context).userRepository()
 
     override suspend fun getMyUserData(): ProfileUser {

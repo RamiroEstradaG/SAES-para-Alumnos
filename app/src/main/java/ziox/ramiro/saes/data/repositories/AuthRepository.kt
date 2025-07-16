@@ -21,20 +21,25 @@ interface AuthRepository {
 
 
 class AuthWebViewRepository(
-    private val context: Context
+    private val context: Context,
+    withTestFile: String? = null
 ) : AuthRepository {
-    private val webViewProvider = WebViewProvider(context)
+    private val webViewProvider = WebViewProvider(context, withTestFile = withTestFile)
     private val userPreferences = UserPreferences.invoke(context)
 
     override suspend fun getCaptcha(): Captcha {
         return if(context.isNetworkAvailable()){
             webViewProvider.scrap(
                 """
-                var isLoggedIn = !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null);
-                next({
-                    isLoggedIn: isLoggedIn,
-                    url: byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src
-                });
+                try{
+                    var isLoggedIn = !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null);
+                    next({
+                        isLoggedIn: isLoggedIn,
+                        url: byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src
+                    });
+                }catch(e){
+                    throwError(e);
+                }
                 """.trimIndent(),
                 timeout = 10000,
                 reloadPage = true
@@ -54,17 +59,25 @@ class AuthWebViewRepository(
     override suspend fun login(username: String, password: String, captcha: String): Auth {
         return webViewProvider.runThenScrap(
             preRequest = """
-                byId("ctl00_leftColumn_LoginUser_UserName").value = "$username";
-                byId("ctl00_leftColumn_LoginUser_Password").value = "${password.replace(Regex("[\"\\\\]")) { matchResult -> "\\${matchResult.value}" }}";
-                byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox").value = "$captcha";
-                byId("ctl00_leftColumn_LoginUser_LoginButton").click();
+                try{
+                    byId("ctl00_leftColumn_LoginUser_UserName").value = "$username";
+                    byId("ctl00_leftColumn_LoginUser_Password").value = "${password.replace(Regex("[\"\\\\]")) { matchResult -> "\\${matchResult.value}" }}";
+                    byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox").value = "$captcha";
+                    byId("ctl00_leftColumn_LoginUser_LoginButton").click();
+                }catch(e){
+                    throwError(e);
+                }
             """.trimIndent(),
             postRequest = """
-                var error = byClass("failureNotification");
-                next({
-                    isLoggedIn: !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null),
-                    errorMessage: error != null && error.length >= 3 ? error[2].innerText.trim() : ""
-                });
+                try{
+                    var error = byClass("failureNotification");
+                    next({
+                        isLoggedIn: !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null),
+                        errorMessage: error != null && error.length >= 3 ? error[2].innerText.trim() : ""
+                    });
+                }catch(e){
+                    throwError(e);
+                }
             """.trimIndent(),
             reloadPage = false,
             timeout = 30000

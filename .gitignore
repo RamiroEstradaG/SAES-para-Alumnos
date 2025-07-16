@@ -21,7 +21,9 @@ app/release/
 /app/src/main/assets/profile_errors/**
 /app/src/main/assets/schedule_errors/**
 /app/src/main/assets/login_errors/**
+/app/src/main/assets/captcha_errors/**
 !/app/src/main/assets/grades_errors/.gitkeep
 !/app/src/main/assets/profile_errors/.gitkeep
 !/app/src/main/assets/schedule_errors/.gitkeep
 !/app/src/main/assets/login_errors/.gitkeep
+!/app/src/main/assets/captcha_errors/.gitkeep

@@ -132,8 +132,11 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                     ErrorSnackbar(authViewModel.error)
-                    ErrorSnackbar(authViewModel.scrapError.map { "Error en la página de inicio de sesión" }) {
-                        authViewModel.uploadSourceCode()
+                    ErrorSnackbar(authViewModel.scrapError.map { it?.let { "Error en la página de inicio de sesión" } }) {
+                        authViewModel.uploadSourceCode(false)
+                    }
+                    ErrorSnackbar(authViewModel.captchaScrapError.map { it?.let { "Error al obtener el captcha" } }) {
+                        authViewModel.uploadSourceCode(true)
                     }
                 }
             }

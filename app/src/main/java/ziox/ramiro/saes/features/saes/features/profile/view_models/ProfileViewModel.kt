@@ -35,6 +35,7 @@ class ProfileViewModel(
             }.onSuccess {
                 profile.value = it
             }.onFailure {
+                it.printStackTrace()
                 if(it is ScrapException) {
                     scrapError.value = it
                 } else {

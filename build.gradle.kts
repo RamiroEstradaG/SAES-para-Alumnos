@@ -16,6 +16,7 @@ val testFolders = listOf(
     "grades_errors",
     "profile_errors",
     "login_errors",
+    "captcha_errors",
 )
 
 val downloadTasks = testFolders.mapIndexed { index, folder ->

@@ -25,12 +25,14 @@ class AuthViewModel(
     val auth = mutableStateOf<Auth?>(Auth.Empty)
     val error = MutableStateFlow<String?>(null)
     val scrapError = MutableStateFlow<ScrapException?>(null)
+    val captchaScrapError = MutableStateFlow<ScrapException?>(null)
     val isLoggedIn = mutableStateOf<Boolean?>(null)
     private var isCaptchaLoading = false
 
     init {
         error.dismissAfterTimeout()
         scrapError.dismissAfterTimeout(10000)
+        captchaScrapError.dismissAfterTimeout(10000)
         checkSession()
         if (initCaptcha) {
             fetchCaptcha()
@@ -54,7 +56,7 @@ class AuthViewModel(
                 fetchCaptcha()
 
                 if (it is ScrapException) {
-                    scrapError.value = it
+                    captchaScrapError.value = it
                 } else {
                     error.value = if (it is TimeoutCancellationException) {
                         "Tiempo de espera excedido (10s)"
@@ -78,6 +80,7 @@ class AuthViewModel(
                 fetchCaptcha()
             }
         }.onFailure {
+            it.printStackTrace()
             auth.value = Auth.Empty
             if (it is ScrapException) {
                 scrapError.value = it
@@ -115,9 +118,12 @@ class AuthViewModel(
         isLoggedIn.value = false
     }
 
-    fun uploadSourceCode() = viewModelScope.launch {
-        val error = scrapError.value
+    fun uploadSourceCode(
+        isCaptcha: Boolean = false
+    ) = viewModelScope.launch {
+        val error = if (isCaptcha) captchaScrapError.value else scrapError.value
         scrapError.value = null
+        captchaScrapError.value = null
         if (error == null) return@launch
 
         val sourceCode = error.sourceCode ?: return@launch
@@ -125,7 +131,7 @@ class AuthViewModel(
         runCatching {
             storageRepository.uploadFile(
                 content = sourceCode,
-                filePath = "login_errors",
+                filePath = if(isCaptcha) "captcha_errors" else "login_errors",
                 fileName = "${Date().time}.html"
             )
         }
