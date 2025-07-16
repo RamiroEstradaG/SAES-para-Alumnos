@@ -2,6 +2,7 @@ package ziox.ramiro.saes.features.saes.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -118,6 +119,14 @@ class SAESActivity : AppCompatActivity() {
 
         listenToNavigationStates()
 
+        onBackPressedDispatcher.addCallback(this) {
+            if (saesViewModel.canGoBack()) {
+                saesViewModel.goBack()
+            } else {
+                onBackPressedDispatcher.onBackPressed()
+            }
+        }
+
         setContent {
             SAESParaAlumnosTheme { uiController ->
                 val selectedMenuItem =
@@ -188,14 +197,6 @@ class SAESActivity : AppCompatActivity() {
                     ).merge()
                 )
             }
-        }
-    }
-
-    override fun onBackPressed() {
-        if (saesViewModel.canGoBack()) {
-            saesViewModel.goBack()
-        } else {
-            super.onBackPressed()
         }
     }
 

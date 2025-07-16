@@ -12,6 +12,7 @@ class BillingViewModel(
 ): ViewModel() {
     val hasDonated = mutableStateOf<Boolean?>(null)
     val error = MutableStateFlow<String?>(null)
+    val productList = billingRepository.productList
 
     init {
         hasDonated()
