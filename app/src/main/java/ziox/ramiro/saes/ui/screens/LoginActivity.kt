@@ -94,11 +94,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        authViewModel = ViewModelProvider(
-            viewModelStore,
-            viewModelFactory { AuthViewModel(AuthWebViewRepository(this), true) }
-        )[AuthViewModel::class.java]
-
         isAuthDataSaved = userPreferences.authData.value.isAuthDataSaved()
         schoolUrl.value = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
 

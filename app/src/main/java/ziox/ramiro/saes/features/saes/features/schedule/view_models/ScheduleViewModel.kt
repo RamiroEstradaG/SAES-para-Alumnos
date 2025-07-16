@@ -8,8 +8,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.data_providers.ScrapException
-import ziox.ramiro.saes.features.saes.data.repositories.StorageRepository
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.data.repositories.StorageRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.CustomClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleRepository
@@ -21,8 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     private val scheduleRepository: ScheduleRepository,
-    private val customScheduleRoomRepository: CustomScheduleRoomRepository,
-    private val storageRepository: StorageRepository
+    private val storageRepository: StorageRepository,
     localAppDatabase: LocalAppDatabase
 ) : ViewModel() {
     private val customScheduleRoomRepository = localAppDatabase.customScheduleGeneratorRepository()

@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.profile.ui.screens
 
-import android.content.Context
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
@@ -50,6 +49,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -60,10 +60,6 @@ import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
-import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.data_providers.rememberJsoupPainter
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.BarcodeCode39
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.QRCode
@@ -75,15 +71,7 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun Profile(
-    context: Context = LocalContext.current,
-    profileViewModel: ProfileViewModel = viewModel(
-        factory = viewModelFactory {
-            ProfileViewModel(
-                ProfileWebViewRepository(context),
-                StorageFirebaseRepository()
-            )
-        }
-    )
+    profileViewModel: ProfileViewModel = viewModel()
 ) {
     val headerHeight = remember {
         mutableStateOf(280.dp)

@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.school_schedule.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,12 +30,7 @@ import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 @OptIn(ExperimentalMaterial3Api::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @Composable
 fun SchoolSchedule(
-    context: Context = LocalContext.current,
-    schoolScheduleViewModel: SchoolScheduleViewModel = viewModel(
-        factory = viewModelFactory {
-            SchoolScheduleViewModel(SchoolScheduleWebViewRepository(context))
-        }
-    )
+    schoolScheduleViewModel: SchoolScheduleViewModel = viewModel()
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutine = rememberCoroutineScope()
@@ -75,7 +69,7 @@ fun SchoolSchedule(
                         ScheduleWeekContainer(
                             classSchedules = it,
                             selectedDayOfWeek = selectedDayOfWeek,
-                            canEdit = false,
+                            isClassActionsEnabled = false,
                         )
                     }
                 }else{

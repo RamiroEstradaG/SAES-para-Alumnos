@@ -98,7 +98,7 @@ fun BaseButton(
                 modifier = Modifier.padding(end = 16.dp),
                 imageVector = icon,
                 contentDescription = "Button icon",
-                tint = MaterialTheme.colors.onPrimary
+                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
         Text(

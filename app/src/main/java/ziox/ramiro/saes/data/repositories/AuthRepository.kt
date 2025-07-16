@@ -63,7 +63,7 @@ class AuthJsoupRepository(
         val userFirebaseRepository = UserFirebaseRepository()
 
         if (auth.isLoggedIn){
-            val schoolDomain = Uri.parse(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)).host?.replace("www.", "")
+            val schoolDomain = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)?.toUri()?.host?.replace("www.", "")
 
             kotlin.runCatching {
                 if(userFirebaseRepository.isUserRegistered(username.trim())){
@@ -172,7 +172,7 @@ class AuthWebViewRepository(
         val userFirebaseRepository = UserFirebaseRepository()
 
         if (auth.isLoggedIn){
-            val schoolDomain = Uri.parse(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)).host?.replace("www.", "")
+            val schoolDomain = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)?.toUri()?.host?.replace("www.", "")
             val userEmail = "${username}@${schoolDomain}"
             kotlin.runCatching {
                 if(userFirebaseRepository.isUserRegistered(userEmail)){

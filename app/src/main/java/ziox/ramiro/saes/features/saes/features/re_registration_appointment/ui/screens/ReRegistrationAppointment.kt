@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.re_registration_appointment.ui.screens
 
-import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
@@ -39,18 +38,14 @@ import ziox.ramiro.saes.features.saes.features.schedule_generator.ui.screens.Sch
 import ziox.ramiro.saes.features.saes.ui.components.FlexView
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.components.OutlineButton
-import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.toLongStringAndHour
 import ziox.ramiro.saes.utils.toStringPrecision
 
 @Composable
 fun ReRegistrationAppointment(
-    context: Context = LocalContext.current,
-    reRegistrationViewModel: ReRegistrationAppointmentViewModel = viewModel(
-        factory = viewModelFactory { ReRegistrationAppointmentViewModel(ReRegistrationWebViewRepository(
-            context)) }
-    )
+    reRegistrationViewModel: ReRegistrationAppointmentViewModel = viewModel()
 ) = Crossfade(targetState = reRegistrationViewModel.reRegistrationData.value) {
+    val context = LocalContext.current
     if(it != null){
         Box(
             modifier = Modifier.verticalScroll(rememberScrollState())

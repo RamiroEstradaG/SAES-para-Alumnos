@@ -22,7 +22,6 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val storageRepository: StorageRepository,
-    initCaptcha: Boolean = false
 ) : ViewModel() {
     val captcha = mutableStateOf<Captcha?>(null)
     val auth = mutableStateOf<Auth?>(Auth.Empty)
@@ -32,11 +31,11 @@ class AuthViewModel @Inject constructor(
     val isLoggedIn = mutableStateOf<Boolean?>(null)
     private var isCaptchaLoading = false
 
-    init {
-        error.dismissAfterTimeout()
-        scrapError.dismissAfterTimeout(10000)
-        captchaScrapError.dismissAfterTimeout(10000)
-        checkSession()
+    constructor(
+        authRepository: AuthRepository,
+        storageRepository: StorageRepository,
+        initCaptcha: Boolean = false
+    ) : this(authRepository, storageRepository) {
         if (initCaptcha) {
             fetchCaptcha()
         }
@@ -44,6 +43,8 @@ class AuthViewModel @Inject constructor(
 
     init {
         error.dismissAfterTimeout()
+        scrapError.dismissAfterTimeout(10000)
+        captchaScrapError.dismissAfterTimeout(10000)
         checkSession()
     }
 

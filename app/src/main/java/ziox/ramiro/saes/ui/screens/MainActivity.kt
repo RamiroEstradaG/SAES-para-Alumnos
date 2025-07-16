@@ -52,11 +52,6 @@ class MainActivity : AppCompatActivity() {
             userPreferences.getPreference(PreferenceKeys.DefaultNightMode, null) ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         )
 
-        authViewModel = ViewModelProvider(
-            this,
-            viewModelFactory { AuthViewModel(AuthWebViewRepository(this), StorageFirebaseRepository()) }
-        )[AuthViewModel::class.java]
-
         if(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) == null){
             startActivity(Intent(this, LoginActivity::class.java))
             finish()

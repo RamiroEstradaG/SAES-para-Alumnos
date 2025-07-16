@@ -31,15 +31,7 @@ import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
 @Composable
 fun Grades(
-    context: Context = LocalContext.current,
-    gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory {
-            GradesViewModel(
-                GradesWebViewRepository(context),
-                StorageFirebaseRepository()
-            )
-        }
-    )
+    gradesViewModel: GradesViewModel = viewModel()
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)

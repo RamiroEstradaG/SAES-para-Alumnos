@@ -5,7 +5,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import ziox.ramiro.saes.data.repositories.*
+import ziox.ramiro.saes.data.repositories.AuthRepository
+import ziox.ramiro.saes.data.repositories.AuthWebViewRepository
+import ziox.ramiro.saes.data.repositories.BillingGooglePayRepository
+import ziox.ramiro.saes.data.repositories.BillingRepository
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
+import ziox.ramiro.saes.features.saes.data.repositories.StorageRepository
 import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaRepository
@@ -32,7 +38,6 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.Schedu
 import ziox.ramiro.saes.features.saes.features.school_schedule.data.repositories.SchoolScheduleRepository
 import ziox.ramiro.saes.features.saes.features.school_schedule.data.repositories.SchoolScheduleWebViewRepository
 import ziox.ramiro.saes.utils.UserPreferences
-import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -105,4 +110,8 @@ object AppModule {
     @Singleton
     @Provides
     fun provideLocalAppDatabase(app: Application): LocalAppDatabase = LocalAppDatabase.invoke(app)
+
+    @Singleton
+    @Provides
+    fun provideStorageRepository(): StorageRepository = StorageFirebaseRepository()
 }

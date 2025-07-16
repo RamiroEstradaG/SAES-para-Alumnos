@@ -12,11 +12,11 @@ class AddClassToScheduleGeneratorContract: ActivityResultContract<Unit?, ClassSc
         const val INTENT_EXTRA_RESULT_ADD_CLASS = "intent_extra_result_add_class"
     }
 
-    override fun createIntent(context: Context, input: Unit) = Intent(context, AddClassToScheduleGeneratorActivity::class.java)
+    override fun createIntent(context: Context, input: Unit?) = Intent(context, AddClassToScheduleGeneratorActivity::class.java)
 
     override fun parseResult(resultCode: Int, intent: Intent?): ClassScheduleCollection? {
         if (resultCode != Activity.RESULT_OK) return null
 
-        return intent?.getParcelableExtra(INTENT_EXTRA_RESULT_ADD_CLASS)
+        return intent?.getParcelableExtra(INTENT_EXTRA_RESULT_ADD_CLASS, ClassScheduleCollection::class.java)
     }
 }

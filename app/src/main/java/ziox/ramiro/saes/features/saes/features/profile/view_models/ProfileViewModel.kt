@@ -12,10 +12,11 @@ import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import java.util.Date
+import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel(
-    private val userRepository: ProfileRepository,
+class ProfileViewModel @Inject constructor (
+    private val profileRepository: ProfileRepository,
     private val storageRepository: StorageRepository
 ) : ViewModel() {
     val profile = mutableStateOf<ProfileUser?>(null)

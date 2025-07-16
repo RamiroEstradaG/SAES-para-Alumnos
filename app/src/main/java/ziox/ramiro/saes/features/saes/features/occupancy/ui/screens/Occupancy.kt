@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.occupancy.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -41,10 +40,7 @@ import ziox.ramiro.saes.ui.theme.getCurrentTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Occupancy(
-    context: Context = LocalContext.current,
-    occupancyViewModel: OccupancyViewModel = viewModel(
-        factory = viewModelFactory { OccupancyViewModel(OccupancyWebViewRepository(context)) }
-    )
+    occupancyViewModel: OccupancyViewModel = viewModel()
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()

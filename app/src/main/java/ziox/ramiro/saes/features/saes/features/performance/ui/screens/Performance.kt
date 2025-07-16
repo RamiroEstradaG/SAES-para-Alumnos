@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.performance.ui.screens
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -42,10 +41,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
-import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
-import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
@@ -62,24 +57,9 @@ import kotlin.math.max
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Performance(
-    context: Context = LocalContext.current,
-    kardexViewModel: KardexViewModel = viewModel(
-        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(context)) }
-    ),
-    gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(context),
-            StorageFirebaseRepository()) }
-    ),
-    performanceViewModel: PerformanceViewModel = viewModel(
-        factory = viewModelFactory {
-            PerformanceViewModel(
-                PerformanceFirebaseRepository(),
-                KardexWebViewRepository(context),
-                UserFirebaseRepository(),
-                context
-            )
-        }
-    )
+    kardexViewModel: KardexViewModel = viewModel(),
+    gradesViewModel: GradesViewModel = viewModel(),
+    performanceViewModel: PerformanceViewModel = viewModel()
 ) = Crossfade(targetState = kardexViewModel.kardexData.value) {
     if (it != null) {
         Box(

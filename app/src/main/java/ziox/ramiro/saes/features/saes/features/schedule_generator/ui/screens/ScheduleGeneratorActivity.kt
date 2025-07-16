@@ -146,7 +146,7 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
                                                     ScheduleWeekContainer(
                                                         classSchedules,
                                                         selectedWeekDay,
-                                                        canEdit = false
+                                                        isClassActionsEnabled = false
                                                     )
                                                 }
                                             }

@@ -20,8 +20,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.lastOrNull
-import ziox.ramiro.saes.R
-import kotlin.coroutines.suspendCoroutine
 
 interface BillingRepository {
     val productList: SharedFlow<List<ProductDetails>?>
@@ -42,7 +40,7 @@ class BillingGooglePayRepository(
     private val client = BillingClient.newBuilder(context).enablePendingPurchases(
         PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
     ).setListener(this).build()
-    private val initializeFlow = MutableStateFlow(false)
+    private val initializeFlow = MutableStateFlow<Boolean?>(null)
     private val _purchase: MutableStateFlow<List<Purchase?>?> = MutableStateFlow(null)
     private val _billingError: MutableStateFlow<Throwable?> = MutableStateFlow(null)
     override val purchase = _purchase.asSharedFlow()

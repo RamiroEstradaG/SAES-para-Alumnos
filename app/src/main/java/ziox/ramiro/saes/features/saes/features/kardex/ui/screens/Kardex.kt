@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.kardex.ui.screens
 
-import android.content.Context
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -43,10 +42,7 @@ import ziox.ramiro.saes.ui.theme.getCurrentTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Kardex(
-    context: Context = LocalContext.current,
-    kardexViewModel: KardexViewModel = viewModel(
-        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(context)) }
-    )
+    kardexViewModel: KardexViewModel = viewModel()
 ) {
     val isExpanded = remember {
         mutableStateOf(false)

@@ -20,22 +20,24 @@ import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.ModeNight
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.SelectableOptions
 import ziox.ramiro.saes.features.settings.view_models.PersonalSavedDataViewModel
 import ziox.ramiro.saes.ui.components.AsyncButton
@@ -85,32 +87,29 @@ class SettingsActivity : AppCompatActivity(){
                     ) {
                         Text(
                             text = "Configuración",
-                            style = MaterialTheme.typography.h4
+                            style = MaterialTheme.typography.headlineLarge,
                         )
                         SettingsSection("Sistema") {
                             SettingsItem(icon = Icons.Rounded.ModeNight, title = "Modo oscuro") {
                                 val selectedUiMode = remember {
-                                    mutableStateOf(AppCompatDelegate.getDefaultNightMode())
+                                    mutableIntStateOf(AppCompatDelegate.getDefaultNightMode())
                                 }
                                 SelectableOptions(
                                     options = nightModeOptions,
                                     selectionState = selectedUiMode,
                                     deSelectValue = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
                                     stringAdapter = {
-                                        when(it){
+                                        when (it) {
                                             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> "Predeterminado del sistema"
                                             AppCompatDelegate.MODE_NIGHT_NO -> "Modo claro"
                                             AppCompatDelegate.MODE_NIGHT_YES -> "Modo oscuro"
                                             else -> ""
                                         }
-                                    ) {
-                                        userPreferences.setPreference(PreferenceKeys.DefaultNightMode, it ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                                        AppCompatDelegate.setDefaultNightMode(it ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                                     }
                                 )
 
                                 LaunchedEffect(key1 = selectedUiMode){
-                                    snapshotFlow { selectedUiMode.value }.collect {
+                                    snapshotFlow { selectedUiMode.intValue }.collect {
                                         runOnUiThread {
                                             userPreferences.setPreference(PreferenceKeys.DefaultNightMode, it)
                                             AppCompatDelegate.setDefaultNightMode(it)
@@ -160,7 +159,6 @@ class SettingsActivity : AppCompatActivity(){
                                 title = {
                                         Text(
                                             text = "Eliminar mis datos",
-                                            style = MaterialTheme.typography.h5
                                         )
                                 },
                                 text = {

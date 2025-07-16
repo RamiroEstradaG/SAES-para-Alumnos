@@ -1,5 +1,6 @@
 package ziox.ramiro.saes.data.data_providers
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -27,11 +28,14 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 private fun socketFactory(): SSLSocketFactory {
-    val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+    val trustAllCerts = arrayOf<TrustManager>(@SuppressLint("CustomX509TrustManager")
+    object : X509TrustManager {
+        @SuppressLint("TrustAllX509TrustManager")
         @Throws(CertificateException::class)
         override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
         }
 
+        @SuppressLint("TrustAllX509TrustManager")
         @Throws(CertificateException::class)
         override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
         }
@@ -50,12 +54,13 @@ private fun socketFactory(): SSLSocketFactory {
             is RuntimeException, is KeyManagementException -> {
                 throw RuntimeException("Failed to create a SSL socket factory", e)
             }
+
             else -> throw e
         }
     }
 }
 
-suspend fun <T>Context.jsoup(path: String = "", lambda: Connection.Response.(Document) -> T): T{
+suspend fun <T> Context.jsoup(path: String = "", lambda: Connection.Response.(Document) -> T): T {
     val userPreferences = UserPreferences.invoke(this)
 
     return runOnDefaultThread {
@@ -70,7 +75,11 @@ suspend fun <T>Context.jsoup(path: String = "", lambda: Connection.Response.(Doc
     }
 }
 
-suspend fun <T>Context.jsoupForm(path: String = "", data: Map<String, String>, lambda: Connection.Response.(Document) -> T): T{
+suspend fun <T> Context.jsoupForm(
+    path: String = "",
+    data: Map<String, String>,
+    lambda: Connection.Response.(Document) -> T
+): T {
     val userPreferences = UserPreferences.invoke(this)
 
     return runOnDefaultThread {
@@ -101,7 +110,7 @@ suspend fun <T>Context.jsoupForm(path: String = "", data: Map<String, String>, l
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-fun rememberJsoupPainter(imageUrl: String, headers: Headers? = null): ImagePainter{
+fun rememberJsoupPainter(imageUrl: String, headers: Headers? = null): ImagePainter {
     val context = LocalContext.current
     val userPreferences = remember {
         UserPreferences.invoke(context)
@@ -110,22 +119,25 @@ fun rememberJsoupPainter(imageUrl: String, headers: Headers? = null): ImagePaint
         mutableStateOf<Bitmap?>(null)
     }
 
-    LaunchedEffect(key1 = body){
+    LaunchedEffect(key1 = body) {
         runOnDefaultThread {
             kotlin.runCatching {
-                val cookies = if(headers == null){
+                val cookies = if (headers == null) {
                     Jsoup
-                        .connect(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: "")
+                        .connect(
+                            userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
+                        )
                         .sslSocketFactory(socketFactory())
                         .execute().cookies()
-                }else null
+                } else null
 
                 Jsoup
                     .connect(imageUrl)
                     .sslSocketFactory(socketFactory())
                     .ignoreContentType(true)
-                    .headers(headers?.toMap() ?: mapOf(
-                        "Cookie" to cookies?.entries?.joinToString("") { "${it.key}=${it.value}; " }
+                    .headers(
+                        headers?.toMap() ?: mapOf(
+                        "Cookie" to (cookies?.entries?.joinToString("") { "${it.key}=${it.value}; " } ?: "")
                     ))
                     .execute()
             }.onSuccess {

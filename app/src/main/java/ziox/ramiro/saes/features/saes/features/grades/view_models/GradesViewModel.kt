@@ -12,9 +12,10 @@ import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import java.util.Date
+import javax.inject.Inject
 
 @HiltViewModel
-class GradesViewModel(
+class GradesViewModel @Inject constructor(
     private val gradesRepository: GradesRepository,
     private val storageRepository: StorageRepository
 ) : ViewModel() {
