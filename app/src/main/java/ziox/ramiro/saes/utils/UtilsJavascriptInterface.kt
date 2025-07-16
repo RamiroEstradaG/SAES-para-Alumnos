@@ -32,10 +32,6 @@ class UtilsJavascriptInterface {
                     || it.value.first.trim().matches(Regex("grupo", RegexOption.IGNORE_CASE))
         }
 
-        println(
-            "mondayIndex: $mondayIndex, fridayIndex: $fridayIndex, groupIndex: $groupIndex, subjectIndex: $subjectIndex, teacherIndex: $teacherIndex, buildingIndex: $buildingIndex, classroomIndex: $classroomIndex"
-        )
-
         return JSONObject(
             mapOf(
                 "mondayIndex" to mondayIndex,

@@ -38,13 +38,14 @@ reviewKtx = "2.0.2"
 roomVersion = "2.7.2"
 zxingAndroidEmbedded = "4.3.0"
 junitKtx = "1.2.1"
+testCoreVersion = "1.6.1"
 
 [libraries]
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityVersion" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
-androidx-core = { module = "androidx.test:core" }
+androidx-core = { module = "androidx.test:core", version.ref = "testCoreVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-espresso-web = { module = "androidx.test.espresso:espresso-web", version.ref = "espressoWeb" }
 androidx-foundation = { module = "androidx.compose.foundation:foundation" }
