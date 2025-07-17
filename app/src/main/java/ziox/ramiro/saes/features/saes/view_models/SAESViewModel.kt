@@ -1,7 +1,17 @@
 package ziox.ramiro.saes.features.saes.view_models
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.DateRange
+import androidx.compose.material.icons.rounded.EventAvailable
+import androidx.compose.material.icons.rounded.FactCheck
+import androidx.compose.material.icons.rounded.HistoryEdu
+import androidx.compose.material.icons.rounded.HistoryToggleOff
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Insights
+import androidx.compose.material.icons.rounded.LockClock
+import androidx.compose.material.icons.rounded.PendingActions
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,7 +51,7 @@ class SAESViewModel @Inject constructor(
     }
 
     fun goBack() = viewModelScope.launch {
-        history.removeLast()
+        history.removeLastOrNull()
         _currentSection.emit(history.last())
     }
 
