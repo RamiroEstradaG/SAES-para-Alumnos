@@ -7,12 +7,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.QrCodeScanner
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ripple
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,7 +26,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import ziox.ramiro.saes.features.saes.features.profile.data.models.QRCodeScannerContract
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.BarcodeTypes
 import ziox.ramiro.saes.utils.PreferenceKeys
@@ -40,10 +42,10 @@ fun QRCode() {
         mutableStateOf(UserPreferences.invoke(context).getPreference(PreferenceKeys.QrUrl, ""))
     }
 
-    val qrCodeScannerLauncher = rememberLauncherForActivityResult(contract = QRCodeScannerContract()) {
+    val qrCodeScannerLauncher = rememberLauncherForActivityResult(contract = ScanContract()) {
         if(it != null){
-            UserPreferences.invoke(context).setPreference(PreferenceKeys.QrUrl, it)
-            qrCodeUrl.value = it
+            UserPreferences.invoke(context).setPreference(PreferenceKeys.QrUrl, it.contents)
+            qrCodeUrl.value = it.contents
         }
     }
 
@@ -54,10 +56,17 @@ fun QRCode() {
             .background(Color.White)
             .size(150.dp)
             .clickable(
-                indication = rememberRipple(),
-                interactionSource = MutableInteractionSource(),
+                indication = ripple(),
+                interactionSource = remember { MutableInteractionSource() },
                 onClick = {
-                    qrCodeScannerLauncher.launch(Unit)
+                    qrCodeScannerLauncher.launch(
+                        ScanOptions()
+                            .setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+                            .setBarcodeImageEnabled(true)
+                            .setBeepEnabled(false)
+                            .setOrientationLocked(false)
+                            .setPrompt("Escanea el QR de tu credencial")
+                    )
                 }
             ),
     ) {
@@ -112,7 +121,7 @@ fun BarcodeCode39(data: String = "1234567890") = Column(
     )
     Text(
         text = data,
-        style = MaterialTheme.typography.subtitle2,
+        style = MaterialTheme.typography.titleMedium,
         color = Color.Black
     )
 }

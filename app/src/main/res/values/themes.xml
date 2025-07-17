@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.SAESParaAlumnos" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="Theme.SAESParaAlumnos" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
@@ -26,5 +26,17 @@
         <item name="titleTextColor">@color/colorOnToolbar</item>
         <item name="colorControlHighlight">@color/colorRipple</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
+
+    <style name="DialogAlert" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="android:buttonBarButtonStyle">@style/ButtonAlertDialog</item>
+        <item name="buttonBarNegativeButtonStyle">@style/ButtonAlertDialog</item>
+        <item name="buttonBarPositiveButtonStyle">@style/ButtonAlertDialog</item>
+    </style>
+
+    <style name="ButtonAlertDialog" parent="Widget.MaterialComponents.Button.TextButton.Dialog.Flush">
+        <item name="android:textColor">@color/colorSecondary</item>
     </style>
 </resources>

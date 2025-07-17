@@ -1,19 +1,30 @@
 package ziox.ramiro.saes.features.saes.features.home.ui.screens
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.FactCheck
+import androidx.compose.material.icons.rounded.Feed
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Insights
+import androidx.compose.material.icons.rounded.Update
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,23 +33,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
-import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
-import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
-import ziox.ramiro.saes.features.saes.features.home.data.repositories.TwitterRetrofitRepository
 import ziox.ramiro.saes.features.saes.features.home.ui.components.RecentActivityItem
 import ziox.ramiro.saes.features.saes.features.home.ui.components.SmallGradeItem
 import ziox.ramiro.saes.features.saes.features.home.ui.components.TweetItem
 import ziox.ramiro.saes.features.saes.features.home.view_models.HomeViewModel
-import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
 import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewModel
 import ziox.ramiro.saes.features.saes.features.performance.ui.screens.KardexChart
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getCurrentClass
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getNextClass
-import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
@@ -48,27 +52,12 @@ import ziox.ramiro.saes.utils.updateWidgets
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Home(
-    homeViewModel: HomeViewModel = viewModel(
-        factory = viewModelFactory {
-            HomeViewModel(
-                LocalAppDatabase.invoke(LocalContext.current).historyRepository(),
-                TwitterRetrofitRepository()
-            )
-        }
-    ),
-    gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(LocalContext.current)) }
-    ),
-    kardexViewModel: KardexViewModel = viewModel(
-        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(LocalContext.current)) }
-    ),
+    homeViewModel: HomeViewModel = viewModel(),
+    gradesViewModel: GradesViewModel = viewModel(),
+    kardexViewModel: KardexViewModel = viewModel(),
     saesViewModel: SAESViewModel = viewModel(),
-    etsViewModel: ETSViewModel = viewModel(
-        factory = viewModelFactory { ETSViewModel(ETSWebViewRepository(LocalContext.current)) }
-    ),
-    scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(ScheduleWebViewRepository(LocalContext.current),LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()) }
-    )
+    etsViewModel: ETSViewModel = viewModel(),
+    scheduleViewModel: ScheduleViewModel = viewModel()
 ) {
     Column(
         modifier = Modifier
@@ -131,12 +120,14 @@ fun Home(
                         modifier = Modifier
                             .padding(horizontal = 32.dp)
                             .fillMaxWidth(),
-                        backgroundColor = Color(currentClass.color.toULong())
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(currentClass.color.toULong())
+                        )
                     ) {
                         Text(
                             modifier = Modifier.padding(16.dp),
                             text = currentClass.className,
-                            style = MaterialTheme.typography.h5,
+                            style = MaterialTheme.typography.headlineMedium,
                             color = Color.White
                         )
                     }
@@ -157,7 +148,9 @@ fun Home(
                         modifier = Modifier
                             .padding(horizontal = 32.dp)
                             .fillMaxWidth(),
-                        backgroundColor = Color(nextClass.color.toULong())
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(nextClass.color.toULong())
+                        )
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -167,13 +160,13 @@ fun Home(
                                     .weight(1f)
                                     .padding(16.dp),
                                 text = nextClass.className,
-                                style = MaterialTheme.typography.h5,
+                                style = MaterialTheme.typography.headlineMedium,
                                 color = Color.White
                             )
                             Text(
                                 modifier = Modifier.padding(16.dp),
                                 text = nextClass.scheduleDayTime.start.toString(),
-                                style = MaterialTheme.typography.subtitle2,
+                                style = MaterialTheme.typography.titleMedium,
                                 color = Color.White
                             )
                         }
@@ -294,7 +287,7 @@ fun HomeItem(
         )
         Text(
             text = title,
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.headlineMedium
         )
     }
     content()

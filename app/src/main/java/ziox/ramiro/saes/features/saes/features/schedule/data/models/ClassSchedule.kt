@@ -12,23 +12,23 @@ import java.util.*
 @Entity(tableName = "class_schedule")
 data class ClassSchedule(
     @PrimaryKey
-    val id: String = "",
+    var id: String = "",
     @ColumnInfo(name = "class_id")
-    val classId: String = "",
+    var classId: String = "",
     @ColumnInfo(name = "class_name")
-    val className: String = "",
+    var className: String = "",
     @ColumnInfo(name = "group")
-    val group: String = "",
+    var group: String = "",
     @ColumnInfo(name = "building")
-    val building: String = "",
+    var building: String = "",
     @ColumnInfo(name = "classroom")
-    val classroom: String = "",
+    var classroom: String = "",
     @ColumnInfo(name = "teacher_name")
-    val teacherName: String = "",
+    var teacherName: String = "",
     @ColumnInfo(name = "class_color")
-    val color: Long = 0L,
+    var color: Long = 0L,
     @Embedded
-    val scheduleDayTime: ScheduleDayTime = ScheduleDayTime()
+    var scheduleDayTime: ScheduleDayTime = ScheduleDayTime()
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -290,11 +290,11 @@ fun List<ClassSchedule>.getNextClass() : ClassSchedule? {
 
 data class ScheduleDayTime(
     @ColumnInfo(name = "hour_start")
-    val start: Hour = Hour(),
+    var start: Hour = Hour(),
     @ColumnInfo(name = "hour_end")
-    val end: Hour = Hour(),
+    var end: Hour = Hour(),
     @ColumnInfo(name = "weekday")
-    val weekDay: WeekDay = WeekDay.UNKNOWN
+    var weekDay: WeekDay = WeekDay.UNKNOWN
 ): Parcelable{
     @Ignore
     val duration: Double = end.toDouble() - start.toDouble()
@@ -319,14 +319,26 @@ data class ScheduleDayTime(
         fun parse(hourRange: String, weekDay: WeekDay = WeekDay.UNKNOWN): List<ScheduleDayTime>{
             val hours = Regex("[0-9]+:[0-9]+\\s*-\\s*[0-9]+:[0-9]+").findAll(hourRange)
 
-            return hours.map {
+            val hoursList = hours.map {
                 val values = it.value.replace(" ", "").split("-")
                 ScheduleDayTime(
                     Hour.parse(values[0])!!,
                     Hour.parse(values[1])!!,
                     weekDay
                 )
-            }.toList()
+            }.toMutableList()
+
+            val hoursCopy = hoursList.toList()
+
+            hoursCopy.forEachIndexed { i, hourCheck ->
+                hoursCopy.subList(i+1, hoursCopy.size).forEach {
+                    if (it == hourCheck){
+                        hoursList.remove(it)
+                    }
+                }
+            }
+
+            return hoursList
         }
 
         override fun createFromParcel(parcel: Parcel): ScheduleDayTime {

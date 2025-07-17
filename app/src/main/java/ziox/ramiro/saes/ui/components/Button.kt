@@ -6,9 +6,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Event
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,18 +52,19 @@ fun AsyncButton(
                         modifier = Modifier.padding(end = 16.dp),
                         imageVector = icon,
                         contentDescription = "Button icon",
-                        tint = MaterialTheme.colors.onPrimary
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
                 Text(
                     text = text.uppercase(),
-                    modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
+                    modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp),
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }else{
             Box {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colors.onPrimary,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
                         .padding(if (isHighEmphasis) 6.dp else 0.dp)
                         .size(24.dp)
@@ -74,16 +80,32 @@ fun BaseButton(
     modifier: Modifier = Modifier,
     text: String = "button",
     isHighEmphasis: Boolean = false,
+    icon: ImageVector? = null,
     onClick: () -> Unit = {}
 ) = Button(
     modifier = modifier,
     onClick = onClick,
     shape = RoundedCornerShape(100),
+    colors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+    ),
 ) {
-    Text(
-        text = text.uppercase(),
-        modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
-    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if(icon != null){
+            Icon(
+                modifier = Modifier.padding(end = 16.dp),
+                imageVector = icon,
+                contentDescription = "Button icon",
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+        Text(
+            text = text.uppercase(),
+            modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
+        )
+    }
 }
 
 
@@ -91,9 +113,9 @@ fun BaseButton(
 fun TextButton(
     modifier: Modifier = Modifier,
     text: String = "button",
-    textColor: Color = MaterialTheme.colors.primary,
+    textColor: Color = MaterialTheme.colorScheme.primary,
     onClick: () -> Unit = {}
-) = TextButton(
+) = androidx.compose.material3.TextButton(
     onClick = onClick,
     modifier = modifier,
 ) {
@@ -108,18 +130,18 @@ fun OutlineButton(
     modifier: Modifier = Modifier,
     text: String = "button",
     isHighEmphasis: Boolean = false,
-    textColor: Color = MaterialTheme.colors.primary,
+    textColor: Color = MaterialTheme.colorScheme.primary,
     enabled: Boolean = true,
     icon: ImageVector? = null,
     backgroundColor: Color? = null,
     borderColor: Color? = null,
     onClick: () -> Unit = {}
-) = OutlinedButton(
+) = androidx.compose.material3.OutlinedButton(
     modifier = modifier,
     onClick = onClick,
     shape = RoundedCornerShape(100),
     colors = ButtonDefaults.outlinedButtonColors(
-        backgroundColor = backgroundColor ?: Color.Transparent
+        containerColor = backgroundColor ?: Color.Transparent
     ),
     enabled = enabled,
     border = BorderStroke(1.dp, borderColor ?: getCurrentTheme().divider)
@@ -152,7 +174,7 @@ fun BaseButtonPreview() = SAESParaAlumnosTheme {
 @Preview(showBackground = true)
 @Composable
 fun AsyncButtonPreview() = SAESParaAlumnosTheme {
-    BaseButton()
+    AsyncButton(isLoading = true) {}
 }
 
 @Preview(showBackground = true)

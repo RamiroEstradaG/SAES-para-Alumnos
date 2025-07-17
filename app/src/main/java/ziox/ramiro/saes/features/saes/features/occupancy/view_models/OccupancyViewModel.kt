@@ -2,14 +2,17 @@ package ziox.ramiro.saes.features.saes.features.occupancy.view_models
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.data.models.FilterViewModel
 import ziox.ramiro.saes.features.saes.features.occupancy.data.models.ClassOccupancy
 import ziox.ramiro.saes.features.saes.features.occupancy.data.repositories.OccupancyRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
+import javax.inject.Inject
 
-class OccupancyViewModel(
+@HiltViewModel
+class OccupancyViewModel @Inject constructor(
     private val occupancyRepository: OccupancyRepository
 ) : FilterViewModel() {
     val occupancyList = mutableStateOf<List<ClassOccupancy>?>(null)

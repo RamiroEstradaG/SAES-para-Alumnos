@@ -17,37 +17,42 @@ interface GradesRepository {
 }
 
 class GradesWebViewRepository(
-    private val context: Context
+    private val context: Context,
+    withTestFile: String? = null
 ) : GradesRepository {
-    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/calificaciones_sem.aspx")
+    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/calificaciones_sem.aspx", withTestFile)
     private val persistenceRepository = LocalAppDatabase.invoke(context).gradesRepository()
 
     override suspend fun getMyGrades(): List<ClassGrades> {
         return if (context.isNetworkAvailable()){
             webView.scrap(
                 script = """
-                var gradesTable = byId("ctl00_mainCopy_GV_Calif");
-                var requireTeacherRate = document.getElementById("ctl00_mainCopy_Btn_Evaluar") != null;
-                
-                if(gradesTable != null){
-                    var grades = [...gradesTable.getElementsByTagName("tr")];
-                    grades.splice(0,1);
-                    next({
-                        grades: grades.map(tr => ({
-                            className: tr.children[1].innerText.trim(),
-                            p1: parseInt(tr.children[2].innerText.trim()),
-                            p2: parseInt(tr.children[3].innerText.trim()),
-                            p3: parseInt(tr.children[4].innerText.trim()),
-                            extra: parseInt(tr.children[5].innerText.trim()),
-                            final: parseInt(tr.children[6].innerText.trim()),
-                        })),
-                        requireTeacherRate: requireTeacherRate
-                    });
-                }else{
-                    next({
-                        grades: [],
-                        requireTeacherRate: requireTeacherRate
-                    });
+                try {
+                    var gradesTable = byId("ctl00_mainCopy_GV_Calif");
+                    var requireTeacherRate = document.getElementById("ctl00_mainCopy_Btn_Evaluar") != null;
+                    
+                    if(gradesTable != null){
+                        var grades = [...gradesTable.getElementsByTagName("tr")];
+                        grades.splice(0,1);
+                        next({
+                            grades: grades.map(tr => ({
+                                className: tr.children[1].innerText.trim(),
+                                p1: parseInt(tr.children[2].innerText.trim()),
+                                p2: parseInt(tr.children[3].innerText.trim()),
+                                p3: parseInt(tr.children[4].innerText.trim()),
+                                extra: parseInt(tr.children[5].innerText.trim()),
+                                final: parseInt(tr.children[6].innerText.trim()),
+                            })),
+                            requireTeacherRate: requireTeacherRate
+                        });
+                    }else{
+                        next({
+                            grades: [],
+                            requireTeacherRate: requireTeacherRate
+                        });
+                    }
+                }catch(e){
+                    throwError(e);
                 }
             """.trimIndent()
             ){

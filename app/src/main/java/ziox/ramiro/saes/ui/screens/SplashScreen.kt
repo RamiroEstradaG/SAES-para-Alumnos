@@ -1,10 +1,14 @@
 package ziox.ramiro.saes.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,8 +20,10 @@ import com.google.accompanist.imageloading.rememberDrawablePainter
 import ziox.ramiro.saes.R
 
 @Composable
-fun SplashScreen() = Box(
-    modifier = Modifier.fillMaxSize(),
+fun SplashScreen(
+    modifier: Modifier = Modifier
+) = Box(
+    modifier = modifier.fillMaxSize(),
     contentAlignment = Alignment.Center
 ) {
     Column(
@@ -38,7 +44,7 @@ fun SplashScreen() = Box(
         Text(
             modifier = Modifier.padding(top = 16.dp),
             text = "SAES para Alumnos",
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.headlineMedium
         )
     }
 }

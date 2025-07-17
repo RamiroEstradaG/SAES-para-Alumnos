@@ -105,5 +105,6 @@ val universities = listOf(
     School("ENBA", null, "https://www.saes.enba.ipn.mx/", R.drawable.enba),
     School("UPIIC", null, "https://www.saes.upiic.ipn.mx/"),
     School("UPIIP", null, "https://www.saes.upiip.ipn.mx/", R.drawable.upiip),
-    School("UPIEM", null, "https://www.saes.upiem.ipn.mx/")
+    School("UPIEM", null, "https://www.saes.upiem.ipn.mx/"),
+    School("UPIIT", null, "https://www.saes.upiit.ipn.mx/")
 )

@@ -4,26 +4,36 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import ziox.ramiro.saes.data.data_providers.ScrapException
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
+import ziox.ramiro.saes.features.saes.data.repositories.StorageRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.CustomClassSchedule
-import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.CustomScheduleRoomRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import ziox.ramiro.saes.utils.runOnDefaultThread
+import java.util.Date
+import javax.inject.Inject
 
-class ScheduleViewModel(
+@HiltViewModel
+class ScheduleViewModel @Inject constructor(
     private val scheduleRepository: ScheduleRepository,
-    private val customScheduleRoomRepository: CustomScheduleRoomRepository
+    private val storageRepository: StorageRepository,
+    localAppDatabase: LocalAppDatabase
 ) : ViewModel() {
+    private val customScheduleRoomRepository = localAppDatabase.customScheduleGeneratorRepository()
     val scheduleList = mutableStateListOf<ClassSchedule>()
     val isLoading = mutableStateOf(false)
     val error = MutableStateFlow<String?>(null)
+    val scrapError = MutableStateFlow<ScrapException?>(null)
 
     init {
         fetchMySchedule()
         error.dismissAfterTimeout()
+        scrapError.dismissAfterTimeout(10000)
     }
 
     private fun fetchMySchedule() = viewModelScope.launch {
@@ -35,7 +45,11 @@ class ScheduleViewModel(
         }.onSuccess {
             scheduleList.addAll(it)
         }.onFailure {
-            error.value = "Error al cargar el horario"
+            if(it is ScrapException) {
+                scrapError.value = it
+            } else {
+                error.value = "Error al cargar el horario"
+            }
         }
 
         isLoading.value = false
@@ -53,6 +67,22 @@ class ScheduleViewModel(
             }
 
             scheduleList[index] = classSchedule.toClassSchedule()
+        }
+    }
+
+    fun uploadSourceCode() = viewModelScope.launch {
+        val error = scrapError.value
+        scrapError.value = null
+        if(error == null) return@launch
+
+        val sourceCode = error.sourceCode ?: return@launch
+
+        runCatching {
+            storageRepository.uploadFile(
+                content = sourceCode,
+                filePath = "schedule_errors",
+                fileName = "${Date().time}.html"
+            )
         }
     }
 }

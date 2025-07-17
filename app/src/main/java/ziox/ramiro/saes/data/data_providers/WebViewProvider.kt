@@ -2,9 +2,11 @@ package ziox.ramiro.saes.data.data_providers
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.http.SslError
 import android.util.Log
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,10 +14,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.perf.ktx.performance
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 import okhttp3.Headers
 import org.json.JSONArray
 import org.json.JSONObject
+import ziox.ramiro.saes.data.models.SAESWebViewClient
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.UtilsJavascriptInterface
@@ -38,7 +45,7 @@ class WebViewProvider(
 
     @Composable
     fun WebViewProviderDebugView() = AndroidView(
-        modifier = Modifier.height(400.dp),
+        modifier = Modifier.height(600.dp),
         factory = {
             webView
         }
@@ -51,6 +58,13 @@ class WebViewProvider(
             javascript:
             function next(obj){
                 window.JSI.result("$jobId", JSON.stringify(obj));
+            }
+            function throwError(error){
+                window.JSI.error("$jobId", JSON.stringify({
+                    error: error.message,
+                    stack: error.stack,
+                    currentPage: document.getElementsByTagName("html")[0].outerHTML
+                }));
             }
             function byId(id){
                 return document.getElementById(id);
@@ -111,12 +125,15 @@ class WebViewProvider(
         private fun createWebView(context: Context) : WebView {
             val webView = WebView(context)
 
-            webView.settings.javaScriptEnabled = true
-            webView.settings.domStorageEnabled = true
+            webView.settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+            }
 
             webView.webChromeClient = object : WebChromeClient(){
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
                     super.onProgressChanged(view, newProgress)
+                    Log.d("WebViewProvider", "Progress: $newProgress%")
                     if(newProgress > 95) view?.stopLoading()
                 }
             }
@@ -164,7 +181,7 @@ class WebViewProvider(
                     if(withTestFile == null){
                         webView.loadUrl(url)
                     }else{
-                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                        webView.loadUrl("file:///android_asset/${withTestFile}")
                     }
                 } else {
                     webView.loadUrl(scriptBase)
@@ -177,7 +194,9 @@ class WebViewProvider(
 
     fun handleResume(jobId: String, block: () -> Unit) {
         if(javascriptInterfaceJobs[jobId]?.isResumed == false && javascriptInterfaceJobs[jobId]?.continuation?.isActive == true){
-            block()
+            kotlin.runCatching {
+                block()
+            }
             javascriptInterfaceJobs[jobId]?.isResumed = true
         }
     }
@@ -214,7 +233,7 @@ class WebViewProvider(
                     if(withTestFile == null){
                         webView.loadUrl(url)
                     }else{
-                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                        webView.loadUrl("file:///android_asset/${withTestFile}")
                     }
                 } else {
                     Log.d("WebViewProvider", "Running script at $currentScriptIndex")
@@ -259,7 +278,7 @@ class WebViewProvider(
                     if(withTestFile == null){
                         webView.loadUrl(url)
                     }else{
-                        webView.loadUrl("file:///android_asset/html_tests/${withTestFile}")
+                        webView.loadUrl("file:///android_asset/${withTestFile}")
                     }
                 } else {
                     webView.loadUrl(preRequestBase)
@@ -272,32 +291,17 @@ class WebViewProvider(
 
     fun attachWebViewClient(
         jobId: String,
-        continuation: CancellableContinuation<*>,
+        continuation: CancellableContinuation<ScrapResultAdapter<Any?>>,
         onPageFinished: () -> Unit
     ){
-        webView.webViewClient = object : WebViewClient(){
-            override fun onReceivedHttpError(
-                view: WebView?,
-                request: WebResourceRequest?,
-                errorResponse: WebResourceResponse?
-            ) {
-                super.onReceivedHttpError(view, request, errorResponse)
-                handleResume(jobId){
-                    continuation.resumeWithException(Exception("Error HTTP ${errorResponse?.statusCode}"))
-                }
+        webView.webViewClient = object : SAESWebViewClient(
+            webView.context,
+            jobId,
+            continuation,
+            { _jobId, _handler ->
+                handleResume(_jobId, _handler)
             }
-
-            override fun onReceivedSslError(
-                view: WebView?,
-                handler: SslErrorHandler?,
-                error: SslError?
-            ) {
-                super.onReceivedSslError(view, handler, error)
-                handleResume(jobId){
-                    continuation.resumeWithException(Exception("Error SSL ${error?.primaryError}"))
-                }
-            }
-
+        ){
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 
@@ -342,6 +346,31 @@ class WebViewProvider(
                 }
             }
         }
+
+        @JavascriptInterface
+        fun error(jobId: String, errorJson: String){
+            Log.e("WebViewProvider", "Error received for $jobId")
+            runBlocking {
+                handleResume(jobId){
+                    javascriptInterfaceJobs[jobId]?.let { job ->
+                        val errorObject = JSONObject(errorJson)
+                        val errorMessage = errorObject.optString("error", "Unknown error")
+                        val stackTrace = errorObject.optString("stack", "")
+                        val sourceCode = errorObject.optString("currentPage", "")
+
+                        Log.e("WebViewProvider", "Error in job $jobId: $errorMessage\nStack trace: $stackTrace")
+
+                        job.continuation.resumeWithException(
+                            ScrapException(
+                                message = errorMessage,
+                                stackTrace = stackTrace,
+                                sourceCode = sourceCode
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -371,6 +400,14 @@ data class ScrapResultAdapter<T>(
 data class ScrapResult(
     val result: JSONObject,
     val headers: Headers
+)
+
+class ScrapException(
+    message: String,
+    stackTrace: String? = null,
+    val sourceCode: String? = null
+) : Exception(
+    "ScrapException: $message\nStack trace: $stackTrace"
 )
 
 

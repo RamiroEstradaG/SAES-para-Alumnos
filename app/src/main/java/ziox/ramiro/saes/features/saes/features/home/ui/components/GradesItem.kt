@@ -3,11 +3,12 @@ package ziox.ramiro.saes.features.saes.features.home.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,9 +30,9 @@ fun SmallGradeItem(
         .clip(MaterialTheme.shapes.medium)
         .size(74.dp, 90.dp)
         .clickable(
-            interactionSource = MutableInteractionSource(),
+            interactionSource = remember { MutableInteractionSource() },
             onClick = onClick,
-            indication = rememberRipple()
+            indication = ripple()
         )
 ) {
     Column(
@@ -40,14 +41,14 @@ fun SmallGradeItem(
     ) {
         Text(
             text = classGrades.className.getInitials(),
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
         Text(
             text = classGrades.finalScore?.toString() ?: "-",
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
             color = gradeColor(classGrades.finalScore)
         )
@@ -64,9 +65,9 @@ fun SmallGradeItem(
         .clip(MaterialTheme.shapes.medium)
         .size(74.dp, 90.dp)
         .clickable(
-            interactionSource = MutableInteractionSource(),
+            interactionSource = remember { MutableInteractionSource() },
             onClick = onClick,
-            indication = rememberRipple()
+            indication = ripple()
         )
 ) {
     Column(
@@ -75,14 +76,14 @@ fun SmallGradeItem(
     ) {
         Text(
             text = etsScore.className.getInitials(),
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )
         Text(
             text = etsScore.grade?.toString() ?: "-",
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
             color = gradeColor(etsScore.grade)
         )
@@ -101,7 +102,7 @@ fun GradeItem(
     ) {
         Text(
             text = classGrades.className,
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.headlineMedium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -129,11 +130,11 @@ private fun Grade(
 ) {
     Text(
         text = title,
-        style = MaterialTheme.typography.subtitle1
+        style = MaterialTheme.typography.titleLarge
     )
     Text(
         text = grade?.toString() ?: "-",
-        style = MaterialTheme.typography.h4,
+        style = MaterialTheme.typography.headlineLarge,
         color = gradeColor(grade)
     )
 }

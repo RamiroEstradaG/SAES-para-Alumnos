@@ -24,6 +24,7 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.utils.MMMddyyyy_toDate
 import ziox.ramiro.saes.utils.offset
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.ExperimentalTime
 
 interface AgendaRepository {
@@ -79,7 +80,8 @@ class AgendaWebViewRepository(
 
 
                     do {
-                        val dateWithOffset = start.offset(Duration.days(offset++))
+                        val dateWithOffset = start.offset(offset.days)
+                        offset++
                         val currentDate = ShortDate.fromDate(dateWithOffset)
 
                         events.add(AgendaItem(

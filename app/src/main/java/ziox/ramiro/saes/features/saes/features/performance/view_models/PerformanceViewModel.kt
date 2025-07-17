@@ -1,14 +1,14 @@
 package ziox.ramiro.saes.features.saes.features.performance.view_models
 
-import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.School
-import ziox.ramiro.saes.features.saes.data.repositories.UserRepository
+import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
 import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexRepository
 import ziox.ramiro.saes.features.saes.features.performance.data.models.PerformanceData
@@ -16,18 +16,19 @@ import ziox.ramiro.saes.features.saes.features.performance.data.repositories.Per
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.dismissAfterTimeout
+import javax.inject.Inject
 
-class PerformanceViewModel(
+@HiltViewModel
+class PerformanceViewModel @Inject constructor(
     private val performanceRepository: PerformanceRepository,
     private val kardexRepository: KardexRepository,
-    private val userRepository: UserRepository,
-    context: Context
+    private val userFirebaseRepository: UserFirebaseRepository,
+    private val userPreferences: UserPreferences
 ): ViewModel() {
     val schoolPerformance = mutableStateOf<PerformanceData?>(null)
     val generalPerformance = mutableStateOf<PerformanceData?>(null)
     val careerPerformance = mutableStateOf<PerformanceData?>(null)
     val error = MutableStateFlow<String?>(null)
-    val userPreferences = UserPreferences.invoke(context)
 
     init {
         error.dismissAfterTimeout()
@@ -36,7 +37,7 @@ class PerformanceViewModel(
         }
     }
 
-    fun uploadUserData() = viewModelScope.launch {
+    private fun uploadUserData() = viewModelScope.launch {
         val schoolName = School
             .findSchoolByUrl(userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: "")
             ?.schoolName ?: "Unknown"
@@ -56,7 +57,7 @@ class PerformanceViewModel(
         }
     }
 
-    fun fetchCareerPerformance(careerName: String) = viewModelScope.launch {
+    private fun fetchCareerPerformance(careerName: String) = viewModelScope.launch {
         kotlin.runCatching {
             performanceRepository.getCareerPerformance(careerName).collect {
                 careerPerformance.value = it
@@ -66,7 +67,7 @@ class PerformanceViewModel(
         }
     }
 
-    fun fetchSchoolPerformance(schoolName: String) = viewModelScope.launch {
+    private fun fetchSchoolPerformance(schoolName: String) = viewModelScope.launch {
         kotlin.runCatching {
             performanceRepository.getSchoolPerformance(schoolName).collect {
                 schoolPerformance.value = it
@@ -76,7 +77,7 @@ class PerformanceViewModel(
         }
     }
 
-    fun fetchGeneralPerformance() = viewModelScope.launch {
+    private fun fetchGeneralPerformance() = viewModelScope.launch {
         kotlin.runCatching {
             performanceRepository.getGeneralPerformance().collect {
                 generalPerformance.value = it
@@ -86,9 +87,9 @@ class PerformanceViewModel(
         }
     }
 
-    fun updateMyPerformance(kardexData: KardexData, schoolName: String) = viewModelScope.launch {
+    private fun updateMyPerformance(kardexData: KardexData, schoolName: String) = viewModelScope.launch {
         kotlin.runCatching {
-            userRepository.update(mapOf(
+            userFirebaseRepository.update(mapOf(
                 "school" to schoolName,
                 "career" to kardexData.careerName,
                 "kardexData" to kardexData,

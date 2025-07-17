@@ -5,14 +5,40 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.AlternateEmail
+import androidx.compose.material.icons.rounded.Apartment
+import androidx.compose.material.icons.rounded.Cake
+import androidx.compose.material.icons.rounded.CorporateFare
+import androidx.compose.material.icons.rounded.EscalatorWarning
+import androidx.compose.material.icons.rounded.Fingerprint
+import androidx.compose.material.icons.rounded.Grading
+import androidx.compose.material.icons.rounded.LocationCity
+import androidx.compose.material.icons.rounded.MarkunreadMailbox
+import androidx.compose.material.icons.rounded.Phone
+import androidx.compose.material.icons.rounded.Smartphone
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,12 +54,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.google.accompanist.coil.rememberCoilPainter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
-import ziox.ramiro.saes.features.saes.features.profile.data.repositories.ProfileWebViewRepository
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.BarcodeCode39
 import ziox.ramiro.saes.features.saes.features.profile.ui.components.QRCode
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
@@ -44,9 +71,7 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun Profile(
-    profileViewModel: ProfileViewModel = viewModel(
-        factory = viewModelFactory { ProfileViewModel(ProfileWebViewRepository(LocalContext.current)) }
-    )
+    profileViewModel: ProfileViewModel = viewModel()
 ) {
     val headerHeight = remember {
         mutableStateOf(280.dp)
@@ -54,24 +79,24 @@ fun Profile(
     val scrollingState = rememberScrollState()
     val coroutine = rememberCoroutineScope()
 
-    val mainScrollState = with(LocalDensity.current){
+    val mainScrollState = with(LocalDensity.current) {
         rememberScrollableState {
-            if(it < 0 && headerHeight.value > 58.dp && scrollingState.value == 0){
-                if(headerHeight.value + it.toDp() >= 58.dp){
+            if (it < 0 && headerHeight.value > 58.dp && scrollingState.value == 0) {
+                if (headerHeight.value + it.toDp() >= 58.dp) {
                     headerHeight.value += it.toDp()
-                }else{
+                } else {
                     headerHeight.value = 58.dp
                 }
                 coroutine.launch {
                     scrollingState.scrollTo(0)
                 }
-            }else if (it > 0 && headerHeight.value < 280.dp && scrollingState.value == 0){
-                if(headerHeight.value + it.toDp() <= 280.dp){
+            } else if (it > 0 && headerHeight.value < 280.dp && scrollingState.value == 0) {
+                if (headerHeight.value + it.toDp() <= 280.dp) {
                     headerHeight.value += it.toDp()
-                }else{
+                } else {
                     headerHeight.value = 280.dp
                 }
-            }else{
+            } else {
                 scrollingState.dispatchRawDelta(-it)
             }
 
@@ -80,19 +105,21 @@ fun Profile(
     }
 
 
-    if(profileViewModel.profile.value != null){
-        profileViewModel.profile.value?.let {
+    if (profileViewModel.profile.value != null) {
+        profileViewModel.profile.value?.let { profileUser ->
             Scaffold(
                 modifier = Modifier.scrollable(mainScrollState, orientation = Orientation.Vertical),
                 topBar = {
                     ProfileAppBar(
-                        profileUser = it,
+                        profileUser = profileUser,
                         headerHeight = headerHeight.value
                     )
                 }
-            ) { _ ->
+            ) { paddingValues ->
                 Box(
-                    modifier = Modifier.verticalScroll(scrollingState)
+                    modifier = Modifier
+                        .verticalScroll(scrollingState)
+                        .padding(paddingValues)
                 ) {
                     Column(
                         Modifier.padding(
@@ -105,50 +132,89 @@ fun Profile(
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
                             text = "Datos generales",
-                            style = MaterialTheme.typography.subtitle2
+                            style = MaterialTheme.typography.titleMedium
                         )
-                        ProfileDataItem(Icons.Rounded.Cake, it.birthday.toLongString())
-                        ProfileDataItem(Icons.Rounded.LocationCity,  "${it.state}, ${it.nationality}")
-                        ProfileDataItem(Icons.Rounded.CorporateFare, it.school)
-                        ProfileDataItem(Icons.Rounded.Fingerprint, it.curp)
-                        ProfileDataItem(Icons.Rounded.MarkunreadMailbox, it.address.joinToString())
+                        ProfileDataItem(Icons.Rounded.Cake, profileUser.birthday.toLongString())
+                        ProfileDataItem(
+                            Icons.Rounded.LocationCity,
+                            "${profileUser.state}, ${profileUser.nationality}"
+                        )
+                        ProfileDataItem(Icons.Rounded.CorporateFare, profileUser.school)
+                        ProfileDataItem(Icons.Rounded.Fingerprint, profileUser.curp)
+                        ProfileDataItem(
+                            Icons.Rounded.MarkunreadMailbox,
+                            profileUser.address.joinToString()
+                        )
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
                             text = "Datos de contacto",
-                            style = MaterialTheme.typography.subtitle2
+                            style = MaterialTheme.typography.titleMedium
                         )
-                        ProfileDataItem(Icons.Rounded.AlternateEmail, it.contactInformation.email)
-                        ProfileDataItem(Icons.Rounded.Smartphone, it.contactInformation.mobilePhoneNumber)
-                        ProfileDataItem(Icons.Rounded.Phone, it.contactInformation.phoneNumber)
-                        ProfileDataItem(Icons.Rounded.Apartment, it.contactInformation.officePhone)
+                        ProfileDataItem(
+                            Icons.Rounded.AlternateEmail,
+                            profileUser.contactInformation.email
+                        )
+                        ProfileDataItem(
+                            Icons.Rounded.Smartphone,
+                            profileUser.contactInformation.mobilePhoneNumber
+                        )
+                        ProfileDataItem(
+                            Icons.Rounded.Phone,
+                            profileUser.contactInformation.phoneNumber
+                        )
+                        ProfileDataItem(
+                            Icons.Rounded.Apartment,
+                            profileUser.contactInformation.officePhone
+                        )
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
                             text = "Datos escolares",
-                            style = MaterialTheme.typography.subtitle2
+                            style = MaterialTheme.typography.titleMedium
                         )
-                        ProfileDataItem(Icons.Rounded.CorporateFare, it.education.highSchoolName)
-                        ProfileDataItem(Icons.Rounded.LocationCity, it.education.highSchoolState)
-                        ProfileDataItem(Icons.Rounded.Grading, it.education.highSchoolFinalGrade.toString())
+                        ProfileDataItem(
+                            Icons.Rounded.CorporateFare,
+                            profileUser.education.highSchoolName
+                        )
+                        ProfileDataItem(
+                            Icons.Rounded.LocationCity,
+                            profileUser.education.highSchoolState
+                        )
+                        ProfileDataItem(
+                            Icons.Rounded.Grading,
+                            profileUser.education.highSchoolFinalGrade.toString()
+                        )
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp, top = 16.dp),
                             text = "Progenitores o tutor",
-                            style = MaterialTheme.typography.subtitle2
+                            style = MaterialTheme.typography.titleMedium
                         )
-                        if(it.parent.guardianName.isNotBlank()){
-                            ProfileDataItem(Icons.Rounded.EscalatorWarning, it.parent.guardianName)
-                            ProfileDataItem(Icons.Rounded.Fingerprint, it.parent.guardianRfc)
+                        if (profileUser.parent.guardianName.isNotBlank()) {
+                            ProfileDataItem(
+                                Icons.Rounded.EscalatorWarning,
+                                profileUser.parent.guardianName
+                            )
+                            ProfileDataItem(
+                                Icons.Rounded.Fingerprint,
+                                profileUser.parent.guardianRfc
+                            )
                         }
-                        if(it.parent.motherName.isNotBlank()){
-                            ProfileDataItem(Icons.Rounded.EscalatorWarning, it.parent.motherName)
+                        if (profileUser.parent.motherName.isNotBlank()) {
+                            ProfileDataItem(
+                                Icons.Rounded.EscalatorWarning,
+                                profileUser.parent.motherName
+                            )
                         }
-                        if(it.parent.fatherName.isNotBlank()){
-                            ProfileDataItem(Icons.Rounded.EscalatorWarning, it.parent.fatherName)
+                        if (profileUser.parent.fatherName.isNotBlank()) {
+                            ProfileDataItem(
+                                Icons.Rounded.EscalatorWarning,
+                                profileUser.parent.fatherName
+                            )
                         }
                     }
                 }
             }
         }
-    }else{
+    } else {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -161,9 +227,13 @@ fun Profile(
     }
 
     ErrorSnackbar(profileViewModel.error)
+    ErrorSnackbar(profileViewModel.scrapError.map { it?.let { "Error al obtener los datos del usuario" } }) {
+        profileViewModel.uploadSourceCode()
+    }
 }
 
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileAppBar(
     profileUser: ProfileUser,
@@ -183,104 +253,110 @@ fun ProfileAppBar(
             bottomStart = 32.dp.times(percentageCollapsed),
             bottomEnd = 32.dp.times(percentageCollapsed)
         ),
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 0.dp
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        ),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 32.dp)
-                .alpha(1 - percentageCollapsed),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
+        Box {
+            Row(
                 modifier = Modifier
-                    .clip(CircleShape)
-                    .size(42.dp),
-                painter = rememberCoilPainter(
-                    request = ImageRequest
-                        .Builder(LocalContext.current)
-                        .data(profileUser.profilePicture.url)
-                        .headers(profileUser.profilePicture.headers).build()),
-                contentDescription = "Profile picture",
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier.padding(start = 16.dp),
+                    .padding(horizontal = 32.dp)
+                    .padding(top = 8.dp)
+                    .alpha(1 - percentageCollapsed),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = profileUser.name,
-                    style = MaterialTheme.typography.subtitle2
+                Image(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(42.dp),
+                    painter = rememberImagePainter(
+                        request = ImageRequest
+                            .Builder(LocalContext.current)
+                            .data(profileUser.profilePicture.url)
+                            .headers(profileUser.profilePicture.headers).build()
+                    ),
+                    contentDescription = "Profile picture",
+                    contentScale = ContentScale.Crop
                 )
+                Column(
+                    modifier = Modifier.padding(start = 16.dp),
+                ) {
+                    Text(
+                        text = profileUser.name,
+                        style = MaterialTheme.typography.titleMedium
+                    )
 
-                Text(
-                    text = profileUser.id,
-                    style = MaterialTheme.typography.body2
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .alpha(percentageCollapsed)
-        ) {
-            val isIdCardVisible = remember {
-                mutableStateOf(false)
-            }
-
-            IconButton(
-                modifier = Modifier.align(Alignment.TopEnd),
-                onClick = {
-                    isIdCardVisible.value = !isIdCardVisible.value
+                    Text(
+                        text = profileUser.id,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Fingerprint,
-                    contentDescription = "Card icon"
-                )
             }
+            Box(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .alpha(percentageCollapsed)
+            ) {
+                val isIdCardVisible = remember {
+                    mutableStateOf(false)
+                }
 
-            Crossfade(targetState = isIdCardVisible.value) {
-                if (!it){
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Image(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(150.dp),
-                            painter = rememberCoilPainter(
-                                request = ImageRequest
-                                    .Builder(LocalContext.current)
-                                    .data(profileUser.profilePicture.url)
-                                    .headers(profileUser.profilePicture.headers).build(),
-                                fadeIn = true
-                            ),
-                            contentDescription = "Profile picture",
-                            contentScale = ContentScale.Crop
-                        )
-
-                        Text(
-                            modifier = Modifier.padding(top = 24.dp),
-                            text = profileUser.name,
-                            style = MaterialTheme.typography.h5
-                        )
-
-                        Text(
-                            text = profileUser.id,
-                            style = MaterialTheme.typography.subtitle1
-                        )
+                IconButton(
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    onClick = {
+                        isIdCardVisible.value = !isIdCardVisible.value
                     }
-                }else{
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Bottom,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        QRCode()
-                        BarcodeCode39(profileUser.id)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Fingerprint,
+                        contentDescription = "Card icon"
+                    )
+                }
+
+                Crossfade(targetState = isIdCardVisible.value) {
+                    if (!it) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .size(150.dp),
+                                painter = rememberCoilPainter(
+                                    request = ImageRequest
+                                        .Builder(LocalContext.current)
+                                        .data(profileUser.profilePicture.url)
+                                        .headers(profileUser.profilePicture.headers).build(),
+                                    fadeIn = true
+                                ),
+                                contentDescription = "Profile picture",
+                                contentScale = ContentScale.Crop
+                            )
+
+                            Text(
+                                modifier = Modifier.padding(top = 24.dp),
+                                text = profileUser.name,
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+
+                            Text(
+                                text = profileUser.id,
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Bottom,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            QRCode()
+                            BarcodeCode39(profileUser.id)
+                        }
                     }
                 }
             }
@@ -301,7 +377,7 @@ fun ProfileDataItem(
     Icon(
         imageVector = icon,
         contentDescription = "Profile item",
-        tint = MaterialTheme.colors.primary
+        tint = MaterialTheme.colorScheme.primary
     )
     Text(
         modifier = Modifier.padding(start = 16.dp),

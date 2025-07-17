@@ -1,7 +1,12 @@
 package ziox.ramiro.saes.features.saes.features.schedule.ui.screens
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -13,12 +18,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.map
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
-import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleHeader
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleWeekContainer
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
@@ -31,18 +34,15 @@ val today = WeekDay.today()
 
 @Composable
 fun Schedule(
-    scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(
-            ScheduleWebViewRepository(LocalContext.current),
-            LocalAppDatabase.invoke(LocalContext.current).customScheduleGeneratorRepository()
-        ) }
-    )
+    scheduleViewModel: ScheduleViewModel = viewModel()
 ) {
-    if(!scheduleViewModel.isLoading.value){
+    if (!scheduleViewModel.isLoading.value) {
         LocalContext.current.updateWidgets()
-        if(scheduleViewModel.scheduleList.isNotEmpty()){
+        if (scheduleViewModel.scheduleList.isNotEmpty()) {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 16.dp),
             ) {
                 val selectedDayOfWeek: MutableState<WeekDay?> = remember {
                     mutableStateOf(null)
@@ -53,20 +53,23 @@ fun Schedule(
                 )
                 ScheduleWeekContainer(
                     classSchedules = scheduleViewModel.scheduleList,
-                    selectedDayOfWeek = selectedDayOfWeek
+                    selectedDayOfWeek = selectedDayOfWeek,
+                    isClassActionsEnabled = true
                 )
             }
-        }else{
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 32.dp)) {
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 32.dp)
+            ) {
                 ResponsePlaceholder(
                     painter = painterResource(id = R.drawable.logging_off),
                     text = "No tienes ninguna materia registrada"
                 )
             }
         }
-    }else{
+    } else {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,6 +82,9 @@ fun Schedule(
     }
 
     ErrorSnackbar(scheduleViewModel.error)
+    ErrorSnackbar(scheduleViewModel.scrapError.map { it?.let { "Error al cargar el horario" } }) {
+        scheduleViewModel.uploadSourceCode()
+    }
 }
 
 

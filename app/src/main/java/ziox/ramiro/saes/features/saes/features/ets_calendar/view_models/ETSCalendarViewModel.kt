@@ -2,14 +2,17 @@ package ziox.ramiro.saes.features.saes.features.ets_calendar.view_models
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.features.saes.data.models.FilterViewModel
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories.ETSCalendarRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
+import javax.inject.Inject
 
-class ETSCalendarViewModel(
+@HiltViewModel
+class ETSCalendarViewModel @Inject constructor(
     private val etsCalendarRepository: ETSCalendarRepository
 ) : FilterViewModel() {
     val etsCalendar = mutableStateOf<List<ETSCalendarItem>?>(null)

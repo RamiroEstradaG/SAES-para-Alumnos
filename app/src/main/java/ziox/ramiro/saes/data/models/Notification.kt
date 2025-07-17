@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.data.models
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -17,6 +16,7 @@ import ziox.ramiro.saes.R
 class NotificationBuilder(val context: Context){
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     private val defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+    private var id: String = ""
     private var title: String = ""
     private var message: String = ""
     private var pendingIntent: PendingIntent? = null
@@ -30,6 +30,10 @@ class NotificationBuilder(val context: Context){
             "general_notifications",
             "Notificaciones generales"
         )
+    }
+
+    fun setId(id: String) = this.also {
+        this.id = id
     }
 
     fun setTitle(title: String) = this.also {
@@ -65,9 +69,14 @@ class NotificationBuilder(val context: Context){
         }
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag")
+
     fun setPendingIntent(intent: Intent) = this.also {
-        pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        pendingIntent = PendingIntent.getActivity(
+            context,
+            id.hashCode(),
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
     }
 
     fun buildAndNotify(notificationId: Int) {

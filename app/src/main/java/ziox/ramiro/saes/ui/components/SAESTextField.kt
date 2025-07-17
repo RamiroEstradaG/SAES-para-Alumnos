@@ -2,11 +2,19 @@ package ziox.ramiro.saes.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -78,8 +86,8 @@ inline fun <reified T>SAESTextField(
     Text(
         modifier = Modifier.padding(start = 8.dp),
         text = error ?: hint,
-        style = MaterialTheme.typography.caption,
-        color = if (error != null) MaterialTheme.colors.error else getCurrentTheme().secondaryText
+        style = MaterialTheme.typography.labelMedium,
+        color = if (error != null) MaterialTheme.colorScheme.error else getCurrentTheme().secondaryText
     )
 }
 

@@ -7,11 +7,15 @@ import androidx.room.Query
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.*
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.CustomClassSchedule
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayTime
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
+import ziox.ramiro.saes.features.saes.features.schedule.data.models.scheduleColors
 import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
-import java.util.*
+import java.util.Calendar
 
 interface ScheduleRepository {
     suspend fun getMySchedule() : List<ClassSchedule>
@@ -19,9 +23,10 @@ interface ScheduleRepository {
 
 
 class ScheduleWebViewRepository(
-    private val context: Context
+    private val context: Context,
+    withTestFile: String? = null
 ) : ScheduleRepository {
-    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/Horario_Alumno.aspx")
+    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/Horario_Alumno.aspx", withTestFile)
     private val persistenceRepository = LocalAppDatabase.invoke(context).scheduleRepository()
     private val customClassSchedule = LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()
 
@@ -33,39 +38,43 @@ class ScheduleWebViewRepository(
         return if(context.isNetworkAvailable()){
             webView.scrap(
                 script = """
-                var scheduleTable = byId("ctl00_mainCopy_GV_Horario");
+                try {
+                    var scheduleTable = byId("ctl00_mainCopy_GV_Horario");
 
-                if(scheduleTable != null){
-                    var schedule = scheduleTable.getElementsByTagName("tbody");
-                    var scheduledClass = [];
-                    
-                    if(schedule.length > 0){
-                        var children = [...schedule[0].children];
-                    
-                        var cols = JSON.parse(window.Utils.analiseColumns(
-                            [...children[0].children].map((el) => el.innerText),
-                            [...children[1].children].map((el) => el.innerText)
-                        ));
-                    
-                        children.splice(0,1);
+                    if(scheduleTable != null){
+                        var schedule = scheduleTable.getElementsByTagName("tbody");
+                        var scheduledClass = [];
                         
-                        children.filter(tr => tr.innerText.trim().length > 0).forEach((tr, trIndex) => {
-                            scheduledClass.push(...[...tr.children].map((td, e) => ({
-                                classId: trIndex.toString() + tr.children[cols.subjectIndex].innerText.trim() + tr.children[cols.groupIndex].innerText.trim(),
-                                dayIndex: (e - cols.mondayIndex) % 5 + ${Calendar.MONDAY},               
-                                className: tr.children[cols.subjectIndex].innerText,               
-                                hours: td.innerText,               
-                                group: tr.children[cols.groupIndex].innerText,               
-                                teacherName: tr.children[cols.teacherIndex].innerText,               
-                                building: tr.children[cols.buildingIndex].innerText,               
-                                classroom: tr.children[cols.classroomIndex].innerText
-                            })));
-                        });
+                        if(schedule.length > 0){
+                            var children = [...schedule[0].children];
+                        
+                            var cols = JSON.parse(window.Utils.analiseColumns(
+                                [...children[0].children].map((el) => el.innerText),
+                                [...children[1].children].map((el) => el.innerText)
+                            ));
+                        
+                            children.splice(0,1);
+                            
+                            children.filter(tr => tr.innerText.trim().length > 0).forEach((tr, trIndex) => {
+                                scheduledClass.push(...[...tr.children].map((td, e) => ({
+                                    classId: trIndex.toString() + tr.children[cols.subjectIndex].innerText.trim() + tr.children[cols.groupIndex].innerText.trim(),
+                                    dayIndex: (e - cols.mondayIndex) % 5 + ${Calendar.MONDAY},               
+                                    className: tr.children[cols.subjectIndex].innerText,               
+                                    hours: td.innerText,               
+                                    group: tr.children[cols.groupIndex]?.innerText ?? '',               
+                                    teacherName: tr.children[cols.teacherIndex]?.innerText ?? '',               
+                                    building: tr.children[cols.buildingIndex]?.innerText ?? '',               
+                                    classroom: tr.children[cols.classroomIndex]?.innerText ?? ''
+                                })));
+                            });
+                        }
+                    
+                        next(scheduledClass);
+                    }else{
+                        next([]);
                     }
-                
-                    next(scheduledClass);
-                }else{
-                    next([]);
+                }catch(e){
+                    throwError(e);
                 }
             """.trimIndent(),
             ){
@@ -134,6 +143,9 @@ class ScheduleWebViewRepository(
 interface ScheduleRoomRepository{
     @Query("SELECT * FROM class_schedule")
     fun getMySchedule() : List<ClassSchedule>
+
+    @Query("SELECT * FROM class_schedule WHERE id = :id")
+    fun getClass(id: String): ClassSchedule?
 
     @Insert
     fun addSchedule(schedule: List<ClassSchedule>)

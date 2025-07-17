@@ -4,35 +4,52 @@ import android.webkit.CookieManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import ziox.ramiro.saes.data.data_providers.ScrapException
 import ziox.ramiro.saes.data.data_providers.WebViewProvider.Companion.DEFAULT_TIMEOUT
 import ziox.ramiro.saes.data.models.Auth
 import ziox.ramiro.saes.data.models.Captcha
 import ziox.ramiro.saes.data.repositories.AuthRepository
+import ziox.ramiro.saes.features.saes.data.repositories.StorageRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
+import java.util.Date
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    initCaptcha: Boolean = false
-) : ViewModel(){
+    private val storageRepository: StorageRepository,
+) : ViewModel() {
     val captcha = mutableStateOf<Captcha?>(null)
     val auth = mutableStateOf<Auth?>(Auth.Empty)
     val error = MutableStateFlow<String?>(null)
+    val scrapError = MutableStateFlow<ScrapException?>(null)
+    val captchaScrapError = MutableStateFlow<ScrapException?>(null)
     val isLoggedIn = mutableStateOf<Boolean?>(null)
     private var isCaptchaLoading = false
 
-    init {
-        error.dismissAfterTimeout()
-        checkSession()
-        if (initCaptcha){
+    constructor(
+        authRepository: AuthRepository,
+        storageRepository: StorageRepository,
+        initCaptcha: Boolean = false
+    ) : this(authRepository, storageRepository) {
+        if (initCaptcha) {
             fetchCaptcha()
         }
     }
 
+    init {
+        error.dismissAfterTimeout()
+        scrapError.dismissAfterTimeout(10000)
+        captchaScrapError.dismissAfterTimeout(10000)
+        checkSession()
+    }
+
     fun fetchCaptcha() {
-        if(isCaptchaLoading) return
+        if (isCaptchaLoading) return
         isCaptchaLoading = true
         viewModelScope.launch {
             captcha.value = null
@@ -46,10 +63,15 @@ class AuthViewModel(
                 it.printStackTrace()
                 isCaptchaLoading = false
                 fetchCaptcha()
-                error.value = if(it is TimeoutCancellationException){
-                    "Tiempo de espera excedido (10s)"
-                }else{
-                    "Error al obtener el captcha"
+
+                if (it is ScrapException) {
+                    captchaScrapError.value = it
+                } else {
+                    error.value = if (it is TimeoutCancellationException) {
+                        "Tiempo de espera excedido (10s)"
+                    } else {
+                        "Error al obtener el captcha"
+                    }
                 }
             }
         }
@@ -63,15 +85,20 @@ class AuthViewModel(
             authRepository.login(username, password, captcha)
         }.onSuccess {
             auth.value = it
-            if (!it.isLoggedIn){
+            if (!it.isLoggedIn) {
                 fetchCaptcha()
             }
         }.onFailure {
+            it.printStackTrace()
             auth.value = Auth.Empty
-            error.value = if(it is TimeoutCancellationException){
-                "Tiempo de espera excedido (30s)"
-            }else{
-                "Error al iniciar sesión"
+            if (it is ScrapException) {
+                scrapError.value = it
+            } else {
+                error.value = if (it is TimeoutCancellationException) {
+                    "Tiempo de espera excedido (30s)"
+                } else {
+                    "Error al iniciar sesión"
+                }
             }
             fetchCaptcha()
         }
@@ -87,9 +114,9 @@ class AuthViewModel(
                 isLoggedIn.value = it
             }.onFailure {
                 checkSession()
-                error.value = if(it is TimeoutCancellationException){
+                error.value = if (it is TimeoutCancellationException) {
                     "Tiempo de espera excedido (${DEFAULT_TIMEOUT.div(1000)}s)"
-                }else{
+                } else {
                     "Error al revisar la sesión"
                 }
             }
@@ -98,5 +125,24 @@ class AuthViewModel(
 
     fun logout() = CookieManager.getInstance().removeAllCookies {
         isLoggedIn.value = false
+    }
+
+    fun uploadSourceCode(
+        isCaptcha: Boolean = false
+    ) = viewModelScope.launch {
+        val error = if (isCaptcha) captchaScrapError.value else scrapError.value
+        scrapError.value = null
+        captchaScrapError.value = null
+        if (error == null) return@launch
+
+        val sourceCode = error.sourceCode ?: return@launch
+
+        runCatching {
+            storageRepository.uploadFile(
+                content = sourceCode,
+                filePath = if(isCaptcha) "captcha_errors" else "login_errors",
+                fileName = "${Date().time}.html"
+            )
+        }
     }
 }

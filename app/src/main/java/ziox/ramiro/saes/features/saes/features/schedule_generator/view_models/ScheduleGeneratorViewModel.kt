@@ -3,17 +3,21 @@ package ziox.ramiro.saes.features.saes.features.schedule_generator.view_models
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.GeneratorClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.checkIfOccupied
-import ziox.ramiro.saes.features.saes.features.schedule_generator.data.repositories.ScheduleGeneratorRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import ziox.ramiro.saes.utils.runOnDefaultThread
+import javax.inject.Inject
 
-class ScheduleGeneratorViewModel(
-    private val scheduleGeneratorRepository: ScheduleGeneratorRepository
+@HiltViewModel
+class ScheduleGeneratorViewModel @Inject constructor(
+    localAppDatabase: LocalAppDatabase
 ): ViewModel() {
+    private val scheduleGeneratorRepository = localAppDatabase.scheduleGeneratorRepository()
     val scheduleItems = mutableStateOf<List<GeneratorClassSchedule>?>(null)
     val error = MutableStateFlow<String?>(null)
 
@@ -22,7 +26,7 @@ class ScheduleGeneratorViewModel(
         error.dismissAfterTimeout()
     }
 
-    fun fetchSchedule() = viewModelScope.launch {
+    private fun fetchSchedule() = viewModelScope.launch {
         scheduleItems.value = null
 
         kotlin.runCatching {

@@ -4,10 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -18,18 +19,17 @@ import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
-import ziox.ramiro.saes.ui.theme.secondaryColor
 
 @Composable
 fun BottomAppBar(
-    saesViewModel : SAESViewModel,
-    etsViewModel : ETSViewModel,
+    saesViewModel: SAESViewModel,
+    etsViewModel: ETSViewModel,
     onMenuIconClick: () -> Unit = {}
-){
+) {
 
 
-    androidx.compose.material.BottomAppBar(
-        backgroundColor = getCurrentTheme().toolbar
+    androidx.compose.material3.BottomAppBar(
+        containerColor = MaterialTheme.colorScheme.primary
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -46,9 +46,9 @@ fun BottomAppBar(
             AppBarIconButton(section = MenuSection.HOME)
             AppBarIconButton(section = MenuSection.SCHEDULE)
 
-            if(!etsViewModel.availableETS.value.isNullOrEmpty() || !etsViewModel.scores.value.isNullOrEmpty()){
+            if (!etsViewModel.availableETS.value.isNullOrEmpty() || !etsViewModel.scores.value.isNullOrEmpty()) {
                 AppBarIconButton(section = MenuSection.ETS)
-            }else{
+            } else {
                 AppBarIconButton(section = MenuSection.GRADES)
             }
 
@@ -61,8 +61,9 @@ fun BottomAppBar(
 fun AppBarIconButton(
     saesViewModel: SAESViewModel = viewModel(),
     section: MenuSection
-){
-    val selectedItemMenu = saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
+) {
+    val selectedItemMenu =
+        saesViewModel.currentSection.collectAsState(initial = SAESViewModel.SECTION_INITIAL)
 
     IconButton(onClick = {
         saesViewModel.changeSection(section)
@@ -72,7 +73,7 @@ fun AppBarIconButton(
             imageVector = section.icon,
             contentDescription = section.sectionName,
             tint = if (selectedItemMenu.value == section) {
-                secondaryColor.s100
+                getCurrentTheme().colors.inversePrimary
             } else getCurrentTheme().onToolbar
         )
     }

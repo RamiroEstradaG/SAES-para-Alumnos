@@ -4,11 +4,21 @@ import android.text.util.Linkify
 import android.widget.TextView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,16 +35,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.accompanist.coil.rememberCoilPainter
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.LocalImageLoader
+import coil.compose.rememberImagePainter
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.features.saes.features.home.data.models.Tweet
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun TweetItem(tweet: Tweet) {
     Card(
         modifier = Modifier.padding(bottom = 16.dp),
-        elevation = 0.dp
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column {
             Row(modifier = Modifier.padding(all = 10.dp)) {
@@ -52,7 +65,10 @@ fun TweetItem(tweet: Tweet) {
                     modifier = Modifier
                         .height(180.dp)
                         .fillMaxWidth(),
-                    painter = rememberCoilPainter(tweet.image),
+                    painter = rememberImagePainter(
+                        data = tweet.image,
+                        imageLoader = LocalImageLoader.current,
+                    ),
                     contentScale = ContentScale.Crop,
                     contentDescription = "Tweet and image"
                 )
@@ -130,7 +146,7 @@ private fun NameAndUserName(tweet: Tweet) {
                 Spacer(modifier = Modifier.size(5.dp))
                 Text(
                     text = "@${tweet.user.username}",
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
             Box(
@@ -141,7 +157,7 @@ private fun NameAndUserName(tweet: Tweet) {
                     })
                     .height(20.dp)
                     .width(50.dp)
-                    .background(MaterialTheme.colors.surface)
+                    .background(MaterialTheme.colorScheme.surface)
             )
         }
         Text(
@@ -151,18 +167,22 @@ private fun NameAndUserName(tweet: Tweet) {
                 }
             },
             text = " · ${tweet.timeAgo()}",
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 private fun UserAvatar(tweet: Tweet) {
     Image(
         modifier = Modifier
             .size(42.dp)
             .clip(CircleShape),
-        painter = rememberCoilPainter(tweet.user.profile_image_url),
+        painter = rememberImagePainter(
+            data = tweet.user.profile_image_url,
+            imageLoader = LocalImageLoader.current,
+        ),
         contentScale = ContentScale.Crop,
         contentDescription = "User avatar"
     )

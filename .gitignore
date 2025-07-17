@@ -14,6 +14,16 @@
 .cxx
 local.properties
 app/google-services.json
-app/google-services.json
 app/src/release/res/values/strings.xml
 app/release/
+/.idea/
+/app/src/main/assets/grades_errors/**
+/app/src/main/assets/profile_errors/**
+/app/src/main/assets/schedule_errors/**
+/app/src/main/assets/login_errors/**
+/app/src/main/assets/captcha_errors/**
+!/app/src/main/assets/grades_errors/.gitkeep
+!/app/src/main/assets/profile_errors/.gitkeep
+!/app/src/main/assets/schedule_errors/.gitkeep
+!/app/src/main/assets/login_errors/.gitkeep
+!/app/src/main/assets/captcha_errors/.gitkeep
