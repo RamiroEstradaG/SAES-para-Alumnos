@@ -1,24 +1,38 @@
 package ziox.ramiro.saes.features.saes.view_models
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.DateRange
+import androidx.compose.material.icons.rounded.EventAvailable
+import androidx.compose.material.icons.rounded.FactCheck
+import androidx.compose.material.icons.rounded.HistoryEdu
+import androidx.compose.material.icons.rounded.HistoryToggleOff
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Insights
+import androidx.compose.material.icons.rounded.LockClock
+import androidx.compose.material.icons.rounded.PendingActions
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.data.models.HistoryItem
-import ziox.ramiro.saes.features.saes.data.repositories.HistoryRoomRepository
 import ziox.ramiro.saes.utils.runOnDefaultThread
+import javax.inject.Inject
 
-class SAESViewModel(
-    private val historyRoomRepository: HistoryRoomRepository
+@HiltViewModel
+class SAESViewModel @Inject constructor(
+    localAppDatabase: LocalAppDatabase
 ) : ViewModel() {
     companion object {
         val SECTION_INITIAL = MenuSection.HOME
     }
 
+    private val historyRoomRepository = localAppDatabase.historyRepository()
     private val _currentSection = MutableStateFlow(SECTION_INITIAL)
     private val history = arrayListOf(SECTION_INITIAL)
     val currentSection = _currentSection.asSharedFlow()
@@ -37,7 +51,7 @@ class SAESViewModel(
     }
 
     fun goBack() = viewModelScope.launch {
-        history.removeLast()
+        history.removeLastOrNull()
         _currentSection.emit(history.last())
     }
 

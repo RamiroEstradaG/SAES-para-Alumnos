@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.ets.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,14 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETS
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETSScore
-import ziox.ramiro.saes.features.saes.features.ets.data.repositories.ETSWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
@@ -34,10 +30,7 @@ import ziox.ramiro.saes.ui.components.OutlineButton
 
 @Composable
 fun ETS(
-    context: Context = LocalContext.current,
-    etsViewModel: ETSViewModel = viewModel(
-        factory = viewModelFactory { ETSViewModel(ETSWebViewRepository(context)) }
-    ),
+    etsViewModel: ETSViewModel = viewModel(),
     saesViewModel: SAESViewModel = viewModel()
 ) = Box(
     modifier = Modifier.verticalScroll(rememberScrollState())
@@ -54,20 +47,20 @@ fun ETS(
             text = "ETS",
             style = MaterialTheme.typography.headlineLarge
         )
-        
+
         Text(
             modifier = Modifier.padding(top = 32.dp),
             text = "Inscripción",
             style = MaterialTheme.typography.headlineMedium
         )
 
-        if(etsViewModel.availableETS.value != null){
+        if (etsViewModel.availableETS.value != null) {
             Column(modifier = Modifier.padding(top = 16.dp)) {
                 etsViewModel.availableETS.value?.forEach {
                     ETSItem(it, etsViewModel)
                 }
             }
-        }else{
+        } else {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -85,13 +78,13 @@ fun ETS(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        if(etsViewModel.scores.value != null){
+        if (etsViewModel.scores.value != null) {
             Column(modifier = Modifier.padding(top = 16.dp)) {
                 etsViewModel.scores.value?.forEach {
                     ETSScoreItem(it, etsViewModel.availableETS)
                 }
             }
-        }else{
+        } else {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -109,7 +102,7 @@ fun ETS(
                 .align(Alignment.CenterHorizontally),
             text = "Calendario de ETS",
             icon = Icons.Rounded.Event
-        ){
+        ) {
             saesViewModel.changeSection(MenuSection.ETS_CALENDAR)
         }
     }
@@ -149,7 +142,7 @@ fun ETSScoreItem(
 ) = Row(
     modifier = Modifier.padding(vertical = 8.dp),
     verticalAlignment = Alignment.CenterVertically
-){
+) {
     val className: String = ets.className.ifBlank {
         val etsName = etsState.value?.firstOrNull { it.id == ets.id }?.name ?: ""
 

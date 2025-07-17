@@ -2,16 +2,11 @@ package ziox.ramiro.saes.data.data_providers
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.http.SslError
 import android.util.Log
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
-import android.webkit.SslErrorHandler
 import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -27,6 +22,7 @@ import kotlinx.coroutines.withTimeout
 import okhttp3.Headers
 import org.json.JSONArray
 import org.json.JSONObject
+import ziox.ramiro.saes.data.models.SAESWebViewClient
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.UtilsJavascriptInterface
@@ -49,7 +45,7 @@ class WebViewProvider(
 
     @Composable
     fun WebViewProviderDebugView() = AndroidView(
-        modifier = Modifier.height(400.dp),
+        modifier = Modifier.height(600.dp),
         factory = {
             webView
         }
@@ -129,8 +125,10 @@ class WebViewProvider(
         private fun createWebView(context: Context) : WebView {
             val webView = WebView(context)
 
-            webView.settings.javaScriptEnabled = true
-            webView.settings.domStorageEnabled = true
+            webView.settings.apply {
+                javaScriptEnabled = true
+                domStorageEnabled = true
+            }
 
             webView.webChromeClient = object : WebChromeClient(){
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
@@ -196,7 +194,9 @@ class WebViewProvider(
 
     fun handleResume(jobId: String, block: () -> Unit) {
         if(javascriptInterfaceJobs[jobId]?.isResumed == false && javascriptInterfaceJobs[jobId]?.continuation?.isActive == true){
-            block()
+            kotlin.runCatching {
+                block()
+            }
             javascriptInterfaceJobs[jobId]?.isResumed = true
         }
     }
@@ -291,32 +291,17 @@ class WebViewProvider(
 
     fun attachWebViewClient(
         jobId: String,
-        continuation: CancellableContinuation<*>,
+        continuation: CancellableContinuation<ScrapResultAdapter<Any?>>,
         onPageFinished: () -> Unit
     ){
-        webView.webViewClient = object : WebViewClient(){
-            override fun onReceivedHttpError(
-                view: WebView?,
-                request: WebResourceRequest?,
-                errorResponse: WebResourceResponse?
-            ) {
-                super.onReceivedHttpError(view, request, errorResponse)
-                handleResume(jobId){
-                    continuation.resumeWithException(Exception("Error HTTP ${errorResponse?.statusCode}"))
-                }
+        webView.webViewClient = object : SAESWebViewClient(
+            webView.context,
+            jobId,
+            continuation,
+            { _jobId, _handler ->
+                handleResume(_jobId, _handler)
             }
-
-            override fun onReceivedSslError(
-                view: WebView?,
-                handler: SslErrorHandler?,
-                error: SslError?
-            ) {
-                super.onReceivedSslError(view, handler, error)
-                handleResume(jobId){
-                    continuation.resumeWithException(Exception("Error SSL ${error?.primaryError}"))
-                }
-            }
-
+        ){
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 

@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,15 +31,7 @@ import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 
 @Composable
 fun Grades(
-    context: Context = LocalContext.current,
-    gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory {
-            GradesViewModel(
-                GradesWebViewRepository(context),
-                StorageFirebaseRepository()
-            )
-        }
-    )
+    gradesViewModel: GradesViewModel = viewModel()
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)

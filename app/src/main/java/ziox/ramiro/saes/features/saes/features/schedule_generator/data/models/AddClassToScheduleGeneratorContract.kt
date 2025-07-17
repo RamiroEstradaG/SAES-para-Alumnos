@@ -17,6 +17,6 @@ class AddClassToScheduleGeneratorContract: ActivityResultContract<Unit?, ClassSc
     override fun parseResult(resultCode: Int, intent: Intent?): ClassScheduleCollection? {
         if (resultCode != Activity.RESULT_OK) return null
 
-        return intent?.getParcelableExtra(INTENT_EXTRA_RESULT_ADD_CLASS)
+        return intent?.getParcelableExtra(INTENT_EXTRA_RESULT_ADD_CLASS, ClassScheduleCollection::class.java)
     }
 }

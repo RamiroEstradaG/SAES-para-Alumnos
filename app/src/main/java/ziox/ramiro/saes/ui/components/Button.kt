@@ -80,6 +80,7 @@ fun BaseButton(
     modifier: Modifier = Modifier,
     text: String = "button",
     isHighEmphasis: Boolean = false,
+    icon: ImageVector? = null,
     onClick: () -> Unit = {}
 ) = Button(
     modifier = modifier,
@@ -89,11 +90,22 @@ fun BaseButton(
         containerColor = MaterialTheme.colorScheme.primary,
     ),
 ) {
-    Text(
-        text = text.uppercase(),
-        modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp),
-        color = MaterialTheme.colorScheme.onPrimary
-    )
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if(icon != null){
+            Icon(
+                modifier = Modifier.padding(end = 16.dp),
+                imageVector = icon,
+                contentDescription = "Button icon",
+                tint = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+        Text(
+            text = text.uppercase(),
+            modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
+        )
+    }
 }
 
 

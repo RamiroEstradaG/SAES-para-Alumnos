@@ -7,27 +7,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.BuildConfig
 import ziox.ramiro.saes.data.models.NotificationBuilder
 import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
-import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaFirebaseRepository
+import ziox.ramiro.saes.features.saes.features.agenda.data.repositories.AgendaRepository
 import ziox.ramiro.saes.utils.PreferenceKeys
 import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import ziox.ramiro.saes.utils.runOnIOThread
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
-class PersonalSavedDataViewModel(
-    context: Context
+@HiltViewModel
+class PersonalSavedDataViewModel @Inject constructor(
+    @ApplicationContext context: Context,
+    private val userPreferences: UserPreferences,
+    private val userRepository: UserFirebaseRepository,
+    private val agendaRepository: AgendaRepository
 ) : ViewModel(){
     private val downloadsDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-    private val userFirebaseRepository = UserFirebaseRepository()
-    private val agendaFirebaseRepository = AgendaFirebaseRepository()
-    private val userPreferences = UserPreferences.invoke(context)
     private val notification = NotificationBuilder(context)
     val isDownloading = mutableStateOf(false)
     val isDeleting = mutableStateOf(false)
@@ -49,7 +53,7 @@ class PersonalSavedDataViewModel(
     fun downloadMyPersonalData() = viewModelScope.launch {
         isDownloading.value = true
         kotlin.runCatching {
-            userFirebaseRepository.isUserRegistered(userPreferences.getPreference(PreferenceKeys.Boleta, ""))
+            userRepository.isUserRegistered(userPreferences.getPreference(PreferenceKeys.Boleta, ""))
         }.onSuccess {
             if(it){
                 kotlin.runCatching {
@@ -60,10 +64,10 @@ class PersonalSavedDataViewModel(
                     }
                     info.value = "Iniciando descarga. Espera un momento..."
 
-                    val userData = userFirebaseRepository.getUserData()
-                    val calendarData = agendaFirebaseRepository.getCalendars().first()
+                    val userData = userRepository.getUserData()
+                    val calendarData = agendaRepository.getCalendars().first()
                     val eventsData = calendarData.map { calendar ->
-                        agendaFirebaseRepository.getEvents(calendar.calendarId).first()
+                        agendaRepository.getEvents(calendar.calendarId).first()
                     }
 
                     val fileText = """
@@ -112,15 +116,15 @@ ${eventsData.joinToString("\n")}
     fun deleteMyPersonalData() = viewModelScope.launch {
         isDeleting.value = true
         kotlin.runCatching {
-            userFirebaseRepository.isUserRegistered(userPreferences.getPreference(PreferenceKeys.Boleta, ""))
+            userRepository.isUserRegistered(userPreferences.getPreference(PreferenceKeys.Boleta, ""))
         }.onSuccess {
             if(it){
                 kotlin.runCatching {
-                    userFirebaseRepository.deleteUser()
+                    userRepository.deleteUser()
                 }.onSuccess { isDeleted ->
                     if(isDeleted){
                         userPreferences.removePreference(PreferenceKeys.IsFirebaseEnabled)
-                        userFirebaseRepository.signOut()
+                        userRepository.signOut()
                         info.value = "Usuario eliminado"
                     }else{
                         info.value = "Usuario no eliminado"

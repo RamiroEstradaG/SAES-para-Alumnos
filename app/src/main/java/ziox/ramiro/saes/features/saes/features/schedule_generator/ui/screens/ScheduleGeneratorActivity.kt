@@ -38,12 +38,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import dagger.hilt.android.AndroidEntryPoint
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassScheduleCollection
-import ziox.ramiro.saes.features.saes.features.schedule.data.models.GeneratorClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleHeader
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleWeekContainer
@@ -55,10 +53,9 @@ import ziox.ramiro.saes.ui.theme.SAESParaAlumnosTheme
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.isNetworkAvailable
 
+@AndroidEntryPoint
 class ScheduleGeneratorActivity: AppCompatActivity() {
-    private val scheduleGeneratorViewModel: ScheduleGeneratorViewModel by viewModels {
-        viewModelFactory { ScheduleGeneratorViewModel(LocalAppDatabase.invoke(this).scheduleGeneratorRepository()) }
-    }
+    private val scheduleGeneratorViewModel: ScheduleGeneratorViewModel by viewModels()
 
     private val addClassToScheduleGeneratorLauncher = registerForActivityResult(
         AddClassToScheduleGeneratorContract()
@@ -120,7 +117,6 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
                         if(scheduleGeneratorViewModel.scheduleItems.value != null){
                             scheduleGeneratorViewModel.scheduleItems.value?.let {
                                 if(it.isNotEmpty()){
-                                    val colors = arrayListOf<GeneratorClassSchedule>()
                                     val classSchedules = it.map {schedule -> ClassSchedule.fromGeneratorClassSchedule(schedule) }
                                     val classCollections = ClassScheduleCollection.fromClassScheduleList(classSchedules)
                                     LazyColumn(
@@ -150,7 +146,7 @@ class ScheduleGeneratorActivity: AppCompatActivity() {
                                                     ScheduleWeekContainer(
                                                         classSchedules,
                                                         selectedWeekDay,
-                                                        canEdit = false
+                                                        isClassActionsEnabled = false
                                                     )
                                                 }
                                             }

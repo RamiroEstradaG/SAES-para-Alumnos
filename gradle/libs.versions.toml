@@ -10,6 +10,9 @@ espressoWeb = "3.6.1"
 firebaseBom = "33.16.0"
 flexbox = "3.0.0"
 fragmentKtx = "1.8.8"
+hiltAndroid = "2.56.2"
+hiltAndroidCompiler = "2.56.2"
+jsoup = "1.21.1"
 kotlin = "2.1.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -72,6 +75,9 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 firebase-perf-ktx = { module = "com.google.firebase:firebase-perf-ktx" }
 firebase-storage = { module = "com.google.firebase:firebase-storage" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }

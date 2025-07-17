@@ -47,11 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.activityViewModels
-import coil.request.ImageRequest
-import com.google.accompanist.coil.rememberCoilPainter
+import coil.annotation.ExperimentalCoilApi
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
+import ziox.ramiro.saes.data.data_providers.rememberJsoupPainter
 import ziox.ramiro.saes.features.about.ui.screens.AboutActivity
 import ziox.ramiro.saes.features.saes.features.profile.data.models.ProfileUser
 import ziox.ramiro.saes.features.saes.features.profile.view_models.ProfileViewModel
@@ -287,6 +287,7 @@ fun MenuHeader(
     color = getCurrentTheme().secondaryText
 )
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ProfileHeader(
     profileState: State<ProfileUser?>
@@ -312,12 +313,9 @@ fun ProfileHeader(
                         modifier = Modifier
                             .clip(CircleShape)
                             .size(48.dp),
-                        painter = rememberCoilPainter(
-                            request = ImageRequest
-                                .Builder(LocalContext.current)
-                                .data(it.profilePicture.url)
-                                .headers(it.profilePicture.headers).build(),
-                            fadeIn = true
+                        painter = rememberJsoupPainter(
+                            imageUrl = it.profilePicture.url,
+                            headers = it.profilePicture.headers
                         ),
                         contentDescription = "Profile picture",
                         contentScale = ContentScale.Crop

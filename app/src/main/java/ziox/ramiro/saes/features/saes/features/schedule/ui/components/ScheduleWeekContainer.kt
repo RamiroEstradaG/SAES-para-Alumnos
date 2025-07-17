@@ -39,7 +39,7 @@ import java.util.Date
 fun ScheduleWeekContainer(
     classSchedules: List<ClassSchedule>,
     selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null),
-    canEdit: Boolean = true
+    isClassActionsEnabled: Boolean = false
 ) {
     val hourRange = classSchedules.getRangeBy { it.scheduleDayTime }
 
@@ -64,7 +64,7 @@ fun ScheduleWeekContainer(
             weekDay = WeekDay.MONDAY,
             classSchedules = classSchedules,
             hourRange = hourRange,
-            canEdit = canEdit
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -82,7 +82,7 @@ fun ScheduleWeekContainer(
             },
             classSchedules = classSchedules,
             hourRange = hourRange,
-            canEdit = canEdit
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -100,7 +100,7 @@ fun ScheduleWeekContainer(
             weekDay = WeekDay.WEDNESDAY,
             classSchedules = classSchedules,
             hourRange = hourRange,
-            canEdit = canEdit
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -118,7 +118,7 @@ fun ScheduleWeekContainer(
             weekDay = WeekDay.THURSDAY,
             classSchedules = classSchedules,
             hourRange = hourRange,
-            canEdit = canEdit
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it
@@ -136,7 +136,7 @@ fun ScheduleWeekContainer(
             weekDay = WeekDay.FRIDAY,
             classSchedules = classSchedules,
             hourRange = hourRange,
-            canEdit = canEdit
+            isClassActionsEnabled = isClassActionsEnabled
         ){
             selectedDayOfWeek.value = if(selectedDayOfWeek.value != it){
                 it

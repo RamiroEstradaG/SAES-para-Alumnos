@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.schedule.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,12 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.map
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
-import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
-import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleHeader
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleWeekContainer
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
@@ -39,20 +34,15 @@ val today = WeekDay.today()
 
 @Composable
 fun Schedule(
-    context: Context = LocalContext.current,
-    scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory { ScheduleViewModel(
-            ScheduleWebViewRepository(context),
-            LocalAppDatabase.invoke(context).customScheduleGeneratorRepository(),
-            StorageFirebaseRepository()
-        ) }
-    )
+    scheduleViewModel: ScheduleViewModel = viewModel()
 ) {
-    if(!scheduleViewModel.isLoading.value){
+    if (!scheduleViewModel.isLoading.value) {
         LocalContext.current.updateWidgets()
-        if(scheduleViewModel.scheduleList.isNotEmpty()){
+        if (scheduleViewModel.scheduleList.isNotEmpty()) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(vertical = 16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 16.dp),
             ) {
                 val selectedDayOfWeek: MutableState<WeekDay?> = remember {
                     mutableStateOf(null)
@@ -63,20 +53,23 @@ fun Schedule(
                 )
                 ScheduleWeekContainer(
                     classSchedules = scheduleViewModel.scheduleList,
-                    selectedDayOfWeek = selectedDayOfWeek
+                    selectedDayOfWeek = selectedDayOfWeek,
+                    isClassActionsEnabled = true
                 )
             }
-        }else{
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 32.dp)) {
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 32.dp)
+            ) {
                 ResponsePlaceholder(
                     painter = painterResource(id = R.drawable.logging_off),
                     text = "No tienes ninguna materia registrada"
                 )
             }
         }
-    }else{
+    } else {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

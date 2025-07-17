@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.performance.ui.screens
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -31,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -43,16 +41,10 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
-import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
-import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesWebViewRepository
 import ziox.ramiro.saes.features.saes.features.grades.view_models.GradesViewModel
 import ziox.ramiro.saes.features.saes.features.home.ui.components.gradeColor
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
-import ziox.ramiro.saes.features.saes.features.kardex.data.repositories.KardexWebViewRepository
 import ziox.ramiro.saes.features.saes.features.kardex.view_models.KardexViewModel
-import ziox.ramiro.saes.features.saes.features.performance.data.repositories.PerformanceFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.performance.view_models.PerformanceViewModel
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
@@ -65,24 +57,9 @@ import kotlin.math.max
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Performance(
-    context: Context = LocalContext.current,
-    kardexViewModel: KardexViewModel = viewModel(
-        factory = viewModelFactory { KardexViewModel(KardexWebViewRepository(context)) }
-    ),
-    gradesViewModel: GradesViewModel = viewModel(
-        factory = viewModelFactory { GradesViewModel(GradesWebViewRepository(context),
-            StorageFirebaseRepository()) }
-    ),
-    performanceViewModel: PerformanceViewModel = viewModel(
-        factory = viewModelFactory {
-            PerformanceViewModel(
-                PerformanceFirebaseRepository(),
-                KardexWebViewRepository(context),
-                UserFirebaseRepository(),
-                context
-            )
-        }
-    )
+    kardexViewModel: KardexViewModel = viewModel(),
+    gradesViewModel: GradesViewModel = viewModel(),
+    performanceViewModel: PerformanceViewModel = viewModel()
 ) = Crossfade(targetState = kardexViewModel.kardexData.value) {
     if (it != null) {
         Box(
@@ -524,7 +501,7 @@ fun getOverallScoresDataSet(kardexData: KardexData): LineDataSet {
     val averages = kardexData.kardexPeriods.mapIndexed { i, _ ->
         Entry(i.toFloat(), kardexData.generalScoreAt(i).toFloat())
     }
-    val averageDataSet = LineDataSet(averages, "Promedio global")
+    val averageDataSet = LineDataSet(averages, "Promedio general")
     averageDataSet.color = getCurrentTheme().colors.secondary.toArgb()
     averageDataSet.setCircleColor(getCurrentTheme().primaryText.toArgb())
     averageDataSet.mode = LineDataSet.Mode.HORIZONTAL_BEZIER

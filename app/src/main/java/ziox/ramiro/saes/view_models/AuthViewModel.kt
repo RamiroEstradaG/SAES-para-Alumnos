@@ -4,6 +4,7 @@ import android.webkit.CookieManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -15,11 +16,12 @@ import ziox.ramiro.saes.data.repositories.AuthRepository
 import ziox.ramiro.saes.features.saes.data.repositories.StorageRepository
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import java.util.Date
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val storageRepository: StorageRepository,
-    initCaptcha: Boolean = false
 ) : ViewModel() {
     val captcha = mutableStateOf<Captcha?>(null)
     val auth = mutableStateOf<Auth?>(Auth.Empty)
@@ -29,14 +31,21 @@ class AuthViewModel(
     val isLoggedIn = mutableStateOf<Boolean?>(null)
     private var isCaptchaLoading = false
 
+    constructor(
+        authRepository: AuthRepository,
+        storageRepository: StorageRepository,
+        initCaptcha: Boolean = false
+    ) : this(authRepository, storageRepository) {
+        if (initCaptcha) {
+            fetchCaptcha()
+        }
+    }
+
     init {
         error.dismissAfterTimeout()
         scrapError.dismissAfterTimeout(10000)
         captchaScrapError.dismissAfterTimeout(10000)
         checkSession()
-        if (initCaptcha) {
-            fetchCaptcha()
-        }
     }
 
     fun fetchCaptcha() {

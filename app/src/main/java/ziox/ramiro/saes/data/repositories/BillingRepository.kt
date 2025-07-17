@@ -40,7 +40,7 @@ class BillingGooglePayRepository(
     private val client = BillingClient.newBuilder(context).enablePendingPurchases(
         PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
     ).setListener(this).build()
-    private val initializeFlow = MutableStateFlow(false)
+    private val initializeFlow = MutableStateFlow<Boolean?>(null)
     private val _purchase: MutableStateFlow<List<Purchase?>?> = MutableStateFlow(null)
     private val _billingError: MutableStateFlow<Throwable?> = MutableStateFlow(null)
     override val purchase = _purchase.asSharedFlow()
@@ -91,11 +91,7 @@ class BillingGooglePayRepository(
         client.endConnection()
     }
 
-    private suspend fun waitToInitialize() = if(initializeFlow.value){
-        true
-    }else{
-        initializeFlow.first { it }
-    }
+    private suspend fun waitToInitialize(): Boolean = initializeFlow.value ?: initializeFlow.first { it != null } ?: false
 
     override fun onBillingServiceDisconnected() {
         Log.e("Billing", "Billing service disconnected")

@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.ets_calendar.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -34,17 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.flow.merge
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.ets_calendar.data.models.ETSCalendarItem
-import ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories.ETSCalendarWebViewRepository
 import ziox.ramiro.saes.features.saes.features.ets_calendar.view_models.ETSCalendarViewModel
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.Hour
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
@@ -56,10 +51,7 @@ import ziox.ramiro.saes.ui.components.TextButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ETSCalendar(
-    context: Context = LocalContext.current,
-    etsCalendarViewModel: ETSCalendarViewModel = viewModel(
-        factory = viewModelFactory { ETSCalendarViewModel(ETSCalendarWebViewRepository(context)) }
-    )
+    etsCalendarViewModel: ETSCalendarViewModel = viewModel()
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
@@ -82,13 +74,13 @@ fun ETSCalendar(
 //        },
         scaffoldState = scaffoldState
     ) {
-        if(etsCalendarViewModel.etsCalendar.value != null){
+        if (etsCalendarViewModel.etsCalendar.value != null) {
             etsCalendarViewModel.etsCalendar.value?.let {
                 val groupedEvents = it.groupBy { item ->
                     item.date
                 }
 
-                if(groupedEvents.isNotEmpty()){
+                if (groupedEvents.isNotEmpty()) {
                     Box(
                         modifier = Modifier.verticalScroll(rememberScrollState())
                     ) {
@@ -102,7 +94,7 @@ fun ETSCalendar(
                             }
                         }
                     }
-                }else{
+                } else {
                     Box(
                         modifier = Modifier.padding(32.dp)
                     ) {
@@ -113,7 +105,7 @@ fun ETSCalendar(
                     }
                 }
             }
-        }else{
+        } else {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -123,7 +115,8 @@ fun ETSCalendar(
         }
     }
 
-    ErrorSnackbar(listOf(etsCalendarViewModel.error, etsCalendarViewModel.filterError).merge())
+    ErrorSnackbar(etsCalendarViewModel.error)
+    ErrorSnackbar(etsCalendarViewModel.filterError)
 }
 
 @Composable
@@ -166,7 +159,7 @@ fun ETSCalendarHourGroup(
             .clip(RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp))
             .height(height.value)
             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
-    ){
+    ) {
         Text(
             modifier = Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp),
             text = hour.toString(),
@@ -178,10 +171,11 @@ fun ETSCalendarHourGroup(
     Column(
         modifier = Modifier
             .clip(
-            RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
-            ).background(MaterialTheme.colorScheme.surfaceContainer)
+                RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
+            )
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .onGloballyPositioned {
-                with(density){
+                with(density) {
                     height.value = it.size.height.toDp()
                 }
             }
@@ -196,7 +190,7 @@ fun ETSCalendarHourGroup(
                     containerColor = Color.Transparent
                 ),
                 modifier = Modifier.clickable {
-                      isDialogVisible.value = true
+                    isDialogVisible.value = true
                 },
                 headlineContent = {
                     Text(text = it.className)
@@ -206,7 +200,7 @@ fun ETSCalendarHourGroup(
                 }
             )
 
-            if(isDialogVisible.value){
+            if (isDialogVisible.value) {
                 AlertDialog(
                     modifier = Modifier
                         .fillMaxWidth(),

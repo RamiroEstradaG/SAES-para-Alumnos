@@ -22,7 +22,7 @@ fun ScheduleDayContainer(
     weekDay: WeekDay,
     selectedDayOfWeek: MutableState<WeekDay?> = mutableStateOf(null),
     hourRange: IntRange,
-    canEdit: Boolean,
+    isClassActionsEnabled: Boolean,
     onClick: (WeekDay) -> Unit
 ) = Box(
     modifier = modifier
@@ -47,7 +47,7 @@ fun ScheduleDayContainer(
             classSchedule = it,
             startHour = hourRange.first,
             hourHeight = classSchedules.getHourHeight(),
-            canEdit = canEdit
+            isClassActionsEnabled = isClassActionsEnabled
         )
     }
 }

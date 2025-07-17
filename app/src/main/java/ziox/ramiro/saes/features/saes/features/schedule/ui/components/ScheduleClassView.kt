@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.schedule.ui.components
 
-import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -22,40 +22,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
-import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
-import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.features.edit_class.data.models.EditClassContract
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
 import ziox.ramiro.saes.utils.getInitials
 
 @Composable
 fun ScheduleClassView(
-    context: Context = LocalContext.current,
-    scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory {
-            ScheduleViewModel(
-                ScheduleWebViewRepository(context),
-                LocalAppDatabase.invoke(context).customScheduleGeneratorRepository(),
-                StorageFirebaseRepository()
-            )
-        }
-    ),
+    scheduleViewModel: ScheduleViewModel = viewModel(),
     isExpanded: Boolean = false,
     startHour: Int,
     classSchedule: ClassSchedule,
     hourHeight: Dp = 170.dp,
-    canEdit: Boolean
+    isClassActionsEnabled: Boolean,
 ) = Card(
     modifier = Modifier
-        .padding(top = hourHeight.times((classSchedule.scheduleDayTime.start.toDouble() - startHour).toFloat()))
+        .offset(y = hourHeight.times((classSchedule.scheduleDayTime.start.toDouble() - startHour).toFloat()))
         .height(hourHeight.times(classSchedule.scheduleDayTime.duration.toFloat()))
         .fillMaxWidth(),
     colors = CardDefaults.cardColors(
@@ -91,7 +77,7 @@ fun ScheduleClassView(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    if(canEdit){
+                    if(isClassActionsEnabled){
                         IconButton(
                             modifier = Modifier.size(32.dp),
                             onClick = {

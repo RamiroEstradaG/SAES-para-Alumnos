@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
+import androidx.activity.result.launch
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
@@ -46,6 +47,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import ziox.ramiro.saes.data.models.School
@@ -66,7 +70,9 @@ import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.launchUrl
 import ziox.ramiro.saes.utils.validate
 import ziox.ramiro.saes.view_models.AuthViewModel
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModels {
         viewModelFactory { AuthViewModel(AuthWebViewRepository(this), StorageFirebaseRepository(), true) }
@@ -74,7 +80,8 @@ class LoginActivity : AppCompatActivity() {
 
     var isAuthDataSaved: Boolean = false
     private val schoolUrl = MutableStateFlow("")
-    private lateinit var userPreferences : UserPreferences
+
+    @Inject lateinit var userPreferences : UserPreferences
 
     private val selectSchoolLauncher = registerForActivityResult(SelectSchoolContract()){
         if (it == null) return@registerForActivityResult
@@ -87,7 +94,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        userPreferences = UserPreferences.invoke(this)
         isAuthDataSaved = userPreferences.authData.value.isAuthDataSaved()
         schoolUrl.value = userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) ?: ""
 

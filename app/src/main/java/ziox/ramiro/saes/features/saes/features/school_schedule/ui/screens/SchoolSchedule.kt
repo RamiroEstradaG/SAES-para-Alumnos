@@ -1,6 +1,5 @@
 package ziox.ramiro.saes.features.saes.features.school_schedule.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,16 +14,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.merge
 import ziox.ramiro.saes.R
-import ziox.ramiro.saes.data.models.viewModelFactory
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleHeader
 import ziox.ramiro.saes.features.saes.features.schedule.ui.components.ScheduleWeekContainer
-import ziox.ramiro.saes.features.saes.features.school_schedule.data.repositories.SchoolScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.school_schedule.view_models.SchoolScheduleViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FilterBottomSheet
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
@@ -34,12 +30,7 @@ import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 @OptIn(ExperimentalMaterial3Api::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 @Composable
 fun SchoolSchedule(
-    context: Context = LocalContext.current,
-    schoolScheduleViewModel: SchoolScheduleViewModel = viewModel(
-        factory = viewModelFactory {
-            SchoolScheduleViewModel(SchoolScheduleWebViewRepository(context))
-        }
-    )
+    schoolScheduleViewModel: SchoolScheduleViewModel = viewModel()
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutine = rememberCoroutineScope()
@@ -78,7 +69,7 @@ fun SchoolSchedule(
                         ScheduleWeekContainer(
                             classSchedules = it,
                             selectedDayOfWeek = selectedDayOfWeek,
-                            canEdit = false,
+                            isClassActionsEnabled = false,
                         )
                     }
                 }else{

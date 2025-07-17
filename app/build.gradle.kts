@@ -5,6 +5,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
     id("com.google.firebase.crashlytics")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -15,8 +16,8 @@ android {
         applicationId = "ziox.ramiro.saes"
         minSdk = 33
         targetSdk = 36
-        versionCode = 113
-        versionName = "2.1.0"
+        versionCode = 118
+        versionName = "2.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -85,6 +86,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.androidx.material)
+    implementation(libs.jsoup)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.material.icons.extended)
     ksp(libs.moshi.kotlin.codegen)
     implementation(libs.retrofit)

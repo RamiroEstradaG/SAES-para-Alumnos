@@ -43,9 +43,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,8 +64,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.R
 import ziox.ramiro.saes.data.models.viewModelFactory
-import ziox.ramiro.saes.data.repositories.LocalAppDatabase
-import ziox.ramiro.saes.features.saes.data.repositories.StorageFirebaseRepository
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaCalendar
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaEventType
 import ziox.ramiro.saes.features.saes.features.agenda.data.models.AgendaItem
@@ -76,7 +76,6 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayT
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.checkIfOccupied
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.getRangeBy
-import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.ScheduleWebViewRepository
 import ziox.ramiro.saes.features.saes.features.schedule.ui.screens.hourWidth
 import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleViewModel
 import ziox.ramiro.saes.features.saes.ui.components.FlexView
@@ -105,7 +104,7 @@ fun Agenda() {
 
     Crossfade(targetState = selectedAgenda.value) {
         if (it != null) {
-            AgendaView(LocalContext.current, selectedAgenda)
+            AgendaView(selectedAgenda)
         } else {
             CalendarList(selectedAgenda = selectedAgenda)
         }
@@ -287,26 +286,9 @@ fun AgendaListItem(
 @OptIn(ExperimentalTime::class)
 @Composable
 fun AgendaView(
-    context: Context = LocalContext.current,
     selectedAgenda: MutableState<String?>,
-    scheduleViewModel: ScheduleViewModel = viewModel(
-        factory = viewModelFactory {
-            ScheduleViewModel(
-                ScheduleWebViewRepository(context),
-                LocalAppDatabase.invoke(context).customScheduleGeneratorRepository(),
-                StorageFirebaseRepository()
-            )
-        }
-    ),
-    agendaViewModel: AgendaViewModel = viewModel(
-        factory = viewModelFactory {
-            AgendaViewModel(
-                AgendaWebViewRepository(context),
-                selectedAgenda.value
-            )
-        },
-        key = selectedAgenda.value
-    )
+    scheduleViewModel: ScheduleViewModel = viewModel(),
+    agendaViewModel: AgendaViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val today = Date()
@@ -592,37 +574,33 @@ fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit) {
 }
 
 @Composable
-fun <T> SelectableOptions(
-    options: List<T>?,
-    stringAdapter: (T) -> String = { it.toString() },
-    initialSelection: Int? = null,
-    onSelectionChange: (T?) -> Unit
+fun <T>SelectableOptions(
+    options: List<T> = listOf(),
+    stringAdapter: (T) -> String = {it.toString()},
+    selectionState: MutableState<T>,
+    deSelectValue: T = selectionState.value,
+    isDeselectEnabled: Boolean = false
 ) {
     val infoColor = MaterialTheme.colorScheme.secondary
-    val selectedIndex = remember {
-        mutableStateOf(initialSelection)
-    }
 
     FlexView(
-        content = options?.mapIndexed { i, value ->
+        content = options.map { value ->
             {
                 OutlineButton(
                     modifier = Modifier.padding(end = 8.dp, top = 8.dp),
                     text = stringAdapter(value),
                     borderColor = infoColor,
-                    textColor = if (i != selectedIndex.value) infoColor else MaterialTheme.colorScheme.onPrimary,
-                    backgroundColor = if (i == selectedIndex.value) infoColor else null
-                ) {
-                    val newIndex = if (selectedIndex.value != i) {
-                        i
-                    } else null
-
-                    selectedIndex.value = newIndex
-
-                    onSelectionChange(if (newIndex == null) null else options.getOrNull(newIndex))
+                    textColor = if (value != selectionState.value) infoColor else MaterialTheme.colorScheme.onPrimary,
+                    backgroundColor = if (value == selectionState.value) infoColor else null
+                ){
+                    selectionState.value = if (isDeselectEnabled && selectionState.value == value){
+                        deSelectValue
+                    }else{
+                        value
+                    }
                 }
             }
-        } ?: listOf()
+        }
     )
 }
 
@@ -635,20 +613,28 @@ fun SelectAddAgendaEventList(
 ) = Column(
     modifier = Modifier.padding(bottom = 16.dp)
 ) {
-
+    val selection = remember {
+        mutableStateOf(initialSelection?.let { options?.get(it) })
+    }
 
     Text(
         text = if (options?.isNotEmpty() == true) title else "",
         style = MaterialTheme.typography.titleMedium
     )
     SelectableOptions(
-        options = options,
-        initialSelection = initialSelection,
-        onSelectionChange = onSelectionChange,
+        options = options ?: listOf(),
         stringAdapter = {
-            it.className
-        }
+            "${it?.className} - ${it?.scheduleDayTime?.weekDay?.dayName}"
+        },
+        selectionState = selection,
+        isDeselectEnabled = true
     )
+
+    LaunchedEffect(key1 = selection){
+        snapshotFlow { selection.value }.collect {
+            onSelectionChange(it)
+        }
+    }
 }
 
 
