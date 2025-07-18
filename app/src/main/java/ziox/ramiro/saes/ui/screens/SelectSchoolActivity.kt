@@ -99,7 +99,7 @@ fun SchoolSelector(
     ) {
         CurrentSchoolSelection.entries.reversed().forEachIndexed { index, tab ->
             Tab(
-                selected = currentSelection.value === tab,
+                selected = currentSelection.value == tab,
                 onClick = {
                     currentSelection.value = tab
                 },
