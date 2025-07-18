@@ -13,53 +13,48 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
-import com.android.billingclient.api.queryPurchasesAsync
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.lastOrNull
 
 interface BillingRepository {
-    val productList: SharedFlow<List<ProductDetails>?>
-    val purchase: SharedFlow<List<Purchase?>?>
-    val billingError: SharedFlow<Throwable?>
+    val productList: Flow<List<ProductDetails>?>
+    val billingError: Flow<Throwable?>
+    val purchases: Flow<List<Purchase?>?>
+    val hasDonated: Flow<Boolean>
 
-    suspend fun purchaseDonation(productId: String)
-    suspend fun hasDonated(): Boolean
+    fun purchaseDonation(product: ProductDetails, activity: Activity)
+    fun refetch()
     fun release()
 }
 
 
 class BillingGooglePayRepository(
     private val context: Context
-): BillingRepository, BillingClientStateListener, PurchasesUpdatedListener {
-    private val _productList: MutableSharedFlow<List<ProductDetails>?> = MutableStateFlow(null)
-    override val productList = _productList.asSharedFlow()
-    private val client = BillingClient.newBuilder(context).enablePendingPurchases(
+) : BillingRepository, BillingClientStateListener, PurchasesUpdatedListener {
+    private var client = BillingClient.newBuilder(context).enablePendingPurchases(
         PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
     ).setListener(this).build()
-    private val initializeFlow = MutableStateFlow<Boolean?>(null)
-    private val _purchase: MutableStateFlow<List<Purchase?>?> = MutableStateFlow(null)
-    private val _billingError: MutableStateFlow<Throwable?> = MutableStateFlow(null)
-    override val purchase = _purchase.asSharedFlow()
+    private val _billingError = MutableStateFlow<Throwable?>(null)
     override val billingError = _billingError.asSharedFlow()
+    private val _purchases = MutableStateFlow<List<Purchase?>?>(null)
+    override val purchases = _purchases.asSharedFlow()
+    private val _hasDonated = MutableStateFlow(false)
+    override val hasDonated = _hasDonated.asSharedFlow()
+    private val _productList = MutableStateFlow<List<ProductDetails>?>(null)
+    override val productList = _productList.asSharedFlow()
+
+    var isLoading = false
+
 
     init {
+        isLoading = true
         client.startConnection(this)
     }
 
-    override suspend fun purchaseDonation(productId: String) {
-        val product = productList.lastOrNull()?.find {
-            it.productId == productId
-        } ?: run {
-            Log.e("Billing", "Product not found: $productId")
-            throw IllegalArgumentException("Product not found: $productId")
-        }
-
+    override fun purchaseDonation(product: ProductDetails, activity: Activity) {
         client.launchBillingFlow(
-            context as Activity,
+            activity,
             BillingFlowParams.newBuilder()
                 .setProductDetailsParamsList(
                     listOf(
@@ -72,26 +67,42 @@ class BillingGooglePayRepository(
         )
     }
 
-    override suspend fun hasDonated(): Boolean{
-        waitToInitialize()
-        return client.queryPurchasesAsync(
+    override fun refetch() {
+        if (client.connectionState == BillingClient.ConnectionState.CONNECTED) {
+            Log.d("Billing", "Refetching purchases")
+            fetchPurchases()
+        } else if (!isLoading) {
+            Log.w("Billing", "Billing client is not ready, starting connection")
+            isLoading = true
+            client.endConnection()
+            client = BillingClient.newBuilder(context).enablePendingPurchases(
+                PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+            ).setListener(this).build()
+            client.startConnection(this)
+        }
+    }
+
+    private fun fetchPurchases() {
+        client.queryPurchasesAsync(
             QueryPurchasesParams
                 .newBuilder()
                 .setProductType(BillingClient.ProductType.INAPP)
                 .build()
-        ).purchasesList.also {
-            Log.d("Billing", "Purchases found: ${it.size}")
-            it.forEach { purchase ->
-                Log.d("Billing", "Purchase: ${purchase.orderId}")
+        ) { result, purchases ->
+            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                Log.d("Billing", "Fetched purchases: ${purchases.size}")
+                _purchases.tryEmit(purchases)
+                _hasDonated.tryEmit(purchases.isNotEmpty())
+            } else {
+                Log.e("Billing", "Error fetching purchases: ${result.debugMessage}")
+                _billingError.value = Exception(result.debugMessage)
             }
-        }.isNotEmpty()
+        }
     }
 
     override fun release() {
         client.endConnection()
     }
-
-    private suspend fun waitToInitialize(): Boolean = initializeFlow.value ?: initializeFlow.first { it != null } ?: false
 
     override fun onBillingServiceDisconnected() {
         Log.e("Billing", "Billing service disconnected")
@@ -99,8 +110,10 @@ class BillingGooglePayRepository(
     }
 
     override fun onBillingSetupFinished(p0: BillingResult) {
+        isLoading = false
         Log.d("Billing", "Billing initialized")
-        initializeFlow.tryEmit(true)
+
+        fetchPurchases()
 
         client.queryProductDetailsAsync(
             QueryProductDetailsParams.newBuilder()
@@ -117,8 +130,7 @@ class BillingGooglePayRepository(
                     )
                 )
                 .build()
-        ){
-            result, products ->
+        ) { result, products ->
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                 _productList.tryEmit(products.productDetailsList)
             } else {
@@ -135,7 +147,8 @@ class BillingGooglePayRepository(
         purchases: List<Purchase?>?
     ) {
         if (result.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-            _purchase.value = purchases
+            _purchases.tryEmit(purchases)
+            _hasDonated.tryEmit(purchases.isNotEmpty())
         } else if (result.responseCode != BillingClient.BillingResponseCode.USER_CANCELED) {
             Log.d("Billing", "Error purchasing: ${result.debugMessage}")
             _billingError.value = Exception(result.debugMessage)

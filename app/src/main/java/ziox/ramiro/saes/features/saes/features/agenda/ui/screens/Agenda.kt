@@ -28,12 +28,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -81,7 +84,6 @@ import ziox.ramiro.saes.features.saes.features.schedule.view_models.ScheduleView
 import ziox.ramiro.saes.features.saes.ui.components.FlexView
 import ziox.ramiro.saes.ui.components.AsyncButton
 import ziox.ramiro.saes.ui.components.ErrorSnackbar
-import ziox.ramiro.saes.ui.components.OutlineButton
 import ziox.ramiro.saes.ui.components.ResponsePlaceholder
 import ziox.ramiro.saes.ui.theme.getCurrentTheme
 import ziox.ramiro.saes.utils.MES
@@ -166,12 +168,15 @@ fun CalendarList(
             }
         } else {
             Box(
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
         }
+        ErrorSnackbar(agendaListViewModel.error, paddingValues)
     }
     if (showAddAgendaDialog.value) {
         Dialog(
@@ -231,7 +236,6 @@ fun CalendarList(
             }
         }
     }
-    ErrorSnackbar(agendaListViewModel.error)
 }
 
 
@@ -251,7 +255,9 @@ fun AgendaListItem(
     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
 ) {
     Row(
-        modifier = Modifier.padding(horizontal = 24.dp).fillMaxHeight(),
+        modifier = Modifier
+            .padding(horizontal = 24.dp)
+            .fillMaxHeight(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -369,6 +375,7 @@ fun AgendaView(
                 }
             }
         }
+        ErrorSnackbar(agendaViewModel.error, paddingValues)
     }
     if (showAddEventDialog.value) {
         Dialog(
@@ -549,7 +556,6 @@ fun AgendaView(
             }
         }
     }
-    ErrorSnackbar(agendaViewModel.error)
 }
 
 fun showHourPickerDialog(context: Context, default: Hour? = null, onChange: (Hour) -> Unit) {
@@ -574,31 +580,41 @@ fun showDatePickerDialog(context: Context, onChange: (ShortDate) -> Unit) {
 }
 
 @Composable
-fun <T>SelectableOptions(
+fun <T> SelectableOptions(
     options: List<T> = listOf(),
-    stringAdapter: (T) -> String = {it.toString()},
+    stringAdapter: (T) -> String = { it.toString() },
     selectionState: MutableState<T>,
     deSelectValue: T = selectionState.value,
     isDeselectEnabled: Boolean = false
 ) {
-    val infoColor = MaterialTheme.colorScheme.secondary
-
     FlexView(
         content = options.map { value ->
             {
-                OutlineButton(
+                FilterChip(
                     modifier = Modifier.padding(end = 8.dp, top = 8.dp),
-                    text = stringAdapter(value),
-                    borderColor = infoColor,
-                    textColor = if (value != selectionState.value) infoColor else MaterialTheme.colorScheme.onPrimary,
-                    backgroundColor = if (value == selectionState.value) infoColor else null
-                ){
-                    selectionState.value = if (isDeselectEnabled && selectionState.value == value){
-                        deSelectValue
-                    }else{
-                        value
-                    }
-                }
+                    selected = value == selectionState.value,
+                    label = {
+                        Text(stringAdapter(value))
+                    },
+                    leadingIcon = if (value == selectionState.value) {
+                        {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = "Localized Description",
+                                modifier = Modifier.size(FilterChipDefaults.IconSize),
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                    onClick = {
+                        selectionState.value =
+                            if (isDeselectEnabled && selectionState.value == value) {
+                                deSelectValue
+                            } else {
+                                value
+                            }
+                    })
             }
         }
     )
@@ -630,7 +646,7 @@ fun SelectAddAgendaEventList(
         isDeselectEnabled = true
     )
 
-    LaunchedEffect(key1 = selection){
+    LaunchedEffect(key1 = selection) {
         snapshotFlow { selection.value }.collect {
             onSelectionChange(it)
         }
@@ -871,7 +887,9 @@ fun DateSelectorItem(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth().fillMaxHeight()
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
         ) {
             Text(
                 text = MES[date.month].uppercase(),
