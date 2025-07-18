@@ -102,6 +102,8 @@ class SAESActivity : AppCompatActivity() {
                     else -> Color.Transparent
                 }
 
+                val hasDonated = billingViewModel.hasDonated.collectAsState(initial = false)
+
                 uiController.setStatusBarColor(statusBarColor)
 
                 if (authViewModel.isLoggedIn.value == false) {
@@ -122,7 +124,7 @@ class SAESActivity : AppCompatActivity() {
                     Column(
                         modifier = Modifier.padding(paddingValues)
                     ) {
-                        if (billingViewModel.hasDonated.value == false) {
+                        if (!hasDonated.value) {
                             AndroidView(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -168,7 +170,7 @@ class SAESActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         authViewModel.checkSession()
-        billingViewModel.hasDonated()
+        billingViewModel.refetch()
     }
 
     private fun listenToNavigationStates() = lifecycleScope.launch {
