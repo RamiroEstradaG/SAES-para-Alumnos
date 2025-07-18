@@ -88,7 +88,7 @@ class SAESActivity : AppCompatActivity() {
             if (saesViewModel.canGoBack()) {
                 saesViewModel.goBack()
             } else {
-                onBackPressedDispatcher.onBackPressed()
+                finish()
             }
         }
 
@@ -101,6 +101,8 @@ class SAESActivity : AppCompatActivity() {
                     MenuSection.PROFILE -> MaterialTheme.colorScheme.surface
                     else -> Color.Transparent
                 }
+
+                val hasDonated = billingViewModel.hasDonated.collectAsState(initial = false)
 
                 uiController.setStatusBarColor(statusBarColor)
 
@@ -122,7 +124,7 @@ class SAESActivity : AppCompatActivity() {
                     Column(
                         modifier = Modifier.padding(paddingValues)
                     ) {
-                        if (billingViewModel.hasDonated.value == false) {
+                        if (!hasDonated.value) {
                             AndroidView(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -168,7 +170,7 @@ class SAESActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         authViewModel.checkSession()
-        billingViewModel.hasDonated()
+        billingViewModel.refetch()
     }
 
     private fun listenToNavigationStates() = lifecycleScope.launch {

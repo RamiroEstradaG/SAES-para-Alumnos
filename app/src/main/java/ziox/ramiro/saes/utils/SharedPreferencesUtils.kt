@@ -2,7 +2,7 @@ package ziox.ramiro.saes.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
+import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class UserPreferences private constructor(context: Context){
@@ -18,17 +18,15 @@ class UserPreferences private constructor(context: Context){
     val sharedPreferences : SharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE)
 
     inline fun <reified T>setPreference(preferenceKeys : PreferenceKeys<T>, value : T){
-        sharedPreferences.edit().let {
-            when(T::class){
-                Int::class -> it.putInt(preferenceKeys.key, value as Int)
-                Long::class -> it.putLong(preferenceKeys.key, value as Long)
-                Float::class -> it.putFloat(preferenceKeys.key, value as Float)
-                String::class -> it.putString(preferenceKeys.key, value as String)
-                Boolean::class -> it.putBoolean(preferenceKeys.key, value as Boolean)
-                else -> it
+        sharedPreferences.edit(commit = true) {
+            when (T::class) {
+                Int::class -> putInt(preferenceKeys.key, value as Int)
+                Long::class -> putLong(preferenceKeys.key, value as Long)
+                Float::class -> putFloat(preferenceKeys.key, value as Float)
+                String::class -> putString(preferenceKeys.key, value as String)
+                Boolean::class -> putBoolean(preferenceKeys.key, value as Boolean)
+                else -> this
             }
-        }.commit().also {
-            Log.d("SharedPreferenceSET ${preferenceKeys::class.simpleName}", if(it) "$value" else "Not set")
         }
     }
 
@@ -67,7 +65,7 @@ class UserPreferences private constructor(context: Context){
     }
 
     inline fun <reified T>removePreference(preferenceKeys: PreferenceKeys<T>){
-        sharedPreferences.edit().remove(preferenceKeys.key).apply()
+        sharedPreferences.edit { remove(preferenceKeys.key) }
     }
 }
 
