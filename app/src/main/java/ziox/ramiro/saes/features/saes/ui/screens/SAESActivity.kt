@@ -88,7 +88,7 @@ class SAESActivity : AppCompatActivity() {
             if (saesViewModel.canGoBack()) {
                 saesViewModel.goBack()
             } else {
-                onBackPressedDispatcher.onBackPressed()
+                finish()
             }
         }
 

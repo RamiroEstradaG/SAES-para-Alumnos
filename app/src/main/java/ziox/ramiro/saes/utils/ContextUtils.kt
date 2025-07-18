@@ -11,10 +11,12 @@ import ziox.ramiro.saes.ui.app_widgets.ScheduleLargeWidget
 import ziox.ramiro.saes.ui.app_widgets.ScheduleMediumWidget
 import ziox.ramiro.saes.ui.app_widgets.ScheduleSmallWidget
 
-fun Context.launchUrl(url: String){
-    startActivity(Intent(Intent.ACTION_VIEW).apply {
-        data = url.toUri()
-    })
+fun Context.launchUrl(url: String?){
+    if(!url.isNullOrBlank()){
+        startActivity(Intent(Intent.ACTION_VIEW).apply {
+            data = url.toUri()
+        })
+    }
 }
 
 fun Context.isNetworkAvailable() : Boolean{
