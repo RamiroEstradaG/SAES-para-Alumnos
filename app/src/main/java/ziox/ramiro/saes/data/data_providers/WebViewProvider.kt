@@ -119,6 +119,22 @@ class WebViewProvider(
                     type: "${FilterType.SELECT.name}"
                 };
             }
+            function log(message){
+                window.JSI.log("$jobId", message);
+            }
+            function getCaptchaElement(){
+                const captchaImgIds = [
+                    "c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage",
+                    "c_default_leftcolumn_loginuser_logincaptcha_CaptchaImage"
+                ];
+                
+                for(const id of captchaImgIds){
+                    const element = byId(id);
+                    if(element){
+                        return element;
+                    }
+                }
+            }
         """.trimIndent()
 
         @SuppressLint("SetJavaScriptEnabled")
@@ -370,6 +386,11 @@ class WebViewProvider(
                     }
                 }
             }
+        }
+
+        @JavascriptInterface
+        fun log(jobId: String, message: String){
+            Log.d("WebViewProvider", "$jobId: $message")
         }
     }
 }

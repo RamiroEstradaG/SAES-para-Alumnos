@@ -106,7 +106,7 @@ fun Agenda() {
 
     Crossfade(targetState = selectedAgenda.value) {
         if (it != null) {
-            AgendaView(selectedAgenda)
+            AgendaView(LocalContext.current, selectedAgenda)
         } else {
             CalendarList(selectedAgenda = selectedAgenda)
         }
@@ -292,11 +292,13 @@ fun AgendaListItem(
 @OptIn(ExperimentalTime::class)
 @Composable
 fun AgendaView(
+    context: Context = LocalContext.current,
     selectedAgenda: MutableState<String?>,
     scheduleViewModel: ScheduleViewModel = viewModel(),
-    agendaViewModel: AgendaViewModel = viewModel()
+    agendaViewModel: AgendaViewModel = viewModel(
+        factory = viewModelFactory { AgendaViewModel(AgendaWebViewRepository(context), selectedAgenda.value) }
+    )
 ) {
-    val context = LocalContext.current
     val today = Date()
     val todayShortDate = ShortDate.fromDate(today)
     val showAddEventDialog = remember {
