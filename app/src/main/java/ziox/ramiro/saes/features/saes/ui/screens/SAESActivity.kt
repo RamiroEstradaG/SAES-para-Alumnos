@@ -2,8 +2,10 @@ package ziox.ramiro.saes.features.saes.ui.screens
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
@@ -14,9 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.lifecycleScope
@@ -93,18 +97,25 @@ class SAESActivity : AppCompatActivity() {
         }
 
         setContent {
-            SAESParaAlumnosTheme { uiController ->
+            SAESParaAlumnosTheme {
                 val selectedMenuItem =
                     saesViewModel.currentSection.collectAsState(initial = initialSection)
 
                 val statusBarColor = when (selectedMenuItem.value) {
-                    MenuSection.PROFILE -> MaterialTheme.colorScheme.surface
+                    MenuSection.PROFILE -> MaterialTheme.colorScheme.surfaceContainer
                     else -> Color.Transparent
                 }
 
                 val hasDonated = billingViewModel.hasDonated.collectAsState(initial = false)
 
-                uiController.setStatusBarColor(statusBarColor)
+                LaunchedEffect(statusBarColor) {
+                    enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.auto(
+                            statusBarColor.toArgb(),
+                            statusBarColor.toArgb()
+                        )
+                    )
+                }
 
                 if (authViewModel.isLoggedIn.value == false) {
                     startActivity(Intent(this@SAESActivity, MainActivity::class.java))
