@@ -84,7 +84,7 @@ class HtmlFilesTest {
             runCatching {
                 repository.getCaptcha()
             }.onSuccess {
-                if (it.url.isBlank()) {
+                if (it.url == null || it.url.isBlank()) {
                     throw AssertionError("File $file returned an empty captcha");
                 }
             }.exceptionOrNull()
@@ -156,7 +156,7 @@ class HtmlFilesTest {
                 Log.e("HtmlFilesTest", "File: $file failed with error: ${error.message}", error)
             }
 
-            Assert.assertEquals(emptyList<Pair<String, Throwable>>(), failedFiles)
+            Assert.assertEquals(0, failedFiles.size)
         }
     }
 }

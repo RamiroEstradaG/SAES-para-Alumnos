@@ -3,9 +3,11 @@ package ziox.ramiro.saes.utils
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.activity.ComponentActivity
 import androidx.core.net.toUri
 import ziox.ramiro.saes.ui.app_widgets.ScheduleLargeWidget
 import ziox.ramiro.saes.ui.app_widgets.ScheduleMediumWidget
@@ -60,4 +62,12 @@ fun Context.updateWidgets() {
         .getAppWidgetIds(ComponentName(this, ScheduleSmallWidget::class.java))
     widgetAgenda.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, idsAgenda)
     sendBroadcast(widgetAgenda)
+}
+
+
+val Context.activity: ComponentActivity?
+    get() = when (this) {
+    is ComponentActivity -> this
+    is ContextWrapper -> baseContext.activity
+    else -> null
 }

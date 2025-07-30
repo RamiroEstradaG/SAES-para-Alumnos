@@ -110,7 +110,7 @@ class AuthWebViewRepository(
                     const isLoggedIn = !(captchaElement != null);
                     next({
                         isLoggedIn: isLoggedIn,
-                        url: captchaElement?.src
+                        url: captchaElement?.src ?? null,
                     });
                 }catch(e){
                     throwError(e);
@@ -121,7 +121,7 @@ class AuthWebViewRepository(
             ){
                 val data = it.result.getJSONObject("data")
                 Captcha(
-                    data.getString("url"),
+                     data.getString("url"),
                     data.getBoolean("isLoggedIn"),
                     it.headers
                 )
