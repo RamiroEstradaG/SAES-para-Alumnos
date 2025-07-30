@@ -1,14 +1,18 @@
 package ziox.ramiro.saes.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,14 +41,14 @@ fun CaptchaInput(
 ) {
     val focusManager = LocalFocusManager.current
 
-    if (authViewModel.captcha.value != null){
+    if (authViewModel.captcha.value != null && authViewModel.captcha.value?.url != null) {
         authViewModel.captcha.value?.let {
             Image(
                 modifier = Modifier
                     .size(captchaWidth, captchaWidth.div(2f))
                     .clip(MaterialTheme.shapes.medium),
                 contentScale = ContentScale.Crop,
-                painter = rememberJsoupPainter(imageUrl = it.url, headers = it.headers),
+                painter = rememberJsoupPainter(imageUrl = it.url ?: "", headers = it.headers),
                 contentDescription = "Captcha"
             )
         }

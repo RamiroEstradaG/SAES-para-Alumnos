@@ -122,8 +122,8 @@ class ProfileWebViewRepository(
                     Education(
                         education.getString("highSchoolName").toProperCase(),
                         education.getString("highSchoolState").toProperCase(),
-                        education.getString("highSchoolFinalGrade").toDouble(),
-                        education.getString("middleSchoolFinalGrade").toDouble()
+                        education.getString("highSchoolFinalGrade").toDoubleOrNull() ?: 0.0,
+                        education.getString("middleSchoolFinalGrade").toDoubleOrNull() ?: 0.0
                     ),
                     Parent(
                         parents.getString("guardianName").toProperCase(),
