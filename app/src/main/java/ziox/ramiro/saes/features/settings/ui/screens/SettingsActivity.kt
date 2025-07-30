@@ -25,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -77,116 +78,120 @@ class SettingsActivity : AppCompatActivity(){
                     mutableStateOf(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false))
                 }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    Column(
-                        Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
+                Scaffold { paddingValues ->
+                    Box(
+                        modifier = Modifier
+                            .padding(paddingValues)
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        Text(
-                            text = "Configuración",
-                            style = MaterialTheme.typography.headlineLarge,
-                        )
-                        SettingsSection("Sistema") {
-                            SettingsItem(icon = Icons.Rounded.ModeNight, title = "Modo oscuro") {
-                                val selectedUiMode = remember {
-                                    mutableIntStateOf(AppCompatDelegate.getDefaultNightMode())
-                                }
-                                SelectableOptions(
-                                    options = nightModeOptions,
-                                    selectionState = selectedUiMode,
-                                    deSelectValue = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
-                                    stringAdapter = {
-                                        when (it) {
-                                            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> "Predeterminado del sistema"
-                                            AppCompatDelegate.MODE_NIGHT_NO -> "Modo claro"
-                                            AppCompatDelegate.MODE_NIGHT_YES -> "Modo oscuro"
-                                            else -> ""
+                        Column(
+                            Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
+                        ) {
+                            Text(
+                                text = "Configuración",
+                                style = MaterialTheme.typography.headlineLarge,
+                            )
+                            SettingsSection("Sistema") {
+                                SettingsItem(icon = Icons.Rounded.ModeNight, title = "Modo oscuro") {
+                                    val selectedUiMode = remember {
+                                        mutableIntStateOf(AppCompatDelegate.getDefaultNightMode())
+                                    }
+                                    SelectableOptions(
+                                        options = nightModeOptions,
+                                        selectionState = selectedUiMode,
+                                        deSelectValue = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+                                        stringAdapter = {
+                                            when (it) {
+                                                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> "Predeterminado del sistema"
+                                                AppCompatDelegate.MODE_NIGHT_NO -> "Modo claro"
+                                                AppCompatDelegate.MODE_NIGHT_YES -> "Modo oscuro"
+                                                else -> ""
+                                            }
+                                        }
+                                    )
+
+                                    LaunchedEffect(key1 = selectedUiMode){
+                                        snapshotFlow { selectedUiMode.intValue }.collect {
+                                            runOnUiThread {
+                                                userPreferences.setPreference(PreferenceKeys.DefaultNightMode, it)
+                                                AppCompatDelegate.setDefaultNightMode(it)
+                                            }
                                         }
                                     }
-                                )
-
-                                LaunchedEffect(key1 = selectedUiMode){
-                                    snapshotFlow { selectedUiMode.intValue }.collect {
-                                        runOnUiThread {
-                                            userPreferences.setPreference(PreferenceKeys.DefaultNightMode, it)
-                                            AppCompatDelegate.setDefaultNightMode(it)
+                                }
+                            }
+                            SettingsSection("Widgets") {
+                                val sliderValue = remember {
+                                    mutableStateOf(userPreferences.getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0).toFloat())
+                                }
+                                SettingsItem(icon = Icons.Rounded.Tune, title = "Calibración del Widget \"Horario semanal\" (${sliderValue.value.toInt()})") {
+                                    Slider(
+                                        value = sliderValue.component1(),
+                                        valueRange = -100f..100f,
+                                        onValueChange = sliderValue.component2(),
+                                        onValueChangeFinished = {
+                                            userPreferences.setPreference(PreferenceKeys.ScheduleWidgetLeveling, sliderValue.value.toInt())
+                                            updateWidgets()
                                         }
+                                    )
+                                }
+                            }
+                            if(isFirebaseEnabled.value){
+                                SettingsSection("Datos almacenados en la nube") {
+                                    AsyncButton(
+                                        text = "Descargar mis datos",
+                                        icon = Icons.Rounded.CloudDownload,
+                                        isLoading = personalSavedDataViewModel.isDownloading.value
+                                    ) {
+                                        permissionsLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                    }
+                                    BaseButton(
+                                        modifier = Modifier.padding(top = 8.dp),
+                                        text = "Eliminar mis datos",
+                                        icon = Icons.Rounded.CloudOff,
+                                    ) {
+                                        showDeleteConfirmation.value = true
                                     }
                                 }
                             }
-                        }
-                        SettingsSection("Widgets") {
-                            val sliderValue = remember {
-                                mutableStateOf(userPreferences.getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0).toFloat())
-                            }
-                            SettingsItem(icon = Icons.Rounded.Tune, title = "Calibración del Widget \"Horario semanal\" (${sliderValue.value.toInt()})") {
-                                Slider(
-                                    value = sliderValue.component1(),
-                                    valueRange = -100f..100f,
-                                    onValueChange = sliderValue.component2(),
-                                    onValueChangeFinished = {
-                                        userPreferences.setPreference(PreferenceKeys.ScheduleWidgetLeveling, sliderValue.value.toInt())
-                                        updateWidgets()
-                                    }
-                                )
-                            }
-                        }
-                        if(isFirebaseEnabled.value){
-                            SettingsSection("Datos almacenados en la nube") {
-                                AsyncButton(
-                                    text = "Descargar mis datos",
-                                    icon = Icons.Rounded.CloudDownload,
-                                    isLoading = personalSavedDataViewModel.isDownloading.value
-                                ) {
-                                    permissionsLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                }
-                                BaseButton(
-                                    modifier = Modifier.padding(top = 8.dp),
-                                    text = "Eliminar mis datos",
-                                    icon = Icons.Rounded.CloudOff,
-                                ) {
-                                    showDeleteConfirmation.value = true
-                                }
-                            }
-                        }
 
-                        if (showDeleteConfirmation.value){
-                            AlertDialog(
-                                onDismissRequest = { showDeleteConfirmation.value = false },
-                                title = {
+                            if (showDeleteConfirmation.value){
+                                AlertDialog(
+                                    onDismissRequest = { showDeleteConfirmation.value = false },
+                                    title = {
                                         Text(
                                             text = "Eliminar mis datos",
                                         )
-                                },
-                                text = {
-                                    Text(text = "¿Deseas eliminar tus datos de servidores externos?")
-                                },
-                                confirmButton = {
-                                    AsyncButton(
-                                        text = "Eliminar",
-                                        isLoading = personalSavedDataViewModel.isDeleting.value
-                                    ) {
-                                        personalSavedDataViewModel.deleteMyPersonalData().invokeOnCompletion {
+                                    },
+                                    text = {
+                                        Text(text = "¿Deseas eliminar tus datos de servidores externos?")
+                                    },
+                                    confirmButton = {
+                                        AsyncButton(
+                                            text = "Eliminar",
+                                            isLoading = personalSavedDataViewModel.isDeleting.value
+                                        ) {
+                                            personalSavedDataViewModel.deleteMyPersonalData().invokeOnCompletion {
+                                                showDeleteConfirmation.value = false
+                                                isFirebaseEnabled.value = false
+                                            }
+                                        }
+                                    },
+                                    dismissButton = {
+                                        ziox.ramiro.saes.ui.components.TextButton(
+                                            text = "Cancelar",
+                                            textColor = getCurrentTheme().info
+                                        ){
                                             showDeleteConfirmation.value = false
-                                            isFirebaseEnabled.value = false
                                         }
                                     }
-                                },
-                                dismissButton = {
-                                    ziox.ramiro.saes.ui.components.TextButton(
-                                        text = "Cancelar",
-                                        textColor = getCurrentTheme().info
-                                    ){
-                                        showDeleteConfirmation.value = false
-                                    }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                 }
+
                 InfoSnackbar(personalSavedDataViewModel.info)
                 ErrorSnackbar(personalSavedDataViewModel.error)
             }

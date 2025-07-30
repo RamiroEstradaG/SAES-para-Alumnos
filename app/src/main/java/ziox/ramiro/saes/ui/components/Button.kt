@@ -88,6 +88,7 @@ fun BaseButton(
     shape = RoundedCornerShape(100),
     colors = ButtonDefaults.buttonColors(
         containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
     ),
 ) {
     Row(
@@ -103,7 +104,8 @@ fun BaseButton(
         }
         Text(
             text = text.uppercase(),
-            modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp)
+            modifier = Modifier.padding(if (isHighEmphasis) 6.dp else 0.dp),
+            color = MaterialTheme.colorScheme.onPrimary
         )
     }
 }

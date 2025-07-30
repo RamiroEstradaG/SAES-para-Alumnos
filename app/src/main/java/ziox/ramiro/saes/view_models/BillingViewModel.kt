@@ -1,8 +1,9 @@
 package ziox.ramiro.saes.view_models
 
-import androidx.compose.runtime.mutableStateOf
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.billingclient.api.ProductDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -13,28 +14,23 @@ import javax.inject.Inject
 class BillingViewModel @Inject constructor (
     private val billingRepository: BillingRepository,
 ): ViewModel() {
-    val hasDonated = mutableStateOf<Boolean?>(null)
     val error = MutableStateFlow<String?>(null)
     val productList = billingRepository.productList
+    val hasDonated = billingRepository.hasDonated
 
-    init {
-        hasDonated()
-    }
-
-    fun hasDonated() = viewModelScope.launch {
+    fun refetch() = viewModelScope.launch {
         kotlin.runCatching {
-            billingRepository.hasDonated()
-        }.onSuccess {
-            hasDonated.value = it
+            billingRepository.refetch()
         }.onFailure {
-            error.value = "Error al obtener información sobre la donación"
+            error.value = "Error al comprobar si ha donado"
         }
     }
 
-    fun purchaceProduct(productId: String) = viewModelScope.launch {
+    fun purchaseProduct(product: ProductDetails, activity: Activity) = viewModelScope.launch {
         kotlin.runCatching {
-            billingRepository.purchaseDonation(productId)
+            billingRepository.purchaseDonation(product, activity)
         }.onFailure {
+            it.printStackTrace()
             error.value = "Error al lanzar el proceso de compra"
         }
     }

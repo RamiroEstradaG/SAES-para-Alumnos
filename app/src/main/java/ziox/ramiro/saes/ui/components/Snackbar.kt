@@ -6,6 +6,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -29,6 +30,7 @@ import ziox.ramiro.saes.ui.theme.getCurrentTheme
 @Composable
 fun ErrorSnackbar(
     errorState: Flow<String?>,
+    paddingValues: PaddingValues = PaddingValues(0.dp),
     onUploadPage: (() -> Unit)? = null
 ) {
     val error = errorState.collectAsState(initial = null)
@@ -43,7 +45,9 @@ fun ErrorSnackbar(
         ),
     ) {
         Snackbar(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp),
             containerColor = getCurrentTheme().danger,
             shape = MaterialTheme.shapes.medium,
         ) {
@@ -98,7 +102,8 @@ fun ErrorSnackbar(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun InfoSnackbar(
-    infoState: Flow<String?>
+    infoState: Flow<String?>,
+    paddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
     val info = infoState.collectAsState(initial = null)
 
@@ -112,7 +117,9 @@ fun InfoSnackbar(
         )
     ) {
         Snackbar(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp),
             containerColor = getCurrentTheme().info,
             shape = MaterialTheme.shapes.medium,
         ) {

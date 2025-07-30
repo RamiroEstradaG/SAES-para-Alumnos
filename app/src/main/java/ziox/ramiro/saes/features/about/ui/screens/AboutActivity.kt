@@ -98,6 +98,7 @@ class AboutActivity : AppCompatActivity() {
             }
 
             val products = billingViewModel.productList.collectAsState(initial = null)
+            val hasDonated = billingViewModel.hasDonated.collectAsState(initial = null)
 
             SAESParaAlumnosTheme {
                 Scaffold { paddingValues ->
@@ -119,7 +120,7 @@ class AboutActivity : AppCompatActivity() {
                                 backgroundColor = getCurrentTheme().danger,
                                 contentColor = MaterialTheme.colorScheme.onPrimary
                             )
-                            if (billingViewModel.hasDonated.value == false) {
+                            if (hasDonated.value == false) {
                                 AboutItem(
                                     leading = rememberVectorPainter(image = Icons.Rounded.Campaign),
                                     text = "Quitar publicidad",
@@ -249,7 +250,7 @@ class AboutActivity : AppCompatActivity() {
                                                 TextButton(
                                                     text = product.name,
                                                 ) {
-                                                    billingViewModel.purchaceProduct(product.productId)
+                                                    billingViewModel.purchaseProduct(product, this)
                                                 }
                                             }
                                         },
@@ -383,8 +384,8 @@ class AboutActivity : AppCompatActivity() {
                             }
                         }
                     }
+                    ErrorSnackbar(billingViewModel.error, paddingValues)
                 }
-                ErrorSnackbar(billingViewModel.error)
             }
         }
     }

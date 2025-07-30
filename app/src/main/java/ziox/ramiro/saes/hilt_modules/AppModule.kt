@@ -47,8 +47,8 @@ object AppModule {
     @Singleton
     fun provideAuthRepository(app: Application): AuthRepository = AuthWebViewRepository(app)
 
-    @Singleton
     @Provides
+    @Singleton
     fun provideBillingRepository(app: Application): BillingRepository = BillingGooglePayRepository(app)
 
     @Singleton

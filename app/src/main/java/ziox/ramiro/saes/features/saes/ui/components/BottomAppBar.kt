@@ -18,7 +18,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ziox.ramiro.saes.features.saes.features.ets.view_models.ETSViewModel
 import ziox.ramiro.saes.features.saes.view_models.MenuSection
 import ziox.ramiro.saes.features.saes.view_models.SAESViewModel
-import ziox.ramiro.saes.ui.theme.getCurrentTheme
 
 @Composable
 fun BottomAppBar(
@@ -29,7 +28,7 @@ fun BottomAppBar(
 
 
     androidx.compose.material3.BottomAppBar(
-        containerColor = MaterialTheme.colorScheme.primary
+        containerColor = MaterialTheme.colorScheme.primaryContainer
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -40,7 +39,7 @@ fun BottomAppBar(
                 Icon(
                     imageVector = Icons.Rounded.Menu,
                     contentDescription = "Menu",
-                    tint = getCurrentTheme().onToolbar
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
             AppBarIconButton(section = MenuSection.HOME)
@@ -73,8 +72,8 @@ fun AppBarIconButton(
             imageVector = section.icon,
             contentDescription = section.sectionName,
             tint = if (selectedItemMenu.value == section) {
-                getCurrentTheme().colors.inversePrimary
-            } else getCurrentTheme().onToolbar
+                MaterialTheme.colorScheme.secondary
+            } else MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
 }

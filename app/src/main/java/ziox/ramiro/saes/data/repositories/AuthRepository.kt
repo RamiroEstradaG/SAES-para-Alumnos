@@ -106,10 +106,11 @@ class AuthWebViewRepository(
             webViewProvider.scrap(
                 """
                 try{
-                    var isLoggedIn = !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null);
+                    const captchaElement = getCaptchaElement();
+                    const isLoggedIn = !(captchaElement != null);
                     next({
                         isLoggedIn: isLoggedIn,
-                        url: byId("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage").src
+                        url: captchaElement?.src
                     });
                 }catch(e){
                     throwError(e);
@@ -134,19 +135,25 @@ class AuthWebViewRepository(
         return webViewProvider.runThenScrap(
             preRequest = """
                 try{
-                    byId("ctl00_leftColumn_LoginUser_UserName").value = "$username";
-                    byId("ctl00_leftColumn_LoginUser_Password").value = "${password.replace(Regex("[\"\\\\]")) { matchResult -> "\\${matchResult.value}" }}";
-                    byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox").value = "$captcha";
-                    byId("ctl00_leftColumn_LoginUser_LoginButton").click();
+                    if(byId("ctl00_leftColumn_LoginUser_UserName")) byId("ctl00_leftColumn_LoginUser_UserName").value = "$username";
+                    if(byId("leftColumn_LoginUser_UserName")) byId("leftColumn_LoginUser_UserName").value = "$username";
+                    if(byId("ctl00_leftColumn_LoginUser_Password")) byId("ctl00_leftColumn_LoginUser_Password").value = "${password.replace(Regex("[\"\\\\]")) { matchResult -> "\\${matchResult.value}" }}";
+                    if(byId("leftColumn_LoginUser_Password")) byId("leftColumn_LoginUser_Password").value = "${password.replace(Regex("[\"\\\\]")) { matchResult -> "\\${matchResult.value}" }}";
+                    if(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox")) byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox").value = "$captcha";
+                    if(byId("leftColumn_LoginUser_CaptchaCodeTextBox")) byId("leftColumn_LoginUser_CaptchaCodeTextBox").value = "$captcha";
+                    byId("ctl00_leftColumn_LoginUser_LoginButton")?.click();
+                    byId("leftColumn_LoginUser_LoginButton")?.click();
                 }catch(e){
                     throwError(e);
                 }
             """.trimIndent(),
             postRequest = """
                 try{
-                    var error = byClass("failureNotification");
+                    const error = byClass("failureNotification");
+                    const captchaElement = getCaptchaElement();
+                    
                     next({
-                        isLoggedIn: !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null),
+                        isLoggedIn: !(captchaElement != null),
                         errorMessage: error != null && error.length >= 3 ? error[2].innerText.trim() : ""
                     });
                 }catch(e){
@@ -192,9 +199,15 @@ class AuthWebViewRepository(
             getPreference(PreferenceKeys.OfflineMode, false) -> true
             context.isNetworkAvailable() -> WebViewProvider(context).scrap(
                 """
-                next({
-                    isLoggedIn: !(byId("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox") != null)
-                });
+                try {
+                    const captchaElement = getCaptchaElement();
+                    
+                    next({
+                        isLoggedIn: !(captchaElement != null)
+                    });
+                } catch (e) {
+                    throwError(e);
+                }
                 """.trimIndent()
             ){
                 it.result.getJSONObject("data").getBoolean("isLoggedIn")

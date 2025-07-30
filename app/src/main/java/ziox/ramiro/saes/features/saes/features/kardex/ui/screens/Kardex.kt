@@ -51,7 +51,6 @@ fun Kardex(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                modifier = Modifier.padding(bottom = 64.dp),
                 onClick = {
                     isExpanded.value = !isExpanded.value
                 }

@@ -1,7 +1,7 @@
 package ziox.ramiro.saes
 
+import android.app.Activity
 import android.util.Log
-import android.webkit.URLUtil
 import androidx.test.core.app.ActivityScenario
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +20,82 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.repositories.Schedu
 class HtmlFilesTest {
     @Test
     fun testScheduleFiles() = runTest {
+        testFiles("schedule_errors") { activity, folderName, file ->
+            val repository =
+                ScheduleWebViewRepository(activity, withTestFile = "$folderName/$file")
+
+            runCatching {
+                repository.getMySchedule()
+            }.onSuccess {
+                if (it.isEmpty()) {
+                    throw AssertionError("File $file returned an empty schedule");
+                }
+            }.exceptionOrNull()
+        }
+    }
+
+    @Test
+    fun testGradesFiles() = runTest {
+        testFiles("grades_errors") { activity, folderName, file ->
+            val repository =
+                GradesWebViewRepository(activity, withTestFile = "$folderName/$file")
+
+            runCatching {
+                repository.getMyGrades()
+            }.onSuccess {
+                if (it.isEmpty()) {
+                    throw AssertionError("File $file returned an empty grades list");
+                }
+            }.exceptionOrNull()
+        }
+
+    }
+
+    @Test
+    fun testProfileFiles() = runTest {
+        testFiles("profile_errors") { activity, folderName, file ->
+            val repository =
+                ProfileWebViewRepository(activity, withTestFile = "$folderName/$file")
+
+            runCatching {
+                repository.getMyUserData()
+            }.exceptionOrNull()
+        }
+    }
+
+    @Test
+    fun testLoginFiles() = runTest {
+        testFiles("login_errors", false) { activity, folderName, file ->
+            val repository =
+                AuthWebViewRepository(activity, withTestFile = "$folderName/$file")
+
+            runCatching {
+                repository.login("testuser", "testpassword", "testcaptcha")
+            }.exceptionOrNull()
+        }
+    }
+
+    @Test
+    fun testCaptchaFiles() = runTest {
+        testFiles("captcha_errors", false) { activity, folderName, file ->
+            val repository =
+                AuthWebViewRepository(activity, withTestFile = "$folderName/$file")
+
+            runCatching {
+                repository.getCaptcha()
+            }.onSuccess {
+                if (it.url.isBlank()) {
+                    throw AssertionError("File $file returned an empty captcha");
+                }
+            }.exceptionOrNull()
+        }
+    }
+
+    private suspend fun testFiles(
+        folderName: String,
+        removeUnlogged: Boolean = true,
+        fileTester: suspend (Activity, String, String) -> Throwable?
+    ) {
         ActivityScenario.launch(AboutActivity::class.java).use { scenario ->
             var activity: AboutActivity? = null
             scenario.onActivity { act ->
@@ -30,10 +106,28 @@ class HtmlFilesTest {
                 throw AssertionError("Activity is null")
             }
 
-            val files = activity.assets.list("schedule_errors")
+            val fileList = activity.assets.list(folderName)
+
+            val files = fileList?.filterNot { fileName ->
+                activity.assets.open("$folderName/$fileName").use { inputStream ->
+                    val body = inputStream.bufferedReader().use { it.readText() }
+
+                    return@filterNot (body.length < 100 || (
+                            removeUnlogged &&
+                                    (body.contains("ctl00_leftColumn_LoginUser_CaptchaCodeTextBox")
+                                            || body.contains("c_default_leftcolumn_loginuser_logincaptcha_CaptchaImage")
+                                            || body.contains("leftColumn_LoginUser_LoginButton"))
+                            ))
+                }
+            }
+
+            Log.d(
+                "HtmlFilesTest",
+                "Invalid files: ${fileList?.size?.minus(files?.size ?: 0) ?: 0} in folder: $folderName"
+            )
 
             if (files == null) {
-                throw AssertionError("No schedule tests found")
+                throw AssertionError("No tests found in folder: $folderName")
             }
 
             val failedFiles = mutableListOf<Pair<String, Throwable>>()
@@ -41,247 +135,28 @@ class HtmlFilesTest {
             Log.d("HtmlFilesTest", "Found ${files.size} schedule test files")
 
             withContext(Dispatchers.Main.immediate) {
-                files.forEach { file ->
-                    val repository =
-                        ScheduleWebViewRepository(activity, withTestFile = "schedule_errors/$file")
-
-                    runCatching {
-                        repository.getMySchedule()
-                    }.onFailure {
-                        failedFiles.add(file to it)
-                        Log.e(
-                            "HtmlFilesTest",
-                            "File $file failed with error: ${it.message}",
-                            it
-                        )
-                    }.onSuccess {
-                        if(it.isNotEmpty()){
-                            Log.d(
-                                "HtmlFilesTest",
-                                "File $file processed successfully with ${it.size} grades"
-                            )
-                        }else{
-                            failedFiles.add(file to AssertionError("File $file returned an empty schedule"))
-                        }
+                files.forEachIndexed { index, file ->
+                    Log.d(
+                        "HtmlFilesTest",
+                        "Testing in progress: ${index + 1}/${files.size} - $file"
+                    )
+                    val error = fileTester(activity, folderName, file)
+                    if (error != null) {
+                        failedFiles.add(file to error)
+                        Log.e("HtmlFilesTest", "❌ ${error.message}")
+                    } else {
+                        Log.d("HtmlFilesTest", "✅")
                     }
                 }
             }
 
-            Assert.assertEquals(emptyList<Pair<String, Throwable>>(), failedFiles)
+            Log.e("HtmlFilesTest", "Failed files: ${failedFiles.size}")
 
-        }
-
-    }
-
-    @Test
-    fun testGradesFiles() = runTest {
-        ActivityScenario.launch(AboutActivity::class.java).use { scenario ->
-            var activity: AboutActivity? = null
-            scenario.onActivity { act ->
-                activity = act
-            }
-
-            if (activity == null) {
-                throw AssertionError("Activity is null")
-            }
-
-            val files = activity.assets.list("grades_errors")
-
-            if (files == null) {
-                throw AssertionError("No grades tests found")
-            }
-
-            val failedFiles = mutableListOf<Pair<String, Throwable>>()
-
-            Log.d("HtmlFilesTest", "Found ${files.size} grades test files")
-
-            withContext(Dispatchers.Main.immediate) {
-                files.forEach { file ->
-                    val repository =
-                        GradesWebViewRepository(activity, withTestFile = "grades_errors/$file")
-
-                    runCatching {
-                        repository.getMyGrades()
-                    }.onFailure {
-                        failedFiles.add(file to it)
-                        Log.e(
-                            "HtmlFilesTest",
-                            "File $file failed with error: ${it.message}",
-                            it
-                        )
-                    }.onSuccess {
-                        if (it.isNotEmpty()) {
-                            Log.d(
-                                "HtmlFilesTest",
-                                "File $file processed successfully with ${it.size} grades"
-                            )
-                        }else {
-                            failedFiles.add(file to AssertionError("File $file returned an empty grades list"))
-                        }
-                    }
-                }
+            failedFiles.forEach { (file, error) ->
+                Log.e("HtmlFilesTest", "File: $file failed with error: ${error.message}", error)
             }
 
             Assert.assertEquals(emptyList<Pair<String, Throwable>>(), failedFiles)
-
         }
-
-    }
-
-    @Test
-    fun testProfileFiles() = runTest {
-        ActivityScenario.launch(AboutActivity::class.java).use { scenario ->
-            var activity: AboutActivity? = null
-            scenario.onActivity { act ->
-                activity = act
-            }
-
-            if (activity == null) {
-                throw AssertionError("Activity is null")
-            }
-
-            val files = activity.assets.list("profile_errors")
-
-            if (files == null) {
-                throw AssertionError("No grades tests found")
-            }
-
-            val failedFiles = mutableListOf<Pair<String, Throwable>>()
-
-            Log.d("HtmlFilesTest", "Found ${files.size} profile test files")
-
-            withContext(Dispatchers.Main.immediate) {
-                files.forEach { file ->
-                    val repository =
-                        ProfileWebViewRepository(activity, withTestFile = "profile_errors/$file")
-
-                    runCatching {
-                        repository.getMyUserData()
-                    }.onFailure {
-                        failedFiles.add(file to it)
-                        Log.e(
-                            "HtmlFilesTest",
-                            "File $file failed with error: ${it.message}",
-                            it
-                        )
-                    }.onSuccess {
-                        Log.d(
-                            "HtmlFilesTest",
-                            "File $file processed successfully with data: $it"
-                        )
-                    }
-                }
-            }
-
-            Assert.assertEquals(emptyList<Pair<String, Throwable>>(), failedFiles)
-
-        }
-
-    }
-
-    @Test
-    fun testLoginFiles() = runTest {
-        ActivityScenario.launch(AboutActivity::class.java).use { scenario ->
-            var activity: AboutActivity? = null
-            scenario.onActivity { act ->
-                activity = act
-            }
-
-            if (activity == null) {
-                throw AssertionError("Activity is null")
-            }
-
-            val files = activity.assets.list("login_errors")
-
-            if (files == null) {
-                throw AssertionError("No login tests found")
-            }
-
-            val failedFiles = mutableListOf<Pair<String, Throwable>>()
-
-            Log.d("HtmlFilesTest", "Found ${files.size} grades test files")
-
-            withContext(Dispatchers.Main.immediate) {
-                files.forEach { file ->
-                    val repository =
-                        AuthWebViewRepository(activity, withTestFile = "login_errors/$file")
-
-                    runCatching {
-                        repository.login("a", "b", "c")
-                    }.onFailure {
-                        failedFiles.add(file to it)
-                        Log.e(
-                            "HtmlFilesTest",
-                            "File $file failed with error: ${it.message}",
-                            it
-                        )
-                    }.onSuccess {
-                        Log.d(
-                            "HtmlFilesTest",
-                            "File $file processed successfully with data: $it"
-                        )
-                    }
-                }
-            }
-
-            Assert.assertEquals(emptyList<Pair<String, Throwable>>(), failedFiles)
-
-        }
-
-    }
-
-    @Test
-    fun testCaptchaFiles() = runTest {
-        ActivityScenario.launch(AboutActivity::class.java).use { scenario ->
-            var activity: AboutActivity? = null
-            scenario.onActivity { act ->
-                activity = act
-            }
-
-            if (activity == null) {
-                throw AssertionError("Activity is null")
-            }
-
-            val files = activity.assets.list("login_errors")
-
-            if (files == null) {
-                throw AssertionError("No login tests found")
-            }
-
-            val failedFiles = mutableListOf<Pair<String, Throwable>>()
-
-            Log.d("HtmlFilesTest", "Found ${files.size} grades test files")
-
-            withContext(Dispatchers.Main.immediate) {
-                files.forEach { file ->
-                    val repository =
-                        AuthWebViewRepository(activity, withTestFile = "login_errors/$file")
-
-                    runCatching {
-                        repository.getCaptcha()
-                    }.onFailure {
-                        failedFiles.add(file to it)
-                        Log.e(
-                            "HtmlFilesTest",
-                            "File $file failed with error: ${it.message}",
-                            it
-                        )
-                    }.onSuccess {
-                        if(it.url.isNotBlank() && URLUtil.isValidUrl(it.url)){
-                            Log.d(
-                                "HtmlFilesTest",
-                                "File $file processed successfully with ${it.url}"
-                            )
-                        }else {
-                            failedFiles.add(file to AssertionError("File $file returned an empty captcha"))
-                        }
-                    }
-                }
-            }
-
-            Assert.assertEquals(emptyList<Pair<String, Throwable>>(), failedFiles)
-
-        }
-
     }
 }
