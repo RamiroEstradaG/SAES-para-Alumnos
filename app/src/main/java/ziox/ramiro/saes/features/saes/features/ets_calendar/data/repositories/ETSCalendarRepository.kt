@@ -2,6 +2,7 @@ package ziox.ramiro.saes.features.saes.features.ets_calendar.data.repositories
 
 import android.content.Context
 import org.json.JSONObject
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.features.saes.data.models.FilterField
 import ziox.ramiro.saes.features.saes.data.models.FilterRepository
@@ -12,7 +13,7 @@ import ziox.ramiro.saes.utils.hhmma_toHour
 import ziox.ramiro.saes.utils.toProperCase
 
 interface ETSCalendarRepository : FilterRepository {
-    suspend fun getETSEvents(): List<ETSCalendarItem>
+    suspend fun getETSEvents(): Response<List<ETSCalendarItem>>
 }
 
 class ETSCalendarWebViewRepository(
@@ -20,7 +21,7 @@ class ETSCalendarWebViewRepository(
 ) : ETSCalendarRepository {
     private val webViewProvider = WebViewProvider(context, "/Academica/Calendario_ets.aspx")
 
-    override suspend fun getETSEvents(): List<ETSCalendarItem> {
+    override suspend fun getETSEvents(): Response<List<ETSCalendarItem>> {
         return webViewProvider.scrap(
             script = """
                 var calendarTable = byId("ctl00_mainCopy_grvcalendario");
@@ -88,7 +89,7 @@ class ETSCalendarWebViewRepository(
 
                 SelectFilterField.fromJson(item)
             }
-        }
+        }.data
     }
 
     override suspend fun selectSelect(fieldId: String, newIndex: Int?): List<FilterField> {
@@ -119,7 +120,7 @@ class ETSCalendarWebViewRepository(
 
                 SelectFilterField.fromJson(item)
             }
-        }
+        }.data
     }
 
     override suspend fun selectRadioGroup(fieldId: String): List<FilterField> = emptyList()

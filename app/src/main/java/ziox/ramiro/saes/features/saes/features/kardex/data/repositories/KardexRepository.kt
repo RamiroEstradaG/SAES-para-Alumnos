@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.kardex.data.models.KardexData
@@ -14,7 +15,7 @@ import ziox.ramiro.saes.utils.isNetworkAvailable
 import ziox.ramiro.saes.utils.runOnDefaultThread
 
 interface KardexRepository {
-    suspend fun getMyKardexData() : KardexData
+    suspend fun getMyKardexData(): Response<KardexData>
 }
 
 
@@ -24,9 +25,9 @@ class KardexWebViewRepository(
     private val webView = WebViewProvider(context, "/Alumnos/boleta/kardex.aspx")
     private val persistenceRepository = LocalAppDatabase.invoke(context).kardexRepository()
 
-    override suspend fun getMyKardexData(): KardexData {
+    override suspend fun getMyKardexData(): Response<KardexData> {
         val userId = UserPreferences.invoke(context).getPreference(PreferenceKeys.Boleta, "")
-        return if(context.isNetworkAvailable()){
+        return if (context.isNetworkAvailable()) {
             webView.scrap(
                 script = """
                 var kardexTable = byId("ctl00_mainCopy_Lbl_Kardex");
@@ -68,7 +69,7 @@ class KardexWebViewRepository(
                     });
                 }
             """.trimIndent(),
-            ){
+            ) {
                 KardexDataRoom(
                     userId,
                     it.result
@@ -76,16 +77,27 @@ class KardexWebViewRepository(
             }.also {
                 runOnDefaultThread {
                     persistenceRepository.removeKardexData(userId)
-                    persistenceRepository.addKardexData(it)
+                    persistenceRepository.addKardexData(it.data)
                 }
-            }.toKardexData()
-        }else{
+            }.let {
+                Response(
+                    data = it.data.toKardexData(),
+                    url = it.url,
+                    sourceCode = it.sourceCode
+                )
+            }
+        } else {
             runOnDefaultThread {
-                persistenceRepository.getMyKardexData(userId)?.toKardexData() ?: KardexData(
-                    null,
-                    "",
-                    userId,
-                    emptyList()
+                Response(
+                    data = persistenceRepository.getMyKardexData(userId)?.toKardexData()
+                        ?: KardexData(
+                            null,
+                            "",
+                            userId,
+                            emptyList()
+                        ),
+                    url = "local_database",
+                    sourceCode = "local_database"
                 )
             }
         }
@@ -94,9 +106,9 @@ class KardexWebViewRepository(
 
 
 @Dao
-interface KardexRoomRepository{
+interface KardexRoomRepository {
     @Query("SELECT * FROM kardex WHERE userId = :userId LIMIT 1")
-    fun getMyKardexData(userId: String) : KardexDataRoom?
+    fun getMyKardexData(userId: String): KardexDataRoom?
 
     @Insert
     fun addKardexData(kardexData: KardexDataRoom)

@@ -10,6 +10,7 @@ import ziox.ramiro.saes.data.data_providers.ScrapException
 import ziox.ramiro.saes.features.saes.data.repositories.StorageRepository
 import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
 import ziox.ramiro.saes.features.saes.features.grades.data.repositories.GradesRepository
+import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.dismissAfterTimeout
 import java.util.Date
 import javax.inject.Inject
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GradesViewModel @Inject constructor(
     private val gradesRepository: GradesRepository,
-    private val storageRepository: StorageRepository
+    private val storageRepository: StorageRepository,
+    private val userPreferences: UserPreferences
 ) : ViewModel() {
     val grades = mutableStateOf<List<ClassGrades>?>(null)
     val error = MutableStateFlow<String?>(null)
@@ -34,7 +36,7 @@ class GradesViewModel @Inject constructor(
         kotlin.runCatching {
             gradesRepository.getMyGrades()
         }.onSuccess {
-            grades.value = it
+            grades.value = it.data
         }.onFailure {
             if(it is ScrapException) {
                 scrapError.value = it
@@ -50,12 +52,13 @@ class GradesViewModel @Inject constructor(
         if(error == null) return@launch
 
         val sourceCode = error.sourceCode ?: return@launch
+        val prefix = error.url?.replace(Regex("[^A-Za-z0-9]"), "") ?: "grades"
 
         runCatching {
             storageRepository.uploadFile(
                 content = sourceCode,
                 filePath = "grades_errors",
-                fileName = "${Date().time}.html"
+                fileName = "${prefix}_${Date().time}.html"
             )
         }
     }

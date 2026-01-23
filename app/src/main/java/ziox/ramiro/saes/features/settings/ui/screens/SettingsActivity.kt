@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.ModeNight
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
 import ziox.ramiro.saes.features.saes.features.agenda.ui.screens.SelectableOptions
+import ziox.ramiro.saes.features.settings.view_models.DebugViewModel
 import ziox.ramiro.saes.features.settings.view_models.PersonalSavedDataViewModel
 import ziox.ramiro.saes.ui.components.AsyncButton
 import ziox.ramiro.saes.ui.components.BaseButton
@@ -52,16 +54,27 @@ import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.updateWidgets
 
 @AndroidEntryPoint
-class SettingsActivity : AppCompatActivity(){
+class SettingsActivity : AppCompatActivity() {
     private val personalSavedDataViewModel: PersonalSavedDataViewModel by viewModels()
+    private val debugViewModel: DebugViewModel by viewModels()
 
-    private val permissionsLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){
-        if (it){
-            personalSavedDataViewModel.downloadMyPersonalData()
-        }else{
-            personalSavedDataViewModel.error.value = "No hay permisos para guardar el archivo"
+    private val permissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                personalSavedDataViewModel.downloadMyPersonalData()
+            } else {
+                personalSavedDataViewModel.error.value = "No hay permisos para guardar el archivo"
+            }
         }
-    }
+
+    private val createDocumentLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("text/html")) {
+            if (it != null) {
+                debugViewModel.downloadedData.value?.firstOrNull()?.let { file ->
+                    debugViewModel.saveFileToUri(it)
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,12 +83,21 @@ class SettingsActivity : AppCompatActivity(){
 
         setContent {
             SAESParaAlumnosTheme {
-                val nightModeOptions = listOf(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, AppCompatDelegate.MODE_NIGHT_NO, AppCompatDelegate.MODE_NIGHT_YES)
+                val nightModeOptions = listOf(
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM,
+                    AppCompatDelegate.MODE_NIGHT_NO,
+                    AppCompatDelegate.MODE_NIGHT_YES
+                )
                 val showDeleteConfirmation = remember {
                     mutableStateOf(false)
                 }
                 val isFirebaseEnabled = remember {
-                    mutableStateOf(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false))
+                    mutableStateOf(
+                        userPreferences.getPreference(
+                            PreferenceKeys.IsFirebaseEnabled,
+                            false
+                        )
+                    )
                 }
 
                 Scaffold { paddingValues ->
@@ -93,7 +115,10 @@ class SettingsActivity : AppCompatActivity(){
                                 style = MaterialTheme.typography.headlineLarge,
                             )
                             SettingsSection("Sistema") {
-                                SettingsItem(icon = Icons.Rounded.ModeNight, title = "Modo oscuro") {
+                                SettingsItem(
+                                    icon = Icons.Rounded.ModeNight,
+                                    title = "Modo oscuro"
+                                ) {
                                     val selectedUiMode = remember {
                                         mutableIntStateOf(AppCompatDelegate.getDefaultNightMode())
                                     }
@@ -111,10 +136,13 @@ class SettingsActivity : AppCompatActivity(){
                                         }
                                     )
 
-                                    LaunchedEffect(key1 = selectedUiMode){
+                                    LaunchedEffect(key1 = selectedUiMode) {
                                         snapshotFlow { selectedUiMode.intValue }.collect {
                                             runOnUiThread {
-                                                userPreferences.setPreference(PreferenceKeys.DefaultNightMode, it)
+                                                userPreferences.setPreference(
+                                                    PreferenceKeys.DefaultNightMode,
+                                                    it
+                                                )
                                                 AppCompatDelegate.setDefaultNightMode(it)
                                             }
                                         }
@@ -123,21 +151,32 @@ class SettingsActivity : AppCompatActivity(){
                             }
                             SettingsSection("Widgets") {
                                 val sliderValue = remember {
-                                    mutableStateOf(userPreferences.getPreference(PreferenceKeys.ScheduleWidgetLeveling, 0).toFloat())
+                                    mutableStateOf(
+                                        userPreferences.getPreference(
+                                            PreferenceKeys.ScheduleWidgetLeveling,
+                                            0
+                                        ).toFloat()
+                                    )
                                 }
-                                SettingsItem(icon = Icons.Rounded.Tune, title = "Calibración del Widget \"Horario semanal\" (${sliderValue.value.toInt()})") {
+                                SettingsItem(
+                                    icon = Icons.Rounded.Tune,
+                                    title = "Calibración del Widget \"Horario semanal\" (${sliderValue.value.toInt()})"
+                                ) {
                                     Slider(
                                         value = sliderValue.component1(),
                                         valueRange = -100f..100f,
                                         onValueChange = sliderValue.component2(),
                                         onValueChangeFinished = {
-                                            userPreferences.setPreference(PreferenceKeys.ScheduleWidgetLeveling, sliderValue.value.toInt())
+                                            userPreferences.setPreference(
+                                                PreferenceKeys.ScheduleWidgetLeveling,
+                                                sliderValue.value.toInt()
+                                            )
                                             updateWidgets()
                                         }
                                     )
                                 }
                             }
-                            if(isFirebaseEnabled.value){
+                            if (isFirebaseEnabled.value) {
                                 SettingsSection("Datos almacenados en la nube") {
                                     AsyncButton(
                                         text = "Descargar mis datos",
@@ -155,8 +194,19 @@ class SettingsActivity : AppCompatActivity(){
                                     }
                                 }
                             }
+                            SettingsSection("Depuración de errores") {
+                                Text("Si tienes problemas con la aplicación, puedes descargar un reporte de errores para enviarlo al desarrollador y que pueda ayudarte a resolverlos.\nRecuerda enviar por privado o correo electrónico el reporte de errores, ya que puede contener información sensible sobre tu cuenta.")
+                                AsyncButton(
+                                    text = "Descargar reporte de errores",
+                                    icon = Icons.Rounded.BugReport,
+                                    modifier = Modifier.padding(top = 16.dp),
+                                    isLoading = debugViewModel.isLoading.value
+                                ) {
+                                    debugViewModel.downloadAllData()
+                                }
+                            }
 
-                            if (showDeleteConfirmation.value){
+                            if (showDeleteConfirmation.value) {
                                 AlertDialog(
                                     onDismissRequest = { showDeleteConfirmation.value = false },
                                     title = {
@@ -172,17 +222,18 @@ class SettingsActivity : AppCompatActivity(){
                                             text = "Eliminar",
                                             isLoading = personalSavedDataViewModel.isDeleting.value
                                         ) {
-                                            personalSavedDataViewModel.deleteMyPersonalData().invokeOnCompletion {
-                                                showDeleteConfirmation.value = false
-                                                isFirebaseEnabled.value = false
-                                            }
+                                            personalSavedDataViewModel.deleteMyPersonalData()
+                                                .invokeOnCompletion {
+                                                    showDeleteConfirmation.value = false
+                                                    isFirebaseEnabled.value = false
+                                                }
                                         }
                                     },
                                     dismissButton = {
                                         ziox.ramiro.saes.ui.components.TextButton(
                                             text = "Cancelar",
                                             textColor = getCurrentTheme().info
-                                        ){
+                                        ) {
                                             showDeleteConfirmation.value = false
                                         }
                                     }
@@ -194,6 +245,15 @@ class SettingsActivity : AppCompatActivity(){
 
                 InfoSnackbar(personalSavedDataViewModel.info)
                 ErrorSnackbar(personalSavedDataViewModel.error)
+                ErrorSnackbar(debugViewModel.error)
+            }
+            LaunchedEffect(Unit) {
+                snapshotFlow { debugViewModel.downloadedData.value }
+                    .collect {
+                        if (it != null && it.isNotEmpty()) {
+                            createDocumentLauncher.launch("saes_debug_report_${System.currentTimeMillis()}.html")
+                        }
+                    }
             }
         }
     }
@@ -247,3 +307,4 @@ fun SettingsItem(
     }
     content()
 }
+

@@ -1,6 +1,7 @@
 package ziox.ramiro.saes.features.saes.features.re_registration_appointment.data.repositories
 
 import android.content.Context
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.features.saes.features.re_registration_appointment.data.models.ReRegistrationData
 import ziox.ramiro.saes.utils.PreferenceKeys
@@ -8,7 +9,7 @@ import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.toDate
 
 interface ReRegistrationRepository {
-    suspend fun getReRegistrationData(): ReRegistrationData
+    suspend fun getReRegistrationData(): Response<ReRegistrationData>
 }
 
 class ReRegistrationWebViewRepository(
@@ -16,7 +17,7 @@ class ReRegistrationWebViewRepository(
 ) : ReRegistrationRepository{
     private val webViewProvider = WebViewProvider(context, "/Alumnos/Reinscripciones/fichas_reinscripcion.aspx")
 
-    override suspend fun getReRegistrationData(): ReRegistrationData {
+    override suspend fun getReRegistrationData(): Response<ReRegistrationData> {
         return webViewProvider.scrap(
             script = """
                 var appointmentTable = byId("ctl00_mainCopy_grvEstatus_alumno");

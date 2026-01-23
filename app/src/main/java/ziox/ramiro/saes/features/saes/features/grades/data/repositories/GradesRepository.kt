@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import org.json.JSONObject
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.grades.data.models.ClassGrades
@@ -13,18 +14,22 @@ import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
 
 interface GradesRepository {
-    suspend fun getMyGrades() : List<ClassGrades>
+    suspend fun getMyGrades(): Response<List<ClassGrades>>
 }
 
 class GradesWebViewRepository(
     private val context: Context,
     withTestFile: String? = null
 ) : GradesRepository {
-    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/calificaciones_sem.aspx", withTestFile)
+    private val webView = WebViewProvider(
+        context,
+        "/Alumnos/Informacion_semestral/calificaciones_sem.aspx",
+        withTestFile
+    )
     private val persistenceRepository = LocalAppDatabase.invoke(context).gradesRepository()
 
-    override suspend fun getMyGrades(): List<ClassGrades> {
-        return if (context.isNetworkAvailable()){
+    override suspend fun getMyGrades(): Response<List<ClassGrades>> {
+        return if (context.isNetworkAvailable()) {
             webView.scrap(
                 script = """
                 try {
@@ -55,10 +60,10 @@ class GradesWebViewRepository(
                     throwError(e);
                 }
             """.trimIndent()
-            ){
+            ) {
                 val data = it.result.getJSONObject("data").getJSONArray("grades")
 
-                List(data.length()){ i ->
+                List(data.length()) { i ->
                     val item = data[i] as JSONObject
                     ClassGrades(
                         item.getString("className").toProperCase(),
@@ -72,12 +77,16 @@ class GradesWebViewRepository(
             }.also {
                 runOnDefaultThread {
                     persistenceRepository.removeAll()
-                    persistenceRepository.addGrades(it)
+                    persistenceRepository.addGrades(it.data)
                 }
             }
-        }else{
+        } else {
             runOnDefaultThread {
-                persistenceRepository.getMyGrades()
+                Response(
+                    data = persistenceRepository.getMyGrades(),
+                    url = "local_database",
+                    sourceCode = "local_database"
+                )
             }
         }
     }
@@ -87,7 +96,7 @@ class GradesWebViewRepository(
 @Dao
 interface GradesRoomRepository {
     @Query("SELECT * FROM class_grades")
-    fun getMyGrades() : List<ClassGrades>
+    fun getMyGrades(): List<ClassGrades>
 
     @Insert
     fun addGrades(grades: List<ClassGrades>)

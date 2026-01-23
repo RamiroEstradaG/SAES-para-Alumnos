@@ -58,7 +58,7 @@ class AuthViewModel @Inject constructor(
                 authRepository.getCaptcha()
             }.onSuccess {
                 isCaptchaLoading = false
-                captcha.value = it
+                captcha.value = it.data
             }.onFailure {
                 it.printStackTrace()
                 isCaptchaLoading = false
@@ -136,12 +136,13 @@ class AuthViewModel @Inject constructor(
         if (error == null) return@launch
 
         val sourceCode = error.sourceCode ?: return@launch
+        val prefix = error.url?.replace(Regex("[^A-Za-z0-9]"), "") ?: if(isCaptcha) "captcha" else "login"
 
         runCatching {
             storageRepository.uploadFile(
                 content = sourceCode,
                 filePath = if(isCaptcha) "captcha_errors" else "login_errors",
-                fileName = "${Date().time}.html"
+                fileName = "${prefix}_${Date().time}.html"
             )
         }
     }

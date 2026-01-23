@@ -2,6 +2,7 @@ package ziox.ramiro.saes.features.saes.features.occupancy.data.repositories
 
 import android.content.Context
 import org.json.JSONObject
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.features.saes.data.models.FilterField
 import ziox.ramiro.saes.features.saes.data.models.FilterRepository
@@ -10,7 +11,7 @@ import ziox.ramiro.saes.features.saes.features.occupancy.data.models.ClassOccupa
 import ziox.ramiro.saes.utils.toProperCase
 
 interface OccupancyRepository : FilterRepository {
-    suspend fun getOccupancyData(): List<ClassOccupancy>
+    suspend fun getOccupancyData(): Response<List<ClassOccupancy>>
 }
 
 class OccupancyWebViewRepository(
@@ -18,7 +19,7 @@ class OccupancyWebViewRepository(
 ) : OccupancyRepository{
     private val webViewProvider = WebViewProvider(context, "/Academica/Ocupabilidad_grupos.aspx")
 
-    override suspend fun getOccupancyData(): List<ClassOccupancy> {
+    override suspend fun getOccupancyData(): Response<List<ClassOccupancy>> {
         return webViewProvider.scrap(
             script = """
                 var occupancyTable = byId("ctl00_mainCopy_GrvOcupabilidad");
@@ -96,7 +97,7 @@ class OccupancyWebViewRepository(
 
                 SelectFilterField.fromJson(item)
             }
-        }
+        }.data
     }
 
     override suspend fun selectSelect(fieldId: String, newIndex: Int?): List<FilterField> {
@@ -149,7 +150,7 @@ class OccupancyWebViewRepository(
 
                 SelectFilterField.fromJson(item)
             }
-        }
+        }.data
     }
 
     override suspend fun selectRadioGroup(fieldId: String): List<FilterField> = emptyList()

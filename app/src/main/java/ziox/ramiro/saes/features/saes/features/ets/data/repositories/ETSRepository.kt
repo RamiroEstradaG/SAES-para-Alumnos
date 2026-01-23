@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import org.json.JSONObject
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.ets.data.models.ETS
@@ -14,9 +15,9 @@ import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
 
 interface ETSRepository {
-    suspend fun getAvailableETS() : List<ETS>
+    suspend fun getAvailableETS(): Response<List<ETS>>
 
-    suspend fun getETSScores() : List<ETSScore>
+    suspend fun getETSScores(): Response<List<ETSScore>>
 
     suspend fun enrollETS(etsIndex: Int): List<ETS>
 }
@@ -26,10 +27,11 @@ class ETSWebViewRepository(
 ) : ETSRepository {
     private val persistenceRepository = LocalAppDatabase.invoke(context).etsRepository()
     private val etsWebViewProvider = WebViewProvider(context, "/Alumnos/ETS/inscripcion_ets.aspx")
-    private val scoresWebViewProvider = WebViewProvider(context, "/Alumnos/ETS/calificaciones_ets.aspx")
+    private val scoresWebViewProvider =
+        WebViewProvider(context, "/Alumnos/ETS/calificaciones_ets.aspx")
 
-    override suspend fun getAvailableETS(): List<ETS> {
-        return if(context.isNetworkAvailable()){
+    override suspend fun getAvailableETS(): Response<List<ETS>> {
+        return if (context.isNetworkAvailable()) {
             etsWebViewProvider.runThenScrap(
                 preRequest = """
                 byId("ctl00_mainCopy_cmbinformacion").click();
@@ -51,10 +53,10 @@ class ETSWebViewRepository(
                     next([]);
                 }
                 """.trimIndent()
-            ){
+            ) {
                 val data = it.result.getJSONArray("data")
 
-                List(data.length()){ i ->
+                List(data.length()) { i ->
                     val element = data[i] as JSONObject
                     ETS(
                         element.getString("id"),
@@ -65,18 +67,22 @@ class ETSWebViewRepository(
             }.also {
                 runOnDefaultThread {
                     persistenceRepository.removeAllAvailableETS()
-                    persistenceRepository.addAllETS(it)
+                    persistenceRepository.addAllETS(it.data)
                 }
             }
-        }else{
+        } else {
             runOnDefaultThread {
-                persistenceRepository.getAvailableETS()
+                Response(
+                    data = persistenceRepository.getAvailableETS(),
+                    sourceCode = "local_database",
+                    url = "local_database"
+                )
             }
         }
     }
 
-    override suspend fun getETSScores(): List<ETSScore> {
-        return if (context.isNetworkAvailable()){
+    override suspend fun getETSScores(): Response<List<ETSScore>> {
+        return if (context.isNetworkAvailable()) {
             scoresWebViewProvider.scrap(
                 script = """
                 var etsTable = byId("ctl00_mainCopy_GridView1");
@@ -96,10 +102,10 @@ class ETSWebViewRepository(
                     next([]);
                 }
             """.trimIndent()
-            ){
+            ) {
                 val data = it.result.getJSONArray("data")
 
-                List(data.length()){ i ->
+                List(data.length()) { i ->
                     val element = data[i] as JSONObject
                     ETSScore(
                         element.getString("id"),
@@ -111,20 +117,24 @@ class ETSWebViewRepository(
             }.also {
                 runOnDefaultThread {
                     persistenceRepository.removeAllScores()
-                    persistenceRepository.addAllETSScores(it)
+                    persistenceRepository.addAllETSScores(it.data)
                 }
             }
-        }else{
+        } else {
             runOnDefaultThread {
-                persistenceRepository.getETSScores()
+                Response(
+                    data = persistenceRepository.getETSScores(),
+                    sourceCode = "local_database",
+                    url = "local_database"
+                )
             }
         }
     }
 
     override suspend fun enrollETS(etsIndex: Int): List<ETS> {
+        // TODO: Make this function actually enroll in an ETS
 
-
-        return getAvailableETS()
+        return getAvailableETS().data
     }
 }
 

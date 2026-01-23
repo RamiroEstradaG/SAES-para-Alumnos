@@ -29,7 +29,7 @@ class KardexViewModel @Inject constructor(
         kotlin.runCatching {
             kardexRepository.getMyKardexData()
         }.onSuccess {
-            kardexData.value = it
+            kardexData.value = it.data
         }.onFailure {
             error.value = "Error al obtener el kardex"
         }

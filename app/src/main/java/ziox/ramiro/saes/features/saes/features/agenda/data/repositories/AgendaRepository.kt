@@ -23,7 +23,6 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.ShortDate
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.utils.MMMddyyyy_toDate
 import ziox.ramiro.saes.utils.offset
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.ExperimentalTime
 
@@ -95,7 +94,7 @@ class AgendaWebViewRepository(
                 }
 
                 events
-            }
+            }.data
         }catch (e: Exception){
             arrayListOf()
         }

@@ -16,8 +16,8 @@ android {
         applicationId = "ziox.ramiro.saes"
         minSdk = 33
         targetSdk = 36
-        versionCode = 120
-        versionName = "2.2.2"
+        versionCode = 121
+        versionName = "2.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

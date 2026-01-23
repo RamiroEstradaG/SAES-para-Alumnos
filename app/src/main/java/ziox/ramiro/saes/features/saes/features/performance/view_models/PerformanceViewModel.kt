@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ziox.ramiro.saes.data.models.School
 import ziox.ramiro.saes.features.saes.data.repositories.UserFirebaseRepository
@@ -49,8 +48,8 @@ class PerformanceViewModel @Inject constructor(
                 && careerPerformance.value == null
                 && generalPerformance.value == null){
 
-                updateMyPerformance(it, schoolName)
-                fetchCareerPerformance(it.careerName)
+                updateMyPerformance(it.data, schoolName)
+                fetchCareerPerformance(it.data.careerName)
                 fetchGeneralPerformance()
                 fetchSchoolPerformance(schoolName)
             }

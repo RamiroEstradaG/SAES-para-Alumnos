@@ -36,7 +36,7 @@ class ProfileViewModel @Inject constructor (
             kotlin.runCatching {
                 profileRepository.getMyUserData()
             }.onSuccess {
-                profile.value = it
+                profile.value = it.data
             }.onFailure {
                 it.printStackTrace()
                 if(it is ScrapException) {
@@ -56,12 +56,13 @@ class ProfileViewModel @Inject constructor (
         if(error == null) return@launch
 
         val sourceCode = error.sourceCode ?: return@launch
+        val prefix = error.url?.replace(Regex("[^A-Za-z0-9]"), "") ?: "profile"
 
         runCatching {
             storageRepository.uploadFile(
                 content = sourceCode,
                 filePath = "profile_errors",
-                fileName = "${Date().time}.html"
+                fileName = "${prefix}_${Date().time}.html",
             )
         }
     }

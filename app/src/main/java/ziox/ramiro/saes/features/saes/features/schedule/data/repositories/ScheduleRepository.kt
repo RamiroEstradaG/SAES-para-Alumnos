@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import org.json.JSONObject
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.ClassSchedule
@@ -18,7 +19,7 @@ import ziox.ramiro.saes.utils.toProperCase
 import java.util.Calendar
 
 interface ScheduleRepository {
-    suspend fun getMySchedule() : List<ClassSchedule>
+    suspend fun getMySchedule(): Response<List<ClassSchedule>>
 }
 
 
@@ -26,16 +27,18 @@ class ScheduleWebViewRepository(
     private val context: Context,
     withTestFile: String? = null
 ) : ScheduleRepository {
-    private val webView = WebViewProvider(context, "/Alumnos/Informacion_semestral/Horario_Alumno.aspx", withTestFile)
+    private val webView =
+        WebViewProvider(context, "/Alumnos/Informacion_semestral/Horario_Alumno.aspx", withTestFile)
     private val persistenceRepository = LocalAppDatabase.invoke(context).scheduleRepository()
-    private val customClassSchedule = LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()
+    private val customClassSchedule =
+        LocalAppDatabase.invoke(context).customScheduleGeneratorRepository()
 
-    override suspend fun getMySchedule(): List<ClassSchedule> {
+    override suspend fun getMySchedule(): Response<List<ClassSchedule>> {
         val customSchedule = runOnDefaultThread {
             customClassSchedule.getMySchedule()
         }
 
-        return if(context.isNetworkAvailable()){
+        return if (context.isNetworkAvailable()) {
             webView.scrap(
                 script = """
                 try {
@@ -77,7 +80,7 @@ class ScheduleWebViewRepository(
                     throwError(e);
                 }
             """.trimIndent(),
-            ){
+            ) {
                 val data = it.result.getJSONArray("data")
                 val registered = mutableMapOf<String, Long>()
 
@@ -92,10 +95,11 @@ class ScheduleWebViewRepository(
 
                         val classId = classSchedule.getString("classId")
 
-                        val color = if (registered.containsKey(classId)){
+                        val color = if (registered.containsKey(classId)) {
                             registered.getValue(classId)
-                        }else{
-                            registered[classId] = scheduleColors[registered.size % scheduleColors.size].value.toLong()
+                        } else {
+                            registered[classId] =
+                                scheduleColors[registered.size % scheduleColors.size].value.toLong()
                             registered.getValue(classId)
                         }
 
@@ -103,7 +107,12 @@ class ScheduleWebViewRepository(
                             val group = classSchedule.getString("group")
                             val className = classSchedule.getString("className").toProperCase()
 
-                            val id = "${classId}_${group}_${className.replace(" ", "_")}_${range.weekDay}_${range.start.toDouble()}_${rangeIndex}"
+                            val id = "${classId}_${group}_${
+                                className.replace(
+                                    " ",
+                                    "_"
+                                )
+                            }_${range.weekDay}_${range.start.toDouble()}_${rangeIndex}"
 
                             val customClass = customSchedule.find { cc -> cc.id == id }
 
@@ -128,21 +137,25 @@ class ScheduleWebViewRepository(
             }.also {
                 runOnDefaultThread {
                     persistenceRepository.removeSchedule()
-                    persistenceRepository.addSchedule(it)
+                    persistenceRepository.addSchedule(it.data)
                 }
             }
-        }else{
+        } else {
             runOnDefaultThread {
-                persistenceRepository.getMySchedule()
+                Response(
+                    data = persistenceRepository.getMySchedule(),
+                    sourceCode = "local_database",
+                    url = "local_database"
+                )
             }
         }
     }
 }
 
 @Dao
-interface ScheduleRoomRepository{
+interface ScheduleRoomRepository {
     @Query("SELECT * FROM class_schedule")
-    fun getMySchedule() : List<ClassSchedule>
+    fun getMySchedule(): List<ClassSchedule>
 
     @Query("SELECT * FROM class_schedule WHERE id = :id")
     fun getClass(id: String): ClassSchedule?
@@ -155,9 +168,9 @@ interface ScheduleRoomRepository{
 }
 
 @Dao
-interface CustomScheduleRoomRepository{
+interface CustomScheduleRoomRepository {
     @Query("SELECT * FROM custom_class_schedule")
-    fun getMySchedule() : List<CustomClassSchedule>
+    fun getMySchedule(): List<CustomClassSchedule>
 
     @Insert
     fun addSchedule(schedule: List<CustomClassSchedule>)

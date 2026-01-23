@@ -29,7 +29,7 @@ class SchoolScheduleViewModel @Inject constructor(
         kotlin.runCatching {
             schoolScheduleRepository.getSchoolSchedule()
         }.onSuccess {
-            schoolSchedule.value = it
+            schoolSchedule.value = it.data
         }.onFailure {
             error.value = "Error al obtener los horarios de la escuela"
         }

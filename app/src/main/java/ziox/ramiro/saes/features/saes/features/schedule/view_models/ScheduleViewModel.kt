@@ -43,7 +43,7 @@ class ScheduleViewModel @Inject constructor(
         kotlin.runCatching {
             scheduleRepository.getMySchedule()
         }.onSuccess {
-            scheduleList.addAll(it)
+            scheduleList.addAll(it.data)
         }.onFailure {
             if(it is ScrapException) {
                 scrapError.value = it
@@ -76,12 +76,13 @@ class ScheduleViewModel @Inject constructor(
         if(error == null) return@launch
 
         val sourceCode = error.sourceCode ?: return@launch
+        val prefix = error.url?.replace(Regex("[^A-Za-z0-9]"), "") ?: "schedule"
 
         runCatching {
             storageRepository.uploadFile(
                 content = sourceCode,
                 filePath = "schedule_errors",
-                fileName = "${Date().time}.html"
+                fileName = "${prefix}_${Date().time}.html"
             )
         }
     }

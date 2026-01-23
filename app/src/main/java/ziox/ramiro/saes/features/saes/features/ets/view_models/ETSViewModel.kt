@@ -33,7 +33,7 @@ class ETSViewModel @Inject constructor(
             kotlin.runCatching {
                 etsRepository.getAvailableETS()
             }.onSuccess {
-                availableETS.value = it
+                availableETS.value = it.data
             }.onFailure {
                 fetchAvailableETS()
                 error.value = "Error al obtener ETS"
@@ -48,7 +48,7 @@ class ETSViewModel @Inject constructor(
             kotlin.runCatching {
                 etsRepository.getETSScores()
             }.onSuccess {
-                scores.value = it
+                scores.value = it.data
             }.onFailure {
                 fetchETSScores()
                 error.value = "Error al obtener calificaciones de ETS"

@@ -57,7 +57,7 @@ class WebViewProvider(
         fun scriptTemplate(jobId: String) = """
             javascript:
             function next(obj){
-                window.JSI.result("$jobId", JSON.stringify(obj));
+                window.JSI.result("$jobId", JSON.stringify(obj), document.getElementsByTagName("html")[0].outerHTML, window.location.href);
             }
             function throwError(error){
                 window.JSI.error("$jobId", JSON.stringify({
@@ -175,7 +175,7 @@ class WebViewProvider(
         reloadPage: Boolean = true,
         timeout: Long = DEFAULT_TIMEOUT,
         noinline resultAdapter: (ScrapResult) -> T
-    ): T {
+    ): Response<T> {
         val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
         val performanceTrace = Firebase.performance.newTrace(url).also { it.start() }
         val jobId = generateJobId()
@@ -226,7 +226,7 @@ class WebViewProvider(
         reloadPage: Boolean = true,
         timeout: Long = DEFAULT_TIMEOUT,
         noinline resultAdapter: (ScrapResult) -> T
-    ): T {
+    ): Response<T> {
         val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
         val performanceTrace = Firebase.performance.newTrace(url).also { it.start() }
         val jobId = generateJobId()
@@ -270,7 +270,7 @@ class WebViewProvider(
         reloadPage: Boolean = true,
         timeout: Long = DEFAULT_TIMEOUT,
         noinline resultAdapter: (ScrapResult) -> T
-    ): T {
+    ): Response<T> {
         val url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
         val performanceTrace = Firebase.performance.newTrace(url).also { it.start() }
         var isFirstLoad = true
@@ -338,7 +338,7 @@ class WebViewProvider(
 
     private inner class ResultJavascriptInterface {
         @JavascriptInterface
-        fun result(jobId: String, resultJson: String){
+        fun result(jobId: String, resultJson: String, sourceCode: String? = null, url: String? = null){
             Log.d("WebViewProvider", "Result received for $jobId")
             runBlocking {
                 handleResume(jobId){
@@ -356,8 +356,10 @@ class WebViewProvider(
                                             null
                                         }
                                     )),
-                                    headers = getCookies()
-                                ))
+                                    headers = getCookies(),
+                                )),
+                                sourceCode = sourceCode,
+                                url = url
                             )
                         )
                     }
@@ -383,7 +385,8 @@ class WebViewProvider(
                             ScrapException(
                                 message = errorMessage,
                                 stackTrace = stackTrace,
-                                sourceCode = sourceCode
+                                sourceCode = sourceCode,
+                                url = userPreferences.getPreference(PreferenceKeys.SchoolUrl, "") + path
                             )
                         )
                     }
@@ -410,11 +413,17 @@ data class JavascriptInterfaceJob(
 )
 
 data class ScrapResultAdapter<T>(
-    val value: T
+    val value: T,
+    val sourceCode: String?,
+    val url: String?
 ) {
-    inline fun <reified T2> toPrimitiveType(): T2{
+    inline fun <reified T2> toPrimitiveType(): Response<T2>{
         return if(this.value is T2){
-            this.value
+            Response(
+                data = this.value as T2,
+                url = this.url ?: "",
+                sourceCode = this.sourceCode ?: ""
+            )
         }else{
             throw TypeCastException()
         }
@@ -429,9 +438,14 @@ data class ScrapResult(
 class ScrapException(
     message: String,
     stackTrace: String? = null,
-    val sourceCode: String? = null
+    val sourceCode: String? = null,
+    val url: String? = null
 ) : Exception(
     "ScrapException: $message\nStack trace: $stackTrace"
 )
 
-
+data class Response<T>(
+    val data: T,
+    val url: String,
+    val sourceCode: String
+)

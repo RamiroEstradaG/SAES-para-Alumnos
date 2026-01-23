@@ -29,7 +29,7 @@ class ReRegistrationAppointmentViewModel @Inject constructor(
         kotlin.runCatching {
             reRegistrationRepository.getReRegistrationData()
         }.onSuccess {
-            reRegistrationData.value = it
+            reRegistrationData.value = it.data
         }.onFailure {
             error.value = "Error al obtener los datos de la cita"
         }

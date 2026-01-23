@@ -63,7 +63,7 @@ class ETSCalendarViewModel @Inject constructor(
         kotlin.runCatching {
             etsCalendarRepository.getETSEvents()
         }.onSuccess {
-            etsCalendar.value = it
+            etsCalendar.value = it.data
         }.onFailure {
             error.value = "Error al obtener el calendario de ETS"
         }

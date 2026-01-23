@@ -59,7 +59,7 @@ class OccupancyViewModel @Inject constructor(
         kotlin.runCatching {
             occupancyRepository.getOccupancyData()
         }.onSuccess {
-            occupancyList.value = it
+            occupancyList.value = it.data
         }.onFailure {
             error.value = "Error al obtener la ocupabilidad"
         }

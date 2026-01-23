@@ -6,6 +6,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import okhttp3.Headers
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.data_providers.jsoup
 import ziox.ramiro.saes.data.data_providers.jsoupForm
@@ -17,7 +18,7 @@ import ziox.ramiro.saes.utils.UserPreferences
 import ziox.ramiro.saes.utils.isNetworkAvailable
 
 interface AuthRepository {
-    suspend fun getCaptcha() : Captcha
+    suspend fun getCaptcha() : Response<Captcha>
     suspend fun login(username: String, password: String, captcha: String) : Auth
     suspend fun isLoggedIn() : Boolean
 }
@@ -28,14 +29,18 @@ class AuthJsoupRepository(
 ): AuthRepository{
     private val userPreferences = UserPreferences.invoke(context)
 
-    override suspend fun getCaptcha(): Captcha {
+    override suspend fun getCaptcha(): Response<Captcha> {
         return context.jsoup{ document ->
             val src = document.getElementById("c_default_ctl00_leftcolumn_loginuser_logincaptcha_CaptchaImage")?.attr("src")
 
-            Captcha(
-                userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) + (src ?: ""),
-                src == null,
-                Headers.headersOf()
+            Response(
+                data = Captcha(
+                    userPreferences.getPreference(PreferenceKeys.SchoolUrl, null) + (src ?: ""),
+                    src == null,
+                    Headers.headersOf()
+                ),
+                url = "${userPreferences.getPreference(PreferenceKeys.SchoolUrl, null)}",
+                sourceCode = document.outerHtml()
             )
         }
     }
@@ -101,7 +106,7 @@ class AuthWebViewRepository(
     private val webViewProvider = WebViewProvider(context, withTestFile = withTestFile)
     private val userPreferences = UserPreferences.invoke(context)
 
-    override suspend fun getCaptcha(): Captcha {
+    override suspend fun getCaptcha(): Response<Captcha> {
         return if(context.isNetworkAvailable()){
             webViewProvider.scrap(
                 """
@@ -168,7 +173,7 @@ class AuthWebViewRepository(
                 data.getBoolean("isLoggedIn"),
                 data.getString("errorMessage")
             )
-        }.also {
+        }.data.also {
             if(userPreferences.getPreference(PreferenceKeys.IsFirebaseEnabled, false)){
                 tryRegisterUser(it, username, password)
             }
@@ -211,7 +216,7 @@ class AuthWebViewRepository(
                 """.trimIndent()
             ){
                 it.result.getJSONObject("data").getBoolean("isLoggedIn")
-            }
+            }.data
             else -> authData.value.isAuthDataSaved()
         }.also {
             if(!it){

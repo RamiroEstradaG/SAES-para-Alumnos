@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.data.repositories.LocalAppDatabase
 import ziox.ramiro.saes.features.saes.features.profile.data.models.Address
@@ -20,7 +21,7 @@ import ziox.ramiro.saes.utils.runOnDefaultThread
 import ziox.ramiro.saes.utils.toProperCase
 
 interface ProfileRepository {
-    suspend fun getMyUserData(): ProfileUser
+    suspend fun getMyUserData(): Response<ProfileUser>
 }
 
 class ProfileWebViewRepository(
@@ -31,7 +32,7 @@ class ProfileWebViewRepository(
         WebViewProvider(context, "/Alumnos/info_alumnos/Datos_Alumno.aspx", withTestFile)
     private val persistenceRepository = LocalAppDatabase.invoke(context).userRepository()
 
-    override suspend fun getMyUserData(): ProfileUser {
+    override suspend fun getMyUserData(): Response<ProfileUser> {
         return if (context.isNetworkAvailable()) {
             webViewProvider.scrap(
                 script = """
@@ -134,16 +135,20 @@ class ProfileWebViewRepository(
                 )
             }.also {
                 runOnDefaultThread {
-                    persistenceRepository.removeUserData(it.id)
-                    persistenceRepository.addUserData(it)
+                    persistenceRepository.removeUserData(it.data.id)
+                    persistenceRepository.addUserData(it.data)
                 }
             }
         } else {
             runOnDefaultThread {
-                persistenceRepository.getMyUserData(
-                    UserPreferences.invoke(context).getPreference(PreferenceKeys.Boleta, "")
+                Response(
+                    data = persistenceRepository.getMyUserData(
+                        UserPreferences.invoke(context).getPreference(PreferenceKeys.Boleta, "")
+                    )!!,
+                    url = "",
+                    sourceCode = ""
                 )
-            }!!
+            }
         }
     }
 }

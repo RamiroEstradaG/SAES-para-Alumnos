@@ -3,6 +3,7 @@ package ziox.ramiro.saes.features.saes.features.school_schedule.data.repositorie
 import android.content.Context
 import org.json.JSONObject
 import ziox.ramiro.saes.data.data_providers.FilterType
+import ziox.ramiro.saes.data.data_providers.Response
 import ziox.ramiro.saes.data.data_providers.WebViewProvider
 import ziox.ramiro.saes.features.saes.data.models.FilterField
 import ziox.ramiro.saes.features.saes.data.models.FilterRepository
@@ -13,18 +14,18 @@ import ziox.ramiro.saes.features.saes.features.schedule.data.models.ScheduleDayT
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.WeekDay
 import ziox.ramiro.saes.features.saes.features.schedule.data.models.scheduleColors
 import ziox.ramiro.saes.utils.toProperCase
-import java.util.*
+import java.util.Calendar
 
-interface SchoolScheduleRepository: FilterRepository {
-    suspend fun getSchoolSchedule(): List<ClassSchedule>
+interface SchoolScheduleRepository : FilterRepository {
+    suspend fun getSchoolSchedule(): Response<List<ClassSchedule>>
 }
 
 class SchoolScheduleWebViewRepository(
     context: Context
-): SchoolScheduleRepository {
+) : SchoolScheduleRepository {
     private val webViewProvider = WebViewProvider(context, "/Academica/horarios.aspx")
 
-    override suspend fun getSchoolSchedule(): List<ClassSchedule> {
+    override suspend fun getSchoolSchedule(): Response<List<ClassSchedule>> {
         return webViewProvider.scrap(
             script = """
                 var scheduleTable = byId("ctl00_mainCopy_Panel1");
@@ -80,16 +81,17 @@ class SchoolScheduleWebViewRepository(
 
                     val classId = classSchedule.getString("classId")
 
-                    val color = if (registered.containsKey(classId)){
+                    val color = if (registered.containsKey(classId)) {
                         registered.getValue(classId)
-                    }else{
-                        registered[classId] = scheduleColors[registered.size % scheduleColors.size].value.toLong()
+                    } else {
+                        registered[classId] =
+                            scheduleColors[registered.size % scheduleColors.size].value.toLong()
                         registered.getValue(classId)
                     }
 
                     addAll(hours.map { range ->
                         ClassSchedule(
-                            classSchedule.getString("id")+range.start.toString(),
+                            classSchedule.getString("id") + range.start.toString(),
                             classId,
                             classSchedule.getString("className").toProperCase(),
                             classSchedule.getString("group"),
@@ -131,7 +133,7 @@ class SchoolScheduleWebViewRepository(
                     FilterType.RADIO_GROUP -> RadioGroupFilterField.fromJson(item)
                 }
             }
-        }
+        }.data
     }
 
     override suspend fun selectSelect(fieldId: String, newIndex: Int?): List<FilterField> {
@@ -164,7 +166,7 @@ class SchoolScheduleWebViewRepository(
                     FilterType.RADIO_GROUP -> RadioGroupFilterField.fromJson(item)
                 }
             }
-        }
+        }.data
     }
 
     override suspend fun selectRadioGroup(fieldId: String): List<FilterField> {
@@ -192,6 +194,6 @@ class SchoolScheduleWebViewRepository(
                     FilterType.RADIO_GROUP -> RadioGroupFilterField.fromJson(item)
                 }
             }
-        }
+        }.data
     }
 }
